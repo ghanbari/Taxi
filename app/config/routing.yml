@@ -1,0 +1,26 @@
+fun_pro_geo:
+    resource: "@FunProGeoBundle/Resources/config/routing.yml"
+    prefix:   /
+
+fun_pro_engine:
+    resource: "@FunProEngineBundle/Resources/config/routing.yml"
+    prefix:   /
+
+fun_pro_agent:
+    resource: "@FunProAgentBundle/Resources/config/routing.yml"
+    prefix:   /
+
+fun_pro_driver:
+    resource: "@FunProDriverBundle/Resources/config/routing.yml"
+    prefix:   /
+
+fun_pro_passenger:
+    resource: "@FunProPassengerBundle/Resources/config/routing.yml"
+    prefix:   /
+
+fun_pro_user:
+    resource: "@FunProUserBundle/Resources/config/routing.yml"
+    prefix:   /
+
+fos_user:
+    resource: "@FOSUserBundle/Resources/config/routing/all.xml"
