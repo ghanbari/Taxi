@@ -1,0 +1,17 @@
+nelmio_api_doc:
+    name: iTaxi
+    default_sections_opened:  false
+    request_listener:
+        enabled:              false
+    sandbox:
+        enabled:              true
+        body_format:
+            formats:
+                - form
+                - json
+            default_format:   form
+        request_format:
+            formats:
+                json:          application/json
+            method:               accept_header
+            default_format:       json

@@ -20,6 +20,7 @@ class AppKernel extends Kernel
             new FOS\UserBundle\FOSUserBundle(),
             new FOS\RestBundle\FOSRestBundle(),
             new JMS\SerializerBundle\JMSSerializerBundle(),
+            new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
             new FunPro\UserBundle\FunProUserBundle(),
             new FunPro\PassengerBundle\FunProPassengerBundle(),
             new FunPro\DriverBundle\FunProDriverBundle(),
