@@ -49,7 +49,6 @@ class CreatePassengerForTest extends AbstractFixture implements OrderedFixtureIn
             $passenger->setMobile($mobile);
             $passenger->setName('passenger-'.$i);
             $passenger->setEnabled(true);
-            $passenger->addRole('ROLE_PASSENGER');
             $manager->persist($passenger);
             $this->setReference('passenger-'.$i, $passenger);
             $i++;

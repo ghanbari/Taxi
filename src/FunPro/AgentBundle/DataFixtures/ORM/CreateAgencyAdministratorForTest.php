@@ -5,6 +5,7 @@ namespace FunPro\AgentBundle\DataFixtures\ORM;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use FunPro\UserBundle\Entity\User;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -46,7 +47,7 @@ class CreateAgencyAdministratorForTest extends AbstractFixture implements Ordere
             $user->setEmail($username.'@itaxico.ir');
             $user->setEnabled(true);
             $user->setName($username);
-            $user->addRole('ROLE_AGENCY_ADMIN');
+            $user->addRole(User::ROLE_AGENCY_ADMIN);
 
             $manager->persist($user);
 
