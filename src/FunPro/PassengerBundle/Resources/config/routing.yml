@@ -1,0 +1,5 @@
+fun_pro_passenger_api:
+    resource: FunPro\PassengerBundle\Controller\PassengerController
+    type: rest
+    options:
+        version: true
