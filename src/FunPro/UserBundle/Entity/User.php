@@ -6,6 +6,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use FOS\UserBundle\Model\User as BaseUser;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation as JS;
 
 /**
  * User
@@ -19,20 +21,63 @@ use Gedmo\Mapping\Annotation as Gedmo;
  *      User::TYPE_DRIVER = "FunPro\DriverBundle\Entity\Driver",
  *      User::TYPE_PASSENGER = "FunPro\PassengerBundle\Entity\Passenger",
  * })
+ * @ORM\AttributeOverrides({
+ *      @ORM\AttributeOverride(
+ *          name="emailCanonical",
+ *          column=@ORM\Column(
+ *              name="email_canonical",
+ *              type="string",
+ *              length=255,
+ *              nullable=true,
+ *              unique=true
+ *          )
+ *      ),
+ *      @ORM\AttributeOverride(
+ *          name="email",
+ *          column=@ORM\Column(
+ *              name="email",
+ *              nullable=true,
+ *          )
+ *      ),
+ *      @ORM\AttributeOverride(
+ *          name="usernameCanonical",
+ *          column=@ORM\Column(
+ *              name="username_canonical",
+ *              type="string",
+ *              length=255,
+ *              nullable=true,
+ *              unique=true
+ *          )
+ *      ),
+ *      @ORM\AttributeOverride(
+ *          name="username",
+ *          column=@ORM\Column(
+ *              name="username",
+ *              nullable=true,
+ *          )
+ *      )
+ * })
  *
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
 class User extends BaseUser
 {
-    const SEX_MALE = 0;
+    const SEX_MALE   = 0;
     const SEX_FEMALE = 1;
 
-    const TYPE_ADMIN = 1;
-    const TYPE_OPERATOR = 2;
-    const TYPE_MARKETER = 3;
-    const TYPE_AGENCY = 4;
-    const TYPE_DRIVER = 5;
-    const TYPE_PASSENGER = 6;
+    const TYPE_ADMIN        = 1;
+    const TYPE_OPERATOR     = 2;
+    const TYPE_MARKETER     = 3;
+    const TYPE_AGENCY_ADMIN = 4;
+    const TYPE_DRIVER       = 5;
+    const TYPE_PASSENGER    = 6;
+
+    const ROLE_ADMIN        = 'ROLE_ADMIN';
+    const ROLE_OPERATOR     = 'ROLE_OPERATOR';
+    const ROLE_MARKETER     = 'ROLE_MARKETER';
+    const ROLE_AGENCY_ADMIN = 'ROLE_AGENCY_ADMIN';
+    const ROLE_DRIVER       = 'ROLE_DRIVER';
+    const ROLE_PASSENGER    = 'ROLE_PASSENGER';
 
     /**
      * @var int
@@ -40,6 +85,9 @@ class User extends BaseUser
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @JS\Groups({"Public"})
+     * @JS\Since("1.0.0")
      */
     protected $id;
 
@@ -47,6 +95,12 @@ class User extends BaseUser
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=50)
+     *
+     * @Assert\NotBlank(groups={"Register", "Profile"})
+     * @Assert\Regex(pattern="/[^\d]{1,50}/", groups={"Register", "Profile"})
+     *
+     * @JS\Groups({"Public", "Register", "Profile", "Admin"})
+     * @JS\Since("1.0.0")
      */
     protected $name;
 
@@ -54,6 +108,12 @@ class User extends BaseUser
      * @var integer
      *
      * @ORM\Column(type="smallint", nullable=true)
+     *
+     * @Assert\Type(type="numeric", groups={"Register", "Profile"})
+     * @Assert\Range(min="13", max="99", groups={"Register", "Profile"})
+     *
+     * @JS\Groups({"Public", "Profile", "Admin"})
+     * @JS\Since("1.0.0")
      */
     protected $age;
 
@@ -61,6 +121,11 @@ class User extends BaseUser
      * @var integer
      *
      * @ORM\Column(type="smallint", nullable=true)
+     *
+     * @Assert\Regex(pattern="/m|f/", groups={"Register", "Profile"})
+     *
+     * @JS\Groups({"Public", "Profile", "Admin"})
+     * @JS\Since("1.0.0")
      */
     protected $sex;
 
@@ -68,6 +133,11 @@ class User extends BaseUser
      * @var string
      *
      * @ORM\Column(type="text", nullable=true)
+     *
+     * @Assert\Length(max="2000", groups={"Register", "Profile"})
+     *
+     * @JS\Groups({"Public", "Profile", "Admin"})
+     * @JS\Since("1.0.0")
      */
     protected $describtion;
 
@@ -75,11 +145,17 @@ class User extends BaseUser
      * @var string
      *
      * @ORM\Column(nullable=true)
+     *
+     * @JS\Groups({"Public", "Profile"})
+     * @JS\Since("1.0.0")
      */
     protected $avatar;
 
     /**
      * @var File
+     *
+     * @TODO: add validations
+     * @Assert\Image(groups={"Profile"})
      */
     protected $avatarFile;
 
@@ -89,6 +165,10 @@ class User extends BaseUser
      * @ORM\ManyToOne(targetEntity="FunPro\UserBundle\Entity\User")
      * @ORM\JoinColumn(name="created_at", referencedColumnName="id", onDelete="SET NULL")
      * @Gedmo\Blameable(on="create")
+     *
+     * @JS\Groups({"createdBy"})
+     * @JS\Since("1.0.0")
+     * @JS\MaxDepth(1)
      */
     protected $createdBy;
 
@@ -97,6 +177,9 @@ class User extends BaseUser
      *
      * @ORM\Column(name="created_by", type="datetime")
      * @Gedmo\Timestampable(on="create")
+     *
+     * @JS\Groups({"createdAt"})
+     * @JS\Since("1.0.0")
      */
     protected $createdAt;
 
@@ -104,6 +187,9 @@ class User extends BaseUser
      * @var \DateTime
      *
      * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
+     *
+     * @JS\Groups({"private"})
+     * @JS\Since("1.0.0")
      */
     protected $deletedAt;
 
@@ -113,6 +199,10 @@ class User extends BaseUser
      * @ORM\ManyToOne(targetEntity="FunPro\UserBundle\Entity\User")
      * @ORM\JoinColumn(name="deleted_by", referencedColumnName="id", onDelete="SET NULL")
      * @Gedmo\Blameable(on="change", field="deletedAt")
+     *
+     * @JS\Groups({"deletedBy"})
+     * @JS\Since("1.0.0")
+     * @JS\MaxDepth(1)
      */
     protected $deletedBy;
     
@@ -175,7 +265,16 @@ class User extends BaseUser
      */
     public function setSex($sex)
     {
-        $this->sex = $sex;
+        switch ($sex) {
+            case self::SEX_MALE:
+            case 'm':
+                $this->sex = self::SEX_MALE;
+                break;
+            case self::SEX_FEMALE:
+            case 'f':
+                $this->sex = self::SEX_FEMALE;
+                break;
+        }
 
         return $this;
     }

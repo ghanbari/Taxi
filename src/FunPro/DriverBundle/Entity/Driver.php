@@ -6,6 +6,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\AgentBundle\Entity\Agency;
 use FunPro\UserBundle\Entity\User;
+use JMS\Serializer\Annotation as JS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Driver
@@ -19,14 +21,25 @@ class Driver extends User
      * @var Car
      *
      * @ORM\OneToMany(targetEntity="FunPro\DriverBundle\Entity\Car", mappedBy="driver")
+     *
+     * @JS\Groups({"Cars", "Owner", "Admin"})
+     * @JS\MaxDepth(1)
+     * @JS\Since("1.0.0")
      */
     private $cars;
 
     /**
      * @var array
      *
-     * @ORM\OneToOne(targetEntity="FunPro\GeoBundle\Entity\Address")
-     * @ORM\JoinColumn(name="address_id", referencedColumnName="id", onDelete="RESTRICT")
+     * @ORM\OneToOne(targetEntity="FunPro\GeoBundle\Entity\Address", orphanRemoval=true, cascade={"persist"})
+     * @ORM\JoinColumn(name="address_id", referencedColumnName="id", onDelete="RESTRICT", nullable=false)
+     *
+     * @Assert\NotNull(groups={"Register", "Profile"})
+     * @Assert\Type(type="FunPro\GeoBundle\Entity\Address", groups={"Register", "Profile"})
+     *
+     * @JS\Groups({"DriverAddress", "Owner", "Admin", "Register"})
+     * @JS\MaxDepth(1)
+     * @JS\Since("1.0.0")
      */
     private $address;
 
@@ -34,6 +47,12 @@ class Driver extends User
      * @var string
      *
      * @ORM\Column(name="contract_number", length=20, unique=true)
+     *
+     * @Assert\NotBlank(groups={"Register", "Profile"})
+     * @Assert\Type(type="numeric", groups={"Register", "Profile"})
+     *
+     * @JS\Groups({"Owner", "Admin", "Register"})
+     * @JS\Since("1.0.0")
      */
     private $contractNumber;
 
@@ -42,6 +61,13 @@ class Driver extends User
      *
      * @ORM\ManyToOne(targetEntity="FunPro\AgentBundle\Entity\Agency")
      * @ORM\JoinColumn(name="agency_id", referencedColumnName="id", onDelete="restrict", nullable=false)
+     *
+     * @Assert\NotNull(groups={"Register", "Profile"})
+     * @Assert\Type(type="FunPro\AgentBundle\Entity\Agency", groups={"Register", "Profile"})
+     *
+     * @JS\Groups({"Public", "Admin", "Register"})
+     * @JS\MaxDepth(1)
+     * @JS\Since("1.0.0")
      */
     private $agency;
 
@@ -49,6 +75,15 @@ class Driver extends User
      * @var array
      *
      * @ORM\Column(type="array")
+     *
+     * @Assert\Count(min="1", groups={"Register", "Profile"})
+     * @Assert\All({
+     *      @Assert\NotBlank(groups={"Register", "Profile"}),
+     *      @Assert\Length(min="8", max="255", groups={"Register", "Profile"}),
+     * })
+     *
+     * @JS\Groups({"Owner", "Admin", "Register"})
+     * @JS\Since("1.0.0")
      */
     private $contact;
 
@@ -56,6 +91,12 @@ class Driver extends User
      * @var string
      *
      * @ORM\Column(name="national_code", unique=true)
+     *
+     * @Assert\NotBlank(groups={"Register", "Profile"})
+     * @Assert\Regex(pattern="/\d{10}/", groups={"Register", "Profile"})
+     *
+     * @JS\Groups({"Owner", "Admin", "Register"})
+     * @JS\Since("1.0.0")
      */
     private $nationalCode;
 
@@ -63,6 +104,9 @@ class Driver extends User
      * @var float
      *
      * @ORM\Column(type="decimal", precision=2, scale=1, options={"default"=0})
+     *
+     * @JS\Groups({"Public", "Vote"})
+     * @JS\Since("1.0.0")
      */
     private $rate;
 
@@ -71,6 +115,7 @@ class Driver extends User
         parent::__construct();
         $this->contact = array();
         $this->cars = new ArrayCollection();
+        $this->addRole(self::ROLE_DRIVER);
         $this->rate = 0;
     }
 
