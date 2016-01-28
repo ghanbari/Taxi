@@ -5,6 +5,7 @@ nelmio_api_doc:
         enabled:              false
     sandbox:
         enabled:              true
+        accept_type:          application/json
         body_format:
             formats:
                 - form
@@ -12,6 +13,6 @@ nelmio_api_doc:
             default_format:   form
         request_format:
             formats:
-                json:          application/json
-            method:               accept_header
-            default_format:       json
+                json:         application/json
+            method:           accept_header
+            default_format:   json

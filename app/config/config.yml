@@ -5,11 +5,14 @@ imports:
     - { resource: stof.yml }
     - { resource: fos.yml }
     - { resource: nelmio.yml }
+    - { resource: fos_rest_mime_types.php }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
-    locale: en
+    locale: fa
+    api_current_version: 1.0.0
+    api_available_versions: ["1.0.0"]
 
 framework:
     #esi:             ~

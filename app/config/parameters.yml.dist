@@ -18,24 +18,6 @@ parameters:
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
 
-    admin.email: ghanbari.daniel@gmail.com
-    admin.username: ghanbari
-    admin.password: 123456789
-
-    test.passenger: true
-    test.passenger.credentials:
-        "09371639233": "123456789"
-        "09371639234": "123456789"
-        "09371639235": "123456789"
-        "09371639236": "123456789"
-
-    test.driver: true
-    test.driver.credentials:
-        "3674240696": "123456789"
-        "3674240697": "123456789"
-        "3674240698": "123456789"
-        "3674240699": "123456789"
-    test.agency.admin.credentials:
-        "agency1": 123456789
-        "agency2": 123456789
-        "agency3": 123456789
+    router.request_context.schema: http
+    router.request_context.host: itaxico.ir
+    router.request_context.base_url: /

@@ -1,0 +1,20 @@
+parameters:
+    admin.email: ghanbari.daniel@gmail.com
+    admin.username: ghanbari
+    admin.password: 1
+    test.passenger: true
+    test.passenger.credentials:
+        '09371639233': 1
+        '09371639234': 1
+        '09371639235': 1
+        '09371639236': 1
+    test.driver: true
+    test.driver.credentials:
+        3674240696: 1
+        3674240697: 1
+        3674240698: 1
+        3674240699: 1
+    test.agency.admin.credentials:
+        agency1: 1
+        agency2: 1
+        agency3: 1

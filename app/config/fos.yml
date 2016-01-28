@@ -2,3 +2,50 @@ fos_user:
     db_driver: orm
     firewall_name: main
     user_class: FunPro\UserBundle\Entity\User
+
+fos_rest:
+    view:
+        view_response_listener:
+            enabled: true
+            force: false
+        formats:
+            xml: false
+            json: true
+        templating_formats:
+            html: true
+    routing_loader:
+        default_format: html
+        include_format: false
+    body_listener:
+        enabled:              true
+        default_format:       json
+        throw_exception_on_unsupported_content_type:  true
+        decoders:
+            json: fos_rest.decoder.json
+    body_converter:
+        enabled:              true
+        validate:             true
+        validation_errors_argument:  validationErrors
+    format_listener:
+        rules:
+            - { path: ^/doc, priorities: [html], fallback_format: html, prefer_extension: false }
+            - { path: ^/, methods: [DELETE], priorities: [json], fallback_format: false, prefer_extension: false }
+            - { path: ^/, host: api.%router.request_context.host%, priorities: [json], fallback_format: json, prefer_extension: false, exception_fallback_format: json }
+            - { path: ^/, priorities: [html], fallback_format: html, prefer_extension: true, exception_fallback_format: html }
+        enabled: true
+    versioning:
+        enabled:              true
+        default_version:      %api_current_version%
+        resolvers:
+            media_type:
+                enabled:              true
+                regex:                '/(v|version)=(?P<version>[0-9\.]+)/'
+    serializer:
+        groups: ['Public']
+    param_fetcher_listener:
+        enabled: true
+        force:   false
+    access_denied_listener:
+        enabled: true
+        formats:
+            json: true
