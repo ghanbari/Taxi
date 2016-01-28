@@ -1,4 +1,6 @@
 services:
-#    fun_pro_engine.example:
-#        class: FunPro\EngineBundle\Example
-#        arguments: ["@service_id", "plain_value", %parameter%]
+    fun_pro_engine.version_listener:
+        class: FunPro\EngineBundle\Listener\FilterControllerByApiVersion
+        arguments: ["@router", "%api_current_version%", "%api_available_versions%"]
+        tags:
+            - { name: kernel.event_subscriber }
