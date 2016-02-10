@@ -5,21 +5,45 @@ namespace FunPro\DriverBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\UserBundle\Entity\User;
 use Gedmo\Mapping\Annotation as Gedmo;
+use JMS\Serializer\Annotation as JS;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Car
  *
- * @ORM\Table(name="car")
+ * @ORM\Table(
+ *      name="car",
+ *      uniqueConstraints={
+ *          @ORM\UniqueConstraint(name="car_driver_UNIQUE", columns={"driver_id", "deleted_at"}),
+ *          @ORM\UniqueConstraint(name="car_driver_UNIQUE", columns={"driver_id", "is_current"})
+ *      },
+ * )
  * @ORM\Entity(repositoryClass="FunPro\DriverBundle\Repository\CarRepository")
+ *
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
+ *
+ * @UniqueEntity(fields={"driver", "deletedAt"}, errorPath="driver", ignoreNull=false, groups={"create", "update"})
  */
 class Car
 {
+    const STATUS_WAKEFUL         = 'wakeful';
+    const STATUS_SLEEP           = 'sleep';
+    const STATUS_SERVICE_ACCEPT  = 'accept';
+    const STATUS_SERVICE_PREPARE = 'prepare'; #go to passenger place
+    const STATUS_SERVICE_READY   = 'ready'; #in passenger place
+    const STATUS_SERVICE_START   = 'start';
+    const STATUS_SERVICE_END     = 'end';
+
     /**
      * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @JS\Groups({"Public", "Driver"})
+     * @JS\Since("1.0.0")
      */
     private $id;
 
@@ -28,6 +52,13 @@ class Car
      *
      * @ORM\ManyToOne(targetEntity="FunPro\DriverBundle\Entity\Driver")
      * @ORM\JoinColumn(name="driver_id", referencedColumnName="id", onDelete="cascade", nullable=false)
+     *
+     * @Assert\NotNull(groups={"Create", "Update"})
+     * @Assert\Type(type="FunPro\DriverBundle\Entity\Driver", groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Driver", "Admin"})
+     * @JS\MaxDepth(1)
+     * @JS\Since("1.0.0")
      */
     private $driver;
 
@@ -35,6 +66,12 @@ class Car
      * @var string
      *
      * @ORM\Column(length=50)
+     *
+     * @Assert\NotBlank(groups={"Create", "Update"})
+     * @Assert\Length(min="2", max="50", groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Public", "Driver", "Admin"})
+     * @JS\Since("1.0.0")
      */
     private $type;
 
@@ -42,6 +79,12 @@ class Car
      * @var string
      *
      * @ORM\Column(length=15)
+     *
+     * @Assert\NotBlank(groups={"Create", "Update"})
+     * @Assert\Length(min="5", max="15", groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Public", "Driver", "Admin"})
+     * @JS\Since("1.0.0")
      */
     private $plaque;
 
@@ -49,6 +92,12 @@ class Car
      * @var string
      *
      * @ORM\Column(length=15)
+     *
+     * @Assert\NotBlank(groups={"Create", "Update"})
+     * @Assert\Length(max="15", groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Public", "Driver", "Admin"})
+     * @JS\Since("1.0.0")
      */
     private $color;
 
@@ -56,6 +105,12 @@ class Car
      * @var \DateTime
      *
      * @ORM\Column(type="date")
+     *
+     * @Assert\NotNull(groups={"Create", "Update"})
+     * @Assert\Date(groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Public", "Driver", "Admin"})
+     * @JS\Since("1.0.0")
      */
     private $born;
 
@@ -63,6 +118,11 @@ class Car
      * @var float
      *
      * @ORM\Column(type="decimal", precision=2, scale=1, options={"default"=0})
+     *
+     * @Assert\Range(min="0", max="9", groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Public", "Driver", "Admin"})
+     * @JS\Since("1.0.0")
      */
     private $rate;
 
@@ -70,13 +130,21 @@ class Car
      * @var string
      *
      * @ORM\Column(type="text", nullable=true)
+     *
+     * @Assert\Length(max="10000", groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Public", "Driver", "Admin"})
+     * @JS\Since("1.0.0")
      */
-    private $discription;
+    private $description;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="deleted_at", type="datetime")
+     * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
+     *
+     * @JS\Groups({"Admin"})
+     * @JS\Since("1.0.0")
      */
     private $deletedAt;
 
@@ -86,8 +154,62 @@ class Car
      * @ORM\ManyToOne(targetEntity="FunPro\UserBundle\Entity\User")
      * @ORM\JoinColumn(name="deleted_by", referencedColumnName="id", onDelete="SET NULL")
      * @Gedmo\Blameable(on="change", field="deletedAt")
+     *
+     * @JS\Groups({"Admin"})
+     * @JS\MaxDepth(1)
+     * @JS\Since("1.0.0")
      */
     private $deletedBy;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime")
+     * @Gedmo\Timestampable(on="create")
+     *
+     * @JS\Groups({"Admin"})
+     * @JS\Since("1.0.0")
+     */
+    private $createdAt;
+
+    /**
+     * @var User
+     *
+     * @ORM\ManyToOne(targetEntity="FunPro\UserBundle\Entity\User")
+     * @ORM\JoinColumn(name="created_by", referencedColumnName="id", onDelete="SET NULL")
+     *
+     * @JS\Groups({"Admin"})
+     * @JS\MaxDepth(1)
+     * @JS\Since("1.0.0")
+     */
+    private $createdBy;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_current", type="boolean", options={"default"=true})
+     *
+     * @JS\Groups({"Driver", "Admin"})
+     * @JS\Since("1.0.0")
+     */
+    private $current;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="status", length=15)
+     *
+     * @JS\Groups({"CarStatus"})
+     * @JS\Since("1.0.0")
+     */
+    private $status;
+
+    public function __construct()
+    {
+        $this->setCurrent(true);
+        $this->setRate(0);
+        $this->setStatus(self::STATUS_SLEEP);
+    }
 
     /**
      * Get id
@@ -215,26 +337,26 @@ class Car
     }
 
     /**
-     * Set discription
+     * Set description
      *
-     * @param string $discription
+     * @param string $description
      * @return Car
      */
-    public function setDiscription($discription)
+    public function setDescription($description)
     {
-        $this->discription = $discription;
+        $this->description = $description;
 
         return $this;
     }
 
     /**
-     * Get discription
+     * Get description
      *
      * @return string 
      */
-    public function getDiscription()
+    public function getDescription()
     {
-        return $this->discription;
+        return $this->description;
     }
 
     /**
@@ -304,5 +426,97 @@ class Car
     public function getDeletedBy()
     {
         return $this->deletedBy;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return Car
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime 
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set current
+     *
+     * @param boolean $current
+     * @return Car
+     */
+    public function setCurrent($current)
+    {
+        $this->current = $current;
+
+        return $this;
+    }
+
+    /**
+     * Get current
+     *
+     * @return boolean 
+     */
+    public function getCurrent()
+    {
+        return $this->current;
+    }
+
+    /**
+     * Set createdBy
+     *
+     * @param \FunPro\UserBundle\Entity\User $createdBy
+     * @return Car
+     */
+    public function setCreatedBy(\FunPro\UserBundle\Entity\User $createdBy = null)
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    /**
+     * Get createdBy
+     *
+     * @return \FunPro\UserBundle\Entity\User 
+     */
+    public function getCreatedBy()
+    {
+        return $this->createdBy;
+    }
+
+    /**
+     * Set status
+     *
+     * @param string $status
+     * @return Car
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get status
+     *
+     * @return string 
+     */
+    public function getStatus()
+    {
+        return $this->status;
     }
 }

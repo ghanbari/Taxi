@@ -1,4 +1,6 @@
 services:
-#    fun_pro_driver.example:
-#        class: FunPro\DriverBundle\Example
-#        arguments: ["@service_id", "plain_value", %parameter%]
+    fun_pro_driver.car_log_subscriber:
+        class: FunPro\DriverBundle\EventListener\CarLogSubscriber
+        arguments: ["@doctrine"]
+        tags:
+            - { name: kernel.event_subscriber }
