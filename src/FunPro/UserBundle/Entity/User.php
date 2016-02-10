@@ -166,7 +166,7 @@ class User extends BaseUser
      * @ORM\JoinColumn(name="created_at", referencedColumnName="id", onDelete="SET NULL")
      * @Gedmo\Blameable(on="create")
      *
-     * @JS\Groups({"createdBy"})
+     * @JS\Groups({"CreatedBy"})
      * @JS\Since("1.0.0")
      * @JS\MaxDepth(1)
      */
@@ -178,7 +178,7 @@ class User extends BaseUser
      * @ORM\Column(name="created_by", type="datetime")
      * @Gedmo\Timestampable(on="create")
      *
-     * @JS\Groups({"createdAt"})
+     * @JS\Groups({"Public"})
      * @JS\Since("1.0.0")
      */
     protected $createdAt;
@@ -188,7 +188,7 @@ class User extends BaseUser
      *
      * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
      *
-     * @JS\Groups({"private"})
+     * @JS\Groups({"Private"})
      * @JS\Since("1.0.0")
      */
     protected $deletedAt;
@@ -200,7 +200,7 @@ class User extends BaseUser
      * @ORM\JoinColumn(name="deleted_by", referencedColumnName="id", onDelete="SET NULL")
      * @Gedmo\Blameable(on="change", field="deletedAt")
      *
-     * @JS\Groups({"deletedBy"})
+     * @JS\Groups({"DeletedBy"})
      * @JS\Since("1.0.0")
      * @JS\MaxDepth(1)
      */
