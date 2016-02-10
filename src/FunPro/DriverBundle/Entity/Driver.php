@@ -65,7 +65,7 @@ class Driver extends User
      * @Assert\NotNull(groups={"Register", "Profile"})
      * @Assert\Type(type="FunPro\AgentBundle\Entity\Agency", groups={"Register", "Profile"})
      *
-     * @JS\Groups({"Public", "Admin", "Register"})
+     * @JS\Groups({"Agency", "Admin", "Register"})
      * @JS\MaxDepth(1)
      * @JS\Since("1.0.0")
      */
