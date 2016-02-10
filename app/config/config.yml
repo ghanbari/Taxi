@@ -4,8 +4,10 @@ imports:
     - { resource: services.yml }
     - { resource: stof.yml }
     - { resource: fos.yml }
+    - { resource: jms.yml }
     - { resource: nelmio.yml }
     - { resource: fos_rest_mime_types.php }
+    - { resource: "@FunProServiceBundle/Resources/config/services.yml" }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
@@ -54,8 +56,10 @@ doctrine:
         charset:  UTF8
         types:
             point: FunPro\GeoBundle\Doctrine\Type\PointType
+            linestring: FunPro\GeoBundle\Doctrine\Type\LineStringType
         mapping_types:
             point: point
+            linestring: linestring
 
         # if using pdo_sqlite as your database driver:
         #   1. add the path in parameters.yml
@@ -68,6 +72,10 @@ doctrine:
         auto_generate_proxy_classes: "%kernel.debug%"
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
+        dql:
+            numeric_functions:
+                point_str: FunPro\GeoBundle\Doctrine\ORM\Query\Functions\PointStr
+                distance: FunPro\GeoBundle\Doctrine\ORM\Query\Functions\Distance
         filters:
             softdeleteable:
                 class: Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter
@@ -105,9 +113,3 @@ swiftmailer:
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: memory }
-
-doctrine_migrations:
-    dir_name: "%kernel.root_dir%/DoctrineMigrations"
-    namespace: Itaxi\Migrations
-    table_name: migration_versions
-    name: Application Migrations

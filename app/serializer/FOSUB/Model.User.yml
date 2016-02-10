@@ -1,0 +1,9 @@
+FOS\UserBundle\Model\User:
+    exclusion_policy: ALL
+    properties:
+        id:
+            groups: ["Public"]
+        email:
+            groups: ["Owner"]
+        lastLogin:
+            groups: ["Owner"]

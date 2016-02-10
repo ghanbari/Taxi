@@ -6,6 +6,8 @@ framework:
     router:
         resource: "%kernel.root_dir%/config/routing_dev.yml"
         strict_requirements: true
+    session:
+        cookie_domain: .%router.request_context.host%
     profiler: { only_exceptions: false }
 
 web_profiler:
@@ -34,3 +36,9 @@ monolog:
 
 #swiftmailer:
 #    delivery_address: me@example.com
+
+doctrine_migrations:
+    dir_name: "%kernel.root_dir%/DoctrineMigrations"
+    namespace: Itaxi\Migrations
+    table_name: migration_versions
+    name: Application Migrations
