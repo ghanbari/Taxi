@@ -4,6 +4,7 @@ namespace FunPro\GeoBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\GeoBundle\Doctrine\ValueObject\Point;
+use JMS\Serializer\Annotation as JS;
 
 /**
  * Address
@@ -19,6 +20,9 @@ class Address
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @JS\Groups({"Public"})
+     * @JS\Since("1.0.0")
      */
     private $id;
 
@@ -26,6 +30,9 @@ class Address
      * @var string
      *
      * @ORM\Column()
+     *
+     * @JS\Groups({"Public"})
+     * @JS\Since("1.0.0")
      */
     private $title;
 
@@ -33,6 +40,10 @@ class Address
      * @var Point
      *
      * @ORM\Column(type="point")
+     *
+     * @JS\Groups({"Point"})
+     * @JS\MaxDepth(1)
+     * @JS\Since("1.0.0")
      */
     private $point;
 
@@ -40,6 +51,9 @@ class Address
      * @var string
      *
      * @ORM\Column(name="postal_code", length=10, nullable=true)
+     *
+     * @JS\Groups({"Public"})
+     * @JS\Since("1.0.0")
      */
     private $postalCode;
 
@@ -48,6 +62,10 @@ class Address
      *
      * @ORM\ManyToOne(targetEntity="FunPro\GeoBundle\Entity\City")
      * @ORM\JoinColumn(name="city", referencedColumnName="id", onDelete="RESTRICT", nullable=false)
+     *
+     * @JS\Groups({"City"})
+     * @JS\MaxDepth(1)
+     * @JS\Since("1.0.0")
      */
     private $city;
 
@@ -55,6 +73,9 @@ class Address
      * @var string
      *
      * @ORM\Column(type="text")
+     *
+     * @JS\Groups({"Public"})
+     * @JS\Since("1.0.0")
      */
     private $address;
 

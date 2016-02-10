@@ -5,6 +5,7 @@ namespace FunPro\GeoBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use Gedmo\Mapping\Annotation as Gedmo;
+use JMS\Serializer\Annotation as JS;
 
 /**
  * City
@@ -22,6 +23,9 @@ class City
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @JS\Groups({"Public"})
+     * @JS\Since("1.0.0")
      */
     private $id;
 
@@ -29,6 +33,9 @@ class City
      * @var string
      *
      * @ORM\Column()
+     *
+     * @JS\Groups({"Public"})
+     * @JS\Since("1.0.0")
      */
     private $name;
 
@@ -36,6 +43,10 @@ class City
      * @var Point
      *
      * @ORM\Column(type="point", nullable=true)
+     *
+     * @JS\Groups({"Public"})
+     * @JS\MaxDepth(1)
+     * @JS\Since("1.0.0")
      */
     private $point;
 
@@ -44,6 +55,8 @@ class City
      *
      * @ORM\Column(type="integer")
      * @Gedmo\TreeLeft()
+     *
+     * @JS\Exclude()
      */
     private $lft;
 
@@ -52,6 +65,8 @@ class City
      *
      * @ORM\Column(type="integer")
      * @Gedmo\TreeRight()
+     *
+     * @JS\Exclude()
      */
     private $rgt;
 
@@ -60,6 +75,8 @@ class City
      *
      * @ORM\Column(type="integer")
      * @Gedmo\TreeLevel()
+     *
+     * @JS\Exclude()
      */
     private $lvl;
 
@@ -69,12 +86,20 @@ class City
      * @ORM\ManyToOne(targetEntity="FunPro\GeoBundle\Entity\City")
      * @ORM\JoinColumn(name="parent", referencedColumnName="id", onDelete="cascade")
      * @Gedmo\TreeParent()
+     *
+     * @JS\Groups({"Parent"})
+     * @JS\MaxDepth(1)
+     * @JS\Since("1.0.0")
      */
     private $parent;
 
     /**
      * @ORM\OneToMany(targetEntity="FunPro\GeoBundle\Entity\City", mappedBy="parent")
      * @ORM\OrderBy({"lft" = "ASC"})
+     *
+     * @JS\Groups({"Children"})
+     * @JS\MaxDepth(1)
+     * @JS\Since("1.0.0")
      */
     private $children;
 
