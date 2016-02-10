@@ -1,0 +1,4 @@
+services:
+#    fun_pro_service.example:
+#        class: FunPro\ServiceBundle\Example
+#        arguments: ["@service_id", "plain_value", %parameter%]

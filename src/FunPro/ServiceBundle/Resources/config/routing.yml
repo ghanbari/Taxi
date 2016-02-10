@@ -1,0 +1,3 @@
+fun_pro_service_wakeful_api:
+    resource: FunPro\ServiceBundle\Controller\WakefulController
+    type: rest
