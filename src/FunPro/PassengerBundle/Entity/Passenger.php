@@ -47,11 +47,11 @@ class Passenger extends User
      *
      * @Assert\Type(type="FunPro\PassengerBundle\Entity\Passenger", groups={"Register", "Profile"})
      *
-     * @JS\Groups({"Referer", "Profile"})
+     * @JS\Groups({"Referrer", "Profile"})
      * @JS\MaxDepth(1)
      * @JS\Since("1.0.0")
      */
-    private $refrerer;
+    private $referrer;
 
     /**
      * @var float
@@ -141,25 +141,25 @@ class Passenger extends User
     }
 
     /**
-     * Set refrerer
+     * Set referrer
      *
-     * @param \FunPro\PassengerBundle\Entity\Passenger $refrerer
+     * @param \FunPro\PassengerBundle\Entity\Passenger $referrer
      * @return Passenger
      */
-    public function setRefrerer(\FunPro\PassengerBundle\Entity\Passenger $refrerer = null)
+    public function setReferrer(\FunPro\PassengerBundle\Entity\Passenger $referrer = null)
     {
-        $this->refrerer = $refrerer;
+        $this->referrer = $referrer;
 
         return $this;
     }
 
     /**
-     * Get refrerer
+     * Get referrer
      *
      * @return \FunPro\PassengerBundle\Entity\Passenger 
      */
-    public function getRefrerer()
+    public function getReferrer()
     {
-        return $this->refrerer;
+        return $this->referrer;
     }
 }
