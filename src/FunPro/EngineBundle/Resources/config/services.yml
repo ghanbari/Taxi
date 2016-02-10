@@ -4,3 +4,16 @@ services:
         arguments: ["@router", "%api_current_version%", "%api_available_versions%"]
         tags:
             - { name: kernel.event_subscriber }
+
+    fun_pro_engine.messaging.sms:
+        class: FunPro\EngineBundle\Messaging\SMS
+
+    fun_pro_engine.messaging.sms.provider.payam_resan:
+        class: FunPro\EngineBundle\Messaging\Provider\PayamResanProvider
+        public: false
+        arguments: ["@=service(fun_pro_engine.messaging.sms).getAdapter()", %sms%]
+
+    fun_pro_engine.messaging.sms.provider.raygan_sms:
+        class: FunPro\EngineBundle\Messaging\Provider\RayganSmsProvider
+        public: false
+        arguments: ["@=service(fun_pro_engine.messaging.sms).getAdapter()", %sms%]

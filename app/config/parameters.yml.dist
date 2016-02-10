@@ -15,6 +15,20 @@ parameters:
     mailer_user:       ~
     mailer_password:   ~
 
+    sms:
+        provider:  payam_resan
+        transport: curl
+        prefix:    +98
+        providers:
+            payam_resan:
+                username: ~
+                password: ~
+                from:     ~
+            raygan_sms:
+                username: ~
+                password: ~
+                from:     ~
+
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
 
