@@ -17,3 +17,11 @@ services:
         class: FunPro\EngineBundle\Messaging\Provider\RayganSmsProvider
         public: false
         arguments: ["@=service(fun_pro_engine.messaging.sms).getAdapter()", %sms%]
+
+    security.authentication.success_handler:
+        class: FunPro\EngineBundle\Authentication\SuccessHandler
+        arguments:  ["@security.http_utils", {}]
+
+    security.authentication.failure_handler:
+        class:  FunPro\EngineBundle\Authentication\FailureHandler
+        arguments:  ["@http_kernel", "@security.http_utils", {}, "@logger"]
