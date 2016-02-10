@@ -4,6 +4,7 @@ namespace FunPro\AgentBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\UserBundle\Entity\User;
+use JMS\Serializer\Annotation as JS;
 
 /**
  * Agent
@@ -27,6 +28,9 @@ class Agent
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @JS\Groups({"Public"})
+     * @JS\Since("1.0.0")
      */
     protected $id;
 
@@ -35,6 +39,10 @@ class Agent
      *
      * @ORM\ManyToOne(targetEntity="FunPro\UserBundle\Entity\User")
      * @ORM\JoinColumn(name="admin_id", referencedColumnName="id", onDelete="cascade", nullable=false)
+     *
+     * @JS\Groups({"AgencyAdmin"})
+     * @JS\MaxDepth(1)
+     * @JS\Since("1.0.0")
      */
     protected $admin;
 
@@ -43,6 +51,10 @@ class Agent
      *
      * @ORM\OneToOne(targetEntity="FunPro\GeoBundle\Entity\Address")
      * @ORM\JoinColumn(name="address_id", referencedColumnName="id", onDelete="RESTRICT", nullable=false)
+     *
+     * @JS\Groups({"AgencyAddress"})
+     * @JS\MaxDepth(1)
+     * @JS\Since("1.0.0")
      */
     protected $address;
 
@@ -50,6 +62,9 @@ class Agent
      * @var array
      *
      * @ORM\Column(type="array")
+     *
+     * @JS\Groups({"AgencyContact"})
+     * @JS\Since("1.0.0")
      */
     protected $contacts;
 
@@ -57,6 +72,9 @@ class Agent
      * @var string
      *
      * @ORM\Column(type="text", nullable=true)
+     *
+     * @JS\Groups({"Public"})
+     * @JS\Since("1.0.0")
      */
     protected $description;
 
