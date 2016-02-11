@@ -25,3 +25,9 @@ services:
     security.authentication.failure_handler:
         class:  FunPro\EngineBundle\Authentication\FailureHandler
         arguments:  ["@http_kernel", "@security.http_utils", {}, "@logger"]
+
+    fun_pro_engine.login_subscriber:
+        class: FunPro\EngineBundle\Listener\LoginSubscriber
+        arguments: ["@doctrine", %login.max_failure_count%]
+        tags:
+            - { name: kernel.event_subscriber }

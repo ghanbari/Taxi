@@ -205,10 +205,18 @@ class User extends BaseUser
      * @JS\MaxDepth(1)
      */
     protected $deletedBy;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="wrong_password_count", type="smallint", options={"default"=0})
+     */
+    private $wrongPasswordCount;
     
     public function __construct()
     {
         parent::__construct();
+        $this->setWrongPasswordCount(0);
     }
 
     /**
@@ -425,5 +433,28 @@ class User extends BaseUser
     public function getDeletedBy()
     {
         return $this->deletedBy;
+    }
+
+    /**
+     * Set wrongPasswordCount
+     *
+     * @param integer $wrongPasswordCount
+     * @return User
+     */
+    public function setWrongPasswordCount($wrongPasswordCount)
+    {
+        $this->wrongPasswordCount = $wrongPasswordCount;
+
+        return $this;
+    }
+
+    /**
+     * Get wrongPasswordCount
+     *
+     * @return integer
+     */
+    public function getWrongPasswordCount()
+    {
+        return $this->wrongPasswordCount;
     }
 }
