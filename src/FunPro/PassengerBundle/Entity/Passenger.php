@@ -4,6 +4,7 @@ namespace FunPro\PassengerBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\UserBundle\Entity\User;
+use FunPro\UserBundle\Interfaces\SMSInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation as JS;
 
@@ -13,7 +14,7 @@ use JMS\Serializer\Annotation as JS;
  * @ORM\Table(name="passenger")
  * @ORM\Entity(repositoryClass="FunPro\UserBundle\Repository\PassengerRepository")
  */
-class Passenger extends User
+class Passenger extends User implements SMSInterface
 {
     /**
      * @var string

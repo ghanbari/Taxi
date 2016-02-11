@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\AgentBundle\Entity\Agency;
 use FunPro\UserBundle\Entity\User;
+use FunPro\UserBundle\Interfaces\SMSInterface;
 use JMS\Serializer\Annotation as JS;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -15,8 +16,32 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="driver")
  * @ORM\Entity(repositoryClass="FunPro\UserBundle\Repository\DriverRepository")
  */
-class Driver extends User
+class Driver extends User implements SMSInterface
 {
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="mobile", type="string", length=11, nullable=true)
+     *
+     * @Assert\NotBlank(groups={"Register", "Profile"})
+     * @Assert\Regex(pattern="/09\d{9}/", groups={"Register", "Profile"})
+     *
+     * @JS\Groups({"PassengerMobile", "Profile"})
+     * @JS\Since("1.0.0")
+     */
+    protected $mobile;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="mobile_canonical", type="string", length=11, unique=true, nullable=true)
+     *
+     * @JS\Groups({"PassengerMobile", "Profile"})
+     * @JS\Since("1.0.0")
+     * @JS\SerializedName("validatedNumber")
+     */
+    protected $mobileCanonical;
+
     /**
      * @var Car
      *
@@ -117,6 +142,53 @@ class Driver extends User
         $this->cars = new ArrayCollection();
         $this->addRole(self::ROLE_DRIVER);
         $this->rate = 0;
+    }
+
+    /**
+     * Set mobile
+     *
+     * @param string $mobile
+     * @return Passenger
+     */
+    public function setMobile($mobile)
+    {
+        $this->mobile = $mobile;
+
+        return $this;
+    }
+
+    /**
+     * Get mobile
+     *
+     * @return string
+     */
+    public function getMobile()
+    {
+        return $this->mobile;
+    }
+
+    /**
+     * Get mobile canonical
+     *
+     * @return string
+     */
+    public function getMobileCanonical()
+    {
+        return $this->mobileCanonical;
+    }
+
+    /**
+     * Set Mobile canonical
+     *
+     * @param string $mobileCanonical
+     * @return $this
+     */
+    public function setMobileCanonical($mobileCanonical)
+    {
+        $this->mobileCanonical = $mobileCanonical;
+        $this->setUsername($mobileCanonical);
+
+        return $this;
     }
 
     /**
