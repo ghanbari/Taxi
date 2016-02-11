@@ -48,7 +48,7 @@ class LoginSubscriber implements EventSubscriberInterface
         $token = $event->getAuthenticationToken();
         $username = $token->getUsername();
         /** @var User $user */
-        $user = $this->doctrine->getRepository('NikEngineBundle:User')->findOneByUsername($username);
+        $user = $this->doctrine->getRepository('FunProUserBundle:User')->findOneByUsername($username);
 
         if (!$user) {
             return;
