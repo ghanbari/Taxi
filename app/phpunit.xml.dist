@@ -9,6 +9,9 @@
 >
     <php>
         <ini name="error_reporting" value="-1" />
+        <const name="BASE_URL" value="http://api.itaxi.ir" />
+        <const name="PASSENGER_USERNAME" value="09371639233" />
+        <const name="PASSENGER_PASSWORD" value="1" />
     </php>
 
     <testsuites>

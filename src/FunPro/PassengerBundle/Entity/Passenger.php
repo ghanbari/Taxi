@@ -5,6 +5,7 @@ namespace FunPro\PassengerBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\UserBundle\Entity\User;
 use FunPro\UserBundle\Interfaces\SMSInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation as JS;
 
@@ -13,13 +14,15 @@ use JMS\Serializer\Annotation as JS;
  *
  * @ORM\Table(name="passenger")
  * @ORM\Entity(repositoryClass="FunPro\UserBundle\Repository\PassengerRepository")
+ *
+ * @UniqueEntity("mobile", groups={"Register"})
  */
 class Passenger extends User implements SMSInterface
 {
     /**
      * @var string
      *
-     * @ORM\Column(name="mobile", type="string", length=11, nullable=true)
+     * @ORM\Column(name="mobile", type="string", length=11, unique=true)
      *
      * @Assert\NotBlank(groups={"Register", "Profile"})
      * @Assert\Regex(pattern="/09\d{9}/", groups={"Register", "Profile"})
@@ -28,17 +31,6 @@ class Passenger extends User implements SMSInterface
      * @JS\Since("1.0.0")
      */
     protected $mobile;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="mobile_canonical", type="string", length=11, unique=true, nullable=true)
-     *
-     * @JS\Groups({"PassengerMobile", "Profile"})
-     * @JS\Since("1.0.0")
-     * @JS\SerializedName("validatedNumber")
-     */
-    protected $mobileCanonical;
 
     /**
      * @var User
@@ -63,6 +55,24 @@ class Passenger extends User implements SMSInterface
      * @JS\Since("1.0.0")
      */
     private $rate;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(nullable=true)
+     *
+     * @JS\Exclude()
+     */
+    private $token;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="token_requested_at", type="datetime", nullable=true)
+     *
+     * @JS\Exclude()
+     */
+    private $tokenRequestedAt;
 
     public function __construct()
     {
@@ -92,30 +102,6 @@ class Passenger extends User implements SMSInterface
     public function getMobile()
     {
         return $this->mobile;
-    }
-
-    /**
-     * Get mobile canonical
-     *
-     * @return string
-     */
-    public function getMobileCanonical()
-    {
-        return $this->mobileCanonical;
-    }
-
-    /**
-     * Set Mobile canonical
-     *
-     * @param string $mobileCanonical
-     * @return $this
-     */
-    public function setMobileCanonical($mobileCanonical)
-    {
-        $this->mobileCanonical = $mobileCanonical;
-        $this->setUsername($mobileCanonical);
-
-        return $this;
     }
 
     /**
@@ -162,5 +148,38 @@ class Passenger extends User implements SMSInterface
     public function getReferrer()
     {
         return $this->referrer;
+    }
+
+    /**
+     * @return string
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param string $token
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+        $this->setTokenRequestedAt(new \DateTime());
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getTokenRequestedAt()
+    {
+        return $this->tokenRequestedAt;
+    }
+
+    /**
+     * @param \DateTime $tokenRequestedAt
+     */
+    public function setTokenRequestedAt($tokenRequestedAt)
+    {
+        $this->tokenRequestedAt = $tokenRequestedAt;
     }
 }

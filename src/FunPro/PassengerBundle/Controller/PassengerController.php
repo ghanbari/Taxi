@@ -4,13 +4,18 @@ namespace FunPro\PassengerBundle\Controller;
 
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\View\View;
 use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\PassengerBundle\Form\Type\RegisterType;
+use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Form\Extension\Core\Type;
 use FOS\RestBundle\Context\Context;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Class PassengerController
@@ -23,63 +28,67 @@ use FOS\RestBundle\Context\Context;
 class PassengerController extends FOSRestController
 {
     /**
-     * create a form
-     *
-     * @param Passenger $passenger
-     * @param string $method
-     * @return \Symfony\Component\Form\Form
-     */
-    private function getForm(Passenger $passenger, $method='POST')
-    {
-        $options['method'] = $method;
-        $options['action'] = $method == 'POST'
-            ? $this->generateUrl('fun_pro_api_post_passenger')
-            : $this->generateUrl('fun_pro_api_put_passenger', array('id' => $passenger->getId()));
-
-        $options['validation_groups'] = $method == 'POST' ? 'Register' : 'Profile';
-
-        $requestFormat = $this->get('request_stack')->getCurrentRequest()->getRequestFormat('html');
-        $options['csrf_protection'] = $requestFormat == 'html' ?: false;
-
-        $form = $this->createForm(new RegisterType(), $passenger, $options);
-
-        return $form;
-    }
-
-    /**
      * Show a form for create of passenger
      *
      * @Security("!is_authenticated()")
      *
-     * @Rest\View()
+     * @Rest\View(template="FunProPassengerBundle:Passenger:new.html.twig")
      *
      * @return \Symfony\Component\Form\Form
      */
     public function newAction()
     {
-        $passenger = new Passenger();
-        $form = $this->getForm($passenger);
-        return $form;
     }
 
     /**
      * Create a passenger
      *
      * @ApiDoc(
-     *      section="Passenger",
+     *      section="Register",
      *      resource=true,
      *      views={"passenger"},
-     *      input={
-     *          "class"="FunPro\PassengerBundle\Form\Type\RegisterType",
-     *          "data"={
-     *              "class"="FunPro\PassengerBundle\Entity\Passenger",
-     *              "groups"={"Register"},
-     *              "parsers"={
-     *                  "Nelmio\ApiDocBundle\Parser\ValidationParser",
-     *                  "Nelmio\ApiDocBundle\Parser\JmsMetadataParser",
-     *              },
+     *      statusCodes={
+     *          204="When success",
+     *          403= {
+     *              "when you are a user and you are login in currently",
      *          },
-     *      },
+     *      }
+     * )
+     *
+     * @Security("!is_authenticated()")
+     *
+     * @Rest\View()
+     * @Rest\RequestParam(name="phone", requirements="09[0-9]{9}", strict=true)
+     *
+     * @param Request $request
+     * @return \FOS\RestBundle\View\View|\Symfony\Component\Form\Form
+     */
+    public function postAction(Request $request)
+    {
+        $phone = $this->get('fos_rest.request.param_fetcher')->get('phone');
+        $passenger = $this->getDoctrine()->getRepository('FunProPassengerBundle:Passenger')->findOneByMobile($phone);
+
+        if (is_null($passenger)) {
+            $passenger = new Passenger();
+            $passenger->setMobile($phone);
+            $passenger->setPassword(bin2hex(random_bytes(10)));
+        }
+
+            $verifyNumber = random_int(11111, 99999);
+            $passenger->setToken($verifyNumber);
+            $this->get('fos_user.user_manager')->updateUser($passenger);
+            $this->get('sms.sender')->send($passenger->getMobile(), $verifyNumber);
+
+        return $this->view(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * Confirm register & login
+     *
+     * @ApiDoc(
+     *      section="Register",
+     *      resource=true,
+     *      views={"passenger"},
      *      output={
      *          "class"="FunPro\PassengerBundle\Entity\Passenger",
      *          "groups"={"Public"},
@@ -92,108 +101,112 @@ class PassengerController extends FOSRestController
      *              "when csrf token is invalid",
      *              "when you are a user and you are login in currently",
      *          },
+     *          404={
+     *              "When user is not exists",
+     *              "When Device is not exists",
+     *          },
      *      }
      * )
      *
      * @Security("!is_authenticated()")
      *
-     * @Rest\View()
-     *
-     * @TODO: must send a verification to user mobile
-     * @TODO: if mobile number is valid, update mobileCanonical
-     *
-     * @param Request $request
-     * @return \FOS\RestBundle\View\View|\Symfony\Component\Form\Form
+     * @Rest\RequestParam(name="token", requirements="\d+", strict=true)
+     * @Rest\RequestParam(name="phone", requirements="09[0-9]{9}", strict=true)
+     * @Rest\RequestParam(name="deviceId", requirements="\d+", strict=true)
      */
-    public function postAction(Request $request)
+    public function postConfirmAction()
     {
-        $passenger = new Passenger();
-        $form = $this->getForm($passenger);
-        $form->handleRequest($request);
+        $translator = $this->get('translator');
+        $fetcher = $this->get('fos_rest.request.param_fetcher');
+        $phone = $fetcher->get('phone');
+        $token = $fetcher->get('token');
+        $deviceId = $fetcher->get('deviceId');
 
-        if ($form->isValid()) {
-            $this->get('fos_user.user_manager')->updateUser($passenger);
+        $manager = $this->getDoctrine()->getManager();
 
-            $context = new Context();
-            $context->addGroups(array("Public", "PassengerMobile"))
-                ->setMaxDepth(true);
-            $view = $this->view($passenger, Response::HTTP_CREATED)
-                ->setSerializationContext($context);
-            return $view;
+        /** @var Passenger $user */
+        $user = $manager->getRepository('FunProPassengerBundle:Passenger')->findOneByMobile($phone);
+        if (!$user) {
+            $error = array(
+                'code' => 0,
+                'message' => $translator->trans('user.is.not.exists'),
+            );
+            return $this->view($error, Response::HTTP_NOT_FOUND);
         }
 
-        return $this->view($form, Response::HTTP_BAD_REQUEST);
-    }
+        $now = new \DateTime();
+        $diff = $now->diff($user->getTokenRequestedAt());
+        if ($user->getToken() != $token or $diff->days >= 1) {
+            $error = array(
+                'code' => 0,
+                'message' => $translator->trans('token.is.not.valid'),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
 
-    public function editAction($id)
-    {
+        $device = $manager->getRepository('FunProEngineBundle:Device')->findOneBy(array(
+            'deviceIdentifier' => $deviceId,
+        ));
+        if (!$device) {
+            $error = array(
+                'code' => 1,
+                'message' => $translator->trans('device.is.not.exists'),
+            );
+            return $this->view($error, Response::HTTP_NOT_FOUND);
+        }
 
+        $apiKey = bin2hex(random_bytes(100));
+
+        $manager->getConnection()->beginTransaction();
+        $device->setOwner($user);
+        $device->setApiKey($apiKey);
+        $user->setToken(null);
+        $manager->flush();
+        $manager->getConnection()->commit();
+
+        $context = (new Context())
+            ->addGroups(array('Owner', 'Devices', 'Public', 'Register'))
+            ->setMaxDepth(2);
+        return $this->view($user, Response::HTTP_CREATED)
+            ->setSerializationContext($context);
     }
 
     /**
-     * Update a user account.
+     * Get current user profile.
      *
      * @ApiDoc(
-     *      section="Passenger",
+     *      section="Profile",
      *      resource=true,
      *      views={"passenger"},
-     *      input={
-     *          "class"="FunPro\PassengerBundle\Form\Type\ProfileType",
-     *          "data"={
-     *              "class"="FunPro\PassengerBundle\Entity\Passenger",
-     *              "groups"={"Profile"},
-     *              "parsers"={
-     *                  "Nelmio\ApiDocBundle\Parser\ValidationParser",
-     *                  "Nelmio\ApiDocBundle\Parser\JmsMetadataParser",
-     *              },
-     *          },
-     *      },
      *      output={
-     *          "class"="FunPro\PassengerBundle\Entity\Passenger",
+     *          "class"="FunPro\UserBundle\Entity\User",
      *          "groups"={"Public"},
      *          "parsers"={"Nelmio\ApiDocBundle\Parser\JmsMetadataParser"},
      *      },
      *      statusCodes={
-     *          204="When success",
-     *          400="When form validation failed.",
+     *          200="When success",
      *          403= {
-     *              "when csrf token is invalid",
-     *              "when you are not login",
+     *              "when you are not login currently",
      *          },
      *      }
      * )
      *
-     * @Security("IS_AUTHENTICATED_FULLY")
+     * @Security("is_authenticated()")
      *
-     * @param Request $request
-     * @return \FOS\RestBundle\View\View|\Symfony\Component\Form\Form
+     * @return View
      */
-    public function putAction(Request $request)
+    public function getProfileAction()
     {
-        # if user change email, he must verify email
-        # if user change mobile, he must verify mobile
-        $passenger = $this->getUser();
-        $form = $this->getForm($passenger, 'PUT');
-        $form->handleRequest($request);
+        $user = $this->getUser();
 
-        if ($form->isValid()) {
-            $this->get('fos_user.user_manager')->updateUser($passenger);
-
-            return $this->view($passenger, Response::HTTP_CREATED);
-        }
-
-        return $form;
+        $context = new Context();
+        $context->addGroups(array('Public', 'Profile'))
+            ->setMaxDepth(2);
+        return $this->view($user, Response::HTTP_OK)
+            ->setSerializationContext($context);
     }
 
-    public function removeAction($id)
-    {
-
-    }
-
-    /**
-     * @param $id
-     */
-    public function deleteAction($id)
+    public function getAction($passengerId)
     {
 
     }

@@ -11,12 +11,29 @@ security:
             id: fos_user.user_provider.username
 
     firewalls:
+        api_passenger:
+            pattern: ^/passenger
+            host: api.%router.request_context.host%
+            guard:
+                authenticators:
+                    - fun_pro_engine.token_authenticator
+            logout:       false
+            anonymous:    true
+            stateless: true
+        api:
+            pattern: ^/
+            host: api.%router.request_context.host%
+            http_basic:
+                provider: fos_userbundle
+            logout:       false
+            anonymous:    true
         main:
             pattern: ^/
+            http_basic:
+                provider: fos_userbundle
             form_login:
                 provider: fos_userbundle
-                require_previous_session: false
-#                csrf_token_generator: security.csrf.token_manager
+                csrf_token_generator: security.csrf.token_manager
             logout:       true
             anonymous:    true
 

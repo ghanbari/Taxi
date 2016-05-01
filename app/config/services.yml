@@ -5,3 +5,4 @@ imports:
     - { resource: "@FunProAgentBundle/Resources/config/services.yml" }
     - { resource: "@FunProEngineBundle/Resources/config/services.yml" }
     - { resource: "@FunProGeoBundle/Resources/config/services.yml" }
+    - { resource: "@FunProServiceBundle/Resources/config/services.yml" }

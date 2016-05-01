@@ -1,0 +1,11 @@
+k_phoen_sms_sender:
+    pool:         memory
+    http_adapter: curl
+    providers:    [%sms_provider%]
+    factories: ['%kernel.root_dir%/config/sms_provider_factories.xml']
+
+    sms_ir:
+        user: %sms_ir.user%
+        pass: %sms_ir.pass%
+        from: %sms_ir.from%
+        international_prefix: '+98'

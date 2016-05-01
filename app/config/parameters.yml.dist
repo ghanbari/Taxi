@@ -15,26 +15,17 @@ parameters:
     mailer_user:       ~
     mailer_password:   ~
 
-    sms:
-        provider:  payam_resan
-        transport: curl
-        prefix:    +98
-        providers:
-            payam_resan:
-                username: ~
-                password: ~
-                from:     ~
-            raygan_sms:
-                username: ~
-                password: ~
-                from:     ~
+    sms_provider: sms_ir
+    sms_ir.user: '09337032077'
+    sms_ir.pass: '$$12345$$'
+    sms_ir.from: '50002015789541'
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
 
     router.request_context.schema: http
     router.request_context.host: itaxico.ir
-    router.request_context.base_url: /
+    router.request_context.base_url: '' # "" or "/google/test"
 
     login.max_failure_count: 10
     login.on_failure_lock_for: 24 #hour

@@ -29,8 +29,3 @@ fun_pro_passenger:
 
 fos_user:
     resource: "@FOSUserBundle/Resources/config/routing/all.xml"
-
-NelmioApiDocBundle:
-    resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
-    prefix:   /doc/v1
-    host:     api.%router.request_context.host%

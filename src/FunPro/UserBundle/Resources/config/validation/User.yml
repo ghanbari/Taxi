@@ -1,29 +1,27 @@
 FunPro\UserBundle\Entity\User:
     properties:
         username:
-            - NotBlank:
-                groups: [Register, Profile]
-                message: fos_user.username.blank
             - Length:
                 min: 2
                 max: 255
                 minMessage: fos_user.username.short
                 maxMessage: fos_user.username.long
-                groups: [Register, Profile]
+                groups: [Register]
         plainPassword:
             - NotBlank:
-                groups: [Register, ResetPassword, ChangePassword]
+                groups: [Register]
                 message: fos_user.password.blank
             - Length:
                 min: 2
                 max: 4096
                 minMessage: fos_user.password.short
-                groups: [Register, ResetPassword, ChangePassword]
+                groups: [Register]
         email:
             - Length:
-                max: 254
+                min: 2
+                max: 255
                 maxMessage: fos_user.email.long
-                groups: [Register, Profile]
+                groups: [Register]
             - Email:
                 message: fos_user.email.invalid
-                groups: [Register, Profile]
+                groups: [Register]

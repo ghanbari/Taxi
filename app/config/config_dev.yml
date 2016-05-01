@@ -1,6 +1,7 @@
 imports:
     - { resource: config.yml }
     - { resource: fixture.yml }
+    - { resource: nelmio.yml }
 
 framework:
     router:

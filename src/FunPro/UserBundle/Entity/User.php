@@ -2,6 +2,7 @@
 
 namespace FunPro\UserBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use FOS\UserBundle\Model\User as BaseUser;
@@ -58,6 +59,8 @@ use JMS\Serializer\Annotation as JS;
  *      )
  * })
  *
+ * ### Username s are nullable, because prevent spam passenger username ###
+ *
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
 class User extends BaseUser
@@ -94,9 +97,8 @@ class User extends BaseUser
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=50)
+     * @ORM\Column(name="name", type="string", length=50, nullable=true)
      *
-     * @Assert\NotBlank(groups={"Register", "Profile"})
      * @Assert\Regex(pattern="/[^\d]{1,50}/", groups={"Register", "Profile"})
      *
      * @JS\Groups({"Public", "Register", "Profile", "Admin"})
@@ -163,7 +165,7 @@ class User extends BaseUser
      * @var User
      *
      * @ORM\ManyToOne(targetEntity="FunPro\UserBundle\Entity\User")
-     * @ORM\JoinColumn(name="created_at", referencedColumnName="id", onDelete="SET NULL")
+     * @ORM\JoinColumn(name="created_by", referencedColumnName="id", onDelete="SET NULL")
      * @Gedmo\Blameable(on="create")
      *
      * @JS\Groups({"CreatedBy"})
@@ -175,13 +177,26 @@ class User extends BaseUser
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="created_by", type="datetime")
+     * @ORM\Column(name="created_at", type="datetime")
      * @Gedmo\Timestampable(on="create")
      *
      * @JS\Groups({"Public"})
+     * @JS\SerializedName("createdAt")
      * @JS\Since("1.0.0")
      */
     protected $createdAt;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
+     * @Gedmo\Timestampable(on="update")
+     *
+     * @JS\Groups({"Public"})
+     * @JS\SerializedName("createdAt")
+     * @JS\Since("1.0.0")
+     */
+    protected $updatedAt;
 
     /**
      * @var \DateTime
@@ -212,10 +227,20 @@ class User extends BaseUser
      * @ORM\Column(name="wrong_password_count", type="smallint", options={"default"=0})
      */
     private $wrongPasswordCount;
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="FunPro\EngineBundle\Entity\Device", mappedBy="owner")
+     *
+     * @JS\Groups({"Devices"})
+     */
+    private $devices;
     
     public function __construct()
     {
         parent::__construct();
+        $this->devices = new ArrayCollection();
         $this->setWrongPasswordCount(0);
     }
 
@@ -268,20 +293,15 @@ class User extends BaseUser
     /**
      * Set sex
      *
-     * @param integer $sex
+     * @param integer|string $sex
      * @return User
      */
     public function setSex($sex)
     {
-        switch ($sex) {
-            case self::SEX_MALE:
-            case 'm':
-                $this->sex = self::SEX_MALE;
-                break;
-            case self::SEX_FEMALE:
-            case 'f':
-                $this->sex = self::SEX_FEMALE;
-                break;
+        if (strtolower($sex) == 'm' or (is_int($sex) and $sex == self::SEX_MALE)) {
+            $this->sex = self::SEX_MALE;
+        } elseif (strtolower($sex) == 'f' or (is_int($sex) and $sex == self::SEX_FEMALE)) {
+            $this->sex = self::SEX_FEMALE;
         }
 
         return $this;
@@ -344,12 +364,33 @@ class User extends BaseUser
     }
 
     /**
+     * @return File
+     */
+    public function getAvatarFile(File $avatar=null)
+    {
+        if (!is_null($avatar)) {
+            $this->avatarFile = $avatar;
+            $this->setUpdatedAt(new \DateTime());
+        }
+
+        return $this->avatarFile;
+    }
+
+    /**
+     * @param File $avatarFile
+     */
+    public function setAvatarFile($avatarFile)
+    {
+        $this->avatarFile = $avatarFile;
+    }
+
+    /**
      * Set createdAt
      *
      * @param \DateTime $createdAt
      * @return User
      */
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt(\DateTime $createdAt)
     {
         $this->createdAt = $createdAt;
 
@@ -367,12 +408,28 @@ class User extends BaseUser
     }
 
     /**
+     * @param \DateTime $updatedAt
+     */
+    public function setUpdatedAt(\DateTime $updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
+
+    /**
      * Set deletedAt
      *
      * @param \DateTime $deletedAt
      * @return User
      */
-    public function setDeletedAt($deletedAt)
+    public function setDeletedAt(\DateTime $deletedAt)
     {
         $this->deletedAt = $deletedAt;
 
