@@ -50,7 +50,7 @@ class Car
     /**
      * @var Driver
      *
-     * @ORM\ManyToOne(targetEntity="FunPro\DriverBundle\Entity\Driver")
+     * @ORM\ManyToOne(targetEntity="FunPro\DriverBundle\Entity\Driver", inversedBy="cars")
      * @ORM\JoinColumn(name="driver_id", referencedColumnName="id", onDelete="cascade", nullable=false)
      *
      * @Assert\NotNull(groups={"Create", "Update"})
