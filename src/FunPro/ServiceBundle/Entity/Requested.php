@@ -6,8 +6,11 @@ use Doctrine\ORM\Mapping as ORM;
 use FunPro\AgentBundle\Entity\Agent;
 use FunPro\DriverBundle\Entity\Car;
 use FunPro\GeoBundle\Doctrine\ValueObject\LineString;
+use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\PassengerBundle\Entity\Passenger;
 use JMS\Serializer\Annotation as JS;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * Requested
@@ -43,6 +46,12 @@ class Requested
      *
      * @ORM\ManyToOne(targetEntity="FunPro\PassengerBundle\Entity\Passenger")
      * @ORM\JoinColumn(name="passenger_id", referencedColumnName="id", onDelete="cascade")
+     *
+     * @Assert\Type(type="FunPro\PassengerBundle\Entity\Passenger", groups={"Create"})
+     *
+     * @JS\Groups({"Public"})
+     * @JS\MaxDepth(1)
+     * @JS\Since("1.0.0")
      */
     private $passenger;
 
@@ -51,20 +60,66 @@ class Requested
      *
      * @ORM\ManyToOne(targetEntity="FunPro\AgentBundle\Entity\Agent")
      * @ORM\JoinColumn(name="agent_id", referencedColumnName="id", onDelete="cascade")
+     *
+     * @Assert\Type(type="FunPro\AgentBundle\Entity\Agent", groups={"Create"})
+     *
+     * @JS\Groups({"Public"})
+     * @JS\MaxDepth(1)
+     * @JS\Since("1.0.0")
      */
     private $agent;
+
+    /**
+     * @var Point
+     *
+     * @ORM\Column(name="start_point", type="point")
+     *
+     * @Assert\NotNull(groups={"Create"})
+     * @Assert\Type(type="FunPro\GeoBundle\Doctrine\ValueObject\Point", groups={"Create"})
+     * @Assert\Valid()
+     *
+     * @JS\Groups({"Public"})
+     * @JS\MaxDepth(1)
+     * @JS\Since("1.0.0")
+     */
+    private $startPoint;
+
+    /**
+     * @var Point
+     *
+     * @ORM\Column(name="end_point", type="point", nullable=true)
+     *
+     * @Assert\Type(type="FunPro\GeoBundle\Doctrine\ValueObject\Point", groups={"Create"})
+     * @Assert\Valid()
+     *
+     * @JS\Groups({"Public"})
+     * @JS\MaxDepth(1)
+     * @JS\Since("1.0.0")
+     */
+    private $endPoint;
 
     /**
      * @var string
      *
      * @ORM\Column(length=15)
+     *
+     * @Assert\NotBlank(groups={"Create"})
+     * @Assert\Choice(callback="getTypes", groups={"Create"})
+     *
+     * @JS\Groups({"Public"})
+     * @JS\Since("1.0.0")
      */
     private $type;
 
     /**
      * @var string
      *
-     * @ORM\Column(length=15, nullable=true)
+     * @ORM\Column(length=15)
+     *
+     * @Assert\Choice(callback="getDesireOptions", groups={"Create"})
+     *
+     * @JS\Groups({"Public"})
+     * @JS\Since("1.0.0")
      */
     private $desire;
 
@@ -72,6 +127,11 @@ class Requested
      * @var string
      *
      * @ORM\Column(type="text", nullable=true)
+     *
+     * @Assert\Length(max="4000", groups={"Create"})
+     *
+     * @JS\Groups({"Public"})
+     * @JS\Since("1.0.0")
      */
     private $description;
 
@@ -80,41 +140,68 @@ class Requested
      *
      * @ORM\ManyToOne(targetEntity="FunPro\DriverBundle\Entity\Car")
      * @ORM\JoinColumn(name="car_id", referencedColumnName="id", onDelete="cascade")
+     *
+     * @JS\Groups({"Public"})
+     * @JS\MaxDepth(1)
+     * @JS\Since("1.0.0")
      */
     private $car;
 
     /**
      * @var double
      *
-     * @ORM\Column(type="decimal", precision=2, scale=2, nullable=true)
+     * @ORM\Column(type="decimal", precision=2, scale=1, nullable=true)
+     *
+     * @Assert\Range(min="0", max="5", groups={"Rate"})
+     * @Assert\NotNull(groups={"Rate"})
+     * @Assert\Type(type="numeric", groups={"Rate"})
+     *
+     * @JS\Groups({"Public"})
+     * @JS\Since("1.0.0")
      */
     private $driverRate;
 
     /**
      * @var double
      *
-     * @ORM\Column(type="decimal", precision=2, scale=2, nullable=true)
+     * @ORM\Column(type="decimal", precision=2, scale=1, nullable=true)
+     *
+     * @Assert\Range(min="0", max="5", groups={"Rate"})
+     * @Assert\NotNull(groups={"Rate"})
+     * @Assert\Type(type="numeric", groups={"Rate"})
+     *
+     * @JS\Groups({"Public"})
+     * @JS\Since("1.0.0")
      */
     private $passengerRate;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(name="start_time", type="datetime", nullable=true)
+     *
+     * @JS\Groups({"Public"})
+     * @JS\Since("1.0.0")
      */
     private $startTime;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(name="end_time", type="datetime", nullable=true)
+     *
+     * @JS\Groups({"Public"})
+     * @JS\Since("1.0.0")
      */
     private $endTime;
 
     /**
      * @var LineString
      *
-     * @ORM\Column(type="linestring")
+     * @ORM\Column(type="linestring", nullable=true)
+     *
+     * @JS\Groups({"Public"})
+     * @JS\Since("1.0.0")
      */
     private $route;
 
@@ -122,6 +209,9 @@ class Requested
      * @var double
      *
      * @ORM\Column(type="decimal", precision=6, scale=3, nullable=true)
+     *
+     * @JS\Groups({"Public"})
+     * @JS\Since("1.0.0")
      */
     private $distance;
 
@@ -129,12 +219,46 @@ class Requested
      * @var int
      *
      * @ORM\Column(type="integer", nullable=true)
+     *
+     * @JS\Groups({"Public"})
+     * @JS\Since("1.0.0")
      */
     private $price;
 
     public function __construct()
     {
         $this->setRoute(new LineString());
+    }
+
+    /**
+     * get available types
+     *
+     * @JS\SerializedName("types")
+     * @JS\Since("1.0.0")
+     */
+    public static function getTypes()
+    {
+        return array(
+            self::TYPE_DISTANCE => self::TYPE_DISTANCE,
+            self::TYPE_TIMING => self::TYPE_TIMING,
+        );
+    }
+
+    /**
+     * get available options for desire field
+     *
+     * @JS\SerializedName("desires")
+     * @JS\Since("1.0.0")
+     */
+    public static function getDesireOptions()
+    {
+        return array(
+            self::DESIRE_QUALITY => self::DESIRE_QUALITY,
+            self::DESIRE_PRICE => self::DESIRE_PRICE,
+            self::DESIRE_FAST => self::DESIRE_FAST,
+            self::DESIRE_CLASS => self::DESIRE_CLASS,
+            self::DESIRE_SUGGEST => self::DESIRE_SUGGEST,
+        );
     }
 
     /**
@@ -148,13 +272,64 @@ class Requested
     }
 
     /**
+     * Set startPoint
+     *
+     * @param point $startPoint
+     * @return Requested
+     */
+    public function setStartPoint($startPoint)
+    {
+        $this->startPoint = $startPoint;
+
+        return $this;
+    }
+
+    /**
+     * Get startPoint
+     *
+     * @return point
+     */
+    public function getStartPoint()
+    {
+        return $this->startPoint;
+    }
+
+    /**
+     * Set endPoint
+     *
+     * @param point $endPoint
+     * @return Requested
+     */
+    public function setEndPoint($endPoint)
+    {
+        $this->endPoint = $endPoint;
+
+        return $this;
+    }
+
+    /**
+     * Get endPoint
+     *
+     * @return point
+     */
+    public function getEndPoint()
+    {
+        return $this->endPoint;
+    }
+
+    /**
      * Set type
      *
      * @param string $type
+     * @throws \InvalidArgumentException
      * @return Requested
      */
     public function setType($type)
     {
+        if (!in_array($type, $this->getTypes())) {
+            throw new \InvalidArgumentException('Invalid type');
+        }
+
         $this->type = $type;
 
         return $this;
@@ -178,6 +353,10 @@ class Requested
      */
     public function setDesire($desire)
     {
+        if (!in_array($desire, $this->getDesireOptions())) {
+            throw new \InvalidArgumentException('Invalid desire');
+        }
+
         $this->desire = $desire;
 
         return $this;
@@ -185,6 +364,8 @@ class Requested
 
     /**
      * Get desire
+     *
+     * @Assert\NotNull(groups={"Create"})
      *
      * @return string 
      */
@@ -444,5 +625,21 @@ class Requested
     public function getCar()
     {
         return $this->car;
+    }
+
+    /**
+     * @Assert\Callback(groups={"Create"})
+     */
+    public function validate(ExecutionContextInterface $context)
+    {
+        if ($this->getPassenger() and $this->getAgent()) {
+            $context->buildViolation("you must set only either passenger or agent")
+                ->atPath('passenger')
+                ->addViolation();
+        } elseif (!($this->getPassenger() or $this->getAgent())) {
+            $context->buildViolation("you must set passenger or agent")
+                ->atPath('passenger')
+                ->addViolation();
+        }
     }
 }
