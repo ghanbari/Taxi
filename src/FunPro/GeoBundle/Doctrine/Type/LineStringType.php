@@ -38,7 +38,7 @@ class LineStringType extends Type
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        return (string) $value;
+        return $value->count() ? (string) $value : null;
     }
 
     public function convertToPHPValue($value, AbstractPlatform $platform)

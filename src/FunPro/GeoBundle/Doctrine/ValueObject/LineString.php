@@ -6,6 +6,10 @@ class LineString extends \SplObjectStorage
 {
     public function __toString()
     {
+        if (!$this->count()) {
+            return '';
+        }
+
         $linestring = 'LineString(';
 
         /** @var Point $point */
