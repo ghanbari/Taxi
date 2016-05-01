@@ -5,6 +5,7 @@ namespace FunPro\AgentBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\UserBundle\Entity\User;
 use JMS\Serializer\Annotation as JS;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Agent
@@ -17,6 +18,8 @@ use JMS\Serializer\Annotation as JS;
  *      0 = "FunPro\AgentBundle\Entity\Agent",
  *      Agent::TYPE_AGENCY = "FunPro\AgentBundle\Entity\Agency"
  * })
+ *
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
 class Agent
 {
@@ -80,6 +83,16 @@ class Agent
 
     #TODO: map this property.
     protected $documents;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
+     *
+     * @JS\Groups({"Private"})
+     * @JS\Since("1.0.0")
+     */
+    protected $deletedAt;
 
     public function __construct()
     {
@@ -186,5 +199,21 @@ class Agent
     public function getAddress()
     {
         return $this->address;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDeletedAt()
+    {
+        return $this->deletedAt;
+    }
+
+    /**
+     * @param \DateTime $deletedAt
+     */
+    public function setDeletedAt($deletedAt)
+    {
+        $this->deletedAt = $deletedAt;
     }
 }
