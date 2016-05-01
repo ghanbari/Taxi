@@ -1,3 +1,8 @@
 fun_pro_service_wakeful_api:
     resource: FunPro\ServiceBundle\Controller\WakefulController
     type: rest
+
+fun_pro_service_api:
+    resource: FunPro\ServiceBundle\Controller\ServiceController
+    prefix: /passenger
+    type: rest
