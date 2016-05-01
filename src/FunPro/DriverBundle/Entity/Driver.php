@@ -8,6 +8,7 @@ use FunPro\AgentBundle\Entity\Agency;
 use FunPro\UserBundle\Entity\User;
 use FunPro\UserBundle\Interfaces\SMSInterface;
 use JMS\Serializer\Annotation as JS;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -15,13 +16,15 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Table(name="driver")
  * @ORM\Entity(repositoryClass="FunPro\UserBundle\Repository\DriverRepository")
+ *
+ * @UniqueEntity("mobile", groups={"Register"})
  */
 class Driver extends User implements SMSInterface
 {
     /**
      * @var string
      *
-     * @ORM\Column(name="mobile", type="string", length=11, nullable=true)
+     * @ORM\Column(name="mobile", type="string", length=11, nullable=true, unique=true)
      *
      * @Assert\NotBlank(groups={"Register", "Profile"})
      * @Assert\Regex(pattern="/09\d{9}/", groups={"Register", "Profile"})
@@ -30,17 +33,6 @@ class Driver extends User implements SMSInterface
      * @JS\Since("1.0.0")
      */
     protected $mobile;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="mobile_canonical", type="string", length=11, unique=true, nullable=true)
-     *
-     * @JS\Groups({"PassengerMobile", "Profile"})
-     * @JS\Since("1.0.0")
-     * @JS\SerializedName("validatedNumber")
-     */
-    protected $mobileCanonical;
 
     /**
      * @var Car
