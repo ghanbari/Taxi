@@ -4,6 +4,8 @@ namespace FunPro\GeoBundle\Doctrine\ValueObject;
 
 use JMS\Serializer\Annotation as JS;
 
+use Symfony\Component\Validator\Constraints as Assert;
+
 /**
  * Class Point
  *
@@ -16,6 +18,9 @@ class Point
      *
      * @JS\Groups({"Point"})
      * @JS\Since("1.0.0")
+     *
+     * @Assert\Type(type="double", groups={"Point"})
+     * @Assert\NotNull(groups={"Point"})
      */
     private $longitude;
 
@@ -24,6 +29,9 @@ class Point
      *
      * @JS\Groups({"Point"})
      * @JS\Since("1.0.0")
+     *
+     * @Assert\Type(type="double", groups={"Point"})
+     * @Assert\NotNull(groups={"Point"})
      */
     private $latitude;
 
@@ -31,7 +39,7 @@ class Point
      * @param $longitude
      * @param $latitude
      */
-    public function __construct($longitude, $latitude)
+    public function __construct($longitude=null, $latitude=null)
     {
         $this->latitude = $latitude;
         $this->longitude = $longitude;
