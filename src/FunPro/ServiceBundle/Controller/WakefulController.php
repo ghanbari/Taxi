@@ -232,7 +232,7 @@ class WakefulController extends FOSRestController
      *      views={"driver"},
      *      output={
      *          "class"="FunPro\ServiceBundle\Entity\Wakeful",
-     *          "groups"={"Public"},
+     *          "groups"={"Public", "Car", "CarStatus", "Point"},
      *          "parsers"={"Nelmio\ApiDocBundle\Parser\JmsMetadataParser"},
      *      },
      *      statusCodes={
@@ -281,7 +281,7 @@ class WakefulController extends FOSRestController
      *      views={"driver"},
      *      output={
      *          "class"="FunPro\ServiceBundle\Entity\Wakeful",
-     *          "groups"={"Public"},
+     *          "groups"={"Public", "Car", "Point"},
      *          "parsers"={"Nelmio\ApiDocBundle\Parser\JmsMetadataParser"},
      *      },
      *      statusCodes={
