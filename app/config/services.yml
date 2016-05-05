@@ -6,3 +6,7 @@ imports:
     - { resource: "@FunProEngineBundle/Resources/config/services.yml" }
     - { resource: "@FunProGeoBundle/Resources/config/services.yml" }
     - { resource: "@FunProServiceBundle/Resources/config/services.yml" }
+
+services:
+  jms_serializer.naming_strategy:
+    class: 'JMS\Serializer\Naming\IdenticalPropertyNamingStrategy'
