@@ -15,6 +15,7 @@ parameters:
     mailer_user:       ~
     mailer_password:   ~
 
+    sms_adapter:  buzz
     sms_provider: sms_ir
     sms_ir.user: '09337032077'
     sms_ir.pass: '$$12345$$'

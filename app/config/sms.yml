@@ -1,6 +1,6 @@
 k_phoen_sms_sender:
     pool:         memory
-    http_adapter: curl
+    http_adapter: %sms_adapter%
     providers:    [%sms_provider%]
     factories: ['%kernel.root_dir%/config/sms_provider_factories.xml']
 
