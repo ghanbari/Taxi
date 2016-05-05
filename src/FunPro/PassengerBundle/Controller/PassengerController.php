@@ -112,7 +112,7 @@ class PassengerController extends FOSRestController
      *
      * @Rest\RequestParam(name="token", requirements="\d+", strict=true)
      * @Rest\RequestParam(name="phone", requirements="09[0-9]{9}", strict=true)
-     * @Rest\RequestParam(name="deviceId", requirements="\d+", strict=true)
+     * @Rest\RequestParam(name="deviceId", strict=true)
      */
     public function postConfirmAction()
     {
