@@ -30,9 +30,10 @@ class WakefulRepository extends EntityRepository
             ->join('w.car', 'c')
             ->join('c.driver', 'd')
             ->where($qb->expr()->lte('distance(w.point, point_str(:point))', ':distance'))
-            ->andWhere($qb->expr()->eq('c.status', Car::STATUS_WAKEFUL))
+            ->andWhere($qb->expr()->eq('c.status', ':status'))
             ->setParameter('point', new Point($longitude, $latitude))
-            ->setParameter('distance', $distance);
+            ->setParameter('distance', $distance)
+            ->setParameter('status', Car::STATUS_WAKEFUL);
 
         $wakefuls = $qb->getQuery()
             ->setMaxResults($limit)
