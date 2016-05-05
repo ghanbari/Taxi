@@ -25,6 +25,8 @@ security:
             host: api.%router.request_context.host%
             http_basic:
                 provider: fos_userbundle
+            form_login:
+                provider: fos_userbundle
             logout:       false
             anonymous:    true
         main:
