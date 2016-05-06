@@ -241,7 +241,7 @@ class User extends BaseUser
     /**
      * @var string
      *
-     * @ORM\OneToMany(targetEntity="FunPro\EngineBundle\Entity\Token", mappedBy="passenger")
+     * @ORM\OneToMany(targetEntity="FunPro\EngineBundle\Entity\Token", mappedBy="user")
      *
      * @JS\Exclude()
      */

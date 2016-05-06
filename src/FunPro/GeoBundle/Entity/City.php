@@ -83,7 +83,7 @@ class City
     /**
      * @var City
      *
-     * @ORM\ManyToOne(targetEntity="FunPro\GeoBundle\Entity\City")
+     * @ORM\ManyToOne(targetEntity="FunPro\GeoBundle\Entity\City", inversedBy="children")
      * @ORM\JoinColumn(name="parent", referencedColumnName="id", onDelete="cascade")
      * @Gedmo\TreeParent()
      *
