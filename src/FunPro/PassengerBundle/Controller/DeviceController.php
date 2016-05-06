@@ -2,6 +2,7 @@
 
 namespace FunPro\PassengerBundle\Controller;
 
+use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FunPro\EngineBundle\Entity\Device;
@@ -10,7 +11,6 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Class DeviceController
@@ -24,10 +24,12 @@ class DeviceController extends FOSRestController
 {
     public function createCreateForm(Device $device)
     {
+        $requestFormat = $this->get('request_stack')->getCurrentRequest()->getRequestFormat('html');
+
         $form = $this->createForm(DeviceType::class, $device, array(
-            'action' => '',
+            'action' => $this->generateUrl('fun_pro_api_post_passenger_device'),
             'method' => 'POST',
-            'csrf_protection' => false,
+            'csrf_protection' => $requestFormat == 'html' ?: false,
         ));
 
         return $form;
@@ -62,6 +64,7 @@ class DeviceController extends FOSRestController
      *          "parsers"={"Nelmio\ApiDocBundle\Parser\JmsMetadataParser"},
      *      },
      *      statusCodes={
+     *          200="When device is exists",
      *          201="When success",
      *          400="When form validation failed.",
      *          403= {
@@ -80,8 +83,27 @@ class DeviceController extends FOSRestController
         $form = $this->createCreateForm($device);
         $form->handleRequest($request);
 
-        if ($form->get('deviceIdentifier')->getErrors()->count()) {
-            return $this->view(null, Response::HTTP_CONFLICT);
+        /** @var Device $persistentDevice */
+        $persistentDevice = $this->getDoctrine()->getRepository('FunProEngineBundle:Device')
+            ->findOneByDeviceIdentifier($device->getDeviceIdentifier());
+
+        if ($persistentDevice) {
+            $context = (new Context())
+                ->addGroup('Owner')
+                ->setMaxDepth(1);
+            if ($device->getDeviceToken() == $persistentDevice->getDeviceToken()
+                or ($device->getDeviceModel() == $persistentDevice->getDeviceModel()
+                    and $device->getDeviceName() == $persistentDevice->getDeviceName())
+            ) {
+                return $this->view($persistentDevice, Response::HTTP_OK)
+                    ->setSerializationContext($context);
+            }
+
+            $error = array(
+                'code' => 0,
+                'message' => $this->get('translator')->trans('this.device.is.exists'),
+            );
+            return $this->view($error, Response::HTTP_CONFLICT);
         }
 
         if ($form->isValid()) {
@@ -89,7 +111,11 @@ class DeviceController extends FOSRestController
             $manager->persist($device);
             $manager->flush();
 
-            return $this->view($device, Response::HTTP_CREATED);
+            $context = (new Context())
+                ->addGroup('Owner')
+                ->setMaxDepth(1);
+            return $this->view($device, Response::HTTP_CREATED)
+                ->setSerializationContext($context);
         }
 
         return $this->view($form, Response::HTTP_BAD_REQUEST);
