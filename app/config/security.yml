@@ -27,6 +27,7 @@ security:
                 provider: fos_userbundle
             form_login:
                 provider: fos_userbundle
+                require_previous_session: false
             logout:       false
             anonymous:    true
         main:
