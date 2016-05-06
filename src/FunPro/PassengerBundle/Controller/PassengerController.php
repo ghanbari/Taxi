@@ -2,9 +2,11 @@
 
 namespace FunPro\PassengerBundle\Controller;
 
+use Doctrine\ORM\NoResultException;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
+use FunPro\EngineBundle\Entity\Token;
 use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\PassengerBundle\Form\Type\RegisterType;
 use JMS\Serializer\SerializationContext;
@@ -63,8 +65,9 @@ class PassengerController extends FOSRestController
      * @param Request $request
      * @return \FOS\RestBundle\View\View|\Symfony\Component\Form\Form
      */
-    public function postAction(Request $request)
+    public function postAction()
     {
+        $manager = $this->getDoctrine()->getManager();
         $phone = $this->get('fos_rest.request.param_fetcher')->get('phone');
         $passenger = $this->getDoctrine()->getRepository('FunProPassengerBundle:Passenger')->findOneByMobile($phone);
 
@@ -72,12 +75,28 @@ class PassengerController extends FOSRestController
             $passenger = new Passenger();
             $passenger->setMobile($phone);
             $passenger->setPassword(bin2hex(random_bytes(10)));
+            $manager->persist($passenger);
+            $manager->flush();
         }
 
-            $verifyNumber = random_int(11111, 99999);
-            $passenger->setToken($verifyNumber);
-            $this->get('fos_user.user_manager')->updateUser($passenger);
-            $this->get('sms.sender')->send($passenger->getMobile(), $verifyNumber);
+        $period = new \DateTime('-' . $this->getParameter('register.reset_token_request_after_second') . 'seconds');
+        $tokenRequestedCount = $manager->getRepository('FunProEngineBundle:Token')
+            ->getTokenCount($passenger, $period);
+
+        if ($tokenRequestedCount > $this->getParameter('register.max_token_request')) {
+            $error = array(
+                'code' => 0,
+                'message' => $this->get('translator')->trans('you.have.very.request.for.token'),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
+
+        $verifyNumber = random_int(11111, 99999);
+        $token = new Token($verifyNumber);
+        $token->setUser($passenger);
+        $this->getDoctrine()->getManager()->persist($token);
+        $this->getDoctrine()->getManager()->flush();
+        $this->get('sms.sender')->send($passenger->getMobile(), $verifyNumber);
 
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
@@ -96,6 +115,7 @@ class PassengerController extends FOSRestController
      *      },
      *      statusCodes={
      *          201="When success",
+     *          204="When you try very wrong token",
      *          400="When form validation failed.",
      *          403= {
      *              "when csrf token is invalid",
@@ -126,6 +146,11 @@ class PassengerController extends FOSRestController
 
         /** @var Passenger $user */
         $user = $manager->getRepository('FunProPassengerBundle:Passenger')->findOneByMobile($phone);
+
+        $device = $manager->getRepository('FunProEngineBundle:Device')->findOneBy(array(
+            'deviceIdentifier' => $deviceId,
+        ));
+
         if (!$user) {
             $error = array(
                 'code' => 0,
@@ -134,9 +159,32 @@ class PassengerController extends FOSRestController
             return $this->view($error, Response::HTTP_NOT_FOUND);
         }
 
+        try {
+            $lastToken = $this->getDoctrine()->getRepository('FunProEngineBundle:Token')
+                ->getLastToken($user);
+        } catch (NoResultException $e) {
+            $error = array(
+                'code' => 0,
+                'message' => $translator->trans('token.is.not.exists'),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($user->getWrongTokenCount() > $this->getParameter('login.max_failure_count')) {
+            $response = $this->postAction();
+            $user->resetWrongTokenCount();
+            $manager->flush();
+            return $response;
+        }
+
+        if ($lastToken->getToken() != $token or is_null($device)) {
+            $user->increaseWrongTokenCount();
+            $manager->flush();
+        }
+
         $now = new \DateTime();
-        $diff = $now->diff($user->getTokenRequestedAt());
-        if ($user->getToken() != $token or $diff->days >= 1) {
+        $diff = $now->diff($lastToken->getCreatedAt());
+        if ($lastToken->getToken() != $token or $diff->days >= 1) {
             $error = array(
                 'code' => 0,
                 'message' => $translator->trans('token.is.not.valid'),
@@ -144,9 +192,6 @@ class PassengerController extends FOSRestController
             return $this->view($error, Response::HTTP_BAD_REQUEST);
         }
 
-        $device = $manager->getRepository('FunProEngineBundle:Device')->findOneBy(array(
-            'deviceIdentifier' => $deviceId,
-        ));
         if (!$device) {
             $error = array(
                 'code' => 1,
@@ -160,7 +205,8 @@ class PassengerController extends FOSRestController
         $manager->getConnection()->beginTransaction();
         $device->setOwner($user);
         $device->setApiKey($apiKey);
-        $user->setToken(null);
+        $lastToken->setExpired(true);
+        $user->resetWrongTokenCount();
         $manager->flush();
         $manager->getConnection()->commit();
 
