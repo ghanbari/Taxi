@@ -4,6 +4,7 @@ namespace FunPro\UserBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use FunPro\EngineBundle\Entity\Token;
 use Symfony\Component\HttpFoundation\File\File;
 use FOS\UserBundle\Model\User as BaseUser;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -236,11 +237,21 @@ class User extends BaseUser
      * @JS\Groups({"Devices"})
      */
     private $devices;
+
+    /**
+     * @var string
+     *
+     * @ORM\OneToMany(targetEntity="FunPro\EngineBundle\Entity\Token", mappedBy="passenger")
+     *
+     * @JS\Exclude()
+     */
+    private $tokens;
     
     public function __construct()
     {
         parent::__construct();
         $this->devices = new ArrayCollection();
+        $this->tokens = new ArrayCollection();
         $this->setWrongPasswordCount(0);
     }
 
@@ -513,5 +524,38 @@ class User extends BaseUser
     public function getWrongPasswordCount()
     {
         return $this->wrongPasswordCount;
+    }
+
+    /**
+     * Add tokens
+     *
+     * @param Token $tokens
+     * @return User
+     */
+    public function addToken(Token $tokens)
+    {
+        $this->tokens[] = $tokens;
+
+        return $this;
+    }
+
+    /**
+     * Remove tokens
+     *
+     * @param Token $tokens
+     */
+    public function removeToken(Token $tokens)
+    {
+        $this->tokens->removeElement($tokens);
+    }
+
+    /**
+     * Get tokens
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getTokens()
+    {
+        return $this->tokens;
     }
 }

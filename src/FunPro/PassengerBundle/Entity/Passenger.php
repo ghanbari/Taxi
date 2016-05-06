@@ -57,28 +57,20 @@ class Passenger extends User implements SMSInterface
     private $rate;
 
     /**
-     * @var string
+     * @var integer
      *
-     * @ORM\Column(nullable=true)
-     *
-     * @JS\Exclude()
-     */
-    private $token;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="token_requested_at", type="datetime", nullable=true)
+     * @ORM\Column(name="wrong_token_count", type="smallint")
      *
      * @JS\Exclude()
      */
-    private $tokenRequestedAt;
+    private $wrongTokenCount;
 
     public function __construct()
     {
         parent::__construct();
         $this->addRole(self::ROLE_PASSENGER);
         $this->rate = 0;
+        $this->setWrongTokenCount(0);
     }
 
     /**
@@ -151,35 +143,36 @@ class Passenger extends User implements SMSInterface
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getToken()
+    public function getWrongTokenCount()
     {
-        return $this->token;
+        return $this->wrongTokenCount;
     }
 
     /**
-     * @param string $token
+     * increase wrong token count
      */
-    public function setToken($token)
+    public function increaseWrongTokenCount()
     {
-        $this->token = $token;
-        $this->setTokenRequestedAt(new \DateTime());
+        ++$this->wrongTokenCount;
+    }
+
+    public function resetWrongTokenCount()
+    {
+        $this->wrongTokenCount = 0;
     }
 
     /**
-     * @return \DateTime
+     * Set wrongTokenCount
+     *
+     * @param integer $wrongTokenCount
+     * @return Passenger
      */
-    public function getTokenRequestedAt()
+    public function setWrongTokenCount($wrongTokenCount)
     {
-        return $this->tokenRequestedAt;
-    }
+        $this->wrongTokenCount = $wrongTokenCount;
 
-    /**
-     * @param \DateTime $tokenRequestedAt
-     */
-    public function setTokenRequestedAt($tokenRequestedAt)
-    {
-        $this->tokenRequestedAt = $tokenRequestedAt;
+        return $this;
     }
 }
