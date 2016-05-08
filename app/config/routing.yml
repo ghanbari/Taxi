@@ -22,10 +22,9 @@ fun_pro_passenger:
     resource: "@FunProPassengerBundle/Resources/config/routing.yml"
     type:     rest
 
-#fun_pro_user:
-#    resource: "@FunProUserBundle/Resources/config/routing.yml"
-#    type:     rest
-#    host:     api.%router.request_context.host%
+fun_pro_user:
+    resource: "@FunProUserBundle/Resources/config/routing.yml"
+    type:     rest
 
 fos_user:
     resource: "@FOSUserBundle/Resources/config/routing/all.xml"

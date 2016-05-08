@@ -39,7 +39,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
     {
         $apiKey = $credentials['token'];
 
-        $device = $this->em->getRepository('FunProEngineBundle:Device')->findOneByApiKey($apiKey);
+        $device = $this->em->getRepository('FunProUserBundle:Device')->findOneByApiKey($apiKey);
 
         if (is_null($device) or !$user = $device->getOwner()) {
             return null;
@@ -55,6 +55,12 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
+        $apiKey = $request->headers->get('X-AUTH-TOKEN');
+
+        $device = $this->em->getRepository('FunProUserBundle:Device')->findOneByApiKey($apiKey);
+        $device->setLastLoginAt(new \DateTime());
+        $this->em->flush();
+
         return null;
     }
 

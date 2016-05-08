@@ -1,0 +1,5 @@
+fun_pro_user_device_api:
+    resource: FunPro\UserBundle\Controller\DeviceController
+    type: rest
+    options:
+        version: true

@@ -1,8 +1,7 @@
 <?php
 
-namespace FunPro\EngineBundle\Entity;
+namespace FunPro\UserBundle\Entity;
 
-use FunPro\UserBundle\Entity\User;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
@@ -176,7 +175,7 @@ class Device
     private $updatedAt;
     
     /**
-     * @ORM\OneToMany(targetEntity="FunPro\EngineBundle\Entity\Message", mappedBy="device")
+     * @ORM\OneToMany(targetEntity="FunPro\UserBundle\Entity\Message", mappedBy="device")
      */
     private $messages;
 
@@ -201,6 +200,16 @@ class Device
      * @JS\Since("1.0.0")
      */
     private $owner;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="last_login_at", type="datetime", nullable=true)
+     *
+     * @JS\Groups({"Owner", "Admin"})
+     * @JS\Since("1.0.0")
+     */
+    private $lastLoginAt;
 
     /**
      * Constructor
@@ -589,5 +598,21 @@ class Device
     public function getOwner()
     {
         return $this->owner;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getLastLoginAt()
+    {
+        return $this->lastLoginAt;
+    }
+
+    /**
+     * @param \DateTime $lastLoginAt
+     */
+    public function setLastLoginAt($lastLoginAt)
+    {
+        $this->lastLoginAt = $lastLoginAt;
     }
 }

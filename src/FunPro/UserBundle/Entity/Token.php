@@ -1,9 +1,8 @@
 <?php
 
-namespace FunPro\EngineBundle\Entity;
+namespace FunPro\UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use FunPro\UserBundle\Entity\User;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as JS;
 
@@ -11,7 +10,7 @@ use JMS\Serializer\Annotation as JS;
  * Token
  *
  * @ORM\Table(name="token")
- * @ORM\Entity(repositoryClass="FunPro\EngineBundle\Repository\TokenRepository")
+ * @ORM\Entity(repositoryClass="FunPro\UserBundle\Repository\TokenRepository")
  *
  * @JS\ExclusionPolicy("ALL")
  */

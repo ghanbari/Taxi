@@ -1,13 +1,15 @@
 <?php
 
-namespace FunPro\PassengerBundle\Controller;
+namespace FunPro\UserBundle\Controller;
 
 use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use FunPro\EngineBundle\Entity\Device;
-use FunPro\EngineBundle\Form\DeviceType;
+use FunPro\UserBundle\Entity\Device;
+use FunPro\UserBundle\Entity\User;
+use FunPro\UserBundle\Form\DeviceType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Class DeviceController
  *
- * @package FunPro\PassengerBundle\Controller
+ * @package FunPro\UserBundle\Controller
  *
  * @Rest\NamePrefix("fun_pro_api_")
  * @Rest\RouteResource("device", pluralize=false)
@@ -27,7 +29,7 @@ class DeviceController extends FOSRestController
         $requestFormat = $this->get('request_stack')->getCurrentRequest()->getRequestFormat('html');
 
         $form = $this->createForm(DeviceType::class, $device, array(
-            'action' => $this->generateUrl('fun_pro_api_post_passenger_device'),
+            'action' => $this->generateUrl('fun_pro_api_post_device'),
             'method' => 'POST',
             'csrf_protection' => $requestFormat == 'html' ?: false,
         ));
@@ -46,11 +48,10 @@ class DeviceController extends FOSRestController
      * @ApiDoc(
      *      section="Device",
      *      resource=true,
-     *      views={"passenger"},
      *      input={
-     *          "class"="FunPro\EngineBundle\Form\DeviceType",
+     *          "class"="FunPro\UserBundle\Form\DeviceType",
      *          "data"={
-     *              "class"="FunPro\EngineBundle\Entity\Device",
+     *              "class"="FunPro\UserBundle\Entity\Device",
      *              "groups"={"Owner"},
      *              "parsers"={
      *                  "Nelmio\ApiDocBundle\Parser\ValidationParser",
@@ -59,7 +60,7 @@ class DeviceController extends FOSRestController
      *          },
      *      },
      *      output={
-     *          "class"="FunPro\EngineBundle\Entity\Device",
+     *          "class"="FunPro\UserBundle\Entity\Device",
      *          "groups"={"Owner"},
      *          "parsers"={"Nelmio\ApiDocBundle\Parser\JmsMetadataParser"},
      *      },
@@ -73,18 +74,25 @@ class DeviceController extends FOSRestController
      *          },
      *      }
      * )
-     *
-     * @Security("!is_authenticated()")
-     *
      */
     public function postAction(Request $request)
     {
         $device = new Device();
+        /** @var User $user */
+        $user = $this->getUser();
+
+
+        if (!is_null($user)) {
+            if (($user->getDevices()->count() == 0) or $user->isMultiDeviceAllowed()) {
+                $device->setOwner($this->getUser());
+            }
+        }
+
         $form = $this->createCreateForm($device);
         $form->handleRequest($request);
 
         /** @var Device $persistentDevice */
-        $persistentDevice = $this->getDoctrine()->getRepository('FunProEngineBundle:Device')
+        $persistentDevice = $this->getDoctrine()->getRepository('FunProUserBundle:Device')
             ->findOneByDeviceIdentifier($device->getDeviceIdentifier());
 
         if ($persistentDevice) {
@@ -120,4 +128,46 @@ class DeviceController extends FOSRestController
 
         return $this->view($form, Response::HTTP_BAD_REQUEST);
     }
+
+    /**
+     * update a device token
+     *
+     * @ApiDoc(
+     *      section="Device",
+     *      resource=true,
+     *      statusCodes={
+     *          204="When success",
+     *          404="When device is not exists",
+     *          403= {
+     *              "when you are not owner of device",
+     *          },
+     *      }
+     * )
+     *
+     * @Security("is_authenticated()")
+     *
+     * @Rest\RequestParam(name="token", nullable=false, strict=true)
+     * @Rest\RequestParam(name="deviceIdentifier", nullable=false, strict=true)
+     */
+    public function putTokenAction()
+    {
+        $fetcher = $this->get('fos_rest.request.param_fetcher');
+        $token = $fetcher->get('token');
+        $device = $this->getDoctrine()->getRepository('FunProUserBundle:Device')
+            ->findOneByDeviceIdentifier($fetcher->get('deviceIdentifier'));
+
+        if (is_null($device)) {
+            throw $this->createNotFoundException('device is not exists');
+        }
+
+        if ($device->getOwner() != $this->getUser()) {
+            throw $this->createAccessDeniedException('you.are.not.owner.of.device');
+        }
+
+        $device->setDeviceToken($token);
+        $this->getDoctrine()->getManager()->flush();
+
+        return $this->view(null, Response::HTTP_NO_CONTENT);
+    }
+
 } 

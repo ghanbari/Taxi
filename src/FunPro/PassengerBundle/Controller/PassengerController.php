@@ -6,7 +6,7 @@ use Doctrine\ORM\NoResultException;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
-use FunPro\EngineBundle\Entity\Token;
+use FunPro\UserBundle\Entity\Token;
 use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\PassengerBundle\Form\Type\RegisterType;
 use JMS\Serializer\SerializationContext;
@@ -62,8 +62,10 @@ class PassengerController extends FOSRestController
      * @Rest\View()
      * @Rest\RequestParam(name="phone", requirements="09[0-9]{9}", strict=true)
      *
-     * @param Request $request
-     * @return \FOS\RestBundle\View\View|\Symfony\Component\Form\Form
+     * @throws \Error
+     * @throws \Exception
+     * @throws \TypeError
+     * @return \FOS\RestBundle\View\View
      */
     public function postAction()
     {
@@ -80,7 +82,7 @@ class PassengerController extends FOSRestController
         }
 
         $period = new \DateTime('-' . $this->getParameter('register.reset_token_request_after_second') . 'seconds');
-        $tokenRequestedCount = $manager->getRepository('FunProEngineBundle:Token')
+        $tokenRequestedCount = $manager->getRepository('FunProUserBundle:Token')
             ->getTokenCount($passenger, $period);
 
         if ($tokenRequestedCount > $this->getParameter('register.max_token_request')) {
@@ -147,7 +149,7 @@ class PassengerController extends FOSRestController
         /** @var Passenger $user */
         $user = $manager->getRepository('FunProPassengerBundle:Passenger')->findOneByMobile($phone);
 
-        $device = $manager->getRepository('FunProEngineBundle:Device')->findOneBy(array(
+        $device = $manager->getRepository('FunProUserBundle:Device')->findOneBy(array(
             'deviceIdentifier' => $deviceId,
         ));
 
@@ -160,7 +162,7 @@ class PassengerController extends FOSRestController
         }
 
         try {
-            $lastToken = $this->getDoctrine()->getRepository('FunProEngineBundle:Token')
+            $lastToken = $this->getDoctrine()->getRepository('FunProUserBundle:Token')
                 ->getLastToken($user);
         } catch (NoResultException $e) {
             $error = array(

@@ -4,7 +4,7 @@ namespace FunPro\UserBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use FunPro\EngineBundle\Entity\Token;
+use FunPro\UserBundle\Entity\Token;
 use Symfony\Component\HttpFoundation\File\File;
 use FOS\UserBundle\Model\User as BaseUser;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -230,9 +230,16 @@ class User extends BaseUser
     private $wrongPasswordCount;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_multi_device_allowed", type="boolean", options={"default"=true})
+     */
+    private $multiDeviceAllowed;
+
+    /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="FunPro\EngineBundle\Entity\Device", mappedBy="owner")
+     * @ORM\OneToMany(targetEntity="FunPro\UserBundle\Entity\Device", mappedBy="owner")
      *
      * @JS\Groups({"Devices"})
      */
@@ -241,7 +248,7 @@ class User extends BaseUser
     /**
      * @var string
      *
-     * @ORM\OneToMany(targetEntity="FunPro\EngineBundle\Entity\Token", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="FunPro\UserBundle\Entity\Token", mappedBy="user")
      *
      * @JS\Exclude()
      */
@@ -253,6 +260,7 @@ class User extends BaseUser
         $this->devices = new ArrayCollection();
         $this->tokens = new ArrayCollection();
         $this->setWrongPasswordCount(0);
+        $this->setMultiDeviceAllowed(true);
     }
 
     /**
@@ -557,5 +565,37 @@ class User extends BaseUser
     public function getTokens()
     {
         return $this->tokens;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isMultiDeviceAllowed()
+    {
+        return $this->multiDeviceAllowed;
+    }
+
+    /**
+     * @param boolean $multiDeviceAllowed
+     */
+    public function setMultiDeviceAllowed($multiDeviceAllowed)
+    {
+        $this->multiDeviceAllowed = $multiDeviceAllowed;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getDevices()
+    {
+        return $this->devices;
+    }
+
+    /**
+     * @param ArrayCollection $devices
+     */
+    public function setDevices($devices)
+    {
+        $this->devices = $devices;
     }
 }

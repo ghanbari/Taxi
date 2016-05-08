@@ -1,6 +1,6 @@
 <?php
 
-namespace FunPro\EngineBundle\Repository;
+namespace FunPro\UserBundle\Repository;
 
 use DateTime;
 use Doctrine\ORM\EntityRepository;

@@ -5,7 +5,7 @@ fun_pro_passenger_api:
         version: true
 
 fun_pro_passenger_device_api:
-    resource: FunPro\PassengerBundle\Controller\DeviceController
+    resource: FunPro\UserBundle\Controller\DeviceController
     parent: fun_pro_passenger_api
     type: rest
     options:

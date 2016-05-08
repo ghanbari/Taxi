@@ -1,6 +1,6 @@
 <?php
 
-namespace FunPro\EngineBundle\Entity;
+namespace FunPro\UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -22,7 +22,7 @@ class Message
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="FunPro\EngineBundle\Entity\Device", inversedBy="messages")
+     * @ORM\ManyToOne(targetEntity="FunPro\UserBundle\Entity\Device", inversedBy="messages")
      */
     protected $device;
 

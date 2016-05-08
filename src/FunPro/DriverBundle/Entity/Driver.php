@@ -134,6 +134,7 @@ class Driver extends User implements SMSInterface
         $this->cars = new ArrayCollection();
         $this->addRole(self::ROLE_DRIVER);
         $this->rate = 0;
+        $this->setMultiDeviceAllowed(false);
     }
 
     /**
