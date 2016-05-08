@@ -1,7 +1,7 @@
 services:
     jms_serializer.naming_strategy:
         class: 'JMS\Serializer\Naming\SerializedNameAnnotationStrategy'
-        arguments: [@jms_serializer.identical]
+        arguments: [@jms_serializer.identical_strategy]
 
     jms_serializer.identical_strategy:
         class: 'JMS\Serializer\Naming\IdenticalPropertyNamingStrategy'
