@@ -1,4 +1,15 @@
 services:
+    jms_serializer.naming_strategy:
+        class: 'JMS\Serializer\Naming\SerializedNameAnnotationStrategy'
+        arguments: [@jms_serializer.identical]
+
+    jms_serializer.identical_strategy:
+        class: 'JMS\Serializer\Naming\IdenticalPropertyNamingStrategy'
+
+    fun_pro_engine.gcm:
+        class: FunPro\EngineBundle\GCM\GCM
+        arguments: [@doctrine, @serializer, %gcm.api_key%]
+
     fun_pro_engine.version_listener:
         class: FunPro\EngineBundle\Listener\FilterControllerByApiVersion
         arguments: ["@router", "%api_current_version%", "%api_available_versions%"]
