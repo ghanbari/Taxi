@@ -182,7 +182,7 @@ class Device
     /**
      * @var string
      *
-     * @ORM\Column(name="api_key", nullable=true)
+     * @ORM\Column(name="api_key", nullable=true, unique=true)
      *
      * @JS\Groups({"Owner", "Admin"})
      * @JS\Since("1.0.0")
