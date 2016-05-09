@@ -36,7 +36,7 @@ class Requested
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @JS\Groups({"Public"})
+     * @JS\Groups({"Passenger", "Driver", "Agent", "Admin"})
      * @JS\Since("1.0.0")
      */
     private $id;
@@ -49,7 +49,7 @@ class Requested
      *
      * @Assert\Type(type="FunPro\PassengerBundle\Entity\Passenger", groups={"Create"})
      *
-     * @JS\Groups({"Public"})
+     * @JS\Groups({"Passenger", "Driver", "Admin"})
      * @JS\MaxDepth(1)
      * @JS\Since("1.0.0")
      */
@@ -63,7 +63,7 @@ class Requested
      *
      * @Assert\Type(type="FunPro\AgentBundle\Entity\Agent", groups={"Create"})
      *
-     * @JS\Groups({"Public"})
+     * @JS\Groups({"Driver", "Agent", "Admin"})
      * @JS\MaxDepth(1)
      * @JS\Since("1.0.0")
      */
@@ -78,7 +78,7 @@ class Requested
      * @Assert\Type(type="FunPro\GeoBundle\Doctrine\ValueObject\Point", groups={"Create"})
      * @Assert\Valid()
      *
-     * @JS\Groups({"Public"})
+     * @JS\Groups({"Passenger", "Driver", "Agent", "Admin"})
      * @JS\MaxDepth(1)
      * @JS\Since("1.0.0")
      */
@@ -92,7 +92,7 @@ class Requested
      * @Assert\Type(type="FunPro\GeoBundle\Doctrine\ValueObject\Point", groups={"Create"})
      * @Assert\Valid()
      *
-     * @JS\Groups({"Public"})
+     * @JS\Groups({"Passenger", "Driver", "Admin"})
      * @JS\MaxDepth(1)
      * @JS\Since("1.0.0")
      */
@@ -106,7 +106,7 @@ class Requested
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Choice(callback="getTypes", groups={"Create"})
      *
-     * @JS\Groups({"Public"})
+     * @JS\Groups({"Passenger", "Driver", "Agent", "Admin"})
      * @JS\Since("1.0.0")
      */
     private $type;
@@ -118,7 +118,7 @@ class Requested
      *
      * @Assert\Choice(callback="getDesireOptions", groups={"Create"})
      *
-     * @JS\Groups({"Public"})
+     * @JS\Groups({"Passenger", "Driver", "Agent", "Admin"})
      * @JS\Since("1.0.0")
      */
     private $desire;
@@ -130,7 +130,7 @@ class Requested
      *
      * @Assert\Length(max="4000", groups={"Create"})
      *
-     * @JS\Groups({"Public"})
+     * @JS\Groups({"Passenger", "Driver", "Agent", "Admin"})
      * @JS\Since("1.0.0")
      */
     private $description;
@@ -141,7 +141,7 @@ class Requested
      * @ORM\ManyToOne(targetEntity="FunPro\DriverBundle\Entity\Car")
      * @ORM\JoinColumn(name="car_id", referencedColumnName="id", onDelete="cascade")
      *
-     * @JS\Groups({"Public"})
+     * @JS\Groups({"Passenger", "Driver", "Agent", "Admin"})
      * @JS\MaxDepth(1)
      * @JS\Since("1.0.0")
      */
@@ -156,7 +156,7 @@ class Requested
      * @Assert\NotNull(groups={"Rate"})
      * @Assert\Type(type="numeric", groups={"Rate"})
      *
-     * @JS\Groups({"Public"})
+     * @JS\Groups({"Passenger", "Admin"})
      * @JS\Since("1.0.0")
      */
     private $driverRate;
@@ -170,7 +170,7 @@ class Requested
      * @Assert\NotNull(groups={"Rate"})
      * @Assert\Type(type="numeric", groups={"Rate"})
      *
-     * @JS\Groups({"Public"})
+     * @JS\Groups({"Driver", "Admin"})
      * @JS\Since("1.0.0")
      */
     private $passengerRate;
@@ -180,7 +180,7 @@ class Requested
      *
      * @ORM\Column(name="start_time", type="datetime", nullable=true)
      *
-     * @JS\Groups({"Public"})
+     * @JS\Groups({"Passenger", "Driver", "Agent", "Admin"})
      * @JS\Since("1.0.0")
      */
     private $startTime;
@@ -190,7 +190,7 @@ class Requested
      *
      * @ORM\Column(name="end_time", type="datetime", nullable=true)
      *
-     * @JS\Groups({"Public"})
+     * @JS\Groups({"Passenger", "Driver", "Admin"})
      * @JS\Since("1.0.0")
      */
     private $endTime;
@@ -200,7 +200,7 @@ class Requested
      *
      * @ORM\Column(type="linestring", nullable=true)
      *
-     * @JS\Groups({"Public"})
+     * @JS\Groups({"Passenger", "Driver", "Admin"})
      * @JS\Since("1.0.0")
      */
     private $route;
@@ -210,7 +210,7 @@ class Requested
      *
      * @ORM\Column(type="decimal", precision=6, scale=3, nullable=true)
      *
-     * @JS\Groups({"Public"})
+     * @JS\Groups({"Passenger", "Driver", "Agent", "Admin"})
      * @JS\Since("1.0.0")
      */
     private $distance;
@@ -220,7 +220,7 @@ class Requested
      *
      * @ORM\Column(type="integer", nullable=true)
      *
-     * @JS\Groups({"Public"})
+     * @JS\Groups({"Passenger", "Driver", "Agent", "Admin"})
      * @JS\Since("1.0.0")
      */
     private $price;
