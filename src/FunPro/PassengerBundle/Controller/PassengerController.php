@@ -122,6 +122,7 @@ class PassengerController extends FOSRestController
      *          403= {
      *              "when csrf token is invalid",
      *              "when you are a user and you are login in currently",
+     *              "when this device is not your",
      *          },
      *          404={
      *              "When user is not exists",
@@ -151,6 +152,7 @@ class PassengerController extends FOSRestController
 
         $device = $manager->getRepository('FunProUserBundle:Device')->findOneBy(array(
             'deviceIdentifier' => $deviceId,
+            'appName' => $this->getParameter('app_passenger.package_name'),
         ));
 
         if (!$user) {
@@ -202,7 +204,19 @@ class PassengerController extends FOSRestController
             return $this->view($error, Response::HTTP_NOT_FOUND);
         }
 
-        $apiKey = bin2hex(random_bytes(100));
+        if ($device->getOwner() and $device->getOwner() != $user) {
+            $error = array(
+                'code' => 1,
+                'message' => $translator->trans('you.are.not.device.owner'),
+            );
+            return $this->view($error, Response::HTTP_FORBIDDEN);
+        }
+
+        do {
+            $apiKey = bin2hex(random_bytes(100));
+            $isDuplicate = $manager->getRepository('FunProUserBundle:Device')
+                ->findOneByApiKey($apiKey);
+        } while ($isDuplicate);
 
         $manager->getConnection()->beginTransaction();
         $device->setOwner($user);

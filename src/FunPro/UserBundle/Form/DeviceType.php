@@ -23,6 +23,7 @@ class DeviceType extends AbstractType
             ->add('deviceModel', Type\TextType::class)
             ->add('deviceVersion', Type\TextType::class)
             ->add('appVersion', Type\TextType::class)
+            ->add('appName', Type\TextType::class)
         ;
     }
     

@@ -9,9 +9,13 @@ use JMS\Serializer\Annotation as JS;
 
 /**
  * @ORM\Entity
+ * @ORM\Table(
+ *      name="device",
+ *      uniqueConstraints={@ORM\UniqueConstraint(name="device_identifier_UNIQUE", columns={"device_identifier", "app_name"})}
+ * )
  * @ORM\HasLifecycleCallbacks()
  *
- * @UniqueEntity("deviceIdentifier")
+ * @UniqueEntity(fields={"deviceIdentifier", "appName"})
  */
 class Device
 {
@@ -47,7 +51,7 @@ class Device
     /**
      * @var string
      *
-     * @ORM\Column(name="device_identifier", unique=true)
+     * @ORM\Column(name="device_identifier")
      *
      * @Assert\NotBlank()
      *
@@ -140,6 +144,18 @@ class Device
      * @JS\Since("1.0.0")
      */
     private $deviceVersion;
+
+    /**
+     * @var String $appName application package name
+     *
+     * @ORM\Column(name="app_name")
+     *
+     * @Assert\NotBlank()
+     *
+     * @JS\Groups({"Owner", "Admin"})
+     * @JS\Since("1.0.0")
+     */
+    private $appName;
     
     /**
      * @var string
@@ -427,6 +443,25 @@ class Device
     public function getDeviceModel()
     {
         return $this->deviceModel;
+    }
+
+    /**
+     * @return String
+     */
+    public function getAppName()
+    {
+        return $this->appName;
+    }
+
+    /**
+     * @param String $appName
+     *
+     * @return $this
+     */
+    public function setAppName($appName)
+    {
+        $this->appName = $appName;
+        return $this;
     }
 
     /**

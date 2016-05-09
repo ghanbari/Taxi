@@ -65,13 +65,16 @@ class DeviceController extends FOSRestController
      *          "parsers"={"Nelmio\ApiDocBundle\Parser\JmsMetadataParser"},
      *      },
      *      statusCodes={
-     *          200="When device is exists",
+     *          200="When Your device is exists",
      *          201="When success",
-     *          400="When form validation failed.",
-     *          403= {
-     *              "when csrf token is invalid",
-     *              "when you are a user and you are login in currently",
+     *          400={
+     *              "When form validation failed.",
+     *              "When Your device is exists, but token is not valid"
      *          },
+     *          403={
+     *              "when csrf token is invalid",
+     *          },
+     *          409="When device is exists, but you aren't owner"
      *      }
      * )
      */
@@ -80,7 +83,6 @@ class DeviceController extends FOSRestController
         $device = new Device();
         /** @var User $user */
         $user = $this->getUser();
-
 
         if (!is_null($user)) {
             if (($user->getDevices()->count() == 0) or $user->isMultiDeviceAllowed()) {
@@ -92,26 +94,33 @@ class DeviceController extends FOSRestController
         $form->handleRequest($request);
 
         /** @var Device $persistentDevice */
-        $persistentDevice = $this->getDoctrine()->getRepository('FunProUserBundle:Device')
-            ->findOneByDeviceIdentifier($device->getDeviceIdentifier());
+        $persistentDevice = $this->getDoctrine()->getRepository('FunProUserBundle:Device')->findOneBy(array(
+            'deviceIdentifier' => $device->getDeviceIdentifier(),
+            'appName' => $device->getAppName(),
+        ));
 
         if ($persistentDevice) {
-            $context = (new Context())
-                ->addGroup('Owner')
-                ->setMaxDepth(1);
-            if ($device->getDeviceToken() == $persistentDevice->getDeviceToken()
-                or ($device->getDeviceModel() == $persistentDevice->getDeviceModel()
-                    and $device->getDeviceName() == $persistentDevice->getDeviceName())
-            ) {
+            if ($device->getDeviceToken() == $persistentDevice->getDeviceToken()) {
+                $context = (new Context())
+                    ->addGroup('Owner')
+                    ->setMaxDepth(1);
                 return $this->view($persistentDevice, Response::HTTP_OK)
                     ->setSerializationContext($context);
+            } elseif (!is_null($user) and $persistentDevice->getOwner() == $user
+                or ($device->getDeviceModel() == $persistentDevice->getDeviceModel()
+                    and $device->getDeviceName() == $persistentDevice->getDeviceName())) {
+                $error = array(
+                    'code' => 1,
+                    'message' => $this->get('translator')->trans('you.must.update.token'),
+                );
+                return $this->view($error, Response::HTTP_BAD_REQUEST);
+            } else {
+                $error = array(
+                    'code' => 0,
+                    'message' => $this->get('translator')->trans('this.device.is.exists'),
+                );
+                return $this->view($error, Response::HTTP_CONFLICT);
             }
-
-            $error = array(
-                'code' => 0,
-                'message' => $this->get('translator')->trans('this.device.is.exists'),
-            );
-            return $this->view($error, Response::HTTP_CONFLICT);
         }
 
         if ($form->isValid()) {
@@ -148,13 +157,16 @@ class DeviceController extends FOSRestController
      *
      * @Rest\RequestParam(name="token", nullable=false, strict=true)
      * @Rest\RequestParam(name="deviceIdentifier", nullable=false, strict=true)
+     * @Rest\RequestParam(name="appName", nullable=false, strict=true)
      */
     public function putTokenAction()
     {
         $fetcher = $this->get('fos_rest.request.param_fetcher');
         $token = $fetcher->get('token');
-        $device = $this->getDoctrine()->getRepository('FunProUserBundle:Device')
-            ->findOneByDeviceIdentifier($fetcher->get('deviceIdentifier'));
+        $device = $this->getDoctrine()->getRepository('FunProUserBundle:Device')->findOneBy(array(
+            'deviceIdentifier' => $fetcher->get('deviceIdentifier'),
+            'appName' => $fetcher->get('appName'),
+        ));
 
         if (is_null($device)) {
             throw $this->createNotFoundException('device is not exists');

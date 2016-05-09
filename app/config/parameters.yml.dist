@@ -15,11 +15,16 @@ parameters:
     mailer_user:       ~
     mailer_password:   ~
 
+    app_passenger.package_name: ''
+    app_driver.package_name: ''
+
     sms_adapter:  buzz
     sms_provider: sms_ir
     sms_ir.user: '09337032077'
     sms_ir.pass: '$$12345$$'
     sms_ir.from: '50002015789541'
+
+    gcm.api_key: ''
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
