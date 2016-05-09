@@ -158,6 +158,8 @@ class DeviceController extends FOSRestController
      * @Rest\RequestParam(name="token", nullable=false, strict=true)
      * @Rest\RequestParam(name="deviceIdentifier", nullable=false, strict=true)
      * @Rest\RequestParam(name="appName", nullable=false, strict=true)
+     * @Rest\Put(name="put_device_token", path="/device/token", options={"method_prefix"=false})
+     * @Rest\Put(name="put_passenger_device_token", path="/passenger/device/token", options={"method_prefix"=false})
      */
     public function putTokenAction()
     {
