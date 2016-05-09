@@ -49,3 +49,8 @@ fos_rest:
         enabled: true
         formats:
             json: true
+    exception:
+        enabled: true
+#        codes:
+        messages:
+            'Symfony\Component\HttpKernel\Exception\NotFoundHttpException': true
