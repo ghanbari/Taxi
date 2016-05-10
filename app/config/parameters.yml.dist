@@ -37,3 +37,5 @@ parameters:
     login.on_failure_lock_for: 24 #hour
     register.max_token_request: 10
     register.reset_token_request_after_second: 86400
+
+    service.visible_radius: 7000 #meter

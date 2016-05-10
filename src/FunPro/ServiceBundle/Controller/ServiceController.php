@@ -103,7 +103,7 @@ class ServiceController extends FOSRestController
 
             //TODO: Use Spatial Mysql Distance function for Mysql > 5.6.1
             $drivers = $this->getDoctrine()->getRepository('FunProDriverBundle:Driver')
-                ->getAllAround($service->getStartPoint(), 2);
+                ->getAllAround($service->getStartPoint(), $this->getParameter('service.visible_radius'));
 
             $getDevices = function ($driver) {
                 $devices = array();
