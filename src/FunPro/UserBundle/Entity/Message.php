@@ -39,9 +39,9 @@ class Message
     protected $gcmId;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="multicast_id", type="integer", nullable=true)
+     * @ORM\Column(name="multicast_id", nullable=true)
      *
      * @JS\Groups({"Public"})
      * @JS\Since("1.0.0")
