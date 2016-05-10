@@ -9,6 +9,7 @@ use Doctrine\ORM\Query\Lexer;
  * DQL function for calculating distances between two points
  *
  * Example: DISTANCE(foo.point, POINT_STR(:param))
+ * @TODO: Use Spatial Mysql Distance function for Mysql > 5.6.1
  */
 class Distance extends FunctionNode {
     private $firstArg;
