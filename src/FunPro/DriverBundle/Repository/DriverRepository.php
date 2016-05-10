@@ -31,7 +31,7 @@ class DriverRepository extends EntityRepository
             ->andWhere($qb->expr()->lte('Distance(w.point, point_str(:location))', ':distance'))
             ->setParameter('carStatus', true)
             ->setParameter('location', $point)
-            ->setParameter('distance', $distance);
+            ->setParameter('distance', $distance/100000);
 
         return $qb->getQuery()
             ->getResult();
