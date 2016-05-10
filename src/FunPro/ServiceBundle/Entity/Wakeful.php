@@ -35,7 +35,7 @@ class Wakeful
     /**
      * @var Car
      *
-     * @ORM\OneToOne(targetEntity="FunPro\DriverBundle\Entity\Car")
+     * @ORM\OneToOne(targetEntity="FunPro\DriverBundle\Entity\Car", inversedBy="wakeful")
      * @ORM\JoinColumn(name="car_id", referencedColumnName="id", onDelete="cascade")
      *
      * @JS\Groups({"Car"})

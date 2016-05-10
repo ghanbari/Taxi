@@ -3,6 +3,7 @@
 namespace FunPro\DriverBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use FunPro\ServiceBundle\Entity\Wakeful;
 use FunPro\UserBundle\Entity\User;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as JS;
@@ -203,6 +204,13 @@ class Car
      * @JS\Since("1.0.0")
      */
     private $status;
+
+    /**
+     * @var Wakeful
+     *
+     * @ORM\OneToOne(targetEntity="FunPro\ServiceBundle\Entity\Wakeful", mappedBy="car")
+     */
+    private $wakeful;
 
     public function __construct()
     {
@@ -518,5 +526,24 @@ class Car
     public function getStatus()
     {
         return $this->status;
+    }
+
+    /**
+     * @return Wakeful
+     */
+    public function getWakeful()
+    {
+        return $this->wakeful;
+    }
+
+    /**
+     * @param Wakeful $wakeful
+     *
+     * @return $this
+     */
+    public function setWakeful($wakeful)
+    {
+        $this->wakeful = $wakeful;
+        return $this;
     }
 }

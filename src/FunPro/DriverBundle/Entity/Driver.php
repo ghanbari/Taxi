@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Driver
  *
  * @ORM\Table(name="driver")
- * @ORM\Entity(repositoryClass="FunPro\UserBundle\Repository\DriverRepository")
+ * @ORM\Entity(repositoryClass="FunPro\DriverBundle\Repository\DriverRepository")
  *
  * @UniqueEntity("mobile", groups={"Register"})
  */

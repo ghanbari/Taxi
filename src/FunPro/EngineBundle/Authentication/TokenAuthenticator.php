@@ -2,6 +2,7 @@
 
 namespace FunPro\EngineBundle\Authentication;
 
+use FunPro\UserBundle\Entity\Device;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -13,6 +14,14 @@ use Doctrine\ORM\EntityManager;
 
 class TokenAuthenticator extends AbstractGuardAuthenticator
 {
+    /**
+     * @var Device
+     */
+    private $device;
+
+    /**
+     * @var EntityManager
+     */
     private $em;
 
     public function __construct(EntityManager $em)
@@ -39,9 +48,9 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
     {
         $apiKey = $credentials['token'];
 
-        $device = $this->em->getRepository('FunProUserBundle:Device')->findOneByApiKey($apiKey);
+        $this->device = $this->em->getRepository('FunProUserBundle:Device')->findOneByApiKey($apiKey);
 
-        if (is_null($device) or !$user = $device->getOwner()) {
+        if (is_null($this->device) or !$user = $this->device->getOwner()) {
             return null;
         }
 
@@ -55,10 +64,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
-        $apiKey = $request->headers->get('X-AUTH-TOKEN');
-
-        $device = $this->em->getRepository('FunProUserBundle:Device')->findOneByApiKey($apiKey);
-        $device->setLastLoginAt(new \DateTime());
+        $this->device->setLastLoginAt(new \DateTime());
         $this->em->flush();
 
         return null;

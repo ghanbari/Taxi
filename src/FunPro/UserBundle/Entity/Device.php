@@ -118,7 +118,7 @@ class Device
      * @JS\Groups({"Owner", "Admin"})
      * @JS\Since("1.0.0")
      */
-    private $status = self::STATUS_UNKNOWN;
+    private $status = self::STATUS_ACTIVE;
     
     /**
      * @var string

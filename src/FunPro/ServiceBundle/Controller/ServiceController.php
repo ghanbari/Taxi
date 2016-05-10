@@ -2,12 +2,17 @@
 
 namespace FunPro\ServiceBundle\Controller;
 
+use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FunPro\DriverBundle\Entity\Driver;
 use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\ServiceBundle\Entity\Requested;
 use FunPro\ServiceBundle\Form\ServiceType;
+use FunPro\UserBundle\Entity\Device;
+use FunPro\UserBundle\Entity\Message;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -70,6 +75,8 @@ class ServiceController extends FOSRestController
      *      }
      * )
      *
+     * @Rest\Post(path="/passenger/service")
+     *
      * @Security("has_role('ROLE_PASSENGER') or has_role('ROLE_AGENT')")
      */
     public function postAction(Request $request)
@@ -93,9 +100,78 @@ class ServiceController extends FOSRestController
             $manager->persist($service);
             $manager->flush();
 
+            $drivers = $this->getDoctrine()->getRepository('FunProDriverBundle:Driver')
+                ->getAllAround($service->getStartPoint(), 2);
+
+            $getDevices = function ($driver) {
+                $devices = array();
+                /** @var Device $device */
+                foreach ($driver->getDevices()->toArray() as $device) {
+                    if ($device->getStatus() == Device::STATUS_ACTIVE) {
+                        $devices[] = $device;
+                    }
+                }
+
+                return $devices;
+            };
+
+            $devices = call_user_func_array('array_merge', array_map($getDevices, $drivers));
+
+            $data = array(
+                'type' => 'service',
+                'id' => $service->getId()
+            );
+
+            $message = (new Message())
+                ->setData($data)
+                ->setPriority(Message::PRIORITY_HIGH)
+                ->setTimeToLive(15);
+
+            $this->get('fun_pro_engine.gcm')->send($devices, $message);
+
             return $this->view($service, Response::HTTP_CREATED);
         }
 
         return $this->view($form, Response::HTTP_BAD_REQUEST);
+    }
+
+    /**
+     * Get a service
+     *
+     * @ApiDoc(
+     *      section="Service",
+     *      resource=true,
+     *      views={"driver"},
+     *      output={
+     *          "class"="FunPro\ServiceBundle\Entity\Requested",
+     *          "groups"={"Passenger", "Driver", "Agent", "Admin", "Public", "Point"},
+     *      },
+     *      statusCodes={
+     *          200="When success",
+     *          403= {
+     *              "when you are not a driver",
+     *          },
+     *      }
+     * )
+     *
+     * @ParamConverter(name="service", class="FunPro\ServiceBundle\Entity\Requested")
+     * @Security("is_authenticated()")
+     *
+     * @param $id
+     * @return \FOS\RestBundle\View\View
+     */
+    public function getAction(Request $request, $id)
+    {
+        $service = $request->attributes->get('service');
+        $user = $this->getUser();
+
+        if (!$user instanceof Driver and $service->getPassenger() != $user) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $context = (new Context())
+            ->addGroups(array('Passenger', 'Driver', 'Public', 'Point', 'PassengerMobile'));
+        return $this->view($service, Response::HTTP_OK)
+            ->setSerializationContext($context);
     }
 }

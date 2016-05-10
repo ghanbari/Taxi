@@ -4,5 +4,4 @@ fun_pro_service_wakeful_api:
 
 fun_pro_service_api:
     resource: FunPro\ServiceBundle\Controller\ServiceController
-    prefix: /passenger
     type: rest
