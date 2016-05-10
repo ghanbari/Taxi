@@ -78,7 +78,7 @@ class Requested
      * @Assert\Type(type="FunPro\GeoBundle\Doctrine\ValueObject\Point", groups={"Create"})
      * @Assert\Valid()
      *
-     * @JS\Groups({"Passenger", "Driver", "Agent", "Admin"})
+     * @JS\Groups({"Passenger", "Driver", "Agent", "Admin", "Point"})
      * @JS\MaxDepth(1)
      * @JS\Since("1.0.0")
      */
@@ -92,7 +92,7 @@ class Requested
      * @Assert\Type(type="FunPro\GeoBundle\Doctrine\ValueObject\Point", groups={"Create"})
      * @Assert\Valid()
      *
-     * @JS\Groups({"Passenger", "Driver", "Admin"})
+     * @JS\Groups({"Passenger", "Driver", "Admin", "Point"})
      * @JS\MaxDepth(1)
      * @JS\Since("1.0.0")
      */
