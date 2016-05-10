@@ -4,11 +4,11 @@ namespace FunPro\EngineBundle\GCM;
 
 use Buzz\Browser;
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use FunPro\EngineBundle\Profiler\GCMDataCollector;
 use FunPro\UserBundle\Entity\Device;
 use FunPro\UserBundle\Entity\Message;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
-use Symfony\Component\VarDumper\VarDumper;
 
 class GCM
 {
@@ -28,15 +28,22 @@ class GCM
     private $apiKey;
 
     /**
+     * @var GCMDataCollector
+     */
+    private $collector;
+
+    /**
      * @param Registry $doctrine
      * @param Serializer $serializer
+     * @param GCMDataCollector $collector
      * @param $apiKey
      */
-    public function __construct(Registry $doctrine, Serializer $serializer, $apiKey)
+    public function __construct(Registry $doctrine, Serializer $serializer, GCMDataCollector $collector, $apiKey)
     {
         $this->doctrine = $doctrine;
         $this->serializer = $serializer;
         $this->apiKey = $apiKey;
+        $this->collector = $collector;
     }
 
     public function send(array $devices, Message $message)
@@ -86,6 +93,9 @@ class GCM
             if ($statusCode == 200) {
                 $resObj = $this->serializer->deserialize($response->getContent(), 'FunPro\EngineBundle\GCM\Success', 'json');
                 $this->onSuccess($resObj, $messages);
+                $this->collector->add($messages, $resObj);
+            } else {
+                $this->collector->add($messages);
             }
 
             $manager->flush();
