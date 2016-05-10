@@ -2,6 +2,7 @@
 
 namespace FunPro\ServiceBundle\Controller;
 
+use Exception;
 use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -100,6 +101,7 @@ class ServiceController extends FOSRestController
             $manager->persist($service);
             $manager->flush();
 
+            //TODO: Use Spatial Mysql Distance function for Mysql > 5.6.1
             $drivers = $this->getDoctrine()->getRepository('FunProDriverBundle:Driver')
                 ->getAllAround($service->getStartPoint(), 2);
 
@@ -171,6 +173,88 @@ class ServiceController extends FOSRestController
 
         $context = (new Context())
             ->addGroups(array('Passenger', 'Driver', 'Public', 'Point', 'PassengerMobile'));
+        return $this->view($service, Response::HTTP_OK)
+            ->setSerializationContext($context);
+    }
+
+    /**
+     * Accept service by driver
+     *
+     * @ApiDoc(
+     *      section="Service",
+     *      resource=true,
+     *      views={"driver"},
+     *      output={
+     *          "class"="FunPro\ServiceBundle\Entity\Requested",
+     *          "groups"={"Public", "Driver"},
+     *          "parsers"={"Nelmio\ApiDocBundle\Parser\JmsMetadataParser"},
+     *      },
+     *      statusCodes={
+     *          200="When success",
+     *          403= {
+     *              "when you are not driver",
+     *          },
+     *          409="When another driver accept this service",
+     *      }
+     * )
+     *
+     * @Security("is_authenticated()")
+     *
+     * @param $id
+     * @return \FOS\RestBundle\View\View
+     */
+    public function acceptAction($id)
+    {
+        /** @var Driver $driver */
+        $driver = $this->getUser();
+
+        if (!$driver instanceof Driver) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $em = $this->getDoctrine()->getManager();
+
+        $car = $em->getRepository('FunProDriverBundle:Car')->findOneBy(array(
+            'driver' => $driver,
+            'current' => true,
+        ));
+
+        $em->getConnection()->beginTransaction();
+        try {
+            $service = $em->find('FunProServiceBundle:Requested', $id,  \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE);
+            if ($service->getCar()) {
+                throw new Exception($this->get('translator')->trans('this.service.done'), Response::HTTP_CONFLICT);
+            }
+
+            $service->setCar($car);
+            $em->flush();
+            $em->getConnection()->commit();
+        } catch (Exception $e) {
+            $em->getConnection()->rollBack();
+            $em->close();
+            $error = array(
+                'code' => 0,
+                'message' => $this->get('translator')->trans('this.service.done'),
+            );
+            return $this->view($error, Response::HTTP_CONFLICT);
+        }
+
+        if ($service->getPassenger()) {
+            $data = array(
+                'type' => 'service.accept',
+                'id' => $service->getId()
+            );
+
+            $message = (new Message())
+                ->setData($data)
+                ->setPriority(Message::PRIORITY_HIGH)
+                ->setTimeToLive(15);
+            $this->get('fun_pro_engine.gcm')->send(array($service->getPassenger()->getDevices()), $message);
+        }
+
+        $context = (new Context())
+            ->addGroups(array('Driver', 'Point', 'Public'))
+            ->setMaxDepth(3);
         return $this->view($service, Response::HTTP_OK)
             ->setSerializationContext($context);
     }
