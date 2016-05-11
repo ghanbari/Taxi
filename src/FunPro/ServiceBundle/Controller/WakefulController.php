@@ -82,7 +82,6 @@ class WakefulController extends FOSRestController
 
         try {
             $this->getDoctrine()->getManager()->persist($wakeful);
-            $this->getDoctrine()->getManager()->flush();
 
             $this->get('event_dispatcher')->dispatch(CarEvents::CAR_WAKEFUL, new FilterWakefulEvent($wakeful));
 
@@ -153,7 +152,6 @@ class WakefulController extends FOSRestController
 
             $wakeful->setPoint($currentLocation);
 
-            $this->getDoctrine()->getManager()->flush();
             $movieEvent = new FilterMoveEvent($wakeful->getCar(), $previousLocation, $currentLocation);
             $this->get('event_dispatcher')->dispatch(CarEvents::CAR_MOVE, $movieEvent);
 
@@ -208,8 +206,8 @@ class WakefulController extends FOSRestController
         }
 
         if (!is_null($wakeful)) {
+            $car->setWakeful(null);
             $this->getDoctrine()->getManager()->remove($wakeful);
-            $this->getDoctrine()->getManager()->flush();
 
             $this->get('event_dispatcher')->dispatch(CarEvents::CAR_SLEEP, new FilterSleepEvent($car));
 
