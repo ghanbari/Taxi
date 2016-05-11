@@ -130,6 +130,7 @@ class Driver extends User implements SMSInterface
     public function __construct()
     {
         parent::__construct();
+        $this->setEnabled(true);
         $this->contact = array();
         $this->cars = new ArrayCollection();
         $this->addRole(self::ROLE_DRIVER);

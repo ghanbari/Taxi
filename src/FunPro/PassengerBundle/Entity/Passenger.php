@@ -68,6 +68,7 @@ class Passenger extends User implements SMSInterface
     public function __construct()
     {
         parent::__construct();
+        $this->setEnabled(true);
         $this->addRole(self::ROLE_PASSENGER);
         $this->rate = 0;
         $this->setWrongTokenCount(0);
