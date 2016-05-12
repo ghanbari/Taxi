@@ -3,6 +3,7 @@
 namespace FunPro\EngineBundle\GCM;
 
 use Buzz\Browser;
+use Buzz\Client\Curl;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use FunPro\EngineBundle\Profiler\GCMDataCollector;
 use FunPro\UserBundle\Entity\Device;
@@ -10,6 +11,13 @@ use FunPro\UserBundle\Entity\Message;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 
+/**
+ * Class GCM
+ *
+ * @package FunPro\EngineBundle\GCM
+ *
+ * @TODO: GCM send request in http_kernel.terminated
+ */
 class GCM
 {
     /**
@@ -69,7 +77,8 @@ class GCM
 
             $retry = 0;
             do {
-                $browser = new Browser();
+                $client = new Curl();
+                $browser = new Browser($client);
                 $headers = array(
                     'Authorization' => 'key=' . $this->apiKey,
                     'Content-Type' => 'application/json',
