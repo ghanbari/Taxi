@@ -14,11 +14,11 @@ services:
 
     fun_pro_engine.gcm:
         class: FunPro\EngineBundle\GCM\GCM
-        arguments: [@doctrine, @serializer, @fun_pro_engine.gcm_collector, %gcm.api_key%]
+        arguments: [@doctrine, @serializer, @fun_pro_engine.gcm_collector, %gcm.api_key%, %kernel.environment%]
 
     fun_pro_engine.version_listener:
         class: FunPro\EngineBundle\Listener\FilterControllerByApiVersion
-        arguments: ["@router", "%api_current_version%", "%api_available_versions%"]
+        arguments: ["@router", "%api_current_version%", "%api_available_versions%", "@debug.controller_resolver"]
         tags:
             - { name: kernel.event_subscriber }
 

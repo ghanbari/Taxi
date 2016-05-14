@@ -5,6 +5,7 @@ namespace FunPro\EngineBundle\Listener;
 use FOS\RestBundle\Controller\FOSRestController;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Controller\TraceableControllerResolver;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -27,6 +28,11 @@ class FilterControllerByApiVersion implements EventSubscriberInterface
      * @var array
      */
     private $availableVersions;
+
+    /**
+     * @var TraceableControllerResolver
+     */
+    private $controllerResolver;
 
     /**
      * Returns an array of event names this subscriber wants to listen to.
@@ -56,11 +62,12 @@ class FilterControllerByApiVersion implements EventSubscriberInterface
     /**
      * @param Router $router
      */
-    public function __construct(Router $router, $currentVersion, array $availableVersions)
+    public function __construct(Router $router, $currentVersion, array $availableVersions, TraceableControllerResolver $controllerResolver)
     {
         $this->router = $router;
         $this->currentVersion = $currentVersion;
         $this->availableVersions = $availableVersions;
+        $this->controllerResolver = $controllerResolver;
     }
 
     public function onKernelRequest(GetResponseEvent $event)
@@ -79,7 +86,15 @@ class FilterControllerByApiVersion implements EventSubscriberInterface
             $controller = $request->attributes->get('_controller');
             $version = 'V' . str_replace('.', '_', $version);
             $controller = str_replace('\Controller\\', '\Controller\\'. $version .'\\', $controller);
-            $request->attributes->set('_controller', $controller);
-        }
+
+            try {
+                $request2 = clone $request;
+                $request2->attributes->set('_controller', $controller);
+                $this->controllerResolver->getController($request2);
+                $request->attributes->set('_controller', $controller);
+            } catch (\LogicException $e) {
+
+            }
+        ;}
     }
 } 
