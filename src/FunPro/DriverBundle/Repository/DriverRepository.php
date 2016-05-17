@@ -3,6 +3,7 @@
 namespace FunPro\DriverBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use FunPro\DriverBundle\Entity\Car;
 use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 
 /**
@@ -27,9 +28,11 @@ class DriverRepository extends EntityRepository
             ->innerJoin('dr.devices', 'de')
             ->innerJoin('dr.cars', 'c')
             ->innerJoin('c.wakeful', 'w')
-            ->where($qb->expr()->eq('c.current', ':carStatus'))
+            ->where($qb->expr()->eq('c.current', ':current'))
+            ->andWhere($qb->expr()->eq('c.status', ':carStatus'))
             ->andWhere($qb->expr()->lte('Distance(w.point, point_str(:location))', ':distance'))
-            ->setParameter('carStatus', true)
+            ->setParameter('current', true)
+            ->setParameter('carStatus', Car::STATUS_WAKEFUL)
             ->setParameter('location', $point)
             ->setParameter('distance', $distance/100000);
 
