@@ -11,6 +11,7 @@ use FunPro\PassengerBundle\Entity\Passenger;
 use JMS\Serializer\Annotation as JS;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Requested
@@ -116,6 +117,7 @@ class Requested
      *
      * @ORM\Column(length=15)
      *
+     * @Assert\NotBlank(groups={"Create"})
      * @Assert\Choice(callback="getDesireOptions", groups={"Create"})
      *
      * @JS\Groups({"Passenger", "Driver", "Agent", "Admin"})
@@ -224,6 +226,26 @@ class Requested
      * @JS\Since("1.0.0")
      */
     private $price;
+
+    /**
+     * @var \Datetime
+     *
+     * @ORM\Column(name="created_at", type="datetime")
+     * @Gedmo\Timestampable(on="create")
+     *
+     * @JS\Groups({"Public"})
+     */
+    private $createdAt;
+
+    /**
+     * @var \Datetime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
+     * @Gedmo\Timestampable(on="update")
+     *
+     * @JS\Groups({"Public"})
+     */
+    private $updatedAt;
 
     public function __construct()
     {
@@ -641,5 +663,43 @@ class Requested
                 ->atPath('passenger')
                 ->addViolation();
         }
+    }
+
+    /**
+     * @return \Datetime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param \Datetime $createdAt
+     *
+     * @return $this
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
+
+    /**
+     * @return \Datetime
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * @param \Datetime $updatedAt
+     *
+     * @return $this
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+        return $this;
     }
 }
