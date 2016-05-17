@@ -135,9 +135,10 @@ class WakefulController extends FOSRestController
         $wakeful = $this->getDoctrine()->getRepository('FunProServiceBundle:Wakeful')
             ->findOneByCar($car);
 
-        if ($car->getStatus() != Car::STATUS_WAKEFUL) {
+        $status = $car->getStatus();
+        if ($status != Car::STATUS_WAKEFUL and $status != Car::STATUS_SERVICE_PREPARE and $status != Car::STATUS_SERVICE_IN) {
             $error = array(
-                'message' => $translator->trans('car.status.must.be.wakeful'),
+                'message' => $translator->trans('car.status.must.be.wakeful.prepare.or.in.service'),
                 'code' => 0,
             );
             return $this->view($error, Response::HTTP_BAD_REQUEST);

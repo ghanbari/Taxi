@@ -6,7 +6,10 @@ use Exception;
 use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FunPro\DriverBundle\CarEvents;
+use FunPro\DriverBundle\Entity\Car;
 use FunPro\DriverBundle\Entity\Driver;
+use FunPro\DriverBundle\Event\CarEvent;
 use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\ServiceBundle\Entity\Requested;
 use FunPro\ServiceBundle\Form\ServiceType;
@@ -25,6 +28,9 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @Rest\RouteResource("service", pluralize=false)
  * @Rest\NamePrefix("fun_pro_api_")
+ *
+ * @TODO: Move GCM to event listener or GCM listen to event
+ * @TODO: GCM send request in http_kernel.terminated
  */
 class ServiceController extends FOSRestController
 {
@@ -117,7 +123,10 @@ class ServiceController extends FOSRestController
                 return $devices;
             };
 
-            $devices = call_user_func_array('array_merge', array_map($getDevices, $drivers));
+            $devices = array_map($getDevices, $drivers);
+            if ($devices) {
+                $devices = call_user_func_array('array_merge', $devices);
+            }
 
             $data = array(
                 'type' => 'service',
@@ -143,7 +152,6 @@ class ServiceController extends FOSRestController
      * @ApiDoc(
      *      section="Service",
      *      resource=true,
-     *      views={"driver"},
      *      output={
      *          "class"="FunPro\ServiceBundle\Entity\Requested",
      *          "groups"={"Passenger", "Driver", "Agent", "Admin", "Public", "Point"},
@@ -158,6 +166,9 @@ class ServiceController extends FOSRestController
      *
      * @ParamConverter(name="service", class="FunPro\ServiceBundle\Entity\Requested")
      * @Security("is_authenticated()")
+     *
+     * @Rest\Get(name="get_service", path="/service/{id}", options={"method_prefix"=false})
+     * @Rest\Get(name="get_passenger_service", path="/passenger/service/{id}", options={"method_prefix"=false})
      *
      * @param $id
      * @return \FOS\RestBundle\View\View
@@ -190,7 +201,7 @@ class ServiceController extends FOSRestController
      *          "parsers"={"Nelmio\ApiDocBundle\Parser\JmsMetadataParser"},
      *      },
      *      statusCodes={
-     *          200="When success",
+     *          204="When success",
      *          403= {
      *              "when you are not driver",
      *          },
@@ -227,6 +238,7 @@ class ServiceController extends FOSRestController
             }
 
             $service->setCar($car);
+            $this->get('event_dispatcher')->dispatch(CarEvents::CAR_ACCEPT_SERVICE, new CarEvent($car));
             $em->flush();
             $em->getConnection()->commit();
         } catch (Exception $e) {
@@ -249,13 +261,95 @@ class ServiceController extends FOSRestController
                 ->setData($data)
                 ->setPriority(Message::PRIORITY_HIGH)
                 ->setTimeToLive(15);
-            $this->get('fun_pro_engine.gcm')->send(array($service->getPassenger()->getDevices()), $message);
+            $this->get('fun_pro_engine.gcm')->send($service->getPassenger()->getDevices()->toArray(), $message);
         }
 
-        $context = (new Context())
-            ->addGroups(array('Driver', 'Point', 'Public'))
-            ->setMaxDepth(3);
-        return $this->view($service, Response::HTTP_OK)
-            ->setSerializationContext($context);
+        return $this->view(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * update service status
+     *
+     * @ApiDoc(
+     *      section="Service",
+     *      resource=true,
+     *      views={"driver"},
+     *      statusCodes={
+     *          204="When success",
+     *          400={
+     *              "When you will finish a service that not started",
+     *              "when status is not valid",
+     *          },
+     *          403= {
+     *              "when csrf token is invalid",
+     *              "when you are not a driver or driver of this service",
+     *          },
+     *          409= {
+     *              "when you will start a started service or finish a finished service",
+     *          },
+     *      }
+     * )
+     *
+     * @ParamConverter("service", class="FunProServiceBundle:Requested")
+     * @Security("has_role('ROLE_DRIVER') and service.getCar().getDriver() == user")
+     *
+     * @Rest\RequestParam(name="status", nullable=false, requirements="ready|finish", strict=true)
+     * @Rest\RequestParam(name="distance", nullable=true, requirements="\d+", strict=true)
+     * @Rest\RequestParam(name="price", nullable=true, requirements="\d+", strict=true)
+     */
+    public function patchStatusAction(Request $request, $id)
+    {
+        /** @var Requested $service */
+        $service = $request->attributes->get('service');
+        $fetcher = $this->get('fos_rest.request.param_fetcher');
+        $manager = $this->getDoctrine()->getManager();
+        $translator = $this->get('translator');
+
+        if ($fetcher->get('status') == 'ready') {
+            if ($service->getStartTime()) {
+                return $this->view(null, Response::HTTP_CONFLICT);
+            }
+            $service->setStartTime(new \DateTime());
+            $this->get('event_dispatcher')->dispatch(CarEvents::CAR_READY_SERVICE, new CarEvent($service->getCar()));
+            $this->get('event_dispatcher')->dispatch(CarEvents::CAR_START_SERVICE, new CarEvent($service->getCar()));
+            $manager->flush();
+
+            $message = (new Message())
+                ->setTitle($translator->trans('car.is.in.your.place'))
+                ->setPriority(Message::PRIORITY_HIGH)
+                ->setTimeToLive(30);
+
+            $this->get('fun_pro_engine.gcm')->send($service->getPassenger()->getDevices()->toArray(), $message);
+
+            return $this->view(null, Response::HTTP_NO_CONTENT);
+        } else {
+            if (is_null($service->getStartTime())) {
+                return $this->view(null, Response::HTTP_BAD_REQUEST);
+            } elseif ($service->getEndTime()) {
+                return $this->view(null, Response::HTTP_CONFLICT);
+            } else {
+                if (is_null($fetcher->get('distance')) or is_null($fetcher->get('price'))) {
+                    return $this->view(null, Response::HTTP_BAD_REQUEST);
+                }
+
+                $service->setDistance($fetcher->get('distance'));
+                $service->setPrice($fetcher->get('price'));
+                $service->setEndTime(new \DateTime());
+
+                $this->get('event_dispatcher')->dispatch(CarEvents::CAR_END_SERVICE, new CarEvent($service->getCar()));
+                $manager->flush();
+
+                $message = (new Message())
+                    ->setData(array('type' => 'service.finish', 'id' => $service->getId()))
+                    ->setPriority(Message::PRIORITY_HIGH)
+                    ->setTimeToLive(30);
+
+                $this->get('fun_pro_engine.gcm')->send($service->getPassenger()->getDevices()->toArray(), $message);
+
+                return $this->view(null, Response::HTTP_NO_CONTENT);
+            }
+        }
+
+        return $this->view(null, Response::HTTP_BAD_REQUEST);
     }
 }

@@ -34,6 +34,7 @@ class Car
     const STATUS_SERVICE_PREPARE = 'prepare'; #go to passenger place
     const STATUS_SERVICE_READY   = 'ready'; #in passenger place
     const STATUS_SERVICE_START   = 'start';
+    const STATUS_SERVICE_IN      = 'in_service';
     const STATUS_SERVICE_END     = 'end';
 
     /**
@@ -196,7 +197,7 @@ class Car
     private $current;
 
     /**
-     * @var integer
+     * @var string
      *
      * @ORM\Column(name="status", length=15)
      *
