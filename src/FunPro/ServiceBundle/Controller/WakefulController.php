@@ -174,6 +174,7 @@ class WakefulController extends FOSRestController
      *      views={"driver"},
      *      statusCodes={
      *          204="When success",
+     *          400="When your status is not wakeful",
      *          404="If you aren't in queue",
      *          403= {
      *              "when you are not a driver",
@@ -287,8 +288,6 @@ class WakefulController extends FOSRestController
      *          204="When no data is exists",
      *      }
      * )
-     *
-     * @Security("is_authenticated()")
      *
      * @Rest\QueryParam(name="latitude", strict=true, requirements=@Assert\Type(type="numeric"), description="latitude of driver coordinate")
      * @Rest\QueryParam(name="longitude", strict=true, requirements=@Assert\Type(type="numeric"), description="longitude of driver coordinate")
