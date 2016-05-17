@@ -41,17 +41,24 @@ class GCM
     private $collector;
 
     /**
+     * @var String
+     */
+    private $env;
+
+    /**
      * @param Registry $doctrine
      * @param Serializer $serializer
      * @param GCMDataCollector $collector
+     * @param String $env
      * @param $apiKey
      */
-    public function __construct(Registry $doctrine, Serializer $serializer, GCMDataCollector $collector, $apiKey)
+    public function __construct(Registry $doctrine, Serializer $serializer, GCMDataCollector $collector, $apiKey, $env)
     {
         $this->doctrine = $doctrine;
         $this->serializer = $serializer;
         $this->apiKey = $apiKey;
         $this->collector = $collector;
+        $this->env = $env;
     }
 
     public function send(array $devices, Message $message)
@@ -99,7 +106,7 @@ class GCM
             call_user_func_array($setStatus, $messages);
 
 
-            if ($statusCode == 200) {
+            if ($statusCode == 200 or $this->env = 'dev') {
                 $resObj = $this->serializer->deserialize($response->getContent(), 'FunPro\EngineBundle\GCM\Success', 'json');
                 $this->onSuccess($resObj, $messages);
                 $this->collector->add($messages, $resObj);
@@ -124,7 +131,7 @@ class GCM
 
         array_map($setMultiCast, $messages);
 
-        if ($response->getFailure() == 0 and $response->getCanonicalIds() == 0) {
+        if ($response->getFailure() == 0 and $response->getCanonicalIds() == 0 and $this->env = 'prod') {
             return;
         }
 
