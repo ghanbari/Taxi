@@ -2,7 +2,6 @@
 
 namespace FunPro\EngineBundle\Listener;
 
-use FOS\RestBundle\Controller\FOSRestController;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Controller\TraceableControllerResolver;
@@ -10,7 +9,6 @@ use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\VarDumper\VarDumper;
 
 class FilterControllerByApiVersion implements EventSubscriberInterface
 {
@@ -83,18 +81,23 @@ class FilterControllerByApiVersion implements EventSubscriberInterface
                 throw new NotFoundHttpException();
             }
 
-            $controller = $request->attributes->get('_controller');
-            $version = 'V' . str_replace('.', '_', $version);
-            $controller = str_replace('\Controller\\', '\Controller\\'. $version .'\\', $controller);
+            array_pop($this->availableVersions);
+            do {
+                $controller = $request->attributes->get('_controller');
+                $version = 'V' . str_replace('.', '_', $version);
+                $controller = str_replace('\Controller\\', '\Controller\\'. $version .'\\', $controller);
 
-            try {
-                $request2 = clone $request;
-                $request2->attributes->set('_controller', $controller);
-                $this->controllerResolver->getController($request2);
-                $request->attributes->set('_controller', $controller);
-            } catch (\LogicException $e) {
-
-            }
+                try {
+                    $validVersion = true;
+                    $request2 = clone $request;
+                    $request2->attributes->set('_controller', $controller);
+                    $this->controllerResolver->getController($request2);
+                    $request->attributes->set('_controller', $controller);
+                } catch (\LogicException $e) {
+                    $validVersion = false;
+                    $version = array_pop($this->availableVersions);
+                }
+            } while(!$validVersion);
         ;}
     }
 } 
