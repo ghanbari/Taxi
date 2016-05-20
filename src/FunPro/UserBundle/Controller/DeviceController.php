@@ -73,14 +73,15 @@ class DeviceController extends FOSRestController
      *          },
      *          403={
      *              "when csrf token is invalid",
-     *          },
-     *          409="When device is exists, but you aren't owner"
+     *          }
      *      }
      * )
      */
     public function postAction(Request $request)
     {
+        $manager = $this->getDoctrine()->getManager();
         $device = new Device();
+
         /** @var User $user */
         $user = $this->getUser();
 
@@ -106,25 +107,17 @@ class DeviceController extends FOSRestController
                     ->setMaxDepth(1);
                 return $this->view($persistentDevice, Response::HTTP_OK)
                     ->setSerializationContext($context);
-            } elseif (!is_null($user) and $persistentDevice->getOwner() == $user
-                or ($device->getDeviceModel() == $persistentDevice->getDeviceModel()
-                    and $device->getDeviceName() == $persistentDevice->getDeviceName())) {
+            } else {
                 $error = array(
                     'code' => 1,
                     'message' => $this->get('translator')->trans('you.must.update.token'),
                 );
+                $this->get('logger')->log('error', '', $error);
                 return $this->view($error, Response::HTTP_BAD_REQUEST);
-            } else {
-                $error = array(
-                    'code' => 0,
-                    'message' => $this->get('translator')->trans('this.device.is.exists'),
-                );
-                return $this->view($error, Response::HTTP_CONFLICT);
             }
         }
 
         if ($form->isValid()) {
-            $manager = $this->getDoctrine()->getManager();
             $manager->persist($device);
             $manager->flush();
 
