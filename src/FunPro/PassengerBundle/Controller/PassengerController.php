@@ -190,7 +190,7 @@ class PassengerController extends FOSRestController
         $diff = $now->diff($lastToken->getCreatedAt());
         if ($lastToken->getToken() != $token or $diff->days >= 1) {
             $error = array(
-                'code' => 0,
+                'code' => 1,
                 'message' => $translator->trans('token.is.not.valid'),
             );
             return $this->view($error, Response::HTTP_BAD_REQUEST);
