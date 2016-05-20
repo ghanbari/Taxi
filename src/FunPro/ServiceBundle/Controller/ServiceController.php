@@ -314,8 +314,15 @@ class ServiceController extends FOSRestController
             $this->get('event_dispatcher')->dispatch(CarEvents::CAR_START_SERVICE, new CarEvent($service->getCar()));
             $manager->flush();
 
+            $data = array(
+                'title' => $translator->trans('dear.passenger'),
+                'message' => $translator->trans('car.is.in.your.place'),
+            );
+
             $message = (new Message())
+                ->setBody($translator->trans('car.is.in.your.place'))
                 ->setTitle($translator->trans('car.is.in.your.place'))
+                ->setData($data)
                 ->setPriority(Message::PRIORITY_HIGH)
                 ->setTimeToLive(30);
 
