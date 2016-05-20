@@ -22,7 +22,7 @@ class WakefulRepository extends EntityRepository
      * @param int $distance in kilometer
      * @return Wakeful[]
      */
-    public function getAllNearWakeful($longitude, $latitude, $distance=2000, $limit=500)
+    public function getAllWakefulNearTo($longitude, $latitude, $distance=2000, $limit=500)
     {
         $qb = $this->createQueryBuilder('w');
 

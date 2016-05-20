@@ -305,7 +305,7 @@ class WakefulController extends FOSRestController
         $limit = intval($fether->get('limit', true));
 
         $wakefuls = $this->getDoctrine()->getRepository('FunProServiceBundle:Wakeful')
-            ->getAllNearWakeful($lon, $lat, 2, $limit);
+            ->getAllWakefulNearTo($lon, $lat, 2, $limit);
 
         if (count($wakefuls)) {
             $context = (new Context())
