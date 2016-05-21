@@ -315,13 +315,13 @@ class ServiceController extends FOSRestController
             $manager->flush();
 
             $data = array(
-                'title' => $translator->trans('dear.passenger'),
-                'message' => $translator->trans('car.is.in.your.place'),
+                'type' => 'service.ready',
+                'id' => $service->getId(),
             );
 
             $message = (new Message())
                 ->setBody($translator->trans('car.is.in.your.place'))
-                ->setTitle($translator->trans('car.is.in.your.place'))
+                ->setTitle($translator->trans('dear.passenger'))
                 ->setData($data)
                 ->setPriority(Message::PRIORITY_HIGH)
                 ->setTimeToLive(30);
