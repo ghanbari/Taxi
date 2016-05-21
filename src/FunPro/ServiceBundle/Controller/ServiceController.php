@@ -183,7 +183,7 @@ class ServiceController extends FOSRestController
         }
 
         $context = (new Context())
-            ->addGroups(array('Passenger', 'Driver', 'Public', 'Point', 'PassengerMobile'));
+            ->addGroups(array('Passenger', 'Driver', 'Public', 'Point', 'PassengerMobile', 'DriverMobile'));
         return $this->view($service, Response::HTTP_OK)
             ->setSerializationContext($context);
     }

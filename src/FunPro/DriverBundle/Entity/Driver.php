@@ -29,7 +29,7 @@ class Driver extends User implements SMSInterface
      * @Assert\NotBlank(groups={"Register", "Profile"})
      * @Assert\Regex(pattern="/09\d{9}/", groups={"Register", "Profile"})
      *
-     * @JS\Groups({"PassengerMobile", "Profile"})
+     * @JS\Groups({"DriverMobile", "Profile"})
      * @JS\Since("1.0.0")
      */
     protected $mobile;
