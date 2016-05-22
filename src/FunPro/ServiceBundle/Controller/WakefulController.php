@@ -312,6 +312,7 @@ class WakefulController extends FOSRestController
                 ->addGroup('Public')
                 ->addGroup('Car')
                 ->addGroup('Point')
+                ->addGroup('Driver')
                 ->setMaxDepth(true);
             return $this->view($wakefuls, Response::HTTP_OK)
                 ->setSerializationContext($context);
