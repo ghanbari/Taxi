@@ -315,8 +315,8 @@ class ServiceController extends FOSRestController
             $manager->flush();
 
             $data = array(
-                'type' => 'service.ready',
-                'id' => $service->getId(),
+                'message' => $translator->trans('car.is.in.your.place'),
+                'title' => $translator->trans('dear.passenger'),
             );
 
             $message = (new Message())
