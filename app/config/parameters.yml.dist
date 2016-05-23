@@ -19,10 +19,13 @@ parameters:
     app_driver.package_name: ''
 
     sms_adapter:  buzz
-    sms_provider: sms_ir
-    sms_ir.user: '09337032077'
-    sms_ir.pass: '$$12345$$'
-    sms_ir.from: '50002015789541'
+    sms_provider: nik_sms
+    sms_ir.user: ''
+    sms_ir.pass: ''
+    sms_ir.from: ''
+    nik_sms.user: ''
+    nik_sms.pass: ''
+    nik_sms.from: ''
 
     gcm.api_key: ''
 

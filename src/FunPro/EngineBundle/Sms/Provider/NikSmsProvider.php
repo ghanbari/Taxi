@@ -1,18 +1,21 @@
 <?php
 
-namespace FunPro\EngineBundle\Messaging\Provider;
+namespace FunPro\EngineBundle\Sms\Provider;
 
+use SmsSender\Exception as Exception;
 use SmsSender\HttpAdapter\HttpAdapterInterface;
 use SmsSender\Provider\AbstractProvider;
-use SmsSender\Exception as Exception;
 use SmsSender\Result\ResultInterface;
 
-class PayamResanProvider extends AbstractProvider
+/**
+ * @author Kévin Gomez <contact@kevingomez.fr>
+ */
+class NikSmsProvider extends AbstractProvider
 {
     /**
      * @var string
      */
-    const SEND_SMS_URL = 'http://www.payam-resan.com/APISend.aspx';
+    const SEND_SMS_URL = 'http://niksms.com/fa/PublicApi/PTPSMS';
 
     /**
      * @var string
@@ -32,19 +35,19 @@ class PayamResanProvider extends AbstractProvider
     /**
      * @var string
      */
-    protected $from;
+    protected $originator;
 
     /**
      * {@inheritDoc}
      */
-    public function __construct(HttpAdapterInterface $adapter, array $config)
+    public function __construct(HttpAdapterInterface $adapter, $username, $password, $from, $international_prefix = '+98')
     {
         parent::__construct($adapter);
 
-        $this->username = $config['providers']['payam_resan']['username'];
-        $this->password = $config['providers']['payam_resan']['password'];
-        $this->from     = $config['providers']['payam_resan']['from'];
-        $this->international_prefix = $config['prefix'];
+        $this->username = $username;
+        $this->password = $password;
+        $this->originator = $from;
+        $this->international_prefix = $international_prefix;
     }
 
     /**
@@ -56,24 +59,24 @@ class PayamResanProvider extends AbstractProvider
             throw new Exception\InvalidCredentialsException('No API credentials provided');
         }
 
-        if (empty($originator) and empty($this->from)) {
+        $originator = $originator ?: $this->originator;
+
+        if (empty($originator)) {
             throw new Exception\InvalidArgumentException('The originator parameter is required for this provider.');
         }
 
-        $originator = !empty($originator) ? $originator : $this->from;
+        // clean the originator string to ensure that the sms won't be
+        // rejected because of this
         $originator = $this->cleanOriginator($originator);
 
         $params = $this->getParameters(array(
-            'to'    => $this->localNumberToInternational($recipient, $this->international_prefix),
-            'text'  => $body,
-            'from'  => $originator,
+            'Numbers'      => $this->localNumberToInternational($recipient, $this->international_prefix),
+            'Message'      => $body,
+            'SenderNumber' => $originator,
+            'SendType'  => 1,
         ));
 
-        return $this->executeQuery(self::SEND_SMS_URL, $params, array(
-            'recipient'  => $recipient,
-            'body'       => $body,
-            'originator' => $originator,
-        ));
+        return $this->executeQuery(self::SEND_SMS_URL, $params);
     }
 
     /**
@@ -81,7 +84,7 @@ class PayamResanProvider extends AbstractProvider
      */
     public function getName()
     {
-        return 'payam_resan';
+        return 'nik_sms';
     }
 
     /**
@@ -108,8 +111,8 @@ class PayamResanProvider extends AbstractProvider
     public function getParameters(array $additionnal_parameters = array())
     {
         return array_merge(array(
-            'username'  => $this->username,
-            'password'  => $this->password,
+            'Username'  => $this->username,
+            'Password'  => $this->password,
         ), $additionnal_parameters);
     }
 
@@ -124,10 +127,14 @@ class PayamResanProvider extends AbstractProvider
         $sms_data = array();
 
         // get the status
-        $sms_data['status'] = $result === '0'
+        $sms_data['status'] = $result == 'Successful'
             ? ResultInterface::STATUS_SENT
             : ResultInterface::STATUS_FAILED;
 
-        return array_merge($this->getDefaults(), $extra_result_data, $sms_data);
+        $sms_data['message'] = $result;
+
+        return array_merge($sms_data, $this->getDefaults(), $extra_result_data);
     }
 }
+
+// vim: set softtabstop=4 tabstop=4 shiftwidth=4 autoindent:

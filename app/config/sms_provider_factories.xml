@@ -18,6 +18,20 @@
             <!-- international prefix -->
             <argument></argument>
         </service>
+        <service id="sms.provider.factory.nik_sms" class="FunPro\EngineBundle\Sms\Provider\Factory\NikSmsProviderFactory">
+            <tag name="sms.provider.factory" />
+        </service>
+        <service id="sms.provider.nik_sms" class="FunPro\EngineBundle\Sms\Provider\NikSmsProvider">
+            <argument type="service" id="sms.http_adapter" />
+            <!-- user -->
+            <argument></argument>
+            <!-- pass -->
+            <argument></argument>
+            <!-- from -->
+            <argument></argument>
+            <!-- international prefix -->
+            <argument></argument>
+        </service>
     </services>
 
 </container>

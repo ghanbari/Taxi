@@ -9,3 +9,9 @@ k_phoen_sms_sender:
         pass: %sms_ir.pass%
         from: %sms_ir.from%
         international_prefix: '+98'
+
+    nik_sms:
+        user: %nik_sms.user%
+        pass: %nik_sms.pass%
+        from: %nik_sms.from%
+        international_prefix: '+98'
