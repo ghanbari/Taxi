@@ -175,7 +175,7 @@ class WakefulController extends FOSRestController
      *      views={"driver"},
      *      statusCodes={
      *          204="When success",
-     *          400="When your status is not wakeful",
+     *          400="When your status is not wakeful or sleep",
      *          404="If you aren't in queue",
      *          403= {
      *              "when you are not a driver",
@@ -199,7 +199,7 @@ class WakefulController extends FOSRestController
         $wakeful = $this->getDoctrine()->getRepository('FunProServiceBundle:Wakeful')
             ->findOneByCar($car);
 
-        if ($car->getStatus() != Car::STATUS_WAKEFUL) {
+        if ($car->getStatus() != Car::STATUS_WAKEFUL and $car->getStatus() != Car::STATUS_SLEEP) {
             $error = array(
                 'message' => $translator->trans('car.status.must.be.wakeful'),
                 'code' => 0,
