@@ -88,6 +88,12 @@ class DeviceController extends FOSRestController
         if (!is_null($user)) {
             if (($user->getDevices()->count() == 0) or $user->isMultiDeviceAllowed()) {
                 $device->setOwner($this->getUser());
+            } else {
+                $error = array(
+                    'code' => 2,
+                    'message' => $this->get('translator')->trans('you.can.not.add.another.device'),
+                );
+                $this->view($error, Response::HTTP_BAD_REQUEST);
             }
         }
 
