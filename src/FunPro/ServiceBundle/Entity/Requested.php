@@ -250,6 +250,7 @@ class Requested
     public function __construct()
     {
         $this->setRoute(new LineString());
+        $this->setStartTime(new \DateTime());
     }
 
     /**
