@@ -93,7 +93,7 @@ class DeviceController extends FOSRestController
                     'code' => 2,
                     'message' => $this->get('translator')->trans('you.can.not.add.another.device'),
                 );
-                $this->view($error, Response::HTTP_BAD_REQUEST);
+                return $this->view($error, Response::HTTP_BAD_REQUEST);
             }
         }
 
