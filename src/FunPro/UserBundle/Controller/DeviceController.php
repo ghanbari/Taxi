@@ -113,6 +113,13 @@ class DeviceController extends FOSRestController
                     ->setMaxDepth(1);
                 return $this->view($persistentDevice, Response::HTTP_OK)
                     ->setSerializationContext($context);
+            } else if ($persistentDevice->getOwner() and $this->getUser() and $persistentDevice->getOwner() != $this->getUser()) {
+                $error = array(
+                    'code' => 1,
+                    'message' => $this->get('translator')->trans('you.are.not.owner.of.this.device'),
+                );
+                $this->get('logger')->log('error', '', $error);
+                return $this->view($error, Response::HTTP_FORBIDDEN);
             } else {
                 $error = array(
                     'code' => 1,
@@ -152,7 +159,7 @@ class DeviceController extends FOSRestController
      *      }
      * )
      *
-     * @Security("is_authenticated()")
+
      *
      * @Rest\RequestParam(name="token", nullable=false, strict=true)
      * @Rest\RequestParam(name="deviceIdentifier", nullable=false, strict=true)
@@ -173,7 +180,7 @@ class DeviceController extends FOSRestController
             throw $this->createNotFoundException('device is not exists');
         }
 
-        if ($device->getOwner() != $this->getUser()) {
+        if ($device->getOwner() and $device->getOwner() != $this->getUser()) {
             throw $this->createAccessDeniedException('you.are.not.owner.of.device');
         }
 
