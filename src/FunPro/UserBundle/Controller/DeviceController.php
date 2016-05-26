@@ -185,6 +185,7 @@ class DeviceController extends FOSRestController
         }
 
         $device->setDeviceToken($token);
+        $device->setStatus(Device::STATUS_ACTIVE);
         $this->getDoctrine()->getManager()->flush();
 
         return $this->view(null, Response::HTTP_NO_CONTENT);
