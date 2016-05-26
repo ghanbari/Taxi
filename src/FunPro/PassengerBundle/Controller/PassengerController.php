@@ -223,6 +223,8 @@ class PassengerController extends FOSRestController
         $device->setApiKey($apiKey);
         $lastToken->setExpired(true);
         $user->resetWrongTokenCount();
+        $user->setUsername($user->getMobile());
+        $this->get('fos_user.user_manager')->updateUser($user, false);
         $manager->flush();
         $manager->getConnection()->commit();
 
