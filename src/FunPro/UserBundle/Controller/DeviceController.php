@@ -69,10 +69,12 @@ class DeviceController extends FOSRestController
      *          201="When success",
      *          400={
      *              "When form validation failed.",
-     *              "When Your device is exists, but token is not valid"
+     *              "When Your device is exists, but token is not valid",
+     *              "You can not have multi device"
      *          },
      *          403={
      *              "when csrf token is invalid",
+     *              "When you are not device owner"
      *          }
      *      }
      * )
@@ -84,18 +86,6 @@ class DeviceController extends FOSRestController
 
         /** @var User $user */
         $user = $this->getUser();
-
-        if (!is_null($user)) {
-            if (($user->getDevices()->count() == 0) or $user->isMultiDeviceAllowed()) {
-                $device->setOwner($this->getUser());
-            } else {
-                $error = array(
-                    'code' => 2,
-                    'message' => $this->get('translator')->trans('you.can.not.add.another.device'),
-                );
-                return $this->view($error, Response::HTTP_BAD_REQUEST);
-            }
-        }
 
         $form = $this->createCreateForm($device);
         $form->handleRequest($request);
@@ -126,6 +116,16 @@ class DeviceController extends FOSRestController
                     'message' => $this->get('translator')->trans('you.must.update.token'),
                 );
                 $this->get('logger')->log('error', '', $error);
+                return $this->view($error, Response::HTTP_BAD_REQUEST);
+            }
+        } elseif (!is_null($user)) {
+            if (($user->getDevices()->count() == 0) or $user->isMultiDeviceAllowed()) {
+                $device->setOwner($this->getUser());
+            } else {
+                $error = array(
+                    'code' => 2,
+                    'message' => $this->get('translator')->trans('you.can.not.add.another.device'),
+                );
                 return $this->view($error, Response::HTTP_BAD_REQUEST);
             }
         }
