@@ -16,4 +16,4 @@ _main:
 NelmioApiDocBundle:
     resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
     prefix:   /doc/v1
-    host:     api.%router.request_context.host%
+    host:     "%router.request_context.host%"
