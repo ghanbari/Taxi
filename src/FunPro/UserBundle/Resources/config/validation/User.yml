@@ -15,7 +15,7 @@ FunPro\UserBundle\Entity\User:
                 min: 2
                 max: 4096
                 minMessage: fos_user.password.short
-                groups: [Register]
+                groups: [Register, Profile]
         email:
             - Length:
                 min: 2

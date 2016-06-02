@@ -38,6 +38,16 @@ class Agent
     protected $id;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(length=50)
+     *
+     * @JS\Groups({"Public"})
+     * @JS\Since("1.0.0")
+     */
+    protected $name;
+
+    /**
      * @var User
      *
      * @ORM\ManyToOne(targetEntity="FunPro\UserBundle\Entity\User")
@@ -107,6 +117,25 @@ class Agent
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return $this
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+        return $this;
     }
 
     /**

@@ -3,7 +3,9 @@ security:
         FOS\UserBundle\Model\UserInterface: bcrypt
 
     role_hierarchy:
-        ROLE_ADMIN:       ROLE_USER
+        ROLE_SALESMAN:    ROLE_PASSENGER
+        ROLE_OPERATOR:    ROLE_SALESMAN
+        ROLE_ADMIN:       ROLE_OPERATOR
         ROLE_SUPER_ADMIN: ROLE_ADMIN
 
     providers:
@@ -11,14 +13,23 @@ security:
             id: fos_user.user_provider.username
 
     firewalls:
+        panel:
+            pattern: ^/admin
+            form_login:
+                login_path: fun_pro_admin_login
+                check_path: fun_pro_admin_login_check
+                provider: fos_userbundle
+                csrf_token_generator: security.csrf.token_manager
+            logout:
+                path: fun_pro_admin_logout
+                target: fun_pro_admin_dashboard
+            anonymous:    true
         api_passenger:
             pattern: ^/passenger
             host: api.%router.request_context.host%
             guard:
                 authenticators:
                     - fun_pro_engine.token_authenticator
-            logout:       false
-            anonymous:    true
             stateless: true
         api:
             pattern: ^/
@@ -29,7 +40,6 @@ security:
                 provider: fos_userbundle
                 require_previous_session: false
             logout:       false
-            anonymous:    true
         main:
             pattern: ^/
             http_basic:
@@ -44,4 +54,5 @@ security:
         - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/admin/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/admin/, role: ROLE_ADMIN }

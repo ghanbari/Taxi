@@ -5,6 +5,7 @@ namespace FunPro\DriverBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\AgentBundle\Entity\Agency;
+use FunPro\GeoBundle\Entity\Address;
 use FunPro\UserBundle\Entity\User;
 use FunPro\UserBundle\Interfaces\SMSInterface;
 use JMS\Serializer\Annotation as JS;
@@ -24,12 +25,12 @@ class Driver extends User implements SMSInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="mobile", type="string", length=11, nullable=true, unique=true)
+     * @ORM\Column(name="mobile", type="string", length=11, unique=true)
      *
      * @Assert\NotBlank(groups={"Register", "Profile"})
      * @Assert\Regex(pattern="/09\d{9}/", groups={"Register", "Profile"})
      *
-     * @JS\Groups({"DriverMobile", "Profile"})
+     * @JS\Groups({"DriverMobile", "Profile", "Admin"})
      * @JS\Since("1.0.0")
      */
     protected $mobile;
@@ -39,22 +40,23 @@ class Driver extends User implements SMSInterface
      *
      * @ORM\OneToMany(targetEntity="FunPro\DriverBundle\Entity\Car", mappedBy="driver")
      *
-     * @JS\Groups({"Cars", "Owner", "Admin"})
+     * @JS\Groups({"Cars"})
      * @JS\MaxDepth(1)
      * @JS\Since("1.0.0")
      */
     private $cars;
 
     /**
-     * @var array
+     * @var Address
      *
      * @ORM\OneToOne(targetEntity="FunPro\GeoBundle\Entity\Address", orphanRemoval=true, cascade={"persist"})
      * @ORM\JoinColumn(name="address_id", referencedColumnName="id", onDelete="RESTRICT", nullable=false)
      *
      * @Assert\NotNull(groups={"Register", "Profile"})
      * @Assert\Type(type="FunPro\GeoBundle\Entity\Address", groups={"Register", "Profile"})
+     * @Assert\Valid()
      *
-     * @JS\Groups({"DriverAddress", "Owner", "Admin", "Register"})
+     * @JS\Groups({"DriverAddress"})
      * @JS\MaxDepth(1)
      * @JS\Since("1.0.0")
      */
@@ -82,7 +84,7 @@ class Driver extends User implements SMSInterface
      * @Assert\NotNull(groups={"Register", "Profile"})
      * @Assert\Type(type="FunPro\AgentBundle\Entity\Agency", groups={"Register", "Profile"})
      *
-     * @JS\Groups({"Agency", "Admin", "Register"})
+     * @JS\Groups({"Agency"})
      * @JS\MaxDepth(1)
      * @JS\Since("1.0.0")
      */
@@ -122,7 +124,7 @@ class Driver extends User implements SMSInterface
      *
      * @ORM\Column(type="decimal", precision=2, scale=1, options={"default"=0})
      *
-     * @JS\Groups({"Public", "Vote"})
+     * @JS\Groups({"Public", "Vote", "Admin"})
      * @JS\Since("1.0.0")
      */
     private $rate;
@@ -130,6 +132,7 @@ class Driver extends User implements SMSInterface
     public function __construct()
     {
         parent::__construct();
+        $this->setUsername($this->getNationalCode());
         $this->setEnabled(true);
         $this->contact = array();
         $this->cars = new ArrayCollection();
@@ -159,30 +162,6 @@ class Driver extends User implements SMSInterface
     public function getMobile()
     {
         return $this->mobile;
-    }
-
-    /**
-     * Get mobile canonical
-     *
-     * @return string
-     */
-    public function getMobileCanonical()
-    {
-        return $this->mobileCanonical;
-    }
-
-    /**
-     * Set Mobile canonical
-     *
-     * @param string $mobileCanonical
-     * @return $this
-     */
-    public function setMobileCanonical($mobileCanonical)
-    {
-        $this->mobileCanonical = $mobileCanonical;
-        $this->setUsername($mobileCanonical);
-
-        return $this;
     }
 
     /**

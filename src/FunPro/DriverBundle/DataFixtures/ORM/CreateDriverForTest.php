@@ -54,6 +54,7 @@ class CreateDriverForTest extends AbstractFixture implements OrderedFixtureInter
             $driver->setName('driver-'.$i);
             $driver->setEnabled(true);
             $driver->setContractNumber($i);
+            $driver->setMobile('09' . substr($nationalCode, 1));
             $driver->setAgency($this->getReference('agency-'. $agencies[rand(0, count($agencies)-1)]));
 
             $address = new Address();

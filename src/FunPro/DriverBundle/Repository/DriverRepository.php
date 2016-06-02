@@ -39,4 +39,10 @@ class DriverRepository extends EntityRepository
         return $qb->getQuery()
             ->getResult();
     }
+
+    public function getAllDriversQueryBuilder()
+    {
+        $qb = $this->createQueryBuilder('d');
+        return $qb;
+    }
 }

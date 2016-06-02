@@ -1,0 +1,26 @@
+fun_pro_admin:
+    path:     /
+    defaults: { _controller: FunProAdminBundle:Dashboard:index }
+
+fun_pro_admin_dashboard:
+    path:     /dashboard
+    defaults: { _controller: FunProAdminBundle:Dashboard:index }
+
+fun_pro_driver_management:
+    resource: "@FunProDriverBundle/Controller/Management/DriverController.php"
+    type: rest
+
+fun_pro_car_management:
+    resource: "@FunProDriverBundle/Controller/Management/CarController.php"
+    type: rest
+    parent: fun_pro_driver_management
+
+fun_pro_admin_login:
+    path: /login
+    defaults: { _controller: FunProAdminBundle:Security:login }
+
+fun_pro_admin_login_check:
+    path: /login_check$
+
+fun_pro_admin_logout:
+    path: /logout

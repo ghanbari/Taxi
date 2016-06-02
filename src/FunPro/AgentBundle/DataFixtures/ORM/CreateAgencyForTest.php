@@ -54,6 +54,7 @@ class CreateAgencyForTest extends AbstractFixture implements OrderedFixtureInter
             $manager->persist($address);
 
             $agency = new Agency();
+            $agency->setName('test');
             $agency->setAdmin($user);
             $agency->setAddress($address);
 

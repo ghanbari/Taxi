@@ -4,7 +4,6 @@ namespace FunPro\UserBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use FunPro\UserBundle\Entity\Token;
 use Symfony\Component\HttpFoundation\File\File;
 use FOS\UserBundle\Model\User as BaseUser;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -66,8 +65,8 @@ use JMS\Serializer\Annotation as JS;
  */
 class User extends BaseUser
 {
-    const SEX_MALE   = 0;
-    const SEX_FEMALE = 1;
+    const SEX_MALE   = 'm';
+    const SEX_FEMALE = 'f';
 
     const TYPE_ADMIN        = 1;
     const TYPE_OPERATOR     = 2;
@@ -90,7 +89,7 @@ class User extends BaseUser
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @JS\Groups({"Public"})
+     * @JS\Groups({"Public", "Admin"})
      * @JS\Since("1.0.0")
      */
     protected $id;
@@ -123,7 +122,7 @@ class User extends BaseUser
     /**
      * @var integer
      *
-     * @ORM\Column(type="smallint", nullable=true)
+     * @ORM\Column(type="string", length=1, nullable=true)
      *
      * @Assert\Regex(pattern="/m|f/", groups={"Register", "Profile"})
      *
@@ -142,14 +141,14 @@ class User extends BaseUser
      * @JS\Groups({"Public", "Profile", "Admin"})
      * @JS\Since("1.0.0")
      */
-    protected $describtion;
+    protected $description;
 
     /**
      * @var string
      *
      * @ORM\Column(nullable=true)
      *
-     * @JS\Groups({"Public", "Profile"})
+     * @JS\Groups({"Public", "Profile", "Admin"})
      * @JS\Since("1.0.0")
      */
     protected $avatar;
@@ -181,8 +180,7 @@ class User extends BaseUser
      * @ORM\Column(name="created_at", type="datetime")
      * @Gedmo\Timestampable(on="create")
      *
-     * @JS\Groups({"Public"})
-     * @JS\SerializedName("createdAt")
+     * @JS\Groups({"Public", "Admin"})
      * @JS\Since("1.0.0")
      */
     protected $createdAt;
@@ -193,8 +191,7 @@ class User extends BaseUser
      * @ORM\Column(name="updated_at", type="datetime", nullable=true)
      * @Gedmo\Timestampable(on="update")
      *
-     * @JS\Groups({"Public"})
-     * @JS\SerializedName("createdAt")
+     * @JS\Groups({"Public", "Admin"})
      * @JS\Since("1.0.0")
      */
     protected $updatedAt;
@@ -204,7 +201,7 @@ class User extends BaseUser
      *
      * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
      *
-     * @JS\Groups({"Private"})
+     * @JS\Groups({"Private", "Admin"})
      * @JS\Since("1.0.0")
      */
     protected $deletedAt;
@@ -226,6 +223,8 @@ class User extends BaseUser
      * @var integer
      *
      * @ORM\Column(name="wrong_password_count", type="smallint", options={"default"=0})
+     *
+     * @JS\Groups({"Admin"})
      */
     private $wrongPasswordCount;
 
@@ -233,6 +232,8 @@ class User extends BaseUser
      * @var boolean
      *
      * @ORM\Column(name="is_multi_device_allowed", type="boolean", options={"default"=true})
+     *
+     * @JS\Groups({"Admin"})
      */
     private $multiDeviceAllowed;
 
@@ -317,11 +318,7 @@ class User extends BaseUser
      */
     public function setSex($sex)
     {
-        if (strtolower($sex) == 'm' or (is_int($sex) and $sex == self::SEX_MALE)) {
-            $this->sex = self::SEX_MALE;
-        } elseif (strtolower($sex) == 'f' or (is_int($sex) and $sex == self::SEX_FEMALE)) {
-            $this->sex = self::SEX_FEMALE;
-        }
+        $this->sex = $sex;
 
         return $this;
     }
@@ -337,26 +334,26 @@ class User extends BaseUser
     }
 
     /**
-     * Set describtion
+     * Set description
      *
-     * @param string $describtion
+     * @param string $description
      * @return User
      */
-    public function setDescribtion($describtion)
+    public function setDescription($description)
     {
-        $this->describtion = $describtion;
+        $this->description = $description;
 
         return $this;
     }
 
     /**
-     * Get describtion
+     * Get description
      *
      * @return string 
      */
-    public function getDescribtion()
+    public function getDescription()
     {
-        return $this->describtion;
+        return $this->description;
     }
 
     /**

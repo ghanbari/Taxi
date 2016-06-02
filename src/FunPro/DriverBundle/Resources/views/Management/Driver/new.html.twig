@@ -1,0 +1,243 @@
+{% extends '::base_admin.html.twig' %}
+
+{% block form_errors -%}
+    {% if errors|length > 0 -%}
+        {%- for error in errors -%}
+            {{ error.message }} <br />
+        {%- endfor -%}
+    {%- endif %}
+{%- endblock form_errors %}
+
+{% form_theme form _self %}
+
+{% use 'bootstrap_3_layout.html.twig' %}
+
+{% block content %}
+    <div class="page-content">
+    <div class="container">
+    <!-- BEGIN PAGE BREADCRUMBS -->
+    {% block breadcrumb %}
+        <ul class="page-breadcrumb breadcrumb">
+            <li>
+                <a href="/">خانه</a>
+                <i class="fa fa-circle"></i>
+            </li>
+            <li>
+                <a href="{{ path('fun_pro_admin_dashboard') }}">داشبورد</a>
+                <i class="fa fa-circle"></i>
+            </li>
+            <li>
+                <a href="{{ url('fun_pro_admin_cget_driver') }}">رانندگان</a>
+                <i class="fa fa-circle"></i>
+            </li>
+            <li>
+                <span>افزودن راننده</span>
+            </li>
+        </ul>
+    {% endblock breadcrumb %}
+    <!-- END PAGE BREADCRUMBS -->
+    <!-- BEGIN PAGE CONTENT INNER -->
+    <div class="page-content-inner">
+        <div class="row">
+            {{ form_start(form) }}
+                <div class="col-md-6 ">
+                    <!-- BEGIN SAMPLE FORM PORTLET-->
+                    <div class="portlet light ">
+                        <div class="portlet-title">
+                            <div class="caption font-red-sunglo">
+                                <i class="icon-settings font-red-sunglo"></i>
+                                <span class="caption-subject bold uppercase">اطلاعات شخصی</span>
+                            </div>
+                        </div>
+                        <div class="portlet-body form">
+                            <div class="form-body">
+                                <div class="form-group form-md-line-input {% if form.name.vars.errors|length %}has-error{% elseif (form.name.vars.submitted) %}has-success{% endif %}">
+                                    {{ form_widget(form.name, {'attr': {'placeholder':'نام راننده را وارد نمایید'}}) }}
+                                    <label for="form_control_1">نام راننده</label>
+                                    <span class="help-block">شامل فقط حروف، حداکثر ۵۰ حرف <br />
+                                        {% if form.name.vars.errors|length %}{{ form_errors(form.name) }}{% endif %}
+                                    </span>
+                                </div>
+
+                                <div class="form-group form-md-line-input {% if form.email.vars.errors|length %}has-error{% elseif (form.email.vars.submitted) %}has-success{% endif %}">
+                                    {{ form_widget(form.email, {'attr': {'placeholder':'ایمیل راننده را وارد نمایید'}}) }}
+                                    <label for="form_control_1">ایمیل راننده</label>
+                                    <span class="help-block">
+                                        {% if form.email.vars.errors|length %}{{ form_errors(form.email) }}{% endif %}
+                                    </span>
+                                </div>
+
+                                {% if form.vars.method == 'POST' %}
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group form-md-line-input {% if form.plainPassword.first.vars.errors|length %}has-error{% elseif (form.plainPassword.first.vars.submitted) %}has-success{% endif %}">
+                                                {{ form_widget(form.plainPassword.first) }}
+                                                <label for="form_control_1">رمز عبور</label>
+                                                <span class="help-block">
+                                                    {% if form.plainPassword.first.vars.errors|length %}{{ form_errors(form.plainPassword.first) }}{% endif %}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group form-md-line-input {% if form.plainPassword.second.vars.errors|length %}has-error{% elseif (form.plainPassword.second.vars.submitted) %}has-success{% endif %}">
+                                                {{ form_widget(form.plainPassword.second) }}
+                                                <label for="form_control_1">تکرار رمزعبور</label>
+                                                <span class="help-block">
+                                                    {% if form.plainPassword.second.vars.errors|length %}{{ form_errors(form.plainPassword.second) }}{% endif %}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div><br>
+                                {% endif %}
+
+                                <div class="form-group form-md-line-input {% if form.age.vars.errors|length %}has-error{% elseif (form.age.vars.submitted) %}has-success{% endif %}">
+                                    {{ form_widget(form.age, {'attr': {'placeholder':'سن راننده را وارد نمایید'}}) }}
+                                    <label for="form_control_1">سن راننده</label>
+                                    <span class="help-block">سن به عدد <br />
+                                        {% if form.age.vars.errors|length %}{{ form_errors(form.age) }}{% endif %}
+                                    </span>
+                                </div>
+                                <div class="form-group form-md-line-input {% if form.description.vars.errors|length %}has-error{% elseif (form.description.vars.submitted) %}has-success{% endif %}">
+                                    {{ form_widget(form.description, {'attr': {'placeholder':'توضیحات', 'rows': 3}}) }}
+                                    <label for="form_control_1">توضیحات</label>
+                                    <span class="help-block">{% if form.description.vars.errors|length %}{{ form_errors(form.description) }}{% endif %}</span>
+                                </div>
+                                <div class="form-group form-md-line-input {% if form.mobile.vars.errors|length %}has-error{% elseif (form.mobile.vars.submitted) %}has-success{% endif %}">
+                                    <div class="input-group">
+                                        {{ form_widget(form.mobile, {'attr': {'placeholder':'موبایل راننده را وارد نمایید'}}) }}
+                                        <label for="form_control_1">همراه</label>
+                                        <span class="help-block">09XXXXXXXXX <br />{% if form.mobile.vars.errors|length %}{{ form_errors(form.mobile) }}{% endif %}</span>
+                                        <div class="form-control-focus"> </div>
+                                        <span class="input-group-addon">98+</span>
+                                    </div>
+                                </div>
+                                <div class="form-group form-md-line-input {% if form.contractNumber.vars.errors|length %}has-error{% elseif (form.contractNumber.vars.submitted) %}has-success{% endif %}">
+                                    {{ form_widget(form.contractNumber, {'attr': {'placeholder':'شماره قرارداد را وارد نمایید'}}) }}
+                                    <label for="form_control_1">شماره قرارداد راننده</label>
+                                    <span class="help-block">حداکثر ۲۰ حرف <br />
+                                        {% if form.contractNumber.vars.errors|length %}{{ form_errors(form.contractNumber) }}{% endif %}
+                                    </span>
+                                </div>
+                                <div class="form-group form-md-line-input {% if form.nationalCode.vars.errors|length %}has-error{% elseif (form.nationalCode.vars.submitted) %}has-success{% endif %}">
+                                    {{ form_widget(form.nationalCode, {'attr': {'placeholder':'کد ملی راننده را وارد نمایید'}}) }}
+                                    <label for="form_control_1">کدملی راننده</label>
+                                    <span class="help-block">کد ملی بدون خط تیره و فاصله <br />
+                                        {% if form.nationalCode.vars.errors|length %}{{ form_errors(form.nationalCode) }}{% endif %}
+                                    </span>
+                                </div>
+                                <div class="form-group form-md-line-input {% if form.contact.vars.errors|length %}has-error{% elseif (form.contact.vars.submitted) %}has-success{% endif %}">
+                                    <input type="text" id="driver_contact_1" name="driver[contact][1]" required="required" class="form-control" />
+                                    <label for="form_control_1">اطلاعات تماس راننده</label>
+                                    <span class="help-block">شماره تماس های راننده <br />
+                                        {% if form.contact.vars.errors|length %}{{ form_errors(form.contact) }}{% endif %}
+                                    </span>
+                                </div>
+                                <div class="form-group form-md-line-input has-info">
+                                    {{ form_widget(form.agency, {'attr': {'placeholder':'اژانس مورد نظر را انتخاب کنید'}}) }}
+                                    <label for="form_control_1">آزانس مورد نظر را انتخاب نمایید</label>
+                                    <span class="help-block">
+                                        {% if form.agency.vars.errors|length %}{{ form_errors(form.agency) }}{% endif %}
+                                    </span>
+                                </div>
+                                <div class="form-group form-md-radios">
+                                    <label>جنسیت</label>
+                                    <div class="md-radio-list">
+                                        <div class="md-radio">
+                                            <input type="radio" id="radio1" name="driver[sex]" class="md-radiobtn" value="m" checked>
+                                            <label for="radio1">
+                                                <span></span>
+                                                <span class="check"></span>
+                                                <span class="box"></span>مرد</label>
+                                        </div>
+                                        <div class="md-radio">
+                                            <input type="radio" id="radio2" value="f" name="driver[sex]" class="md-radiobtn">
+                                            <label for="radio2">
+                                                <span></span>
+                                                <span class="check"></span>
+                                                <span class="box"></span>زن</label>
+                                        </div>
+                                    </div>
+                                    <span class="help-block">
+                                        {% if form.sex.vars.errors|length %}{{ form_errors(form.sex) }}{% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END SAMPLE FORM PORTLET-->
+                </div>
+                <div class="col-md-6 ">
+                    <!-- BEGIN SAMPLE FORM PORTLET-->
+                    <div class="portlet light ">
+                        <div class="portlet-title">
+                            <div class="caption font-red-sunglo">
+                                <i class="icon-settings font-red-sunglo"></i>
+                                <span class="caption-subject bold uppercase">اطلاعات مربوط به آدرس راننده</span>
+                            </div>
+                        </div>
+                        <div class="portlet-body form">
+                            <div class="form-body">
+                                <div class="form-group form-md-line-input {% if form.address.title.vars.errors|length %}has-error{% elseif (form.address.title.vars.submitted) %}has-success{% endif %}">
+                                    {{ form_widget(form.address.title, {'attr': {'placeholder':'عنوان آدرس را وارد نمایید'}}) }}
+                                    <label for="form_control_1">عنوان آدرس</label>
+                                    <span class="help-block">حداکثر ۲۵۵ حرف <br />
+                                        {% if form.address.title.vars.errors|length %}{{ form_errors(form.address.title) }}{% endif %}
+                                    </span>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group form-md-line-input {% if form.address.point.longitude.vars.errors|length %}has-error{% elseif (form.address.point.longitude.vars.submitted) %}has-success{% endif %}">
+                                            {{ form_widget(form.address.point.longitude) }}
+                                            <label for="form_control_1">طول جغرافیایی</label>
+                                            <span class="help-block">
+                                                {% if form.address.point.longitude.vars.errors|length %}{{ form_errors(form.address.point.longitude) }}{% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group form-md-line-input {% if form.address.point.latitude.vars.errors|length %}has-error{% elseif (form.address.point.latitude.vars.submitted) %}has-success{% endif %}">
+                                            {{ form_widget(form.address.point.latitude) }}
+                                            <label for="form_control_1">عرض جغرافیایی</label>
+                                            <span class="help-block">
+                                                {% if form.address.point.latitude.vars.errors|length %}{{ form_errors(form.address.point.latitude) }}{% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group form-md-line-input {% if form.address.postalCode.vars.errors|length %}has-error{% elseif (form.address.postalCode.vars.submitted) %}has-success{% endif %}">
+                                    {{ form_widget(form.address.postalCode, {'attr': {'placeholder':'کدپستی را وارد نمایید'}}) }}
+                                    <label for="form_control_1">کد پستی</label>
+                                    <span class="help-block">کدپستی ده رقمی <br />
+                                        {% if form.address.postalCode.vars.errors|length %}{{ form_errors(form.address.postalCode) }}{% endif %}
+                                    </span>
+                                </div>
+                                <div class="form-group form-md-line-input {% if form.address.address.vars.errors|length %}has-error{% elseif (form.address.address.vars.submitted) %}has-success{% endif %}">
+                                    {{ form_widget(form.address.address, {'attr': {'placeholder':'ادرس را وارد نمایید', 'rows': 3}}) }}
+                                    <label for="form_control_1">آدرس راننده</label>
+                                    <span class="help-block">
+                                        {% if form.address.address.vars.errors|length %}{{ form_errors(form.address.address) }}{% endif %}
+                                    </span>
+                                </div>
+                                <div class="form-group form-md-line-input has-info">
+                                    {{ form_widget(form.address.city, {'attr': {'placeholder':'شهر را انتخاب نمایید'}}) }}
+                                    <label for="form_control_1">شهر مورد نظر را انتخاب نمایید</label>
+                                    <span class="help-block">
+                                        {% if form.address.city.vars.errors|length %}{{ form_errors(form.address.city) }}{% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-actions noborder">
+                                <input type="submit" {% if form.vars.method == 'POST' %}value="ثبت نام"{% else %}value="ویرایش"{% endif %} class="btn blue" />
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END SAMPLE FORM PORTLET-->
+                </div>
+            {{ form_widget(form._token) }}
+            </form>
+        </div>
+    </div>
+    <!-- END PAGE CONTENT INNER -->
+    </div>
+    </div>
+{% endblock content %}

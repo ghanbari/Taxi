@@ -1,3 +1,8 @@
+fun_pro_admin_res:
+    resource: "@FunProAdminBundle/Resources/config/routing.yml"
+    prefix:   /admin
+    type:     rest
+
 fun_pro_service:
     resource: "@FunProServiceBundle/Resources/config/routing.yml"
     type:     rest

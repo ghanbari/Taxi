@@ -1,0 +1,90 @@
+{% extends "FOSUserBundle::layout.html.twig" %}
+
+{% trans_default_domain 'FOSUserBundle' %}
+
+{% block fos_user_content %}
+    <div class="content">
+        <!-- BEGIN LOGIN FORM -->
+        <form class="login-form" action="{{ path("fos_user_security_check") }}" method="post">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+            <div class="form-title">
+                <span class="form-title">خوش آمدید.</span>
+                <span class="form-subtitle">لطفا اطلاعات خود را وارد نمایید.</span>
+            </div>
+
+            <div class="alert alert-danger display-hide">
+                <button class="close" data-close="alert"></button>
+                <span> نام کاربری و رمزعبور را وارد نمایید </span>
+            </div>
+
+            {% if app.request.hasPreviousSession %}
+                {% for type, messages in app.session.flashbag.all() %}
+                    {% for message in messages %}
+                        <div class="alert alert-danger">
+                            <button class="close" data-close="alert"></button>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            {% endif %}
+
+            {% if error %}
+                <div class="alert alert-danger">
+                    <button class="close" data-close="alert"></button>
+                    <span>{{ error.messageKey|trans(error.messageData, 'security') }}</span>
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
+                <label class="control-label visible-ie8 visible-ie9">نام کاربری</label>
+                <input class="form-control form-control-solid placeholder-no-fix" type="text" autocomplete="off" placeholder="نام کاربری" name="_username" value="{{ last_username }}" /> </div>
+            <div class="form-group">
+                <label class="control-label visible-ie8 visible-ie9">رمزعبور</label>
+                <input class="form-control form-control-solid placeholder-no-fix" type="password" autocomplete="off" placeholder="رمزعبور" name="_password" /> </div>
+            <div class="form-actions">
+                <button type="submit" class="btn red btn-block uppercase">ورود</button>
+            </div>
+            <div class="form-actions">
+                <div class="pull-left">
+                    <label class="rememberme check">
+                        <input type="checkbox" name="_remember_me" value="on" />مرا به خاطر بسپار</label>
+                </div>
+                <div class="pull-right forget-password-block">
+                    <a href="javascript:;" id="forget-password" class="forget-password">آیا رمز عبور خود را فراموش کرده اید؟</a>
+                </div>
+            </div>
+            <div class="login-options">
+                <h4 class="pull-left">لاگین با:</h4>
+                <ul class="social-icons pull-right">
+                    <li>
+                        <a class="social-icon-color facebook" data-original-title="facebook" href="javascript:;"></a>
+                    </li>
+                    <li>
+                        <a class="social-icon-color twitter" data-original-title="Twitter" href="javascript:;"></a>
+                    </li>
+                    <li>
+                        <a class="social-icon-color googleplus" data-original-title="Goole Plus" href="javascript:;"></a>
+                    </li>
+                    <li>
+                        <a class="social-icon-color linkedin" data-original-title="Linkedin" href="javascript:;"></a>
+                    </li>
+                </ul>
+            </div>
+        </form>
+        <!-- END LOGIN FORM -->
+        <!-- BEGIN FORGOT PASSWORD FORM -->
+        <form class="forget-form" action="index.html" method="post">
+            <div class="form-title">
+                <span class="form-title">آیا رمز عبور خود را فراموش کرده اید؟</span>
+            </div>
+            <div class="form-group">
+                <input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="لطفا ایمیل خود را وارد نمایید" name="email" /> </div>
+            <div class="form-actions">
+                <button type="button" id="back-btn" class="btn btn-default">بازگشت</button>
+                <button type="submit" class="btn btn-primary uppercase pull-right">بازیابی</button>
+            </div>
+        </form>
+        <!-- END FORGOT PASSWORD FORM -->
+    </div>
+{% endblock fos_user_content %}

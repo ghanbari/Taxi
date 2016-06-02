@@ -26,7 +26,9 @@ class AppKernel extends Kernel
             new FunPro\EngineBundle\FunProEngineBundle(),
             new FunPro\GeoBundle\FunProGeoBundle(),
             new FunPro\ServiceBundle\FunProServiceBundle(),
+            new FunPro\AdminBundle\FunProAdminBundle(),
             new KPhoen\SmsSenderBundle\KPhoenSmsSenderBundle(),
+            new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'), true)) {

@@ -42,3 +42,6 @@ parameters:
     register.reset_token_request_after_second: 86400
 
     service.visible_radius: 7000 #meter
+
+    ui.data_table.per_page: 10
+    ui.data_table.max_per_page: 100
