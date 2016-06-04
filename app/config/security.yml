@@ -31,7 +31,6 @@ security:
                 authenticators:
                     - fun_pro_engine.token_authenticator
             stateless: true
-            anonymous: true
         api:
             pattern: ^/
             host: api.%router.request_context.host%
