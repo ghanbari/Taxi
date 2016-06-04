@@ -91,7 +91,7 @@ class Car
      * @Assert\NotNull(groups={"Create", "Update"})
      * @Assert\Valid()
      *
-     * @JS\Groups({"Public", "Driver", "Admin"})
+     * @JS\Groups({"Plaque"})
      * @JS\Since("1.0.0")
      */
     private $plaque;
