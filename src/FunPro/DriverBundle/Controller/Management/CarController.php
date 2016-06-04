@@ -151,7 +151,8 @@ class CarController extends FOSRestController
 
         $context = (new Context())
             ->addGroup('Public')
-            ->addGroup('Admin');
+            ->addGroup('Admin')
+            ->addGroup('Plaque');
         return $this->view(
             array(
                 "recordsTotal" => $pagination->getTotalItemCount(),
