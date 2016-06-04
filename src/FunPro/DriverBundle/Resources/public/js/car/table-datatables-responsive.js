@@ -1,3 +1,10 @@
+var addPlaque = function (td, cellData, rowData, row, col) {
+    var html = '<span class="label label-info">ایران'
+        + '<span style="vertical-align: bottom">'+cellData.cityNumber+'</span></span>&nbsp;<span style="font-size: medium" class="label label-info">' +
+        cellData.firstNumber + cellData.areaCode + cellData.secondNumber + '</span>';
+    $(td).html(html);
+};
+
 var TableDatatablesResponsive = function () {
 
     var initTable = function () {
@@ -44,17 +51,17 @@ var TableDatatablesResponsive = function () {
             },
             columns: [
                 {"defaultContent": ""},
-                {name: "d.contractNumber", data: "contractNumber", orderable: true, searchable: true},
-                {name: "d.name", data: "name", orderable: true, searchable: true},
-                {name: "d.nationalCode", data: "nationalCode", orderable: true, searchable: true},
-                {name: "d.mobile", data: "mobile", "defaultContent": "", orderable: true, searchable: true},
-                {name: "d.age", data: "age", "defaultContent": "", orderable: true, searchable: false},
-                {name: "d.sex", data: "sex", "defaultContent": "", orderable: true, searchable: false},
-                {name: "d.rate", data: "rate", "defaultContent": 0, orderable: true, searchable: false},
-                {name: "d.description", data: "description", "defaultContent": "", orderable: false, searchable: false},
-                {name: "d.avatar", data: "avatar", "defaultContent": "", orderable: false, searchable: false},
-                {name: "edit", "defaultContent": "<i class='btn btn-warning'>ویرایش</i>", orderable: false, searchable: false, className: "edit"},
-                {name: "delete", "defaultContent": "<i class='btn btn-danger'>حذف</i>", orderable: false, searchable: false, className: "delete"},
+                {name: "c.plaque", data: "plaque", orderable: false, searchable: false, className: "plaque", "createdCell": addPlaque},
+                {name: "c.brand", data: "brand", orderable: true, searchable: true},
+                {name: "c.type", data: "type", orderable: true, searchable: true},
+                {name: "c.color", data: "color", orderable: false, searchable: false},
+                {name: "c.born", data: "born", orderable: true, searchable: false},
+                {name: "c.rate", data: "rate", orderable: true, searchable: false},
+                {name: "c.description", data: "description", "defaultContent": "", orderable: false, searchable: false},
+                {name: "c.current", data: "current", orderable: true, searchable: false, className: "isCurrent"},
+                {name: "c.status", data: "status", orderable: false, searchable: false},
+                {name: "edit", "defaultContent": "<i class='btn btn-warning'>ویرایش</i>", orderable: false, searchable: false, className: "edit text-center"},
+                {name: "delete", "defaultContent": "<i class='btn btn-danger'>حذف</i>", orderable: false, searchable: false, className: "delete text-center"},
             ],
 
             order: [ 1, 'asc' ],
@@ -95,4 +102,14 @@ var TableDatatablesResponsive = function () {
 
 jQuery(document).ready(function() {
     TableDatatablesResponsive.init();
+
+    $('#sample_2').on( 'draw.dt', function () {
+        $('.isCurrent').each(function(index, item) {
+            if ($(item).text() == 'true') {
+                $(item).html('<span class="glyphicon glyphicon-ok"></span>')
+            } else if ($(item).text() == 'false') {
+                $(item).html('<span class="glyphicon glyphicon-remove"></span>')
+            }
+        });
+    } );
 });

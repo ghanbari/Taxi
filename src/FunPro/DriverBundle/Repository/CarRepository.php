@@ -3,6 +3,7 @@
 namespace FunPro\DriverBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use FunPro\DriverBundle\Entity\Driver;
 
 /**
  * CarRepository
@@ -12,4 +13,13 @@ use Doctrine\ORM\EntityRepository;
  */
 class CarRepository extends EntityRepository
 {
+    public function getAllFilterByDriverQueryBuilder(Driver $driver)
+    {
+        $qb = $this->createQueryBuilder('c');
+        return $qb
+            ->select(array('c', 'p'))
+            ->innerJoin('c.plaque', 'p')
+            ->where($qb->expr()->eq('c.driver', ':driver'))
+            ->setParameter('driver', $driver);
+    }
 }

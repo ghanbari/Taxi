@@ -1,0 +1,172 @@
+{% extends '::base_admin.html.twig' %}
+
+{% block form_errors -%}
+    {% if errors|length > 0 -%}
+        {%- for error in errors -%}
+            {{ error.message }} <br />
+        {%- endfor -%}
+    {%- endif %}
+{%- endblock form_errors %}
+
+{% form_theme form _self %}
+
+{% use 'bootstrap_3_layout.html.twig' %}
+
+{% block content %}
+    <div class="page-content">
+        <div class="container">
+            <!-- BEGIN PAGE BREADCRUMBS -->
+            {% block breadcrumb %}
+                <ul class="page-breadcrumb breadcrumb">
+                    <li>
+                        <a href="/">خانه</a>
+                        <i class="fa fa-circle"></i>
+                    </li>
+                    <li>
+                        <a href="{{ path('fun_pro_admin_dashboard') }}">داشبورد</a>
+                        <i class="fa fa-circle"></i>
+                    </li>
+                    <li>
+                        <a href="{{ url('fun_pro_admin_cget_driver') }}">رانندگان</a>
+                        <i class="fa fa-circle"></i>
+                    </li>
+                    <li>
+                        <a href="{{ url('fun_pro_admin_get_driver', {'id': form.vars.data.driver.id}) }}">{{ form.vars.data.driver.name }}</a>
+                        <i class="fa fa-circle"></i>
+                    </li>
+                    <li>
+                        <span>افزودن ماشین</span>
+                    </li>
+                </ul>
+            {% endblock breadcrumb %}
+            <!-- END PAGE BREADCRUMBS -->
+            <!-- BEGIN PAGE CONTENT INNER -->
+            <div class="page-content-inner">
+                <div class="row">
+                    {{ form_start(form) }}
+
+                    <div class="col-md-12">
+                        <!-- BEGIN SAMPLE FORM PORTLET-->
+                        <div class="portlet light ">
+                            <div class="portlet-title">
+                                <div class="caption font-green-haze">
+                                    <i class="icon-settings font-green-haze"></i>
+                                    <span class="caption-subject bold uppercase">افزودن ماشین</span>
+                                </div>
+                            </div>
+                            <div class="portlet-body form">
+                                <div class="form-body">
+                                    <div class="form-group form-md-line-input" {% if form.brand.vars.errors|length %}has-error{% elseif (form.brand.vars.submitted) %}has-success{% endif %}">
+                                        <label class="col-md-2 control-label" for="form_control_1">سازنده ماشین</label>
+                                        <div class="col-md-10">
+                                            {{ form_widget(form.brand, {'attr':{'placeholder':'سازنده ماشین را وارد نمایید'}}) }}
+                                            <div class="form-control-focus"></div>
+                                            <span class="help-block">مثلا: پژو <br />
+                                                {% if form.brand.vars.errors|length %}{{ form_errors(form.brand) }}{% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-md-line-input" {% if form.type.vars.errors|length %}has-error{% elseif (form.type.vars.submitted) %}has-success{% endif %}">
+                                        <label class="col-md-2 control-label" for="form_control_1">نوع ماشین</label>
+                                        <div class="col-md-10">
+                                            {{ form_widget(form.type, {'attr':{'placeholder':'نوع ماشین را وارد نمایید'}}) }}
+                                            <div class="form-control-focus"></div>
+                                            <span class="help-block">مثلا: ۴۰۵ <br />
+                                                {% if form.type.vars.errors|length %}{{ form_errors(form.type) }}{% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-md-line-input" {% if form.plaque.vars.errors|length %}has-error{% elseif (form.plaque.vars.submitted) %}has-success{% endif %}">
+                                        <label class="col-md-2 control-label" for="form_control_1">شماره پلاک</label>
+                                        <div class="col-md-2">
+                                            {{ form_widget(form.plaque.cityNumber, {'attr': {'placeholder': 'کد شهر'}}) }}
+                                            <div class="form-control-focus" style="text-align: left">11</div>
+                                            <span class="help-block">کد شهری، مثلا کد مشهد: ۱۱ <br />
+                                                {% if form.plaque.cityNumber.vars.errors|length %}{{ form_errors(form.plaque.cityNumber) }}{% endif %}
+                                            </span>
+                                        </div>
+                                        <div class="col-md-3">
+                                            {{ form_widget(form.plaque.secondNumber, {'attr': {'placeholder': 'سه رقم'}}) }}
+                                            <div class="form-control-focus" style="text-align: left">253</div>
+                                            <span class="help-block">سه رقم دوم شماره پلاک <br />
+                                                {% if form.plaque.secondNumber.vars.errors|length %}{{ form_errors(form.plaque.secondNumber) }}{% endif %}
+                                            </span>
+                                        </div>
+                                        <div class="col-md-1">
+                                            {{ form_widget(form.plaque.areaCode, {'attr': {'placeholder':'حرف الفبا'}}) }}
+                                            <div class="form-control-focus" style="text-align: left">ج</div>
+                                            <span class="help-block">کد نشانگر منطقه <br />
+                                                {% if form.plaque.areaCode.vars.errors|length %}{{ form_errors(form.plaque.areaCode) }}{% endif %}
+                                            </span>
+                                        </div>
+                                        <div class="col-md-2">
+                                            {{ form_widget(form.plaque.firstNumber, {'attr':{'placeholder':'دو رقم'}}) }}
+                                            <div class="form-control-focus" style="text-align: left">45</div>
+                                            <span class="help-block">دو رقم اول شماره پلاک
+                                                {% if form.plaque.firstNumber.vars.errors|length %}{{ form_errors(form.plaque.firstNumber) }}{% endif %}
+                                            </span>
+                                        </div>
+                                        <div class="col-md-2" style="direction: ltr">
+                                            <span class="label label-info">ایران
+                                                <span style="vertical-align: bottom">11</span>
+                                            </span>
+                                            &nbsp;
+                                            <span style="font-size: medium" class="label label-info">۲۵۳ج۴۵</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-md-line-input {% if form.color.vars.errors|length %}has-error{% elseif (form.color.vars.submitted) %}has-success{% endif %}">
+                                        <label class="col-md-2 control-label" for="form_control_1">رنگ</label>
+                                        <div class="col-md-10">
+                                            {{ form_widget(form.color, {'attr':{'placeholder':'رنگ ماشین را انتخاب نمایید'}}) }}
+                                            <div class="form-control-focus"> </div>
+                                            <span class="help-block">رنگ ماشین به فارسی <br />
+                                                {% if form.color.vars.errors|length %}{{ form_errors(form.color) }}{% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-md-line-input {% if form.born.vars.errors|length %}has-error{% elseif (form.born.vars.submitted) %}has-success{% endif %}">
+                                        <label class="col-md-2 control-label" for="form_control_1">تاریخ ساخت</label>
+                                        <div class="col-md-10">
+                                            {{ form_widget(form.born, {'attr':{'placeholder':'2007-02-25'}}) }}
+                                            <div class="form-control-focus"> </div>
+                                            <span class="help-block">{% if form.born.vars.errors|length %}{{ form_errors(form.born) }}{% endif %}</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-md-line-input {% if form.rate.vars.errors|length %}has-error{% elseif (form.rate.vars.submitted) %}has-success{% endif %}">
+                                        <label class="col-md-2 control-label" for="form_control_1">امتیاز</label>
+                                        <div class="col-md-10">
+                                            {{ form_widget(form.rate, {'attr': {'placeholder':'امتیاز گرفته شده ماشین توسط کارشناس'}}) }}
+                                            <div class="form-control-focus"> </div>
+                                            <span class="help-block">{% if form.rate.vars.errors|length %}{{ form_errors(form.rate) }}{% endif %}</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-md-line-input {% if form.description.vars.errors|length %}has-error{% elseif (form.description.vars.submitted) %}has-success{% endif %}">
+                                        <label class="col-md-2 control-label" for="form_control_1">توضیحات</label>
+                                        <div class="col-md-10">
+                                            {{ form_widget(form.description, {'attr': {'placeholder':'نظر کارشناس در مورد ماشین'}}) }}
+                                            <div class="form-control-focus"> </div>
+                                            <span class="help-block">{% if form.description.vars.errors|length %}{{ form_errors(form.description) }}{% endif %}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <div class="row">
+                                        <div class="col-md-offset-2 col-md-10">
+                                            <br />
+                                            <input type="submit" class="btn blue" value="ثبت ماشین">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- END SAMPLE FORM PORTLET-->
+                    </div>
+
+                    {{ form_widget(form._token) }}
+                    </form>
+                </div>
+            </div>
+            <!-- END PAGE CONTENT INNER -->
+        </div>
+    </div>
+{% endblock content %}

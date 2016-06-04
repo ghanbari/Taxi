@@ -167,13 +167,15 @@ class DriverController extends FOSRestController
      *
      * @Security("has_role('ROLE_OPERATOR')")
      *
+     * @Rest\QueryParam(name="start", requirements="\d+", default="0", nullable=true)
+     * @Rest\QueryParam(name="length", requirements="\d+", default="10", nullable=true)
      * @Rest\View("FunProDriverBundle:Management/Driver:cget.html.twig")
      */
     public function cgetAction(Request $request)
     {
         $max = $this->getParameter('ui.data_table.max_per_page');
-        $offset = $request->query->get('start', 0);
-        $length = $request->get('length', 10);
+        $offset = $this->get('fos_rest.request.param_fetcher')->get('start', 0);
+        $length = $this->get('fos_rest.request.param_fetcher')->get('length', 10);
 
         $offset = max($offset, 0);
         $length = min($length, $max);

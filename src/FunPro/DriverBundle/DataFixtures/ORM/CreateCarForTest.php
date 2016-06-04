@@ -7,6 +7,7 @@ use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use FunPro\DriverBundle\Entity\Car;
 use FunPro\DriverBundle\Entity\Driver;
+use FunPro\DriverBundle\Entity\Plaque;
 use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\GeoBundle\Entity\Address;
 use Symfony\Component\DependencyInjection\Container;
@@ -49,10 +50,18 @@ class CreateCarForTest extends AbstractFixture implements OrderedFixtureInterfac
             $car->setBorn(new \DateTime());
             $car->setColor('red');
             $car->setType('405');
-            $car->setPlaque(rand(8888, 999999));
+            $car->setBrand('Iran Khodro');
+            $car->setDriver($this->getReference('driver-' . $i));
+            $car->setCurrent(true);
+
+            $plaque = (new Plaque())
+                ->setFirstNumber(22)
+                ->setAreaCode("‌ب")
+                ->setSecondNumber(rand(1, 999))
+                ->setCityNumber(rand(10, 99));
+            $car->setPlaque($plaque);
 
             $manager->persist($car);
-            $car->setDriver($this->getReference('driver-' . $i));
             $this->setReference('car-' . $i, $car);
             $i++;
         }

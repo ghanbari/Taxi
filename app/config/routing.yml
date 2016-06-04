@@ -1,6 +1,8 @@
 fun_pro_admin_res:
     resource: "@FunProAdminBundle/Resources/config/routing.yml"
     prefix:   /admin
+    options:
+        expose: true
     type:     rest
 
 fun_pro_service:
@@ -33,3 +35,6 @@ fun_pro_user:
 
 fos_user:
     resource: "@FOSUserBundle/Resources/config/routing/all.xml"
+
+fos_js_routing:
+    resource: "@FOSJsRoutingBundle/Resources/config/routing/routing.xml"

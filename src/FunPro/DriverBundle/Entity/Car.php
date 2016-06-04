@@ -13,18 +13,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Car
  *
- * @ORM\Table(
- *      name="car",
- *      uniqueConstraints={
- *          @ORM\UniqueConstraint(name="car_driver_UNIQUE", columns={"driver_id", "deleted_at"}),
- *          @ORM\UniqueConstraint(name="car_driver_UNIQUE", columns={"driver_id", "is_current"})
- *      },
- * )
+ * @ORM\Table(name="car")
  * @ORM\Entity(repositoryClass="FunPro\DriverBundle\Repository\CarRepository")
  *
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- *
- * @UniqueEntity(fields={"driver", "deletedAt"}, errorPath="driver", ignoreNull=false, groups={"create", "update"})
  */
 class Car
 {
@@ -67,6 +59,19 @@ class Car
     /**
      * @var string
      *
+     * @ORM\Column()
+     *
+     * @Assert\NotBlank(groups={"Create", "Update"})
+     * @Assert\Length(min="2",max="50", groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Public", "Driver", "Admin"})
+     * @JS\Since("1.0.0")
+     */
+    private $brand;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(length=50)
      *
      * @Assert\NotBlank(groups={"Create", "Update"})
@@ -78,12 +83,13 @@ class Car
     private $type;
 
     /**
-     * @var string
+     * @var Plaque
      *
-     * @ORM\Column(length=15)
+     * @ORM\OneToOne(targetEntity="FunPro\DriverBundle\Entity\Plaque", inversedBy="car", cascade={"persist"})
+     * @ORM\JoinColumn(name="plaque_id", referencedColumnName="id", nullable=false)
      *
-     * @Assert\NotBlank(groups={"Create", "Update"})
-     * @Assert\Length(min="5", max="15", groups={"Create", "Update"})
+     * @Assert\NotNull(groups={"Create", "Update"})
+     * @Assert\Valid()
      *
      * @JS\Groups({"Public", "Driver", "Admin"})
      * @JS\Since("1.0.0")
@@ -201,7 +207,7 @@ class Car
      *
      * @ORM\Column(name="status", length=15)
      *
-     * @JS\Groups({"CarStatus"})
+     * @JS\Groups({"CarStatus", "Admin"})
      * @JS\Since("1.0.0")
      */
     private $status;
@@ -215,7 +221,7 @@ class Car
 
     public function __construct()
     {
-        $this->setCurrent(true);
+        $this->setCurrent(false);
         $this->setRate(0);
         $this->setStatus(self::STATUS_SLEEP);
     }
@@ -546,5 +552,28 @@ class Car
     {
         $this->wakeful = $wakeful;
         return $this;
+    }
+
+    /**
+     * Set brand
+     *
+     * @param string $brand
+     * @return Car
+     */
+    public function setBrand($brand)
+    {
+        $this->brand = $brand;
+
+        return $this;
+    }
+
+    /**
+     * Get brand
+     *
+     * @return string 
+     */
+    public function getBrand()
+    {
+        return $this->brand;
     }
 }
