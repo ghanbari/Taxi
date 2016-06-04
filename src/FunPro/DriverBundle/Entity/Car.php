@@ -221,7 +221,8 @@ class Car
 
     public function __construct()
     {
-        $this->setCurrent(false);
+        //TODO: status must be disable by default
+        $this->setCurrent(true);
         $this->setRate(0);
         $this->setStatus(self::STATUS_SLEEP);
     }

@@ -106,9 +106,9 @@ jQuery(document).ready(function() {
     $('#sample_2').on( 'draw.dt', function () {
         $('.isCurrent').each(function(index, item) {
             if ($(item).text() == 'true') {
-                $(item).html('<span class="glyphicon glyphicon-ok"></span>')
+                $(item).html('<button class="btn btn-info glyphicon glyphicon-ok changeStatus"></button>')
             } else if ($(item).text() == 'false') {
-                $(item).html('<span class="glyphicon glyphicon-remove"></span>')
+                $(item).html('<button class="btn btn-info glyphicon glyphicon-remove changeStatus"></button>')
             }
         });
     } );
