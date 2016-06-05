@@ -43,7 +43,7 @@ var TableDatatablesResponsive = function () {
                 }
             },
             columns: [
-                {"defaultContent": ""},
+                {"defaultContent": "", name: "d.id", orderable: true, searchable: false},
                 {name: "d.contractNumber", data: "contractNumber", orderable: true, searchable: true},
                 {name: "d.name", data: "name", orderable: true, searchable: true},
                 {name: "d.nationalCode", data: "nationalCode", orderable: true, searchable: true},

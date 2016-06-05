@@ -50,7 +50,7 @@ var TableDatatablesResponsive = function () {
                 }
             },
             columns: [
-                {"defaultContent": ""},
+                {"defaultContent": "", name: "c.id", orderable: true, searchable: false},
                 {name: "c.plaque", data: "plaque", orderable: false, searchable: false, className: "plaque", "createdCell": addPlaque},
                 {name: "c.brand", data: "brand", orderable: true, searchable: true},
                 {name: "c.type", data: "type", orderable: true, searchable: true},
