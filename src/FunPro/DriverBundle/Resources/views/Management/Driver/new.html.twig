@@ -106,7 +106,9 @@
                                     <div class="input-group">
                                         {{ form_widget(form.mobile, {'attr': {'placeholder':'موبایل راننده را وارد نمایید'}}) }}
                                         <label for="form_control_1">همراه</label>
-                                        <span class="help-block">09XXXXXXXXX <br />{% if form.mobile.vars.errors|length %}{{ form_errors(form.mobile) }}{% endif %}</span>
+                                        <span class="help-block">09XXXXXXXXX <br /> لطفا از صفحه کلید انگلیسی استفاده کنید
+                                            {% if form.mobile.vars.errors|length %}{{ form_errors(form.mobile) }}{% endif %}
+                                        </span>
                                         <div class="form-control-focus"> </div>
                                         <span class="input-group-addon">98+</span>
                                     </div>
@@ -121,12 +123,12 @@
                                 <div class="form-group form-md-line-input {% if form.nationalCode.vars.errors|length %}has-error{% elseif (form.nationalCode.vars.submitted) %}has-success{% endif %}">
                                     {{ form_widget(form.nationalCode, {'attr': {'placeholder':'کد ملی راننده را وارد نمایید'}}) }}
                                     <label for="form_control_1">کدملی راننده</label>
-                                    <span class="help-block">کد ملی بدون خط تیره و فاصله <br />
+                                    <span class="help-block">کد ملی بدون خط تیره و فاصله  و لطفا از صفحه کلید انگلیسی استفاده کنید<br />
                                         {% if form.nationalCode.vars.errors|length %}{{ form_errors(form.nationalCode) }}{% endif %}
                                     </span>
                                 </div>
                                 <div class="form-group form-md-line-input {% if form.contact.vars.errors|length %}has-error{% elseif (form.contact.vars.submitted) %}has-success{% endif %}">
-                                    <input type="text" id="driver_contact_1" name="driver[contact][1]" required="required" class="form-control" />
+                                    <input type="text" id="driver_contact_1" name="driver[contact][1]" class="form-control" />
                                     <label for="form_control_1">اطلاعات تماس راننده</label>
                                     <span class="help-block">شماره تماس های راننده <br />
                                         {% if form.contact.vars.errors|length %}{{ form_errors(form.contact) }}{% endif %}

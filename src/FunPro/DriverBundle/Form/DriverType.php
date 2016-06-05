@@ -21,7 +21,7 @@ class DriverType extends AbstractType
     {
         $builder
             ->add('name', Type\TextType::class)
-            ->add('age', Type\IntegerType::class)
+            ->add('age', Type\NumberType::class)
             ->add('sex', Type\ChoiceType::class, array(
                 'choices' => array(
                     'male' => User::SEX_MALE,
@@ -50,6 +50,7 @@ class DriverType extends AbstractType
                 'choice_label' => 'name'
             ))
             ->add('address', AddressType::class)
+            ->add('email', Type\EmailType::class, array('required'=>false))
         ;
     }
     

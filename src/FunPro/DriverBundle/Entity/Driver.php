@@ -68,7 +68,6 @@ class Driver extends User implements SMSInterface
      * @ORM\Column(name="contract_number", length=20, unique=true)
      *
      * @Assert\NotBlank(groups={"Register", "Profile"})
-     * @Assert\Type(type="numeric", groups={"Register", "Profile"})
      *
      * @JS\Groups({"Owner", "Admin", "Register"})
      * @JS\Since("1.0.0")
@@ -94,12 +93,6 @@ class Driver extends User implements SMSInterface
      * @var array
      *
      * @ORM\Column(type="array")
-     *
-     * @Assert\Count(min="1", groups={"Register", "Profile"})
-     * @Assert\All({
-     *      @Assert\NotBlank(groups={"Register", "Profile"}),
-     *      @Assert\Length(min="8", max="255", groups={"Register", "Profile"}),
-     * })
      *
      * @JS\Groups({"Owner", "Admin", "Register"})
      * @JS\Since("1.0.0")

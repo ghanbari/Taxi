@@ -2,6 +2,6 @@ FunPro\DriverBundle\Entity\Driver:
     properties:
         name:
             - NotBlank: ~
-        description:
-            - NotBlank:
-                groups: ["Profile"]
+        email:
+            - Email:
+                groups: ["Register", "Profile"]
