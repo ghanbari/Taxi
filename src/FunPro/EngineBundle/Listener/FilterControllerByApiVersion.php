@@ -4,6 +4,7 @@ namespace FunPro\EngineBundle\Listener;
 
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Controller\ControllerResolver;
 use Symfony\Component\HttpKernel\Controller\TraceableControllerResolver;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
@@ -28,7 +29,7 @@ class FilterControllerByApiVersion implements EventSubscriberInterface
     private $availableVersions;
 
     /**
-     * @var TraceableControllerResolver
+     * @var ControllerResolver
      */
     private $controllerResolver;
 
@@ -60,12 +61,12 @@ class FilterControllerByApiVersion implements EventSubscriberInterface
     /**
      * @param Router $router
      */
-    public function __construct(Router $router, $currentVersion, array $availableVersions, TraceableControllerResolver $controllerResolver)
+    public function __construct(Router $router, $currentVersion, array $availableVersions)
     {
         $this->router = $router;
         $this->currentVersion = $currentVersion;
         $this->availableVersions = $availableVersions;
-        $this->controllerResolver = $controllerResolver;
+        $this->controllerResolver = new ControllerResolver();
     }
 
     public function onKernelRequest(GetResponseEvent $event)
