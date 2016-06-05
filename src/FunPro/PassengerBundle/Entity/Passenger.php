@@ -83,6 +83,7 @@ class Passenger extends User implements SMSInterface
     public function setMobile($mobile)
     {
         $this->mobile = $mobile;
+        $this->setUsername($mobile);
 
         return $this;
     }
