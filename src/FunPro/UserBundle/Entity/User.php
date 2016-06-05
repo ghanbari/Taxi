@@ -65,8 +65,8 @@ use JMS\Serializer\Annotation as JS;
  */
 class User extends BaseUser
 {
-    const SEX_MALE   = 'm';
-    const SEX_FEMALE = 'f';
+    const SEX_MALE   = 0;
+    const SEX_FEMALE = 1;
 
     const TYPE_ADMIN        = 1;
     const TYPE_OPERATOR     = 2;
@@ -124,7 +124,7 @@ class User extends BaseUser
      *
      * @ORM\Column(type="string", length=1, nullable=true)
      *
-     * @Assert\Regex(pattern="/m|f/", groups={"Register", "Profile"})
+     * @Assert\Regex(pattern="/[01]/", groups={"Register", "Profile"})
      *
      * @JS\Groups({"Public", "Profile", "Admin"})
      * @JS\Since("1.0.0")
@@ -313,7 +313,7 @@ class User extends BaseUser
     /**
      * Set sex
      *
-     * @param integer|string $sex
+     * @param integer $sex
      * @return User
      */
     public function setSex($sex)

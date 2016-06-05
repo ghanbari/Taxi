@@ -145,14 +145,14 @@
                                     <label>جنسیت</label>
                                     <div class="md-radio-list">
                                         <div class="md-radio">
-                                            <input type="radio" id="radio1" name="driver[sex]" class="md-radiobtn" value="m" checked>
+                                            <input type="radio" id="radio1" name="driver[sex]" class="md-radiobtn" value="{{ constant('FunPro\\UserBundle\\Entity\\User::SEX_MALE') }}" checked>
                                             <label for="radio1">
                                                 <span></span>
                                                 <span class="check"></span>
                                                 <span class="box"></span>مرد</label>
                                         </div>
                                         <div class="md-radio">
-                                            <input type="radio" id="radio2" value="f" name="driver[sex]" class="md-radiobtn">
+                                            <input type="radio" id="radio2" value="{{ constant('FunPro\\UserBundle\\Entity\\User::SEX_FEMALE') }}" name="driver[sex]" class="md-radiobtn">
                                             <label for="radio2">
                                                 <span></span>
                                                 <span class="check"></span>
