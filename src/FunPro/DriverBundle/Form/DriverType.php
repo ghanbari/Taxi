@@ -34,9 +34,7 @@ class DriverType extends AbstractType
             ->add('description', Type\TextareaType::class, array(
                 'required' => false,
             ))
-            ->add('mobile', Type\TextType::class, array(
-                'required' => false,
-            ))
+            ->add('mobile', Type\TextType::class)
             ->add('contractNumber', Type\TextType::class)
             ->add('nationalCode', Type\TextType::class)
 //            ->add('avatar')
