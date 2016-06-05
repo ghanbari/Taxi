@@ -5,6 +5,7 @@ namespace FunPro\GeoBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use JMS\Serializer\Annotation as JS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Address
@@ -31,6 +32,9 @@ class Address
      *
      * @ORM\Column()
      *
+     * @Assert\NotBlank(groups={"Create", "Update"})
+     * @Assert\Length(max="255", groups={"Create", "Update"})
+     *
      * @JS\Groups({"Public"})
      * @JS\Since("1.0.0")
      */
@@ -40,6 +44,9 @@ class Address
      * @var Point
      *
      * @ORM\Column(type="point")
+     *
+     * @Assert\NotBlank(groups={"Create", "Update"})
+     * @Assert\Valid()
      *
      * @JS\Groups({"Point"})
      * @JS\MaxDepth(1)
@@ -52,6 +59,8 @@ class Address
      *
      * @ORM\Column(name="postal_code", length=10, nullable=true)
      *
+     * @Assert\Length(min="10", max="10", groups={"Create", "Update"})
+     *
      * @JS\Groups({"Public"})
      * @JS\Since("1.0.0")
      */
@@ -63,6 +72,9 @@ class Address
      * @ORM\ManyToOne(targetEntity="FunPro\GeoBundle\Entity\City")
      * @ORM\JoinColumn(name="city", referencedColumnName="id", onDelete="RESTRICT", nullable=false)
      *
+     * @Assert\Type(type="FunPro\GeoBundle\Entity\City", groups={"Create", "Update"})
+     * @Assert\NotNull(groups={"Create", "Update"})
+     *
      * @JS\Groups({"City"})
      * @JS\MaxDepth(1)
      * @JS\Since("1.0.0")
@@ -73,6 +85,9 @@ class Address
      * @var string
      *
      * @ORM\Column(type="text")
+     *
+     * @Assert\NotBlank(groups={"Create", "Update"})
+     * @Assert\Length(max="2000", groups={"Create", "Update"})
      *
      * @JS\Groups({"Public"})
      * @JS\Since("1.0.0")

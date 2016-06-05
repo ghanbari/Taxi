@@ -29,11 +29,11 @@ class CarController extends FOSRestController
         switch ($options['method']) {
             case 'POST':
                 $options['action'] = $this->generateUrl('fun_pro_admin_post_driver_car', array('driverId'=>$car->getDriver()->getId()));
-                $options['validation_groups'] = array('Create');
+                $options['validation_groups'] = array('Create', 'Point');
                 break;
             case 'PUT':
                 $options['action'] = $this->generateUrl('fun_pro_admin_put_driver_car', array('id'=>$car->getId()));
-                $options['validation_groups'] = array('Update');
+                $options['validation_groups'] = array('Update', 'Point');
             case 'DELETE':
                 $options['action'] = $this->generateUrl('fun_pro_admin_delete_driver_car', array('id'=>$car->getId()));
         }
