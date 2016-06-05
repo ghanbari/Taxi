@@ -125,7 +125,6 @@ class Driver extends User implements SMSInterface
     public function __construct()
     {
         parent::__construct();
-        $this->setUsername($this->getNationalCode());
         $this->setEnabled(true);
         $this->contact = array();
         $this->cars = new ArrayCollection();
@@ -212,6 +211,7 @@ class Driver extends User implements SMSInterface
     public function setNationalCode($nationalCode)
     {
         $this->nationalCode = $nationalCode;
+        $this->setUsername($nationalCode);
 
         return $this;
     }

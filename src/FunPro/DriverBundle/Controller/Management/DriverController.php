@@ -97,8 +97,7 @@ class DriverController extends FOSRestController
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $this->getDoctrine()->getManager()->persist($driver);
-            $this->getDoctrine()->getManager()->flush();
+            $this->get('fos_user.user_manager')->updateUser($driver);
 
             $this->addFlash('success', $this->get('translator')->trans('driver.created'));
             return $this->routeRedirectView('fun_pro_admin_cget_driver');
