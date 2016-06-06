@@ -53,7 +53,7 @@ var TableDatatablesResponsive = function () {
                 {name: "d.rate", data: "rate", "defaultContent": 0, orderable: true, searchable: false},
                 {name: "d.description", data: "description", "defaultContent": "", orderable: false, searchable: false},
                 {name: "d.avatar", data: "avatar", "defaultContent": "", orderable: false, searchable: false},
-                {name: "edit", data: "id", orderable: false, searchable: false, className: "carList text-center"},
+                {name: "car", data: "id", orderable: false, searchable: false, className: "carList text-center"},
                 {name: "edit", "defaultContent": "<i class='btn btn-warning'>ویرایش</i>", orderable: false, searchable: false, className: "edit text-center"},
                 {name: "delete", "defaultContent": "<i class='btn btn-danger'>حذف</i>", orderable: false, searchable: false, className: "delete text-center"},
             ],
