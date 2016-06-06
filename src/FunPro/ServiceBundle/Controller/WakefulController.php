@@ -8,6 +8,7 @@ use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FunPro\DriverBundle\CarEvents;
 use FunPro\DriverBundle\Entity\Car;
+use FunPro\DriverBundle\Entity\Driver;
 use FunPro\DriverBundle\Event\FilterMoveEvent;
 use FunPro\DriverBundle\Event\FilterSleepEvent;
 use FunPro\DriverBundle\Event\FilterWakefulEvent;
@@ -305,8 +306,14 @@ class WakefulController extends FOSRestController
         $lon = $fether->get('longitude', true);
         $limit = intval($fether->get('limit', true));
 
+        if ($this->getUser() and $this->getUser() instanceof Driver) {
+            $disappear = $this->getUser();
+        } else {
+            $disappear = null;
+        }
+
         $wakefuls = $this->getDoctrine()->getRepository('FunProServiceBundle:Wakeful')
-            ->getAllWakefulNearTo($lon, $lat, 2, $limit);
+            ->getAllWakefulNearTo($lon, $lat, 2, $limit, $disappear);
 
         if (count($wakefuls)) {
             $context = (new Context())

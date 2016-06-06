@@ -5,6 +5,7 @@ namespace FunPro\ServiceBundle\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use FunPro\DriverBundle\Entity\Car;
+use FunPro\DriverBundle\Entity\Driver;
 use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\ServiceBundle\Entity\Wakeful;
 
@@ -22,7 +23,7 @@ class WakefulRepository extends EntityRepository
      * @param int $distance in kilometer
      * @return Wakeful[]
      */
-    public function getAllWakefulNearTo($longitude, $latitude, $distance=2000, $limit=500)
+    public function getAllWakefulNearTo($longitude, $latitude, $distance=2000, $limit=500, Driver $disappear=null)
     {
         $qb = $this->createQueryBuilder('w');
 
@@ -34,6 +35,11 @@ class WakefulRepository extends EntityRepository
             ->setParameter('point', new Point($longitude, $latitude))
             ->setParameter('distance', $distance)
             ->setParameter('status', Car::STATUS_WAKEFUL);
+
+        if (!is_null($disappear)) {
+            $qb->andWhere($qb->expr()->neq('d.id', ':disappear'))
+                ->setParameter('disappear', $disappear->getId());
+        }
 
         $wakefuls = $qb->getQuery()
             ->setMaxResults($limit)
