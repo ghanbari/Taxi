@@ -3,6 +3,7 @@
 namespace FunPro\ServiceBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use FunPro\ServiceBundle\Entity\Requested;
 
 /**
  * RequestedRepository
@@ -12,4 +13,23 @@ use Doctrine\ORM\EntityRepository;
  */
 class RequestedRepository extends EntityRepository
 {
+    /**
+     * @param $id
+     * @return Requested
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getWithCar($id)
+    {
+        $qb = $this->createQueryBuilder('r');
+
+        return $qb->select(array('c', 'r', 'p', 'd'))
+            ->innerJoin('r.car', 'c')
+            ->innerJoin('c.plaque', 'p')
+            ->innerJoin('c.driver', 'd')
+            ->where($qb->expr()->eq('r.id', ':service_id'))
+            ->setParameter('service_id', $id)
+            ->getQuery()
+            ->getSingleResult();
+    }
 }

@@ -234,14 +234,18 @@ class ServiceController extends FOSRestController
         try {
             $service = $em->find('FunProServiceBundle:Requested', $id,  \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE);
             if ($service->getCar()) {
-                throw new Exception($this->get('translator')->trans('this.service.done'), Response::HTTP_CONFLICT);
+                $error = array(
+                    'code' => 1,
+                    'message' => $this->get('translator')->trans('this.service.done')
+                );
+                return $this->view($error, Response::HTTP_CONFLICT);
             }
 
             $service->setCar($car);
             $this->get('event_dispatcher')->dispatch(CarEvents::CAR_ACCEPT_SERVICE, new CarEvent($car));
             $em->flush();
             $em->getConnection()->commit();
-        } catch (Exception $e) {
+        } catch (PessimisticLockException $e) {
             $em->getConnection()->rollBack();
             $em->close();
             $error = array(
@@ -252,9 +256,17 @@ class ServiceController extends FOSRestController
         }
 
         if ($service->getPassenger()) {
+
+            $requested = $this->getDoctrine()->getRepository('FunProServiceBundle:Requested')
+                ->getWithCar($service->getId());
+
             $data = array(
                 'type' => 'service.accept',
-                'id' => $service->getId()
+                'id' => $requested->getId(),
+                'name' => $requested->getCar()->getDriver()->getName(),
+                'car_type' => $requested->getCar()->getType(),
+                'plaque' => (string) $requested->getCar()->getPlaque(),
+                'mobile' => $requested->getCar()->getDriver()->getMobile(),
             );
 
             $message = (new Message())
@@ -347,8 +359,15 @@ class ServiceController extends FOSRestController
                 $this->get('event_dispatcher')->dispatch(CarEvents::CAR_END_SERVICE, new CarEvent($service->getCar()));
                 $manager->flush();
 
+                $data = array(
+                    'type' => 'service.finish',
+                    'id' => $service->getId(),
+                    'price' => $service->getPrice(),
+                    'distance' => $service->getDistance(),
+                );
+
                 $message = (new Message())
-                    ->setData(array('type' => 'service.finish', 'id' => $service->getId()))
+                    ->setData($data)
                     ->setPriority(Message::PRIORITY_HIGH)
                     ->setTimeToLive(30);
 

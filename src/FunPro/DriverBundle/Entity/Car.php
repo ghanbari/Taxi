@@ -263,7 +263,7 @@ class Car
     /**
      * Set plaque
      *
-     * @param string $plaque
+     * @param Plaque $plaque
      * @return Car
      */
     public function setPlaque($plaque)
@@ -276,7 +276,7 @@ class Car
     /**
      * Get plaque
      *
-     * @return string 
+     * @return Plaque
      */
     public function getPlaque()
     {

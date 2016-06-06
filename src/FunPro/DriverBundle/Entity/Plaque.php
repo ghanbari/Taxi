@@ -213,4 +213,9 @@ class Plaque
     {
         return $this->car;
     }
+
+    function __toString()
+    {
+        return $this->getFirstNumber().'-'.$this->getAreaCode().'-'.$this->getSecondNumber().'|'.$this->getCityNumber();
+    }
 }
