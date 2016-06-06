@@ -32,8 +32,8 @@ class Address
      *
      * @ORM\Column()
      *
-     * @Assert\NotBlank(groups={"Create", "Update"})
-     * @Assert\Length(max="255", groups={"Create", "Update"})
+     * @Assert\NotBlank(groups={"AddressCreate", "AddressUpdate"})
+     * @Assert\Length(max="255", groups={"AddressCreate", "AddressUpdate"})
      *
      * @JS\Groups({"Public"})
      * @JS\Since("1.0.0")
@@ -45,7 +45,7 @@ class Address
      *
      * @ORM\Column(type="point")
      *
-     * @Assert\NotBlank(groups={"Create", "Update"})
+     * @Assert\NotBlank(groups={"AddressCreate", "AddressUpdate"})
      * @Assert\Valid()
      *
      * @JS\Groups({"Point"})
@@ -59,7 +59,7 @@ class Address
      *
      * @ORM\Column(name="postal_code", length=10, nullable=true)
      *
-     * @Assert\Length(min="10", max="10", groups={"Create", "Update"})
+     * @Assert\Length(min="10", max="10", groups={"AddressCreate", "AddressUpdate"})
      *
      * @JS\Groups({"Public"})
      * @JS\Since("1.0.0")
@@ -72,8 +72,8 @@ class Address
      * @ORM\ManyToOne(targetEntity="FunPro\GeoBundle\Entity\City")
      * @ORM\JoinColumn(name="city", referencedColumnName="id", onDelete="RESTRICT", nullable=false)
      *
-     * @Assert\Type(type="FunPro\GeoBundle\Entity\City", groups={"Create", "Update"})
-     * @Assert\NotNull(groups={"Create", "Update"})
+     * @Assert\Type(type="FunPro\GeoBundle\Entity\City", groups={"AddressCreate", "AddressUpdate"})
+     * @Assert\NotNull(groups={"AddressCreate", "AddressUpdate"})
      *
      * @JS\Groups({"City"})
      * @JS\MaxDepth(1)
@@ -86,8 +86,8 @@ class Address
      *
      * @ORM\Column(type="text")
      *
-     * @Assert\NotBlank(groups={"Create", "Update"})
-     * @Assert\Length(max="2000", groups={"Create", "Update"})
+     * @Assert\NotBlank(groups={"AddressCreate", "AddressUpdate"})
+     * @Assert\Length(max="2000", groups={"AddressCreate", "AddressUpdate"})
      *
      * @JS\Groups({"Public"})
      * @JS\Since("1.0.0")

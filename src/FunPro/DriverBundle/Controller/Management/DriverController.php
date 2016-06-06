@@ -40,11 +40,11 @@ class DriverController extends FOSRestController
         switch ($options['method']) {
             case 'POST':
                 $options['action'] = $this->generateUrl('fun_pro_admin_post_driver');
-                $options['validation_groups'] = 'Register';
+                $options['validation_groups'] = array('Register', 'AddressCreate', 'Point');
                 break;
             case 'PUT':
                 $options['action'] = $this->generateUrl('fun_pro_admin_put_driver', array('id' => $driver->getId()));
-                $options['validation_groups'] = 'Profile';
+                $options['validation_groups'] = array('Profile', 'AddressUpdate', 'Point');
                 break;
             case 'DELETE':
                 $options['action'] = $this->generateUrl('fun_pro_admin_delete_driver', array('id' => $driver->getId()));
