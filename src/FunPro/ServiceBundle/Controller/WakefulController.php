@@ -313,7 +313,7 @@ class WakefulController extends FOSRestController
         }
 
         $wakefuls = $this->getDoctrine()->getRepository('FunProServiceBundle:Wakeful')
-            ->getAllWakefulNearTo($lon, $lat, 2, $limit, $disappear);
+            ->getAllWakefulNearTo($lon, $lat, $this->getParameter('service.visible_radius'), $limit, $disappear);
 
         if (count($wakefuls)) {
             $context = (new Context())

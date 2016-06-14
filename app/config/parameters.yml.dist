@@ -41,6 +41,7 @@ parameters:
     register.max_token_request: 10
     register.reset_token_request_after_second: 86400
 
+    # visible radius for driver is differ from passenger
     service.visible_radius: 7000 #meter
 
     ui.data_table.per_page: 10

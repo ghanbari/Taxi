@@ -33,7 +33,7 @@ class WakefulRepository extends EntityRepository
             ->where($qb->expr()->lte('distance(w.point, point_str(:point))', ':distance'))
             ->andWhere($qb->expr()->eq('c.status', ':status'))
             ->setParameter('point', new Point($longitude, $latitude))
-            ->setParameter('distance', $distance)
+            ->setParameter('distance', $distance/100000)
             ->setParameter('status', Car::STATUS_WAKEFUL);
 
         if (!is_null($disappear)) {
