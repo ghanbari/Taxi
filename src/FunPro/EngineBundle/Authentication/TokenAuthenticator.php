@@ -50,8 +50,10 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
 
         $this->device = $this->em->getRepository('FunProUserBundle:Device')->findOneByApiKey($apiKey);
 
-        if (is_null($this->device) or !$user = $this->device->getOwner()) {
-            return null;
+        if (is_null($this->device)) {
+            $user = $this->em->getRepository('FunProUserBundle:User')->findOneByApiKey($apiKey);
+        } else {
+            $user = $this->device->getOwner();
         }
 
         return $user;
@@ -64,8 +66,10 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
-        $this->device->setLastLoginAt(new \DateTime());
-        $this->em->flush();
+        if (!is_null($this->device)) {
+            $this->device->setLastLoginAt(new \DateTime());
+            $this->em->flush();
+        }
 
         return null;
     }

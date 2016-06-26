@@ -135,7 +135,6 @@ class PassengerController extends FOSRestController
      *
      * @Rest\RequestParam(name="token", requirements="\d+", strict=true)
      * @Rest\RequestParam(name="phone", requirements="09[0-9]{9}", strict=true)
-     * @Rest\RequestParam(name="deviceId", strict=true)
      */
     public function postConfirmAction()
     {
@@ -143,17 +142,11 @@ class PassengerController extends FOSRestController
         $fetcher = $this->get('fos_rest.request.param_fetcher');
         $phone = $fetcher->get('phone');
         $token = $fetcher->get('token');
-        $deviceId = $fetcher->get('deviceId');
 
         $manager = $this->getDoctrine()->getManager();
 
         /** @var Passenger $user */
         $user = $manager->getRepository('FunProPassengerBundle:Passenger')->findOneByMobile($phone);
-
-        $device = $manager->getRepository('FunProUserBundle:Device')->findOneBy(array(
-            'deviceIdentifier' => $deviceId,
-            'appName' => $this->getParameter('app_passenger.package_name'),
-        ));
 
         if (!$user) {
             $error = array(
@@ -181,7 +174,7 @@ class PassengerController extends FOSRestController
             return $response;
         }
 
-        if ($lastToken->getToken() != $token or is_null($device)) {
+        if ($lastToken->getToken() != $token) {
             $user->increaseWrongTokenCount();
             $manager->flush();
         }
@@ -196,22 +189,6 @@ class PassengerController extends FOSRestController
             return $this->view($error, Response::HTTP_BAD_REQUEST);
         }
 
-        if (!$device) {
-            $error = array(
-                'code' => 1,
-                'message' => $translator->trans('device.is.not.exists'),
-            );
-            return $this->view($error, Response::HTTP_NOT_FOUND);
-        }
-
-        if ($device->getOwner() and $device->getOwner() != $user) {
-            $error = array(
-                'code' => 1,
-                'message' => $translator->trans('you.are.not.device.owner'),
-            );
-            return $this->view($error, Response::HTTP_FORBIDDEN);
-        }
-
         do {
             $apiKey = bin2hex(random_bytes(100));
             $isDuplicate = $manager->getRepository('FunProUserBundle:Device')
@@ -219,13 +196,11 @@ class PassengerController extends FOSRestController
         } while ($isDuplicate);
 
         $manager->getConnection()->beginTransaction();
-        $device->setOwner($user);
-        $device->setApiKey($apiKey);
+        $user->setApiKey($apiKey);
         $lastToken->setExpired(true);
         $user->resetWrongTokenCount();
         $user->setUsername($user->getMobile());
-        $this->get('fos_user.user_manager')->updateUser($user, false);
-        $manager->flush();
+        $this->get('fos_user.user_manager')->updateUser($user);
         $manager->getConnection()->commit();
 
         $context = (new Context())

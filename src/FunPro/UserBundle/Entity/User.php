@@ -254,6 +254,16 @@ class User extends BaseUser
      * @JS\Exclude()
      */
     private $tokens;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="api_key", nullable=true, unique=true)
+     *
+     * @JS\Groups({"Owner", "Admin"})
+     * @JS\Since("1.0.0")
+     */
+    private $apiKey;
     
     public function __construct()
     {
@@ -594,5 +604,24 @@ class User extends BaseUser
     public function setDevices($devices)
     {
         $this->devices = $devices;
+    }
+
+    /**
+     * @return string
+     */
+    public function getApiKey()
+    {
+        return $this->apiKey;
+    }
+
+    /**
+     * @param string $apiKey
+     *
+     * @return $this
+     */
+    public function setApiKey($apiKey)
+    {
+        $this->apiKey = $apiKey;
+        return $this;
     }
 }

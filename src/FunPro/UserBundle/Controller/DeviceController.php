@@ -78,15 +78,17 @@ class DeviceController extends FOSRestController
      *          }
      *      }
      * )
+     *
+     * @Security("is_authenticated() and has_role('ROLE_USER')")
      */
     public function postAction(Request $request)
     {
         $manager = $this->getDoctrine()->getManager();
-        $device = new Device();
 
         /** @var User $user */
         $user = $this->getUser();
 
+        $device = new Device();
         $form = $this->createCreateForm($device);
         $form->handleRequest($request);
 
@@ -103,7 +105,7 @@ class DeviceController extends FOSRestController
                     ->setMaxDepth(1);
                 return $this->view($persistentDevice, Response::HTTP_OK)
                     ->setSerializationContext($context);
-            } else if ($persistentDevice->getOwner() and $this->getUser() and $persistentDevice->getOwner() != $this->getUser()) {
+            } else if ($persistentDevice->getOwner() != $user) {
                 $error = array(
                     'code' => 1,
                     'message' => $this->get('translator')->trans('you.are.not.owner.of.this.device'),
@@ -118,19 +120,21 @@ class DeviceController extends FOSRestController
                 $this->get('logger')->log('error', '', $error);
                 return $this->view($error, Response::HTTP_BAD_REQUEST);
             }
-        } elseif (!is_null($user)) {
-            if (($user->getDevices()->count() == 0) or $user->isMultiDeviceAllowed()) {
-                $device->setOwner($this->getUser());
-            } else {
-                $error = array(
-                    'code' => 2,
-                    'message' => $this->get('translator')->trans('you.can.not.add.another.device'),
-                );
-                return $this->view($error, Response::HTTP_BAD_REQUEST);
-            }
+        }
+
+        if (($user->getDevices()->count() > 0) and !$user->isMultiDeviceAllowed()) {
+            $error = array(
+                'code' => 2,
+                'message' => $this->get('translator')->trans('you.can.not.add.another.device'),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
         }
 
         if ($form->isValid()) {
+            $device->setApiKey($user->getApiKey());
+            $user->setApiKey(null);
+            $device->setOwner($user);
+
             $manager->persist($device);
             $manager->flush();
 
