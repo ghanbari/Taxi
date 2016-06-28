@@ -13,6 +13,12 @@ security:
             id: fos_user.user_provider.username
 
     firewalls:
+        panel_login:
+            pattern: ^/admin/login$
+            form_login:
+                login_path: fun_pro_admin_login
+                check_path: fun_pro_admin_login_check
+            anonymous: true
         panel:
             pattern: ^/admin
             form_login:
@@ -23,24 +29,18 @@ security:
             logout:
                 path: fun_pro_admin_logout
                 target: fun_pro_admin_dashboard
-            anonymous:    true
-        api_passenger:
-            pattern: ^/passenger
-            host: api.%router.request_context.host%
-            guard:
-                authenticators:
-                    - fun_pro_engine.token_authenticator
-            stateless: true
-            anonymous: true
         api:
             pattern: ^/
             host: api.%router.request_context.host%
             http_basic:
                 provider: fos_userbundle
+            guard:
+                authenticators:
+                    - fun_pro_engine.token_authenticator
             form_login:
                 provider: fos_userbundle
                 require_previous_session: false
-            logout:       false
+            logout:       true
             anonymous: true
         main:
             pattern: ^/
@@ -53,8 +53,9 @@ security:
             anonymous:    true
 
     access_control:
-        - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/admin/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/admin/, role: ROLE_ADMIN }
+        - { path: ^/passenger$, methods: [POST], host: "api.%router.request_context.host%", role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/passenger/confirm$, methods: [POST], host: "api.%router.request_context.host%", role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/passenger, host: "api.%router.request_context.host%", role: ROLE_PASSENGER }
+        - { path: ^/driver, host: "api.%router.request_context.host%", role: ROLE_DRIVER }
