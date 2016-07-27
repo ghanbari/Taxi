@@ -233,12 +233,17 @@ class ServiceController extends FOSRestController
         $em->getConnection()->beginTransaction();
         try {
             $service = $em->find('FunProServiceBundle:Requested', $id,  \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE);
+
+            if (!$service) {
+                throw $this->createNotFoundException();
+            }
+
             if ($service->getCar()) {
                 $error = array(
                     'code' => 1,
                     'message' => $this->get('translator')->trans('this.service.done')
                 );
-                return $this->view($error, Response::HTTP_CONFLICT);
+                return $this->view($error, Response::HTTP_NOT_FOUND);
             }
 
             $service->setCar($car);

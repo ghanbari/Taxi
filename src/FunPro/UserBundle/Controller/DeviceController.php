@@ -8,8 +8,8 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FunPro\UserBundle\Entity\Device;
 use FunPro\UserBundle\Entity\User;
 use FunPro\UserBundle\Form\DeviceType;
+use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,7 +31,7 @@ class DeviceController extends FOSRestController
         $form = $this->createForm(DeviceType::class, $device, array(
             'action' => $this->generateUrl('fun_pro_api_post_device'),
             'method' => 'POST',
-            'csrf_protection' => $requestFormat == 'html' ?: false,
+            'csrf_protection' => $requestFormat === 'html' ?: false,
         ));
 
         return $form;
@@ -39,7 +39,6 @@ class DeviceController extends FOSRestController
 
     public function newAction()
     {
-
     }
 
     /**
@@ -69,12 +68,12 @@ class DeviceController extends FOSRestController
      *          201="When success",
      *          400={
      *              "When form validation failed.",
-     *              "When Your device is exists, but token is not valid",
-     *              "You can not have multi device"
+     *              "When Your device is exists, but token is differ(code: 1)",
+     *              "You can not have multi device(code: 2)"
      *          },
      *          403={
      *              "when csrf token is invalid",
-     *              "When you are not device owner"
+     *              "When you are not device owner(code: 1)"
      *          }
      *      }
      * )
@@ -84,6 +83,8 @@ class DeviceController extends FOSRestController
     public function postAction(Request $request)
     {
         $manager = $this->getDoctrine()->getManager();
+        $logger = $this->get('logger');
+        $serializer = $this->get('jms_serializer');
 
         /** @var User $user */
         $user = $this->getUser();
@@ -99,30 +100,52 @@ class DeviceController extends FOSRestController
         ));
 
         if ($persistentDevice) {
-            if ($device->getDeviceToken() == $persistentDevice->getDeviceToken()) {
+            if ($device->getDeviceToken() === $persistentDevice->getDeviceToken()) {
+                $logger->addNotice(
+                    'device is exists and have same token',
+                    array(
+                        $serializer->serialize(
+                            $persistentDevice,
+                            'json',
+                            SerializationContext::create()->enableMaxDepthChecks()
+                        )
+                    )
+                );
                 $context = (new Context())
                     ->addGroup('Owner')
                     ->setMaxDepth(1);
                 return $this->view($persistentDevice, Response::HTTP_OK)
                     ->setSerializationContext($context);
-            } else if ($persistentDevice->getOwner() != $user) {
+            } elseif ($persistentDevice->getOwner() !== $user) {
+                $logger->addNotice(
+                    'you are not owner of this device',
+                    array(
+                        $serializer->serialize($device, 'json', SerializationContext::create()->enableMaxDepthChecks()),
+                        $serializer->serialize($persistentDevice, 'json', SerializationContext::create()->enableMaxDepthChecks()),
+                        $serializer->serialize($this->getUser(), 'json', SerializationContext::create()->enableMaxDepthChecks()),
+                    )
+                );
                 $error = array(
                     'code' => 1,
                     'message' => $this->get('translator')->trans('you.are.not.owner.of.this.device'),
                 );
-                $this->get('logger')->log('error', '', $error);
                 return $this->view($error, Response::HTTP_FORBIDDEN);
             } else {
+                $logger->addWarning('device token is not synced', array(
+                    'old' => $persistentDevice->getDeviceToken(),
+                    'new' => $device->getDeviceToken(),
+                ));
                 $error = array(
                     'code' => 1,
                     'message' => $this->get('translator')->trans('you.must.update.token'),
                 );
-                $this->get('logger')->log('error', '', $error);
                 return $this->view($error, Response::HTTP_BAD_REQUEST);
             }
         }
 
         if (($user->getDevices()->count() > 0) and !$user->isMultiDeviceAllowed()) {
+            $logger->addInfo("you have {$user->getDevices()->count()} device");
+
             $error = array(
                 'code' => 2,
                 'message' => $this->get('translator')->trans('you.can.not.add.another.device'),
@@ -138,6 +161,8 @@ class DeviceController extends FOSRestController
             $manager->persist($device);
             $manager->flush();
 
+            $logger->addDebug('device was persisted');
+
             $context = (new Context())
                 ->addGroup('Owner')
                 ->setMaxDepth(1);
@@ -149,7 +174,7 @@ class DeviceController extends FOSRestController
     }
 
     /**
-     * update a device token
+     * Update a device token
      *
      * @ApiDoc(
      *      section="Device",
@@ -163,13 +188,12 @@ class DeviceController extends FOSRestController
      *      }
      * )
      *
-
+     * @Security("is_authenticated() and has_role('ROLE_USER')")
      *
      * @Rest\RequestParam(name="token", nullable=false, strict=true)
      * @Rest\RequestParam(name="deviceIdentifier", nullable=false, strict=true)
      * @Rest\RequestParam(name="appName", nullable=false, strict=true)
-     * @Rest\Put(name="put_device_token", path="/device/token", options={"method_prefix"=false})
-     * @Rest\Put(name="put_passenger_device_token", path="/passenger/device/token", options={"method_prefix"=false})
+     *
      */
     public function putTokenAction()
     {
@@ -185,6 +209,7 @@ class DeviceController extends FOSRestController
         }
 
         if ($device->getOwner() and $device->getOwner() != $this->getUser()) {
+
             throw $this->createAccessDeniedException('you.are.not.owner.of.device');
         }
 
@@ -195,4 +220,4 @@ class DeviceController extends FOSRestController
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
 
-} 
+}

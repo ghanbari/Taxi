@@ -51,9 +51,10 @@ class Device
     /**
      * @var string
      *
-     * @ORM\Column(name="device_identifier")
+     * @ORM\Column(name="device_identifier", length=50)
      *
      * @Assert\NotBlank()
+     * @Assert\Length(max="50")
      *
      * @JS\Groups({"Owner", "Admin"})
      * @JS\Since("1.0.0")
@@ -90,7 +91,7 @@ class Device
      * @ORM\Column(name="device_name")
      *
      * @Assert\NotBlank()
-     * @Assert\Length(max="255")
+     * @Assert\Length(max="100")
      *
      * @JS\Groups({"Owner", "Admin"})
      * @JS\Since("1.0.0")
@@ -115,6 +116,8 @@ class Device
      *
      * @ORM\Column(type="string", length=20)
      *
+     * @Assert\Choice(callback="getStatusAvailable")
+     *
      * @JS\Groups({"Owner", "Admin"})
      * @JS\Since("1.0.0")
      */
@@ -123,9 +126,10 @@ class Device
     /**
      * @var string
      *
-     * @ORM\Column(name="device_model")
+     * @ORM\Column(name="device_model", length=100)
      *
      * @Assert\NotBlank()
+     * @Assert\Length(max="100")
      *
      * @JS\Groups({"Owner", "Admin"})
      * @JS\Since("1.0.0")
@@ -148,9 +152,10 @@ class Device
     /**
      * @var String $appName application package name
      *
-     * @ORM\Column(name="app_name")
+     * @ORM\Column(name="app_name", length=50)
      *
      * @Assert\NotBlank()
+     * @Assert\Length(max="50")
      *
      * @JS\Groups({"Owner", "Admin"})
      * @JS\Since("1.0.0")
@@ -192,13 +197,20 @@ class Device
     
     /**
      * @ORM\OneToMany(targetEntity="FunPro\UserBundle\Entity\Message", mappedBy="device")
+     *
+     * @JS\Groups({"Messages"})
+     * @JS\MaxDepth(1)
+     * @JS\Since("1.0.0")
      */
     private $messages;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="api_key", nullable=true, unique=true)
+     * @ORM\Column(name="api_key", unique=true)
+     *
+     * @Assert\NotBlank()
+     * @Assert\Length(max="255")
      *
      * @JS\Groups({"Owner", "Admin"})
      * @JS\Since("1.0.0")
@@ -233,6 +245,14 @@ class Device
     public function __construct()
     {
         $this->messages = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    public static function getStatusAvailable()
+    {
+        return array(
+            self::STATUS_ACTIVE,
+            self::STATUS_DEACTIVE,
+        );
     }
 
     /**

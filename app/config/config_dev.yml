@@ -39,9 +39,11 @@ monolog:
             channel: 'server-logs'
             bot_name: FunPro_Logger
             include_extra: true
+            level: INFO
         rollbar:
             type: rollbar
-            token: bb23898c8ae64237a5d10bc0f8c66b9f
+            token: 7333aebd4ce54050af1ac6cb89da1700
+            level: INFO
 
 
 #swiftmailer:
