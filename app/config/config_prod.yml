@@ -26,7 +26,7 @@ monolog:
             handler: grouped
         grouped:
             type: whatfailuregroup
-            members: [slack, file]
+            members: [slack, file, rollbar]
         file:
             type: rotating_file
             path: "%kernel.logs_dir%/%kernel.environment%.log"
@@ -37,3 +37,6 @@ monolog:
             channel: 'server-logs'
             bot_name: FunPro_Logger
             include_extra: true
+        rollbar:
+            type: rollbar
+            token: bb23898c8ae64237a5d10bc0f8c66b9f

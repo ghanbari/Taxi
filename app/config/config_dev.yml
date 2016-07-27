@@ -25,7 +25,7 @@ monolog:
             channels: ['!event', '!php', '!doctrine']
         grouped:
             type: whatfailuregroup
-            members: [deduplicated, file]
+            members: [deduplicated, file, rollbar]
         deduplicated:
             type: deduplication
             handler: slack
@@ -39,6 +39,10 @@ monolog:
             channel: 'server-logs'
             bot_name: FunPro_Logger
             include_extra: true
+        rollbar:
+            type: rollbar
+            token: bb23898c8ae64237a5d10bc0f8c66b9f
+
 
 #swiftmailer:
 #    delivery_address: me@example.com
