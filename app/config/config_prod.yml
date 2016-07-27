@@ -20,23 +20,20 @@ monolog:
             handler: deduplicated
             action_level: error
             excluded_404s: ["^/"]
+            channels: ['!event', '!php', '!doctrine']
         deduplicated:
             type: deduplication
             handler: grouped
         grouped:
             type: whatfailuregroup
             members: [slack, file]
-            channels: [!event]
         file:
             type: rotating_file
             path: "%kernel.logs_dir%/%kernel.environment%.log"
             level: debug
-            channels: [!event]
         slack:
             type: slack
             token: "xoxb-63535591344-yofIljobgRyy0FLMCGKvqwzZ"
             channel: 'server-logs'
             bot_name: FunPro_Logger
             include_extra: true
-            level: ERROR
-            channels: [!event]

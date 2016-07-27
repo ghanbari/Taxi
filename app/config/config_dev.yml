@@ -22,10 +22,10 @@ monolog:
             handler: grouped
             action_level: error
             excluded_404s: ["^/"]
+            channels: ['!event', '!php', '!doctrine']
         grouped:
             type: whatfailuregroup
             members: [deduplicated, file]
-            channels: [!event]
         deduplicated:
             type: deduplication
             handler: slack
@@ -33,15 +33,12 @@ monolog:
             type: rotating_file
             path: "%kernel.logs_dir%/%kernel.environment%.log"
             level: debug
-            channels: [!event]
         slack:
             type: slack
             token: "xoxb-63535591344-yofIljobgRyy0FLMCGKvqwzZ"
             channel: 'server-logs'
             bot_name: FunPro_Logger
             include_extra: true
-            level: ERROR
-            channels: [!event]
 
 #swiftmailer:
 #    delivery_address: me@example.com
