@@ -36,4 +36,9 @@ class DeviceType extends AbstractType
             'data_class' => 'FunPro\UserBundle\Entity\Device'
         ));
     }
+
+    public function getBlockPrefix()
+    {
+        return '';
+    }
 }

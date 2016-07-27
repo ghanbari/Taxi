@@ -208,8 +208,11 @@ class DeviceController extends FOSRestController
             throw $this->createNotFoundException('device is not exists');
         }
 
-        if ($device->getOwner() and $device->getOwner() != $this->getUser()) {
-
+        if ($device->getOwner() and $device->getOwner() !== $this->getUser()) {
+            $this->get('logger')->addNotice('you are not device owner', array(
+                'user' => $this->getUser()->getId(),
+                'device' => $device->getId(),
+            ));
             throw $this->createAccessDeniedException('you.are.not.owner.of.device');
         }
 
@@ -219,5 +222,4 @@ class DeviceController extends FOSRestController
 
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
-
 }
