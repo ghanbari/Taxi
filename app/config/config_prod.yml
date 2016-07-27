@@ -15,13 +15,28 @@ imports:
 
 monolog:
     handlers:
-        main:
-            type:         fingers_crossed
+        crossed:
+            type: fingers_crossed
+            handler: deduplicated
             action_level: error
-            handler:      nested
-        nested:
-            type:  stream
-            path:  "%kernel.logs_dir%/%kernel.environment%.log"
+            excluded_404s: ["^/"]
+        deduplicated:
+            type: deduplication
+            handler: grouped
+        grouped:
+            type: whatfailuregroup
+            members: [slack, file]
+            channels: [!event]
+        file:
+            type: rotating_file
+            path: "%kernel.logs_dir%/%kernel.environment%.log"
             level: debug
-        console:
-            type:  console
+            channels: [!event]
+        slack:
+            type: slack
+            token: "xoxb-63535591344-yofIljobgRyy0FLMCGKvqwzZ"
+            channel: 'server-logs'
+            bot_name: FunPro_Logger
+            include_extra: true
+            level: ERROR
+            channels: [!event]

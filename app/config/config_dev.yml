@@ -17,23 +17,31 @@ web_profiler:
 
 monolog:
     handlers:
-        main:
-            type: stream
+        crossed:
+            type: fingers_crossed
+            handler: grouped
+            action_level: error
+            excluded_404s: ["^/"]
+        grouped:
+            type: whatfailuregroup
+            members: [deduplicated, file]
+            channels: [!event]
+        deduplicated:
+            type: deduplication
+            handler: slack
+        file:
+            type: rotating_file
             path: "%kernel.logs_dir%/%kernel.environment%.log"
             level: debug
             channels: [!event]
-        console:
-            type:   console
-            bubble: false
-            channels: [!event, !doctrine]
-        # uncomment to get logging in your browser
-        # you may have to allow bigger header sizes in your Web server configuration
-        #firephp:
-        #    type:   firephp
-        #    level:  info
-        #chromephp:
-        #    type:   chromephp
-        #    level:  info
+        slack:
+            type: slack
+            token: "xoxb-63535591344-yofIljobgRyy0FLMCGKvqwzZ"
+            channel: 'server-logs'
+            bot_name: FunPro_Logger
+            include_extra: true
+            level: ERROR
+            channels: [!event]
 
 #swiftmailer:
 #    delivery_address: me@example.com
