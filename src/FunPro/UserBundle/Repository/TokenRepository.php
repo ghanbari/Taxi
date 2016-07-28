@@ -3,7 +3,10 @@
 namespace FunPro\UserBundle\Repository;
 
 use DateTime;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use FunPro\UserBundle\Entity\Token;
 use FunPro\UserBundle\Entity\User;
 
 /**
@@ -16,37 +19,49 @@ class TokenRepository extends EntityRepository
 {
     /**
      * @param User $user
-     * @return mixed
+     *
+     * @return Token $token
+     *
      * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function getLastToken(User $user)
+    public function getToken(User $user, $token)
     {
-        $qb = $this->createQueryBuilder('t');
+        $queryBuilder = $this->createQueryBuilder('t');
 
-        return $qb->select(array('t', 'u'))
-            ->innerJoin('t.user', 'u')
-            ->where($qb->expr()->eq('u.id', ':userId'))
-            ->andWhere($qb->expr()->eq('t.expired', ':status'))
-            ->setParameter('userId', $user->getId())
-            ->setParameter('status', false)
-            ->orderBy('t.createdAt', 'DESC')
-            ->getQuery()
-            ->setMaxResults(1)
-            ->getSingleResult();
+        try {
+            $token = $queryBuilder->select(array('t', 'u'))
+                ->innerJoin('t.user', 'u')
+                ->where($queryBuilder->expr()->eq('u.id', ':userId'))
+                ->andWhere($queryBuilder->expr()->eq('t.token', ':token'))
+                ->setParameter('userId', $user->getId())
+                ->setParameter('token', $token)
+                ->getQuery()
+                ->getSingleResult();
+            return $token;
+        } catch (NonUniqueResultException $e) {
+        }
     }
 
-    public function getTokenCount(User $user, DateTime $period=null)
+    /**
+     * @param User     $user
+     * @param DateTime $period
+     *
+     * @return int|null
+     */
+    public function getTokenCount(User $user, DateTime $period = null)
     {
-        $qb = $this->createQueryBuilder('t');
+        $queryBuilder = $this->createQueryBuilder('t');
 
-        return $qb->select('count(t)')
-            ->innerJoin('t.user', 'u')
-            ->where($qb->expr()->eq('u.id', ':userId'))
-            ->andWhere($qb->expr()->gte('t.createdAt', ':period'))
-            ->setParameter('userId', $user->getId())
-            ->setParameter('period', $period)
-            ->getQuery()
-            ->getSingleScalarResult();
+        try {
+            return $queryBuilder->select('count(t)')
+                ->innerJoin('t.user', 'u')
+                ->where($queryBuilder->expr()->eq('u.id', ':userId'))
+                ->andWhere($queryBuilder->expr()->gte('t.createdAt', ':period'))
+                ->setParameter('userId', $user->getId())
+                ->setParameter('period', $period)
+                ->getQuery()
+                ->getSingleScalarResult();
+        } catch (QueryException $e) {
+        }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace FunPro\PassengerBundle\Controller;
 
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\NoResultException;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -32,8 +33,6 @@ class PassengerController extends FOSRestController
     /**
      * Show a form for create of passenger
      *
-     * @Security("!is_authenticated()")
-     *
      * @Rest\View(template="FunProPassengerBundle:Passenger:new.html.twig")
      *
      * @return \Symfony\Component\Form\Form
@@ -51,8 +50,9 @@ class PassengerController extends FOSRestController
      *      views={"passenger"},
      *      statusCodes={
      *          204="When success",
+     *          400="you send very request for token(code: 1)",
      *          403= {
-     *              "when you are a user and you are login in currently",
+     *              "when you are a user and you are login currently",
      *          },
      *      }
      * )
@@ -62,23 +62,22 @@ class PassengerController extends FOSRestController
      * @Rest\View()
      * @Rest\RequestParam(name="phone", requirements="09[0-9]{9}", strict=true)
      *
-     * @throws \Error
-     * @throws \Exception
-     * @throws \TypeError
      * @return \FOS\RestBundle\View\View
      */
     public function postAction()
     {
+        $logger = $this->get('logger');
         $manager = $this->getDoctrine()->getManager();
         $phone = $this->get('fos_rest.request.param_fetcher')->get('phone');
         $passenger = $this->getDoctrine()->getRepository('FunProPassengerBundle:Passenger')->findOneByMobile($phone);
 
-        if (is_null($passenger)) {
+        if ($passenger === null) {
             $passenger = new Passenger();
             $passenger->setMobile($phone);
             $passenger->setPassword(bin2hex(random_bytes(10)));
             $manager->persist($passenger);
             $manager->flush();
+            $logger->addInfo('passenger persisted', array('id' => $passenger->getId()));
         }
 
         $period = new \DateTime('-' . $this->getParameter('register.reset_token_request_after_second') . 'seconds');
@@ -86,18 +85,31 @@ class PassengerController extends FOSRestController
             ->getTokenCount($passenger, $period);
 
         if ($tokenRequestedCount > $this->getParameter('register.max_token_request')) {
+            $logger->addWarning('you have very token request', [
+                'count' => $tokenRequestedCount,
+                'max' => $this->getParameter('register.max_token_request'),
+                'period' => $this->getParameter('register.reset_token_request_after_second'),
+            ]);
             $error = array(
-                'code' => 0,
+                'code' => 1,
                 'message' => $this->get('translator')->trans('you.have.very.request.for.token'),
             );
             return $this->view($error, Response::HTTP_BAD_REQUEST);
         }
 
-        $verifyNumber = random_int(11111, 99999);
-        $token = new Token($verifyNumber);
-        $token->setUser($passenger);
-        $this->getDoctrine()->getManager()->persist($token);
-        $this->getDoctrine()->getManager()->flush();
+        do {
+            try {
+                $verifyNumber = random_int(11111, 99999);
+                $token = new Token($verifyNumber);
+                $token->setUser($passenger);
+                $this->getDoctrine()->getManager()->persist($token);
+                $this->getDoctrine()->getManager()->flush();
+                $tokenIsValid = true;
+            } catch (UniqueConstraintViolationException $e) {
+                $tokenIsValid = false;
+            }
+        } while (!$tokenIsValid);
+        $logger->addInfo('token persisted', array('token' => $verifyNumber));
         $this->get('sms.sender')->send($passenger->getMobile(), $verifyNumber);
 
         return $this->view(null, Response::HTTP_NO_CONTENT);
@@ -117,16 +129,18 @@ class PassengerController extends FOSRestController
      *      },
      *      statusCodes={
      *          201="When success",
-     *          204="When you try very wrong token",
-     *          400="When form validation failed.",
+     *          204="When token is reset",
+     *          400={
+     *              "you send very request for token(code: 1)",
+     *              "Token is not exists(code: 2)",
+     *              "Token is expire(code: 3)",
+     *          },
      *          403= {
      *              "when csrf token is invalid",
      *              "when you are a user and you are login in currently",
-     *              "when this device is not your",
      *          },
      *          404={
-     *              "When user is not exists",
-     *              "When Device is not exists",
+     *              "When user is not exists(code: 1)",
      *          },
      *      }
      * )
@@ -138,6 +152,7 @@ class PassengerController extends FOSRestController
      */
     public function postConfirmAction()
     {
+        $logger = $this->get('logger');
         $translator = $this->get('translator');
         $fetcher = $this->get('fos_rest.request.param_fetcher');
         $phone = $fetcher->get('phone');
@@ -149,42 +164,44 @@ class PassengerController extends FOSRestController
         $user = $manager->getRepository('FunProPassengerBundle:Passenger')->findOneByMobile($phone);
 
         if (!$user) {
+            $logger->addNotice('user is not exists', array('username' => $phone));
             $error = array(
-                'code' => 0,
+                'code' => 1,
                 'message' => $translator->trans('user.is.not.exists'),
             );
             return $this->view($error, Response::HTTP_NOT_FOUND);
         }
 
-        try {
-            $lastToken = $this->getDoctrine()->getRepository('FunProUserBundle:Token')
-                ->getLastToken($user);
-        } catch (NoResultException $e) {
-            $error = array(
-                'code' => 0,
-                'message' => $translator->trans('token.is.not.exists'),
-            );
-            return $this->view($error, Response::HTTP_BAD_REQUEST);
-        }
-
-        if ($user->getWrongTokenCount() > $this->getParameter('login.max_failure_count')) {
+        if ($user->getWrongTokenCount() >= $this->getParameter('login.max_failure_count')) {
+            $logger->addNotice('You send very request with wrong token');
             $response = $this->postAction();
             $user->resetWrongTokenCount();
             $manager->flush();
             return $response;
         }
 
-        if ($lastToken->getToken() != $token) {
+        try {
+            $tokenObject = $this->getDoctrine()->getRepository('FunProUserBundle:Token')
+                ->getToken($user, $token);
+
+            $now = new \DateTime();
+            $diff = $now->diff($tokenObject->getCreatedAt());
+
+            if ($tokenObject->isExpired() or $diff->days >= 1) {
+                $logger->addNotice('your token was expired', array('token' => $tokenObject->getToken()));
+                $error = [
+                    'code' => 3,
+                    'message' => $translator->trans('your.token.expired'),
+                ];
+                return $this->view($error, Response::HTTP_BAD_REQUEST);
+            }
+        } catch (NoResultException $e) {
+            $logger->addNotice('token is not exists');
             $user->increaseWrongTokenCount();
             $manager->flush();
-        }
-
-        $now = new \DateTime();
-        $diff = $now->diff($lastToken->getCreatedAt());
-        if ($lastToken->getToken() != $token or $diff->days >= 1) {
             $error = array(
-                'code' => 1,
-                'message' => $translator->trans('token.is.not.valid'),
+                'code' => 2,
+                'message' => $translator->trans('token.is.not.exists'),
             );
             return $this->view($error, Response::HTTP_BAD_REQUEST);
         }
@@ -196,12 +213,13 @@ class PassengerController extends FOSRestController
         } while ($isDuplicate);
 
         $manager->getConnection()->beginTransaction();
+        $tokenObject->setExpired(true);
         $user->setApiKey($apiKey);
-        $lastToken->setExpired(true);
         $user->resetWrongTokenCount();
         $user->setUsername($user->getMobile());
         $this->get('fos_user.user_manager')->updateUser($user);
         $manager->getConnection()->commit();
+        $logger->addInfo('registration process completed');
 
         $context = (new Context())
             ->addGroups(array('Owner', 'Devices', 'Public', 'Register'))
@@ -218,8 +236,8 @@ class PassengerController extends FOSRestController
      *      resource=true,
      *      views={"passenger"},
      *      output={
-     *          "class"="FunPro\UserBundle\Entity\User",
-     *          "groups"={"Public"},
+     *          "class"="FunPro\PassengerBundle\Entity\Passenger",
+     *          "groups"={"Public", "Profile"},
      *          "parsers"={"Nelmio\ApiDocBundle\Parser\JmsMetadataParser"},
      *      },
      *      statusCodes={
@@ -230,7 +248,7 @@ class PassengerController extends FOSRestController
      *      }
      * )
      *
-     * @Security("is_authenticated()")
+     * @Security("is_authenticated() and has_role('ROLE_PASSENGER')")
      *
      * @return View
      */
@@ -247,6 +265,5 @@ class PassengerController extends FOSRestController
 
     public function getAction($passengerId)
     {
-
     }
 }
