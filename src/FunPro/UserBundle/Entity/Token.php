@@ -9,9 +9,12 @@ use JMS\Serializer\Annotation as JS;
 /**
  * Token
  *
- * @ORM\Table(name="token")
+ * @ORM\Table(
+ *      name="token",
+ *      uniqueConstraints={@ORM\UniqueConstraint(name="UNIQUE_token_per_user", columns={"token", "user_id"})},
+ * )
  * @ORM\Entity(repositoryClass="FunPro\UserBundle\Repository\TokenRepository")
- *
+ * @ORM\EntityListeners({"TokenListener"})
  * @JS\ExclusionPolicy("ALL")
  */
 class Token
