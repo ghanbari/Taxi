@@ -99,7 +99,7 @@ class User extends BaseUser
      *
      * @ORM\Column(name="name", type="string", length=50, nullable=true)
      *
-     * @Assert\Regex(pattern="/[^\d]{1,50}/", groups={"Register", "Profile"})
+     * @Assert\Regex(pattern="/\d/", match=false, groups={"Register", "Profile"})
      *
      * @JS\Groups({"Public", "Register", "Profile", "Admin"})
      * @JS\Since("1.0.0")
@@ -225,6 +225,7 @@ class User extends BaseUser
      * @ORM\Column(name="wrong_password_count", type="smallint", options={"default"=0})
      *
      * @JS\Groups({"Admin"})
+     * @JS\Since("1.0.0")
      */
     private $wrongPasswordCount;
 
@@ -234,6 +235,7 @@ class User extends BaseUser
      * @ORM\Column(name="is_multi_device_allowed", type="boolean", options={"default"=true})
      *
      * @JS\Groups({"Admin"})
+     * @JS\Since("1.0.0")
      */
     private $multiDeviceAllowed;
 
@@ -243,6 +245,7 @@ class User extends BaseUser
      * @ORM\OneToMany(targetEntity="FunPro\UserBundle\Entity\Device", mappedBy="owner")
      *
      * @JS\Groups({"Devices"})
+     * @JS\Since("1.0.0")
      */
     private $devices;
 
@@ -382,11 +385,25 @@ class User extends BaseUser
     /**
      * Get avatar
      *
-     * @return string 
+     * @return string
      */
     public function getAvatar()
     {
         return $this->avatar;
+    }
+
+    /**
+     * @JS\Groups({"Public", "Profile", "Admin"})
+     * @JS\Since("1.0.0")
+     * @JS\SerializedName("avatar_path")
+     * @JS\Type("string")
+     * @JS\VirtualProperty()
+     *
+     * @return string
+     */
+    public function getAatarPath()
+    {
+        return 'images/cache/avatar_mob_thumb/images/avatars/' . $this->getAvatar();
     }
 
     /**

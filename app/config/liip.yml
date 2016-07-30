@@ -1,0 +1,16 @@
+parameters:
+    filesystem.avatar.path: "%kernel.root_dir%/../web/images/avatars"
+
+liip_imagine:
+    resolvers:
+        default:
+            web_path:
+                cache_prefix: images/cache
+    loaders:
+        avatar:
+            filesystem:
+                data_root: "%filesystem.avatar.path%"
+    filter_sets:
+        avatar_mob_thumb:
+            filters:
+                downscale: { max: [300, 300] }

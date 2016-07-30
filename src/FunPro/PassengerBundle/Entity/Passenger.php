@@ -13,7 +13,7 @@ use JMS\Serializer\Annotation as JS;
  * Passenger
  *
  * @ORM\Table(name="passenger")
- * @ORM\Entity(repositoryClass="FunPro\UserBundle\Repository\PassengerRepository")
+ * @ORM\Entity(repositoryClass="FunPro\PassengerBundle\Repository\PassengerRepository")
  *
  * @UniqueEntity("mobile", groups={"Register"})
  */
@@ -91,7 +91,7 @@ class Passenger extends User implements SMSInterface
     /**
      * Get mobile
      *
-     * @return string 
+     * @return string
      */
     public function getMobile()
     {

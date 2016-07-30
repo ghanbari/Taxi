@@ -1,6 +1,6 @@
 <?php
 
-namespace FunPro\UserBundle\Repository;
+namespace FunPro\PassengerBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 

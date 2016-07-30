@@ -7,6 +7,9 @@ imports:
     - { resource: jms.yml }
     - { resource: sms.yml }
     - { resource: knp.yml }
+    - { resource: liip.yml }
+    - { resource: vich.yml }
+    - { resource: dunglas.yml }
     - { resource: fos_rest_mime_types.php }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
@@ -23,7 +26,10 @@ framework:
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
         strict_requirements: ~
-    form:            ~
+    form:
+        csrf_protection:
+            #TODO: activate dunglas csrf in production
+            enabled: false
     csrf_protection: ~
     validation:      { enable_annotations: true }
     #serializer:      { enable_annotations: true }

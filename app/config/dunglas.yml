@@ -1,0 +1,15 @@
+dunglas_angular_csrf:
+    token:
+        id: angular
+    header:
+        name: X-XSRF-TOKEN
+    cookie:
+        name: XSRF-TOKEN
+        expire: 0
+        path: /
+        domain: "api.%router.request_context.host%"
+        secure: false
+        set_on:
+            - { path: "^/url-pattern", route: "^route_name_pattern$", host: "example.com", methods: [GET, POST] }
+    secure:
+        - { path: "^/url-pattern", route: "^route_name_pattern$", host: "example.com", methods: [GET, POST] }

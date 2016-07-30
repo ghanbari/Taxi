@@ -147,8 +147,9 @@ class PassengerController extends FOSRestController
      *
      * @Security("!is_authenticated()")
      *
-     * @Rest\RequestParam(name="token", requirements="\d+", strict=true)
-     * @Rest\RequestParam(name="phone", requirements="09[0-9]{9}", strict=true)
+     * @Rest\RequestParam(name="token", requirements="\d+", strict=true, description="token number for verify")
+     * @Rest\RequestParam(name="phone", requirements="09[0-9]{9}", strict=true, description="phone number")
+     * @Rest\RequestParam(name="referer", requirements="09[0-9]{9}", strict=true, nullable=true, description="referer phone number")
      */
     public function postConfirmAction()
     {
@@ -157,6 +158,7 @@ class PassengerController extends FOSRestController
         $fetcher = $this->get('fos_rest.request.param_fetcher');
         $phone = $fetcher->get('phone');
         $token = $fetcher->get('token');
+        $referer = $fetcher->get('referer');
 
         $manager = $this->getDoctrine()->getManager();
 
@@ -218,6 +220,14 @@ class PassengerController extends FOSRestController
         $user->resetWrongTokenCount();
         $user->setUsername($user->getMobile());
         $this->get('fos_user.user_manager')->updateUser($user);
+        if ($user->getReferrer() === null and $referer !== null) {
+            $userReferer = $manager->getRepository('FunProPassengerBundle:Passenger')->findOneByMobile($referer);
+            if ($userReferer) {
+                $logger->addInfo('set user referer', array('referer' => $referer));
+                $user->setReferrer($userReferer);
+                #TODO: add point to user(referer) wallet
+            }
+        }
         $manager->getConnection()->commit();
         $logger->addInfo('registration process completed');
 
@@ -229,40 +239,10 @@ class PassengerController extends FOSRestController
     }
 
     /**
-     * Get current user profile.
+     * @param $passengerId
      *
-     * @ApiDoc(
-     *      section="Profile",
-     *      resource=true,
-     *      views={"passenger"},
-     *      output={
-     *          "class"="FunPro\PassengerBundle\Entity\Passenger",
-     *          "groups"={"Public", "Profile"},
-     *          "parsers"={"Nelmio\ApiDocBundle\Parser\JmsMetadataParser"},
-     *      },
-     *      statusCodes={
-     *          200="When success",
-     *          403= {
-     *              "when you are not login currently",
-     *          },
-     *      }
-     * )
-     *
-     * @Security("is_authenticated() and has_role('ROLE_PASSENGER')")
-     *
-     * @return View
+     * @Rest\Get(requirements={"passengerId"="\d+"})
      */
-    public function getProfileAction()
-    {
-        $user = $this->getUser();
-
-        $context = new Context();
-        $context->addGroups(array('Public', 'Profile'))
-            ->setMaxDepth(2);
-        return $this->view($user, Response::HTTP_OK)
-            ->setSerializationContext($context);
-    }
-
     public function getAction($passengerId)
     {
     }

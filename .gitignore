@@ -1,3 +1,7 @@
+/web/images/*
+/web/images/avatars/.gitkeep
+!/web/images/.gitkeep
+!/web/images/avatars/.gitkeep
 /web/assets
 /web/bundles/
 /app/bootstrap.php.cache

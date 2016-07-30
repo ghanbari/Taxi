@@ -21,10 +21,6 @@ class ProfileType extends AbstractType
                 'label' => 'form.email',
                 'required' => false,
             ))
-            ->add('mobile', Type\TextType::class, array(
-                'label' => 'mobile',
-                'required' => false,
-            ))
             ->add('name', Type\TextType::class, array(
                 'label' => 'name',
                 'required' => false
@@ -45,7 +41,7 @@ class ProfileType extends AbstractType
                 'multiple' => false,
                 'expanded' => true,
             ))
-            ->add('describtion', Type\TextareaType::class, array(
+            ->add('description', Type\TextareaType::class, array(
                 'label' => 'description',
                 'required' => false,
             ))

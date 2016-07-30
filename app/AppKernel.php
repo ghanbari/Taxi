@@ -30,6 +30,9 @@ class AppKernel extends Kernel
             new FunPro\AdminBundle\FunProAdminBundle(),
             new KPhoen\SmsSenderBundle\KPhoenSmsSenderBundle(),
             new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(),
+            new Liip\ImagineBundle\LiipImagineBundle(),
+            new Vich\UploaderBundle\VichUploaderBundle(),
+            new Dunglas\AngularCsrfBundle\DunglasAngularCsrfBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'), true)) {

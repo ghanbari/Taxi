@@ -39,5 +39,8 @@ fun_pro_user:
 fos_user_security:
     resource: "@FOSUserBundle/Resources/config/routing/security.xml"
 
+_liip_imagine:
+    resource: "@LiipImagineBundle/Resources/config/routing.xml"
+
 fos_js_routing:
     resource: "@FOSJsRoutingBundle/Resources/config/routing/routing.xml"
