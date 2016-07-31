@@ -26,7 +26,7 @@ use Symfony\Component\VarDumper\VarDumper;
  * @package FunPro\PassengerBundle\Controller
  *
  * @Rest\RouteResource("passenger", pluralize=false)
- * @Rest\NamePrefix("fun_pro_api_")
+ * @Rest\NamePrefix("fun_pro_passenger_api_")
  */
 class PassengerController extends FOSRestController
 {

@@ -15,8 +15,8 @@ parameters:
     mailer_user:       ~
     mailer_password:   ~
 
-    app_passenger.package_name: ''
-    app_driver.package_name: ''
+    app_passenger.package_name: 'ir.vdevelop.passenger'
+    app_driver.package_name: 'ir.vdevelop.driver'
 
     sms_adapter:  buzz
     sms_provider: nik_sms
@@ -28,6 +28,7 @@ parameters:
     nik_sms.from: ''
 
     gcm.api_key: ''
+    gcm.ttl.service_request: 15
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
