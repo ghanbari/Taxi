@@ -209,9 +209,6 @@ class Device
      *
      * @ORM\Column(name="api_key", unique=true)
      *
-     * @Assert\NotBlank()
-     * @Assert\Length(max="255")
-     *
      * @JS\Groups({"Owner", "Admin"})
      * @JS\Since("1.0.0")
      */
