@@ -401,7 +401,7 @@ class User extends BaseUser
      *
      * @return string
      */
-    public function getAatarPath()
+    public function getAvatarPath()
     {
         return 'images/cache/avatar_mob_thumb/images/avatars/' . $this->getAvatar();
     }
