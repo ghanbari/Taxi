@@ -1,6 +1,10 @@
 imports:
     - { resource: config.yml }
 
+parameters:
+    gcm.queue.process_in: 'kernel.terminate'
+    gcm.queue.priority: -255
+
 #framework:
 #    validation:
 #        cache: validator.mapping.cache.apc

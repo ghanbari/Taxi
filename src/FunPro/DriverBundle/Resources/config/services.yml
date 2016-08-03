@@ -1,6 +1,11 @@
 services:
+    fun_pro_driver.service_log_subscriber:
+        class: FunPro\DriverBundle\Event\ServiceSubscriber
+        arguments: ["@doctrine", "@logger"]
+        tags:
+            - { name: kernel.event_subscriber }
     fun_pro_driver.car_log_subscriber:
         class: FunPro\DriverBundle\EventListener\CarLogSubscriber
-        arguments: ["@doctrine"]
+        arguments: ["@doctrine", "@logger"]
         tags:
             - { name: kernel.event_subscriber }

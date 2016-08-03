@@ -6,14 +6,21 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JS;
 
 /**
- * Log
+ * ServiceLog
  *
  * @ORM\Table(name="log")
- * @ORM\Entity(repositoryClass="FunPro\ServiceBundle\Repository\LogRepository")
+ * @ORM\Entity(repositoryClass="FunPro\ServiceBundle\Repository\ServiceLogRepository")
  * @ORM\HasLifecycleCallbacks()
  */
-class Log
+class ServiceLog
 {
+    const STATUS_REQUESTED = 0;
+    const STATUS_ACCEPTED  = 1;
+    const STATUS_REJECTED  = 2;
+    const STATUS_READY     = 3;
+    const STATUS_START     = 4;
+    const STATUS_FINISH    = 5;
+
     /**
      * @var int
      *
@@ -37,9 +44,9 @@ class Log
     private $status;
 
     /**
-     * @var Requested
+     * @var Service
      *
-     * @ORM\ManyToOne(targetEntity="FunPro\ServiceBundle\Entity\Requested")
+     * @ORM\ManyToOne(targetEntity="FunPro\ServiceBundle\Entity\Service", inversedBy="logs")
      * @ORM\JoinColumn(name="service_id", referencedColumnName="id", onDelete="cascade")
      *
      * @JS\Groups({"Public"})
@@ -59,9 +66,20 @@ class Log
     private $atTime;
 
     /**
+     * @param $service
+     * @param $status
+     */
+    public function __construct($service, $status)
+    {
+        $this->service = $service;
+        $this->status = $status;
+        $this->atTime = new \DateTime();
+    }
+
+    /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -72,7 +90,8 @@ class Log
      * Set status
      *
      * @param string $status
-     * @return Log
+     *
+*@return ServiceLog
      */
     public function setStatus($status)
     {
@@ -84,7 +103,7 @@ class Log
     /**
      * Get status
      *
-     * @return string 
+     * @return string
      */
     public function getStatus()
     {
@@ -104,7 +123,7 @@ class Log
     /**
      * Get atTime
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getAtTime()
     {
@@ -114,10 +133,11 @@ class Log
     /**
      * Set service
      *
-     * @param \FunPro\ServiceBundle\Entity\Requested $service
-     * @return Log
+     * @param Service $service
+     *
+     * @return ServiceLog
      */
-    public function setService(\FunPro\ServiceBundle\Entity\Requested $service = null)
+    public function setService(Service $service = null)
     {
         $this->service = $service;
 
@@ -127,7 +147,7 @@ class Log
     /**
      * Get service
      *
-     * @return \FunPro\ServiceBundle\Entity\Requested 
+     * @return Service
      */
     public function getService()
     {

@@ -17,7 +17,7 @@ class DriverRepository extends EntityRepository
     /**
      * @TODO: Use Spatial Mysql Distance function for Mysql > 5.6.1
      * @param Point $point
-     * @param $distance radius in meter
+     * @param integer $distance radius in meter
      * @return array
      */
     public function getAllAround(Point $point, $distance)

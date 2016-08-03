@@ -4,38 +4,34 @@ namespace FunPro\DriverBundle\Event;
 
 use FunPro\DriverBundle\Entity\Car;
 use FunPro\GeoBundle\Doctrine\ValueObject\Point;
-use Symfony\Component\EventDispatcher\Event;
 
-class FilterMoveEvent extends Event
+/**
+ * Class GetMoveCarEvent
+ *
+ * @package FunPro\DriverBundle\Event
+ */
+class GetMoveCarEvent extends CarEvent
 {
     /**
-     * @var Car
-     */
-    private $car;
-
-    /**
-     * @var Point
+     * @var Point $currentLocation
      */
     private $currentLocation;
 
     /**
-     * @var Point
+     * @var Point $previousLocation
      */
     private $previousLocation;
 
+    /**
+     * @param Car   $car
+     * @param Point $previous
+     * @param Point $current
+     */
     public function __construct(Car $car, Point $previous, Point $current)
     {
-        $this->car = $car;
+        parent::__construct($car);
         $this->currentLocation = $current;
         $this->previousLocation = $previous;
-    }
-
-    /**
-     * @return Car
-     */
-    public function getCar()
-    {
-        return $this->car;
     }
 
     /**
@@ -53,4 +49,4 @@ class FilterMoveEvent extends Event
     {
         return $this->previousLocation;
     }
-} 
+}

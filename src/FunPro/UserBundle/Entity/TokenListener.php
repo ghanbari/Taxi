@@ -3,7 +3,6 @@
 namespace FunPro\UserBundle\Entity;
 
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
-use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping as ORM;
 

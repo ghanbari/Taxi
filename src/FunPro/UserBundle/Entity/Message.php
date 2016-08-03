@@ -641,7 +641,7 @@ class Message
      *
      * @return $this
      */
-    public function setRegistrationIds(array $registrationIds=array())
+    public function setRegistrationIds(array $registrationIds = array())
     {
         $this->registrationIds = $registrationIds;
         return $this;

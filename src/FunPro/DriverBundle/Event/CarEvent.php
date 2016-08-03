@@ -5,10 +5,15 @@ namespace FunPro\DriverBundle\Event;
 use FunPro\DriverBundle\Entity\Car;
 use Symfony\Component\EventDispatcher\Event;
 
+/**
+ * Class CarEvent
+ *
+ * @package FunPro\DriverBundle\Event
+ */
 class CarEvent extends Event
 {
     /**
-     * @var Car
+     * @var Car $car
      */
     private $car;
 
@@ -24,4 +29,4 @@ class CarEvent extends Event
     {
         return $this->car;
     }
-} 
+}

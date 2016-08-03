@@ -36,7 +36,7 @@ class Wakeful
      * @var Car
      *
      * @ORM\OneToOne(targetEntity="FunPro\DriverBundle\Entity\Car", inversedBy="wakeful")
-     * @ORM\JoinColumn(name="car_id", referencedColumnName="id", onDelete="cascade")
+     * @ORM\JoinColumn(name="car_id", referencedColumnName="id", onDelete="cascade", nullable=false)
      *
      * @JS\Groups({"Car"})
      * @JS\MaxDepth(2)
@@ -74,7 +74,7 @@ class Wakeful
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -95,7 +95,7 @@ class Wakeful
     /**
      * Get atTime
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getAtTime()
     {
@@ -119,7 +119,7 @@ class Wakeful
     /**
      * Get point
      *
-     * @return point 
+     * @return point
      */
     public function getPoint()
     {
@@ -129,10 +129,10 @@ class Wakeful
     /**
      * Set car
      *
-     * @param \FunPro\DriverBundle\Entity\Car $car
+     * @param Car $car
      * @return Wakeful
      */
-    public function setCar(\FunPro\DriverBundle\Entity\Car $car = null)
+    public function setCar(Car $car = null)
     {
         $this->car = $car;
 
@@ -142,7 +142,7 @@ class Wakeful
     /**
      * Get car
      *
-     * @return \FunPro\DriverBundle\Entity\Car 
+     * @return Car
      */
     public function getCar()
     {

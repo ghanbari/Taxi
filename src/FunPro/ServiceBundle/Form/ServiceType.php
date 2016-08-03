@@ -2,7 +2,7 @@
 
 namespace FunPro\ServiceBundle\Form;
 
-use FunPro\ServiceBundle\Entity\Requested;
+use FunPro\ServiceBundle\Entity\Service;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -21,16 +21,36 @@ class ServiceType extends AbstractType
             ->add('endPoint', \FunPro\GeoBundle\Form\Type\PointType::class, array(
                 'required' => false,
             ))
+            ->add('startAddress', Type\TextareaType::class, array(
+                'required' => false,
+            ))
+            ->add('endAddress', Type\TextareaType::class, array(
+                'required' => false,
+            ))
             ->add('type', Type\ChoiceType::class, array(
-                'choices' => Requested::getTypes(),
+                'choices' => Service::getTypes(),
                 'choices_as_values' => true,
+                'required' => false,
             ))
             ->add('desire', Type\ChoiceType::class, array(
-                'choices' => Requested::getDesireOptions(),
+                'choices' => Service::getDesireOptions(),
                 'choices_as_values' => true,
+                'required' => false,
             ))
             ->add('description', Type\TextareaType::class, array(
                 'required' => false,
+            ))
+            ->add('propagationList', Type\CollectionType::class, array(
+                'description' => 'array of cars ids',
+                'entry_type' => 'entity',
+                'allow_add' => true,
+                'allow_delete' => true,
+                'delete_empty' => true,
+                'mapped' => false,
+                'options' => array(
+                    'class' => 'FunPro\DriverBundle\Entity\Car',
+                    'choice_label' => 'plaque'
+                )
             ))
         ;
     }
@@ -41,7 +61,7 @@ class ServiceType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'FunPro\ServiceBundle\Entity\Requested'
+            'data_class' => 'FunPro\ServiceBundle\Entity\Service'
         ));
     }
 

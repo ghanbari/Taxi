@@ -5,7 +5,12 @@ namespace FunPro\DriverBundle\Event;
 use FunPro\ServiceBundle\Entity\Wakeful;
 use Symfony\Component\EventDispatcher\Event;
 
-class FilterWakefulEvent extends Event
+/**
+ * Class WakefulEvent
+ *
+ * @package FunPro\DriverBundle\Event
+ */
+class WakefulEvent extends Event
 {
     /**
      * @var Wakeful
@@ -24,4 +29,4 @@ class FilterWakefulEvent extends Event
     {
         return $this->wakeful;
     }
-} 
+}

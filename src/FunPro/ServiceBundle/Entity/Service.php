@@ -2,6 +2,7 @@
 
 namespace FunPro\ServiceBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\AgentBundle\Entity\Agent;
 use FunPro\DriverBundle\Entity\Car;
@@ -14,21 +15,25 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
- * Requested
+ * Service
  *
- * @ORM\Table(name="requested")
- * @ORM\Entity(repositoryClass="FunPro\ServiceBundle\Repository\RequestedRepository")
+ * @ORM\Table(name="service")
+ * @ORM\Entity(repositoryClass="FunPro\ServiceBundle\Repository\ServiceRepository")
  */
-class Requested
+class Service
 {
-    const TYPE_DISTANCE = 'distance';
-    const TYPE_TIMING   = 'timing';
+    const TYPE_DISTANCE = 1;
+    const TYPE_TIMING   = 2;
 
-    const DESIRE_QUALITY = 'quality';
-    const DESIRE_PRICE   = 'price';
-    const DESIRE_FAST    = 'fast';
-    const DESIRE_CLASS   = 'class';
-    const DESIRE_SUGGEST = 'suggest';
+    const DESIRE_QUALITY = 1;
+    const DESIRE_PRICE   = 2;
+    const DESIRE_FAST    = 3;
+    const DESIRE_CLASS   = 4;
+    const DESIRE_SUGGEST = 5;
+
+    const PROPAGATION_TYPE_ALL = 1;
+    const PROPAGATION_TYPE_LIST = 2;
+    const PROPAGATION_TYPE_SINGLE = 3;
 
     /**
      * @var int
@@ -37,7 +42,7 @@ class Requested
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @JS\Groups({"Passenger", "Driver", "Agent", "Admin"})
+     * @JS\Groups({"Passenger", "Driver", "Agent", "Admin", "Public"})
      * @JS\Since("1.0.0")
      */
     private $id;
@@ -46,7 +51,7 @@ class Requested
      * @var Passenger
      *
      * @ORM\ManyToOne(targetEntity="FunPro\PassengerBundle\Entity\Passenger")
-     * @ORM\JoinColumn(name="passenger_id", referencedColumnName="id", onDelete="cascade")
+     * @ORM\JoinColumn(name="passenger_id", referencedColumnName="id", onDelete="SET NULL")
      *
      * @Assert\Type(type="FunPro\PassengerBundle\Entity\Passenger", groups={"Create"})
      *
@@ -60,7 +65,7 @@ class Requested
      * @var Agent
      *
      * @ORM\ManyToOne(targetEntity="FunPro\AgentBundle\Entity\Agent")
-     * @ORM\JoinColumn(name="agent_id", referencedColumnName="id", onDelete="cascade")
+     * @ORM\JoinColumn(name="agent_id", referencedColumnName="id", onDelete="SET NULL")
      *
      * @Assert\Type(type="FunPro\AgentBundle\Entity\Agent", groups={"Create"})
      *
@@ -86,6 +91,18 @@ class Requested
     private $startPoint;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="start_address", length=500, nullable=true)
+     *
+     * @Assert\Length(max="500", groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Passenger", "Driver", "Agent", "Admin", "Point"})
+     * @JS\Since("1.0.0")
+     */
+    private $startAddress;
+
+    /**
      * @var Point
      *
      * @ORM\Column(name="end_point", type="point", nullable=true)
@@ -102,7 +119,19 @@ class Requested
     /**
      * @var string
      *
-     * @ORM\Column(length=15)
+     * @ORM\Column(name="end_address", length=500, nullable=true)
+     *
+     * @Assert\Length(max="500", groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Passenger", "Driver", "Admin", "Point"})
+     * @JS\Since("1.0.0")
+     */
+    private $endAddress;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(type="smallint")
      *
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Choice(callback="getTypes", groups={"Create"})
@@ -113,9 +142,9 @@ class Requested
     private $type;
 
     /**
-     * @var string
+     * @var integer
      *
-     * @ORM\Column(length=15)
+     * @ORM\Column(type="smallint")
      *
      * @Assert\NotBlank(groups={"Create"})
      * @Assert\Choice(callback="getDesireOptions", groups={"Create"})
@@ -141,18 +170,41 @@ class Requested
      * @var Car
      *
      * @ORM\ManyToOne(targetEntity="FunPro\DriverBundle\Entity\Car")
-     * @ORM\JoinColumn(name="car_id", referencedColumnName="id", onDelete="cascade")
+     * @ORM\JoinColumn(name="car_id", referencedColumnName="id", onDelete="RESTRICT")
      *
-     * @JS\Groups({"Passenger", "Driver", "Agent", "Admin"})
-     * @JS\MaxDepth(1)
+     * @JS\Groups({"Car"})
+     * @JS\MaxDepth(2)
      * @JS\Since("1.0.0")
      */
     private $car;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="propagation_type", type="smallint")
+     *
+     * @Assert\NotBlank(groups={"Create"})
+     *
+     * @JS\Groups({"Passenger", "Driver", "Agent", "Admin"})
+     * @JS\Since("1.0.0")
+     */
+    private $propagationType;
+
+    /**
+     * @var PropagationList
+     *
+     * @ORM\OneToMany(targetEntity="FunPro\ServiceBundle\Entity\PropagationList", mappedBy="service")
+     *
+     * @JS\Groups({"PropagationList"})
+     * @JS\MaxDepth(3)
+     * @JS\Since("1.0.0")
+     */
+    private $propagationList;
+
+    /**
      * @var double
      *
-     * @ORM\Column(type="decimal", precision=2, scale=1, nullable=true)
+     * @ORM\Column(type="decimal", precision=1, nullable=true)
      *
      * @Assert\Range(min="0", max="5", groups={"Rate"})
      * @Assert\NotNull(groups={"Rate"})
@@ -166,7 +218,7 @@ class Requested
     /**
      * @var double
      *
-     * @ORM\Column(type="decimal", precision=2, scale=1, nullable=true)
+     * @ORM\Column(type="decimal", precision=1, nullable=true)
      *
      * @Assert\Range(min="0", max="5", groups={"Rate"})
      * @Assert\NotNull(groups={"Rate"})
@@ -176,26 +228,6 @@ class Requested
      * @JS\Since("1.0.0")
      */
     private $passengerRate;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="start_time", type="datetime", nullable=true)
-     *
-     * @JS\Groups({"Passenger", "Driver", "Agent", "Admin"})
-     * @JS\Since("1.0.0")
-     */
-    private $startTime;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="end_time", type="datetime", nullable=true)
-     *
-     * @JS\Groups({"Passenger", "Driver", "Admin"})
-     * @JS\Since("1.0.0")
-     */
-    private $endTime;
 
     /**
      * @var LineString
@@ -228,12 +260,33 @@ class Requested
     private $price;
 
     /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="FunPro\ServiceBundle\Entity\FloatingCost", mappedBy="service")
+     *
+     * @JS\Groups({"Cost"})
+     * @JS\Since("1.0.0")
+     */
+    private $floatingCosts;
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="FunPro\ServiceBundle\Entity\ServiceLog", mappedBy="service")
+     *
+     * @JS\Groups({"ServiceLogs"})
+     * @JS\Since("1.0.0")
+     */
+    private $logs;
+
+    /**
      * @var \Datetime
      *
      * @ORM\Column(name="created_at", type="datetime")
      * @Gedmo\Timestampable(on="create")
      *
-     * @JS\Groups({"Public"})
+     * @JS\Groups({"Public", "Admin"})
+     * @JS\Since("1.0.0")
      */
     private $createdAt;
 
@@ -243,14 +296,21 @@ class Requested
      * @ORM\Column(name="updated_at", type="datetime", nullable=true)
      * @Gedmo\Timestampable(on="update")
      *
-     * @JS\Groups({"Public"})
+     * @JS\Groups({"Public", "Admin"})
+     * @JS\Since("1.0.0")
      */
     private $updatedAt;
 
     public function __construct()
     {
+        $this->setType(self::TYPE_DISTANCE);
+        $this->setDesire(self::DESIRE_SUGGEST);
         $this->setRoute(new LineString());
         $this->setCreatedAt(new \DateTime());
+        $this->floatingCosts = new ArrayCollection();
+        $this->propagationList = new ArrayCollection();
+        $this->setPropagationType(self::PROPAGATION_TYPE_ALL);
+        $this->logs = new ArrayCollection();
     }
 
     /**
@@ -262,8 +322,8 @@ class Requested
     public static function getTypes()
     {
         return array(
-            self::TYPE_DISTANCE => self::TYPE_DISTANCE,
-            self::TYPE_TIMING => self::TYPE_TIMING,
+            'distance' => self::TYPE_DISTANCE,
+            'timing' => self::TYPE_TIMING,
         );
     }
 
@@ -276,18 +336,27 @@ class Requested
     public static function getDesireOptions()
     {
         return array(
-            self::DESIRE_QUALITY => self::DESIRE_QUALITY,
-            self::DESIRE_PRICE => self::DESIRE_PRICE,
-            self::DESIRE_FAST => self::DESIRE_FAST,
-            self::DESIRE_CLASS => self::DESIRE_CLASS,
-            self::DESIRE_SUGGEST => self::DESIRE_SUGGEST,
+            'quality' => self::DESIRE_QUALITY,
+            'price'   => self::DESIRE_PRICE,
+            'fast'    => self::DESIRE_FAST,
+            'class'   => self::DESIRE_CLASS,
+            'suggest' => self::DESIRE_SUGGEST,
+        );
+    }
+
+    public static function getPropaginationTypes()
+    {
+        return array(
+            'all' => self::PROPAGATION_TYPE_ALL,
+            'list' => self::PROPAGATION_TYPE_LIST,
+            'single' => self::PROPAGATION_TYPE_SINGLE,
         );
     }
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -298,7 +367,8 @@ class Requested
      * Set startPoint
      *
      * @param point $startPoint
-     * @return Requested
+     *
+     * @return Service
      */
     public function setStartPoint($startPoint)
     {
@@ -321,7 +391,8 @@ class Requested
      * Set endPoint
      *
      * @param point $endPoint
-     * @return Requested
+     *
+     * @return Service
      */
     public function setEndPoint($endPoint)
     {
@@ -341,14 +412,57 @@ class Requested
     }
 
     /**
+     * @return mixed
+     */
+    public function getEndAddress()
+    {
+        return $this->endAddress;
+    }
+
+    /**
+     * @param mixed $endAddress
+     *
+     * @return $this
+     */
+    public function setEndAddress($endAddress)
+    {
+        $this->endAddress = $endAddress;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStartAddress()
+    {
+        return $this->startAddress;
+    }
+
+    /**
+     * @param string $startAddress
+     *
+     * @return $this
+     */
+    public function setStartAddress($startAddress)
+    {
+        $this->startAddress = $startAddress;
+        return $this;
+    }
+
+    /**
      * Set type
      *
-     * @param string $type
+     * @param integer $type
+     *
      * @throws \InvalidArgumentException
-     * @return Requested
+     * @return Service
      */
     public function setType($type)
     {
+        if ($type === null) {
+            return;
+        }
+
         if (!in_array($type, $this->getTypes())) {
             throw new \InvalidArgumentException('Invalid type');
         }
@@ -361,7 +475,7 @@ class Requested
     /**
      * Get type
      *
-     * @return string 
+     * @return string
      */
     public function getType()
     {
@@ -371,11 +485,16 @@ class Requested
     /**
      * Set desire
      *
-     * @param string $desire
-     * @return Requested
+     * @param integer $desire
+     *
+     * @return Service
      */
     public function setDesire($desire)
     {
+        if ($desire === null) {
+            return;
+        }
+
         if (!in_array($desire, $this->getDesireOptions())) {
             throw new \InvalidArgumentException('Invalid desire');
         }
@@ -390,7 +509,7 @@ class Requested
      *
      * @Assert\NotNull(groups={"Create"})
      *
-     * @return string 
+     * @return string
      */
     public function getDesire()
     {
@@ -401,7 +520,8 @@ class Requested
      * Set description
      *
      * @param string $description
-     * @return Requested
+     *
+     * @return Service
      */
     public function setDescription($description)
     {
@@ -413,7 +533,7 @@ class Requested
     /**
      * Get description
      *
-     * @return string 
+     * @return string
      */
     public function getDescription()
     {
@@ -424,7 +544,8 @@ class Requested
      * Set driverRate
      *
      * @param string $driverRate
-     * @return Requested
+     *
+     * @return Service
      */
     public function setDriverRate($driverRate)
     {
@@ -436,7 +557,7 @@ class Requested
     /**
      * Get driverRate
      *
-     * @return string 
+     * @return string
      */
     public function getDriverRate()
     {
@@ -447,7 +568,8 @@ class Requested
      * Set passengerRate
      *
      * @param string $passengerRate
-     * @return Requested
+     *
+     * @return Service
      */
     public function setPassengerRate($passengerRate)
     {
@@ -459,7 +581,7 @@ class Requested
     /**
      * Get passengerRate
      *
-     * @return string 
+     * @return string
      */
     public function getPassengerRate()
     {
@@ -467,56 +589,11 @@ class Requested
     }
 
     /**
-     * Set startTime
-     *
-     * @param \DateTime $startTime
-     * @return Requested
-     */
-    public function setStartTime($startTime)
-    {
-        $this->startTime = $startTime;
-
-        return $this;
-    }
-
-    /**
-     * Get startTime
-     *
-     * @return \DateTime 
-     */
-    public function getStartTime()
-    {
-        return $this->startTime;
-    }
-
-    /**
-     * Set endTime
-     *
-     * @param \DateTime $endTime
-     * @return Requested
-     */
-    public function setEndTime($endTime)
-    {
-        $this->endTime = $endTime;
-
-        return $this;
-    }
-
-    /**
-     * Get endTime
-     *
-     * @return \DateTime 
-     */
-    public function getEndTime()
-    {
-        return $this->endTime;
-    }
-
-    /**
      * Set route
      *
      * @param linestring $route
-     * @return Requested
+     *
+     * @return Service
      */
     public function setRoute($route)
     {
@@ -528,7 +605,7 @@ class Requested
     /**
      * Get route
      *
-     * @return linestring 
+     * @return linestring
      */
     public function getRoute()
     {
@@ -539,7 +616,8 @@ class Requested
      * Set distance
      *
      * @param string $distance
-     * @return Requested
+     *
+     * @return Service
      */
     public function setDistance($distance)
     {
@@ -551,7 +629,7 @@ class Requested
     /**
      * Get distance
      *
-     * @return string 
+     * @return string
      */
     public function getDistance()
     {
@@ -562,7 +640,8 @@ class Requested
      * Set price
      *
      * @param integer $price
-     * @return Requested
+     *
+     * @return Service
      */
     public function setPrice($price)
     {
@@ -574,7 +653,7 @@ class Requested
     /**
      * Get price
      *
-     * @return integer 
+     * @return integer
      */
     public function getPrice()
     {
@@ -584,10 +663,11 @@ class Requested
     /**
      * Set passenger
      *
-     * @param \FunPro\PassengerBundle\Entity\Passenger $passenger
-     * @return Requested
+     * @param Passenger $passenger
+     *
+     * @return Service
      */
-    public function setPassenger(\FunPro\PassengerBundle\Entity\Passenger $passenger = null)
+    public function setPassenger(Passenger $passenger = null)
     {
         $this->passenger = $passenger;
 
@@ -597,7 +677,7 @@ class Requested
     /**
      * Get passenger
      *
-     * @return \FunPro\PassengerBundle\Entity\Passenger 
+     * @return Passenger
      */
     public function getPassenger()
     {
@@ -607,10 +687,11 @@ class Requested
     /**
      * Set agent
      *
-     * @param \FunPro\AgentBundle\Entity\Agent $agent
-     * @return Requested
+     * @param Agent $agent
+     *
+     * @return Service
      */
-    public function setAgent(\FunPro\AgentBundle\Entity\Agent $agent = null)
+    public function setAgent(Agent $agent = null)
     {
         $this->agent = $agent;
 
@@ -620,7 +701,7 @@ class Requested
     /**
      * Get agent
      *
-     * @return \FunPro\AgentBundle\Entity\Agent 
+     * @return Agent
      */
     public function getAgent()
     {
@@ -630,10 +711,11 @@ class Requested
     /**
      * Set car
      *
-     * @param \FunPro\DriverBundle\Entity\Car $car
-     * @return Requested
+     * @param Car $car
+     *
+     * @return Service
      */
-    public function setCar(\FunPro\DriverBundle\Entity\Car $car = null)
+    public function setCar(Car $car = null)
     {
         $this->car = $car;
 
@@ -643,7 +725,7 @@ class Requested
     /**
      * Get car
      *
-     * @return \FunPro\DriverBundle\Entity\Car 
+     * @return Car
      */
     public function getCar()
     {
@@ -656,11 +738,11 @@ class Requested
     public function validate(ExecutionContextInterface $context)
     {
         if ($this->getPassenger() and $this->getAgent()) {
-            $context->buildViolation("you must set only either passenger or agent")
+            $context->buildViolation('you must set only either passenger or agent')
                 ->atPath('passenger')
                 ->addViolation();
         } elseif (!($this->getPassenger() or $this->getAgent())) {
-            $context->buildViolation("you must set passenger or agent")
+            $context->buildViolation('you must set passenger or agent')
                 ->atPath('passenger')
                 ->addViolation();
         }
@@ -701,6 +783,126 @@ class Requested
     public function setUpdatedAt($updatedAt)
     {
         $this->updatedAt = $updatedAt;
+        return $this;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getFloatingCosts()
+    {
+        return $this->floatingCosts;
+    }
+
+    /**
+     * @param ArrayCollection $floatingCosts
+     *
+     * @return $this
+     */
+    public function setFloatingCosts($floatingCosts)
+    {
+        $this->floatingCosts = $floatingCosts;
+        return $this;
+    }
+
+    /**
+     * Set propagationType
+     *
+     * @param integer $propagationType
+     *
+     * @return Service
+     */
+    public function setPropagationType($propagationType)
+    {
+        $this->propagationType = $propagationType;
+
+        return $this;
+    }
+
+    /**
+     * Get propagationType
+     *
+     * @return integer
+     */
+    public function getPropagationType()
+    {
+        return $this->propagationType;
+    }
+
+    /**
+     * Add propagationList
+     *
+     * @param PropagationList $propagationList
+     *
+     * @return Service
+     */
+    public function addPropagationList(PropagationList $propagationList)
+    {
+        $this->propagationList[] = $propagationList;
+
+        return $this;
+    }
+
+    /**
+     * Remove propagationList
+     *
+     * @param PropagationList $propagationList
+     */
+    public function removePropagationList(PropagationList $propagationList)
+    {
+        $this->propagationList->removeElement($propagationList);
+    }
+
+    /**
+     * Get propagationList
+     *
+     * @return ArrayCollection
+     */
+    public function getPropagationList()
+    {
+        return $this->propagationList;
+    }
+
+    /**
+     * Add floatingCosts
+     *
+     * @param FloatingCost $floatingCosts
+     *
+     * @return Service
+     */
+    public function addFloatingCost(FloatingCost $floatingCosts)
+    {
+        $this->floatingCosts[] = $floatingCosts;
+
+        return $this;
+    }
+
+    /**
+     * Remove floatingCosts
+     *
+     * @param FloatingCost $floatingCosts
+     */
+    public function removeFloatingCost(FloatingCost $floatingCosts)
+    {
+        $this->floatingCosts->removeElement($floatingCosts);
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getLogs()
+    {
+        return $this->logs;
+    }
+
+    /**
+     * @param ArrayCollection $logs
+     *
+     * @return $this
+     */
+    public function setLogs($logs)
+    {
+        $this->logs = $logs;
         return $this;
     }
 }

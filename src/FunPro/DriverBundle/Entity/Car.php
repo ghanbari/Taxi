@@ -7,7 +7,6 @@ use FunPro\ServiceBundle\Entity\Wakeful;
 use FunPro\UserBundle\Entity\User;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as JS;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**

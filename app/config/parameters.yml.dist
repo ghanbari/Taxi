@@ -29,6 +29,10 @@ parameters:
 
     gcm.api_key: ''
     gcm.ttl.service_request: 15
+    gcm.ttl.service_accept: 15
+    gcm.ttl.service_ready: 15
+    gcm.ttl.service_start: 15
+    gcm.ttl.service_finish: 15
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt

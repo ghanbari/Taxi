@@ -10,7 +10,7 @@ use JMS\Serializer\Annotation as JS;
  * DriverLog
  *
  * @ORM\Table(name="driver_log")
- * @ORM\Entity(repositoryClass="FunPro\DriverBundle\Repository\DriverLogRepository")
+ * @ORM\Entity(repositoryClass="FunPro\DriverBundle\Repository\CarLogRepository")
  * @ORM\HasLifecycleCallbacks()
  */
 class CarLog
@@ -52,12 +52,12 @@ class CarLog
     /**
      * @var integer
      *
-     * @ORM\Column(name="log", length=15)
+     * @ORM\Column(name="status", length=15)
      *
      * @JS\Groups({"Public"})
      * @JS\Since("1.0.0")
      */
-    private $log;
+    private $status;
 
     /**
      * @var Point
@@ -70,17 +70,22 @@ class CarLog
      */
     private $point;
 
-    public function __construct(Car $car, $log, Point $point=null)
+    /**
+     * @param Car   $car
+     * @param       $status
+     * @param Point $point
+     */
+    public function __construct(Car $car, $status, Point $point = null)
     {
         $this->setCar($car);
-        $this->setLog($log);
+        $this->setStatus($status);
         $this->setPoint($point);
     }
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -99,7 +104,7 @@ class CarLog
     /**
      * Get atTime
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getAtTime()
     {
@@ -107,26 +112,22 @@ class CarLog
     }
 
     /**
-     * Set log
-     *
-     * @param string $log
-     * @return CarLog
+     * @return int
      */
-    public function setLog($log)
+    public function getStatus()
     {
-        $this->log = $log;
-
-        return $this;
+        return $this->status;
     }
 
     /**
-     * Get log
+     * @param int $status
      *
-     * @return string 
+     * @return $this
      */
-    public function getLog()
+    public function setStatus($status)
     {
-        return $this->log;
+        $this->status = $status;
+        return $this;
     }
 
     /**
@@ -145,7 +146,7 @@ class CarLog
     /**
      * Get point
      *
-     * @return point 
+     * @return point
      */
     public function getPoint()
     {
@@ -155,10 +156,10 @@ class CarLog
     /**
      * Set car
      *
-     * @param \FunPro\DriverBundle\Entity\Car $car
+     * @param Car $car
      * @return CarLog
      */
-    public function setCar(\FunPro\DriverBundle\Entity\Car $car = null)
+    public function setCar(Car $car = null)
     {
         $this->car = $car;
 
@@ -168,7 +169,7 @@ class CarLog
     /**
      * Get car
      *
-     * @return \FunPro\DriverBundle\Entity\Car 
+     * @return Car
      */
     public function getCar()
     {

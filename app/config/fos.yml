@@ -53,7 +53,7 @@ fos_rest:
     exception:
         enabled: true
         codes:
-            'FunPro\DriverBundle\Exception\RuntimeCarStatusException': 400
+            'FunPro\DriverBundle\Exception\CarStatusException': 400
         messages:
             'Symfony\Component\HttpKernel\Exception\NotFoundHttpException': true
-            'FunPro\DriverBundle\Exception\RuntimeCarStatusException': true
+            'FunPro\DriverBundle\Exception\CarStatusException': true
