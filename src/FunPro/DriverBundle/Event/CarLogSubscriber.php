@@ -1,14 +1,11 @@
 <?php
 
-namespace FunPro\DriverBundle\EventListener;
+namespace FunPro\DriverBundle\Event;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use FunPro\DriverBundle\CarEvents;
 use FunPro\DriverBundle\Entity\Car;
 use FunPro\DriverBundle\Entity\CarLog;
-use FunPro\DriverBundle\Event\CarEvent;
-use FunPro\DriverBundle\Event\GetMoveCarEvent;
-use FunPro\DriverBundle\Event\WakefulEvent;
 use FunPro\DriverBundle\Exception\CarStatusException;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
