@@ -92,7 +92,15 @@ class DriverController extends FOSRestController
      */
     public function postAction(Request $request)
     {
+        do {
+            $apiKey = bin2hex(random_bytes(100));
+            $isDuplicate = $this->getDoctrine()->getRepository('FunProUserBundle:Device')
+                ->findOneByApiKey($apiKey);
+        } while ($isDuplicate);
+
         $driver = new Driver();
+        $driver->setApiKey($apiKey);
+
         $form = $this->getForm($driver, 'POST');
         $form->handleRequest($request);
 

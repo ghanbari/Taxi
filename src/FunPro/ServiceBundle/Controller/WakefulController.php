@@ -17,6 +17,7 @@ use FunPro\DriverBundle\Event\GetMoveCarEvent;
 use FunPro\DriverBundle\Event\WakefulEvent;
 use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\ServiceBundle\Entity\Wakeful;
+use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,7 +43,7 @@ class WakefulController extends FOSRestController
      *      views={"driver"},
      *      output={
      *          "class"="FunPro\ServiceBundle\Entity\Wakeful",
-     *          "groups"={"Public"},
+     *          "groups"={"Public", "Car", "CarStatus", "Point"},
      *          "parsers"={"Nelmio\ApiDocBundle\Parser\JmsMetadataParser"},
      *      },
      *      statusCodes={
@@ -152,6 +153,7 @@ class WakefulController extends FOSRestController
         $manager = $this->getDoctrine()->getManager();
         $logger = $this->get('logger');
         $translator = $this->get('translator');
+        $serializer = $this->get('jms_serializer');
 
         $driver = $this->getUser();
         $car = $manager->getRepository('FunProDriverBundle:Car')
@@ -186,6 +188,12 @@ class WakefulController extends FOSRestController
             $previousLocation = $wakeful->getPoint();
 
             $wakeful->setPoint($currentLocation);
+
+            $context = SerializationContext::create()->setGroups(array('Point'));
+            $logger->addInfo('car is moving', array(
+                'previous location' => $serializer->serialize($previousLocation, 'json', clone $context),
+                'current location' => $serializer->serialize($currentLocation, 'json', clone $context),
+            ));
 
             $movieEvent = new GetMoveCarEvent($wakeful->getCar(), $previousLocation, $currentLocation);
             $this->get('event_dispatcher')->dispatch(CarEvents::CAR_MOVE, $movieEvent);
@@ -288,6 +296,9 @@ class WakefulController extends FOSRestController
      *      statusCodes={
      *          200="When driver is in queue",
      *          204="When driver isn't in queue",
+     *          400={
+     *              "When driver's car is not defined(code: 1)",
+     *          },
      *          403= {
      *              "when you are not a driver",
      *          },
@@ -302,11 +313,12 @@ class WakefulController extends FOSRestController
      */
     public function getStatusAction()
     {
+        $manager = $this->getDoctrine()->getManager();
         $logger = $this->get('logger');
         $translator = $this->get('translator');
 
         $driver = $this->getUser();
-        $car = $this->getDoctrine()->getRepository('FunProDriverBundle:Car')
+        $car = $manager->getRepository('FunProDriverBundle:Car')
             ->findOneBy(array('driver' => $driver, 'current' => true));
 
         if (!$car) {
@@ -318,7 +330,7 @@ class WakefulController extends FOSRestController
             return $this->view($error, Response::HTTP_BAD_REQUEST);
         }
 
-        $wakeful = $this->getDoctrine()->getRepository('FunProServiceBundle:Wakeful')
+        $wakeful = $manager->getRepository('FunProServiceBundle:Wakeful')
             ->findOneByCar($car);
 
         if (!is_null($wakeful)) {
@@ -350,19 +362,21 @@ class WakefulController extends FOSRestController
      *      }
      * )
      *
-     * @Rest\QueryParam(name="latitude", strict=true, requirements=@Assert\Type(type="numeric"), description="latitude of driver coordinate")
-     * @Rest\QueryParam(name="longitude", strict=true, requirements=@Assert\Type(type="numeric"), description="longitude of driver coordinate")
-     * @Rest\QueryParam(name="limit", default=500, requirements=@Assert\Range(max="500"), description="Maximum of result")
+     * @Security("is_authenticated()")
+     *
+     * @Rest\QueryParam(name="latitude", strict=true, requirements=@Assert\Type(type="numeric"), nullable=false)
+     * @Rest\QueryParam(name="longitude", strict=true, requirements=@Assert\Type(type="numeric"), nullable=false)
+     * @Rest\QueryParam(name="limit", default=500, requirements=@Assert\Range(max="500"), description="Max of result")
      * @Rest\View()
      *
      * @return \FOS\RestBundle\View\View
      */
     public function cgetAction()
     {
-        $fether = $this->get('fos_rest.request.param_fetcher');
-        $lat = $fether->get('latitude', true);
-        $lon = $fether->get('longitude', true);
-        $limit = intval($fether->get('limit', true));
+        $fetcher = $this->get('fos_rest.request.param_fetcher');
+        $lat = $fetcher->get('latitude', true);
+        $lon = $fetcher->get('longitude', true);
+        $limit = intval($fetcher->get('limit', true));
 
         if ($this->getUser() and $this->getUser() instanceof Driver) {
             $disappear = $this->getUser();
@@ -370,14 +384,14 @@ class WakefulController extends FOSRestController
             $disappear = null;
         }
 
-        $wakefuls = $this->getDoctrine()->getRepository('FunProServiceBundle:Wakeful')
+        $wakefulList = $this->getDoctrine()->getRepository('FunProServiceBundle:Wakeful')
             ->getAllWakefulNearTo($lon, $lat, $this->getParameter('service.visible_radius'), $limit, $disappear);
 
-        if (count($wakefuls)) {
+        if (count($wakefulList)) {
             $context = (new Context())
                 ->addGroups(array('Public', 'Car', 'Point', 'Driver'))
                 ->setMaxDepth(true);
-            return $this->view($wakefuls, Response::HTTP_OK)
+            return $this->view($wakefulList, Response::HTTP_OK)
                 ->setSerializationContext($context);
         } else {
             return $this->view(null, Response::HTTP_NO_CONTENT);

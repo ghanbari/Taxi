@@ -8,7 +8,7 @@ use JMS\Serializer\Annotation as JS;
 /**
  * ServiceLog
  *
- * @ORM\Table(name="log")
+ * @ORM\Table(name="service_log")
  * @ORM\Entity(repositoryClass="FunPro\ServiceBundle\Repository\ServiceLogRepository")
  * @ORM\HasLifecycleCallbacks()
  */

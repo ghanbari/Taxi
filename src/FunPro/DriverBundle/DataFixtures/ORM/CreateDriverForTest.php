@@ -46,6 +46,12 @@ class CreateDriverForTest extends AbstractFixture implements OrderedFixtureInter
         $i = 1;
 
         foreach ($credentials as $nationalCode => $pass) {
+            do {
+                $apiKey = bin2hex(random_bytes(100));
+                $isDuplicate = $manager->getRepository('FunProUserBundle:Device')
+                    ->findOneByApiKey($apiKey);
+            } while ($isDuplicate);
+
             $driver = new Driver();
             $driver->setEmail($nationalCode.'@itaxico.ir');
             $driver->setUsername($nationalCode);
@@ -53,6 +59,7 @@ class CreateDriverForTest extends AbstractFixture implements OrderedFixtureInter
             $driver->setNationalCode($nationalCode);
             $driver->setName('driver-'.$i);
             $driver->setEnabled(true);
+            $driver->setApiKey($apiKey);
             $driver->setContractNumber($i);
             $driver->setMobile('09' . substr($nationalCode, 1));
             $driver->setAgency($this->getReference('agency-'. $agencies[rand(0, count($agencies)-1)]));

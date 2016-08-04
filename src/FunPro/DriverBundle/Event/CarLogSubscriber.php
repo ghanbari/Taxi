@@ -127,7 +127,7 @@ class CarLogSubscriber implements EventSubscriberInterface
 
         $car->setStatus($status);
         $carLog = new CarLog($car, $status, $event->getCurrentLocation());
-        $this->logger->addInfo('Car\'s status changed to'.$status, array($car->getId()));
+        $this->logger->addInfo('Car\'s status changed to '.$status, array($car->getId()));
         $this->doctrine->getManager()->persist($carLog);
     }
 

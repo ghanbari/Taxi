@@ -105,7 +105,12 @@ class PropagationList
      */
     private $updatedAt;
 
-    public function __construct($service, $car, $number)
+    /**
+     * @param Service $service
+     * @param Car     $car
+     * @param int     $number
+     */
+    public function __construct(Service $service, Car $car, $number)
     {
         $this->setService($service);
         $this->setCar($car);
@@ -247,7 +252,12 @@ class PropagationList
      */
     public function setService(Service $service)
     {
+        if ($this->service !== null) {
+            $this->service->removePropagationList($this);
+        }
+
         $this->service = $service;
+        $service->addPropagationList($this);
 
         return $this;
     }

@@ -19,14 +19,14 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Car
 {
-    const STATUS_WAKEFUL         = 'wakeful';
-    const STATUS_SLEEP           = 'sleep';
-    const STATUS_SERVICE_ACCEPT  = 'accept';
-    const STATUS_SERVICE_PREPARE = 'prepare'; #go to passenger place
-    const STATUS_SERVICE_READY   = 'ready'; #in passenger place
-    const STATUS_SERVICE_START   = 'start';
-    const STATUS_SERVICE_IN      = 'in_service';
-    const STATUS_SERVICE_END     = 'end';
+    const STATUS_SLEEP           = 0;
+    const STATUS_WAKEFUL         = 1;
+    const STATUS_SERVICE_ACCEPT  = 2;
+    const STATUS_SERVICE_PREPARE = 3;
+    const STATUS_SERVICE_READY   = 4;
+    const STATUS_SERVICE_START   = 5;
+    const STATUS_SERVICE_IN      = 6;
+    const STATUS_SERVICE_END     = 7;
 
     /**
      * @var int
@@ -202,9 +202,9 @@ class Car
     private $current;
 
     /**
-     * @var string
+     * @var integer
      *
-     * @ORM\Column(name="status", length=15)
+     * @ORM\Column(name="status", type="smallint")
      *
      * @JS\Groups({"CarStatus", "Admin"})
      * @JS\Since("1.0.0")
@@ -229,7 +229,7 @@ class Car
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -252,7 +252,7 @@ class Car
     /**
      * Get type
      *
-     * @return string 
+     * @return string
      */
     public function getType()
     {
@@ -298,7 +298,7 @@ class Car
     /**
      * Get color
      *
-     * @return string 
+     * @return string
      */
     public function getColor()
     {
@@ -321,7 +321,7 @@ class Car
     /**
      * Get born
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getBorn()
     {
@@ -344,7 +344,7 @@ class Car
     /**
      * Get rate
      *
-     * @return string 
+     * @return string
      */
     public function getRate()
     {
@@ -367,7 +367,7 @@ class Car
     /**
      * Get description
      *
-     * @return string 
+     * @return string
      */
     public function getDescription()
     {
@@ -390,7 +390,7 @@ class Car
     /**
      * Get deletedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDeletedAt()
     {
@@ -400,10 +400,10 @@ class Car
     /**
      * Set driver
      *
-     * @param \FunPro\DriverBundle\Entity\Driver $driver
+     * @param Driver $driver
      * @return Car
      */
-    public function setDriver(\FunPro\DriverBundle\Entity\Driver $driver)
+    public function setDriver(Driver $driver)
     {
         $this->driver = $driver;
 
@@ -413,7 +413,7 @@ class Car
     /**
      * Get driver
      *
-     * @return \FunPro\DriverBundle\Entity\Driver 
+     * @return Driver
      */
     public function getDriver()
     {
@@ -423,10 +423,10 @@ class Car
     /**
      * Set deletedBy
      *
-     * @param \FunPro\UserBundle\Entity\User $deletedBy
+     * @param User $deletedBy
      * @return Car
      */
-    public function setDeletedBy(\FunPro\UserBundle\Entity\User $deletedBy = null)
+    public function setDeletedBy(User $deletedBy = null)
     {
         $this->deletedBy = $deletedBy;
 
@@ -436,7 +436,7 @@ class Car
     /**
      * Get deletedBy
      *
-     * @return \FunPro\UserBundle\Entity\User 
+     * @return User
      */
     public function getDeletedBy()
     {
@@ -459,7 +459,7 @@ class Car
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt()
     {
@@ -480,9 +480,19 @@ class Car
     }
 
     /**
+     * Show whether car is current
+     *
+     * @return boolean
+     */
+    public function isCurrent()
+    {
+        return $this->current;
+    }
+
+    /**
      * Get current
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getCurrent()
     {
@@ -492,10 +502,10 @@ class Car
     /**
      * Set createdBy
      *
-     * @param \FunPro\UserBundle\Entity\User $createdBy
+     * @param User $createdBy
      * @return Car
      */
-    public function setCreatedBy(\FunPro\UserBundle\Entity\User $createdBy = null)
+    public function setCreatedBy(User $createdBy = null)
     {
         $this->createdBy = $createdBy;
 
@@ -505,7 +515,7 @@ class Car
     /**
      * Get createdBy
      *
-     * @return \FunPro\UserBundle\Entity\User 
+     * @return User
      */
     public function getCreatedBy()
     {
@@ -515,7 +525,7 @@ class Car
     /**
      * Set status
      *
-     * @param string $status
+     * @param integer $status
      * @return Car
      */
     public function setStatus($status)
@@ -526,9 +536,9 @@ class Car
     }
 
     /**
-     * Get status
+     * Get integer
      *
-     * @return string 
+     * @return string
      */
     public function getStatus()
     {
@@ -570,7 +580,7 @@ class Car
     /**
      * Get brand
      *
-     * @return string 
+     * @return string
      */
     public function getBrand()
     {

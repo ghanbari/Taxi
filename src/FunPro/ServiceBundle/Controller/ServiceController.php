@@ -3,14 +3,11 @@
 namespace FunPro\ServiceBundle\Controller;
 
 use Doctrine\ORM\PessimisticLockException;
-use Exception;
 use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use FunPro\DriverBundle\CarEvents;
-use FunPro\DriverBundle\Entity\Car;
 use FunPro\DriverBundle\Entity\Driver;
-use FunPro\DriverBundle\Event\CarEvent;
+use FunPro\DriverBundle\Exception\DriverNotFound;
 use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\ServiceBundle\Entity\FloatingCost;
@@ -20,15 +17,13 @@ use FunPro\ServiceBundle\Event\GetCarPointServiceEvent;
 use FunPro\ServiceBundle\Event\ServiceEvent;
 use FunPro\ServiceBundle\ServiceEvents;
 use FunPro\ServiceBundle\Form\ServiceType;
-use FunPro\UserBundle\Entity\Device;
-use FunPro\UserBundle\Entity\Message;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\VarDumper\VarDumper;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class ServiceController
@@ -38,8 +33,6 @@ use Symfony\Component\VarDumper\VarDumper;
  * @Rest\RouteResource("service", pluralize=false)
  * @Rest\NamePrefix("fun_pro_service_api_")
  *
- * @TODO: Move GCM to event listener or GCM listen to event
- * @TODO: GCM send request in http_kernel.terminated
  */
 class ServiceController extends FOSRestController
 {
@@ -78,7 +71,11 @@ class ServiceController extends FOSRestController
      *      },
      *      statusCodes={
      *          201="When success",
-     *          400="When form validation failed.",
+     *          400={
+     *              "When form validation failed.",
+     *              "When specified car in propagationList is not found(code: 1)",
+     *              "When any driver are not online(code: 2)",
+     *          },
      *          403= {
      *              "when csrf token is invalid",
      *              "when you are not a passenger or agent",
@@ -91,6 +88,7 @@ class ServiceController extends FOSRestController
     public function postAction(Request $request)
     {
         $logger = $this->get('logger');
+        $translator = $this->get('translator');
         $manager = $this->getDoctrine()->getManager();
         $service = new Service();
         $context = new Context();
@@ -121,7 +119,20 @@ class ServiceController extends FOSRestController
                 $service->setPropagationType($propagationType);
 
                 $number = 1;
-                foreach ($propagationCars as $car) {
+                foreach ($propagationCars as $carId) {
+                    $car = $manager->getRepository('FunProDriverBundle:Car')
+                        ->findOneBy(array('id' => $carId, 'current' => true));
+
+                    if (!$car) {
+                        $logger->addError('Car is not found', array('carId' => $carId));
+                        $error = array(
+                            'code' => 1,
+                            'message' => $translator->trans('car.is.not.found'),
+                            'carId' => $carId,
+                        );
+                        return $this->view($error, Response::HTTP_BAD_REQUEST);
+                    }
+
                     $propagationCar = new PropagationList($service, $car, $number);
                     $manager->persist($propagationCar);
                     $number++;
@@ -130,7 +141,15 @@ class ServiceController extends FOSRestController
 
             $logger->addInfo('Dispatch service requested event');
             $event = new ServiceEvent($service);
-            $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_REQUESTED, $event);
+            try {
+                $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_REQUESTED, $event);
+            } catch (DriverNotFound $e) {
+                $error = array(
+                    'code' => 2,
+                    'message' => $translator->trans($e->getMessage()),
+                );
+                return $this->view($error, Response::HTTP_BAD_REQUEST);
+            }
 
             $manager->persist($service);
             $manager->flush();
@@ -275,17 +294,24 @@ class ServiceController extends FOSRestController
      *
      * @ParamConverter("service", class="FunProServiceBundle:Service")
      * @Security("has_role('ROLE_DRIVER') and service.getCar().getDriver() == user")
+     *
+     * @Rest\RequestParam(name="latitude", nullable=false, requirements="\d+\.\d+", strict=true)
+     * @Rest\RequestParam(name="longitude", nullable=false, requirements="\d+\.\d+", strict=true)
      */
     public function patchReadyAction(Request $request, $id)
     {
         /** @var Service $service */
         $service = $request->attributes->get('service');
         $manager = $this->getDoctrine()->getManager();
+        $fetcher = $this->get('fos_rest.request.param_fetcher');
+        $point = new Point($fetcher->get('longitude'), $fetcher->get('latitude'));
         $logger = $this->get('logger');
+
+        # check driver location & request location
 
         #TODO: check service status, it must be accepted
 
-        $event = new ServiceEvent($service);
+        $event = new GetCarPointServiceEvent($service, $point);
         $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_READY, $event);
         $manager->flush();
 
@@ -361,7 +387,19 @@ class ServiceController extends FOSRestController
      * @Security("has_role('ROLE_DRIVER') and service.getCar().getDriver() == user")
      *
      * @Rest\RequestParam(name="price", nullable=false, requirements="\d+", strict=true)
-     * @Rest\RequestParam(name="floatingCost", nullable=true, map=true, strict=true)
+     * @Rest\RequestParam(
+     *      name="floatingCost",
+     *      nullable=true,
+     *      strict=true,
+     *      requirements=@Assert\All({
+     *          @Assert\Collection(
+     *              fields={
+     *                  "amount"=@Assert\Required({@Assert\NotBlank, @Assert\Type(type="numeric")}),
+     *                  "description"=@Assert\Required({@Assert\NotBlank(), @Assert\Length(max="50")})
+     *              }
+     *          )
+     *      })
+     * )
      */
     public function patchFinishAction(Request $request, $id)
     {
@@ -373,8 +411,10 @@ class ServiceController extends FOSRestController
         #TODO: check service status, it must be in service
 
         $service->setPrice($fetcher->get('price'));
-        foreach ($fetcher->get('floatingCost') as $floatCost) {
-            $manager->persist(new FloatingCost($service, $floatCost['cost'], $floatCost['description']));
+        if ($floatingCosts = $fetcher->get('floatingCost')) {
+            foreach ($floatingCosts as $floatCost) {
+                $manager->persist(new FloatingCost($service, intval($floatCost['amount']), $floatCost['description']));
+            }
         }
 
         $event = new ServiceEvent($service);
@@ -418,9 +458,9 @@ class ServiceController extends FOSRestController
 
         if ($user instanceof Driver) {
             $context->addGroup('Driver');
-        } elseif ($service->getPassenger() == $user) {
+        } elseif ($service->getPassenger() === $user) {
             $context->addGroups(array('Passenger', 'PropagationList', 'Cost'));
-        } elseif ($service->getAgent() and $service->getAgent()->getAdmin() == $user) {
+        } elseif ($service->getAgent() and $service->getAgent()->getAdmin() === $user) {
             $context->addGroup('Agent');
         } else {
             throw $this->createAccessDeniedException();

@@ -21,6 +21,8 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @Rest\NamePrefix("fun_pro_user_api_")
  * @Rest\RouteResource("device", pluralize=false)
+ *
+ * TODO: add more log
  */
 class DeviceController extends FOSRestController
 {

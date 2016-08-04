@@ -3,7 +3,9 @@
 namespace FunPro\EngineBundle\Listener;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use FunPro\DriverBundle\Exception\DriverNotFound;
 use FunPro\EngineBundle\GCM\GCM;
+use FunPro\ServiceBundle\Entity\PropagationList;
 use FunPro\ServiceBundle\Entity\Service;
 use FunPro\ServiceBundle\Event\GetCarPointServiceEvent;
 use FunPro\ServiceBundle\Event\GetCarServiceEvent;
@@ -17,6 +19,7 @@ use JMS\Serializer\Serializer;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Class ServiceNotificationListener
@@ -133,20 +136,36 @@ class ServiceNotificationListener implements EventSubscriberInterface
      * Send notification to specify drivers when service is requested
      *
      * @param ServiceEvent $event
+     *
+     * @throws DriverNotFound
      */
     public function onServiceRequest(ServiceEvent $event)
     {
         $service = $event->getService();
         $logger = $this->logger;
 
+        $data = array(
+            'type' => 'service',
+            'id' => $service->getId(),
+            'propagationType' => $event->getService()->getPropagationType(),
+        );
+
         if ($event->getService()->getPropagationType() !== Service::PROPAGATION_TYPE_ALL) {
             #TODO: sending notification only to first driver
             #TODO: monitoring and send notification to remain list members by cron job
-            $drivers = $service->getPropagationList()->first()->getCar()->getDriver();
+            /** @var PropagationList $firstPropagation */
+            VarDumper::dump($service->getPropagationList());
+            $firstPropagation = $service->getPropagationList()->first();
+            $firstPropagation->setNotifyStatus(PropagationList::NOTIFY_SEND);
+            $drivers = array($firstPropagation->getCar()->getDriver());
         } else {
             //TODO: Use Spatial Mysql Distance function for Mysql > 5.6.1
             $drivers = $this->doctrine->getRepository('FunProDriverBundle:Driver')
                 ->getAllAround($service->getStartPoint(), $this->parameterBag->get('service.visible_radius'));
+        }
+
+        if (!is_array($drivers) or empty($drivers)) {
+            throw new DriverNotFound('driver.is.not.found', 400);
         }
 
         $logger->addInfo(
@@ -157,24 +176,26 @@ class ServiceNotificationListener implements EventSubscriberInterface
         $devices = array_map(array($this, 'getActiveDevices'), $drivers);
         if ($devices) {
             $devices = call_user_func_array('array_merge', $devices);
+
+            if (!is_array($devices) or empty($devices)) {
+                throw new DriverNotFound('device.is.not.found', 400);
+            }
+
+            $logger->addInfo(
+                'sending notification to devices, ids:',
+                array_map(array($this, 'getEntitiesIds'), $devices)
+            );
+
+            $message = (new Message())
+                ->setData($data)
+                ->setPriority(Message::PRIORITY_HIGH)
+                ->setTimeToLive($this->parameterBag->get('gcm.ttl.service_request'));
+
+            $this->gcm->queue($devices, $message);
+        } else {
+            $logger->addNotice('Any active device is not found');
+            throw new DriverNotFound('device.is.not.found', 400);
         }
-
-        $logger->addInfo(
-            'sending notification to devices, ids:',
-            array_map(array($this, 'getEntitiesIds'), $devices)
-        );
-
-        $data = array(
-            'type' => 'service',
-            'id' => $service->getId()
-        );
-
-        $message = (new Message())
-            ->setData($data)
-            ->setPriority(Message::PRIORITY_HIGH)
-            ->setTimeToLive($this->parameterBag->get('gcm.ttl.service_request'));
-
-        $this->gcm->queue($devices, $message);
     }
 
     public function onServiceAccept(GetCarPointServiceEvent $event)
@@ -224,7 +245,7 @@ class ServiceNotificationListener implements EventSubscriberInterface
         $this->gcm->queue($service->getPassenger()->getDevices()->toArray(), $message);
     }
 
-    public function onServiceStart(GetCarPointServiceEvent $event)
+    public function onServiceStart(ServiceEvent $event)
     {
         $service = $event->getService();
 
@@ -240,7 +261,7 @@ class ServiceNotificationListener implements EventSubscriberInterface
         $this->gcm->queue($service->getPassenger()->getDevices()->toArray(), $message);
     }
 
-    public function onServiceFinish(GetCarPointServiceEvent $event)
+    public function onServiceFinish(ServiceEvent $event)
     {
         $service = $event->getService();
 

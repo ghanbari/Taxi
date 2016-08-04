@@ -96,7 +96,7 @@ class ServiceSubscriber implements EventSubscriberInterface
         $this->doctrine->getManager()->persist($carLog);
     }
 
-    public function onServiceReady(ServiceEvent $event)
+    public function onServiceReady(GetCarPointServiceEvent $event)
     {
         $service = $event->getService();
         $car = $service->getCar();

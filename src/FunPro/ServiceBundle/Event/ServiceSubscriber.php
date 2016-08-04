@@ -124,7 +124,7 @@ class ServiceSubscriber implements EventSubscriberInterface
         );
     }
 
-    public function onServiceStart(GetCarPointServiceEvent $event)
+    public function onServiceStart(ServiceEvent $event)
     {
         $log = new ServiceLog($event->getService(), ServiceLog::STATUS_START);
         $this->doctrine->getManager()->persist($log);
@@ -137,7 +137,7 @@ class ServiceSubscriber implements EventSubscriberInterface
         );
     }
 
-    public function onServiceFinish(GetCarPointServiceEvent $event)
+    public function onServiceFinish(ServiceEvent $event)
     {
         $log = new ServiceLog($event->getService(), ServiceLog::STATUS_FINISH);
         $this->doctrine->getManager()->persist($log);

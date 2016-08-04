@@ -52,7 +52,7 @@ class CarLog
     /**
      * @var integer
      *
-     * @ORM\Column(name="status", length=15)
+     * @ORM\Column(name="status", type="smallint")
      *
      * @JS\Groups({"Public"})
      * @JS\Since("1.0.0")
