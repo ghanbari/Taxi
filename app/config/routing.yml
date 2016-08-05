@@ -9,9 +9,9 @@ fun_pro_service:
     resource: "@FunProServiceBundle/Resources/config/routing.yml"
     type:     rest
 
-#fun_pro_geo:
-#    resource: "@FunProGeoBundle/Resources/config/routing.yml"
-#    type:     rest
+fun_pro_geo:
+    resource: "@FunProGeoBundle/Resources/config/routing.yml"
+    type:     rest
 #
 #fun_pro_engine:
 #    resource: "@FunProEngineBundle/Resources/config/routing.yml"

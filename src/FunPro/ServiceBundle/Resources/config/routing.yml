@@ -5,3 +5,8 @@ fun_pro_service_wakeful_api:
 fun_pro_service_api:
     resource: FunPro\ServiceBundle\Controller\ServiceController
     type: rest
+
+fun_pro_service_canceled_reason_api:
+    resource: "@FunProServiceBundle/Controller/CanceledReasonController.php"
+    type: rest
+    parent: fun_pro_service_api

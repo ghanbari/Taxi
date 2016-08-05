@@ -1,15 +1,12 @@
 <?php
 
-namespace FunPro\EngineBundle\Listener;
+namespace FunPro\ServiceBundle\Event;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use FunPro\DriverBundle\Exception\DriverNotFound;
 use FunPro\EngineBundle\GCM\GCM;
 use FunPro\ServiceBundle\Entity\PropagationList;
 use FunPro\ServiceBundle\Entity\Service;
-use FunPro\ServiceBundle\Event\GetCarPointServiceEvent;
-use FunPro\ServiceBundle\Event\GetCarServiceEvent;
-use FunPro\ServiceBundle\Event\ServiceEvent;
 use FunPro\ServiceBundle\ServiceEvents;
 use FunPro\UserBundle\Entity\Device;
 use FunPro\UserBundle\Entity\Message;

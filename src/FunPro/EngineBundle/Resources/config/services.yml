@@ -22,12 +22,6 @@ services:
                 method: 'processQueue'
                 priority: "%gcm.queue.priority%"
 
-    fun_pro_engine.service_notification_subscriber:
-        class: FunPro\EngineBundle\Listener\ServiceNotificationListener
-        arguments: ["@fun_pro_engine.gcm", "@doctrine", "@logger", "@serializer", "@=container.getParameterBag()"]
-        tags:
-            - { name: kernel.event_subscriber }
-
     fun_pro_engine.version_listener:
         class: FunPro\EngineBundle\Listener\FilterControllerByApiVersion
         arguments: ["@router", "%api_current_version%", "%api_available_versions%"]
