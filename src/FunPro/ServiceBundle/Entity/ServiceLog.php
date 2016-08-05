@@ -8,15 +8,19 @@ use JMS\Serializer\Annotation as JS;
 /**
  * ServiceLog
  *
- * @ORM\Table(name="service_log")
+ * @ORM\Table(
+ *      name="service_log",
+ *      uniqueConstraints={@ORM\UniqueConstraint(name="service_log_UNIQUE", columns={"status", "service_id"})}
+ * )
  * @ORM\Entity(repositoryClass="FunPro\ServiceBundle\Repository\ServiceLogRepository")
  * @ORM\HasLifecycleCallbacks()
  */
 class ServiceLog
 {
-    const STATUS_REQUESTED = 0;
-    const STATUS_ACCEPTED  = 1;
-    const STATUS_REJECTED  = 2;
+    const STATUS_REQUESTED = 1;
+    const STATUS_CANCELED  = -1;
+    const STATUS_ACCEPTED  = 2;
+    const STATUS_REJECTED  = -2;
     const STATUS_READY     = 3;
     const STATUS_START     = 4;
     const STATUS_FINISH    = 5;
@@ -34,9 +38,9 @@ class ServiceLog
     private $id;
 
     /**
-     * @var string
+     * @var integer
      *
-     * @ORM\Column(length=15)
+     * @ORM\Column(type="smallint")
      *
      * @JS\Groups({"Public"})
      * @JS\Since("1.0.0")
@@ -66,10 +70,10 @@ class ServiceLog
     private $atTime;
 
     /**
-     * @param $service
-     * @param $status
+     * @param Service $service
+     * @param Integer $status
      */
-    public function __construct($service, $status)
+    public function __construct(Service $service, $status)
     {
         $this->service = $service;
         $this->status = $status;
@@ -89,9 +93,9 @@ class ServiceLog
     /**
      * Set status
      *
-     * @param string $status
+     * @param integer $status
      *
-*@return ServiceLog
+     * @return ServiceLog
      */
     public function setStatus($status)
     {
@@ -103,7 +107,7 @@ class ServiceLog
     /**
      * Get status
      *
-     * @return string
+     * @return integer
      */
     public function getStatus()
     {

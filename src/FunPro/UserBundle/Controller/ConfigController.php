@@ -46,6 +46,7 @@ class ConfigController extends FOSRestController
             'register.max_token_request' => $this->getParameter('register.max_token_request'),
             'register.reset_token_request_after_second' => $this->getParameter('register.reset_token_request_after_second'),
             'service.visible_radius' => $this->getParameter('service.visible_radius'),
+            'service.passenger.can_cancel_till' => $this->getParameter('service.passenger.can_cancel_till'),
         );
 
         return $this->view($config, Response::HTTP_OK);

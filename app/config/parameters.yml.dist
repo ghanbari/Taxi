@@ -33,6 +33,7 @@ parameters:
     gcm.ttl.service_ready: 15
     gcm.ttl.service_start: 15
     gcm.ttl.service_finish: 15
+    gcm.ttl.service_cancel: 15
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
@@ -48,6 +49,7 @@ parameters:
 
     # visible radius for driver is differ from passenger
     service.visible_radius: 7000 #meter
+    service.passenger.can_cancel_till: '60second'
 
     ui.data_table.per_page: 10
     ui.data_table.max_per_page: 100

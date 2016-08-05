@@ -19,7 +19,6 @@ use JMS\Serializer\Serializer;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Class ServiceNotificationListener
@@ -96,6 +95,7 @@ class ServiceNotificationListener implements EventSubscriberInterface
     {
         return array(
             ServiceEvents::SERVICE_REQUESTED => array('onServiceRequest', 5),
+            ServiceEvents::SERVICE_CANCELED => array('onServiceCanceled', 5),
             ServiceEvents::SERVICE_ACCEPTED  => array('onServiceAccept', 5),
             ServiceEvents::SERVICE_REJECTED  => array('onServiceReject', 5),
             ServiceEvents::SERVICE_READY     => array('onServiceReady', 5),
@@ -133,7 +133,7 @@ class ServiceNotificationListener implements EventSubscriberInterface
     }
 
     /**
-     * Send notification to specify drivers when service is requested
+     * Send notification to given drivers when service is requested
      *
      * @param ServiceEvent $event
      *
@@ -154,7 +154,6 @@ class ServiceNotificationListener implements EventSubscriberInterface
             #TODO: sending notification only to first driver
             #TODO: monitoring and send notification to remain list members by cron job
             /** @var PropagationList $firstPropagation */
-            VarDumper::dump($service->getPropagationList());
             $firstPropagation = $service->getPropagationList()->first();
             $firstPropagation->setNotifyStatus(PropagationList::NOTIFY_SEND);
             $drivers = array($firstPropagation->getCar()->getDriver());
@@ -178,7 +177,7 @@ class ServiceNotificationListener implements EventSubscriberInterface
             $devices = call_user_func_array('array_merge', $devices);
 
             if (!is_array($devices) or empty($devices)) {
-                throw new DriverNotFound('device.is.not.found', 400);
+                throw new DriverNotFound('driver.device.is.not.found', 400);
             }
 
             $logger->addInfo(
@@ -196,6 +195,30 @@ class ServiceNotificationListener implements EventSubscriberInterface
             $logger->addNotice('Any active device is not found');
             throw new DriverNotFound('device.is.not.found', 400);
         }
+    }
+
+    public function onServiceCanceled(ServiceEvent $event)
+    {
+        $service = $event->getService();
+
+        if (!$service->getCar()) {
+            $this->logger->addInfo('Service haven\'t car, no send notification', array('service' => $service->getId()));
+            return;
+        }
+
+        $driver = $service->getCar()->getDriver();
+
+        $data = array(
+            'type' => 'service.canceled',
+            'id' => $service->getId(),
+            'mobile' => $service->getPassenger()->getMobile(),
+        );
+
+        $message = (new Message())
+            ->setData($data)
+            ->setPriority(Message::PRIORITY_HIGH)
+            ->setTimeToLive($this->parameterBag->get('gcm.ttl.service_cancel'));
+        $this->gcm->queue($driver->getDevices()->toArray(), $message);
     }
 
     public function onServiceAccept(GetCarPointServiceEvent $event)

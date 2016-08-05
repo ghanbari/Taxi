@@ -9,6 +9,7 @@ use FunPro\DriverBundle\Entity\Car;
 use FunPro\GeoBundle\Doctrine\ValueObject\LineString;
 use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\PassengerBundle\Entity\Passenger;
+use FunPro\UserBundle\Entity\User;
 use JMS\Serializer\Annotation as JS;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -19,6 +20,8 @@ use Gedmo\Mapping\Annotation as Gedmo;
  *
  * @ORM\Table(name="service")
  * @ORM\Entity(repositoryClass="FunPro\ServiceBundle\Repository\ServiceRepository")
+ *
+ * @Gedmo\SoftDeleteable(fieldName="canceledAt", timeAware=false)
  */
 class Service
 {
@@ -300,6 +303,40 @@ class Service
      * @JS\Since("1.0.0")
      */
     private $updatedAt;
+
+    /**
+     * @var User
+     *
+     * @ORM\ManyToOne(targetEntity="FunPro\UserBundle\Entity\User")
+     * @ORM\JoinColumn(name="canceled_by", referencedColumnName="id", onDelete="SET NULL")
+     *
+     * @Gedmo\Blameable(on="change", field="canceledAt")
+     *
+     * @JS\Groups({"CanceledBy"})
+     * @JS\Since("1.0.0")
+     */
+    private $canceledBy;
+
+    /**
+     * @var \Datetime
+     *
+     * @ORM\Column(name="canceled_at", type="datetime", nullable=true)
+     *
+     * @JS\Groups({"Public"})
+     * @JS\Since("1.0.0")
+     */
+    private $canceledAt;
+
+    /**
+     * @var CanceledReason
+     *
+     * @ORM\ManyToOne(targetEntity="FunPro\ServiceBundle\Entity\CanceledReason")
+     * @ORM\JoinColumn(name="canceled_reason", referencedColumnName="id", onDelete="CASCADE")
+     *
+     * @JS\Groups({"Public"})
+     * @JS\Since("1.0.0")
+     */
+    private $canceledReason;
 
     public function __construct()
     {
@@ -903,6 +940,63 @@ class Service
     public function setLogs($logs)
     {
         $this->logs = $logs;
+        return $this;
+    }
+
+    /**
+     * @return \Datetime
+     */
+    public function getCanceledAt()
+    {
+        return $this->canceledAt;
+    }
+
+    /**
+     * @param \Datetime $canceledAt
+     *
+     * @return $this
+     */
+    public function setCanceledAt($canceledAt)
+    {
+        $this->canceledAt = $canceledAt;
+        return $this;
+    }
+
+    /**
+     * @return User
+     */
+    public function getCanceledBy()
+    {
+        return $this->canceledBy;
+    }
+
+    /**
+     * @param User $canceledBy
+     *
+     * @return $this
+     */
+    public function setCanceledBy($canceledBy)
+    {
+        $this->canceledBy = $canceledBy;
+        return $this;
+    }
+
+    /**
+     * @return CanceledReason
+     */
+    public function getCanceledReason()
+    {
+        return $this->canceledReason;
+    }
+
+    /**
+     * @param CanceledReason $canceledReason
+     *
+     * @return $this
+     */
+    public function setCanceledReason($canceledReason)
+    {
+        $this->canceledReason = $canceledReason;
         return $this;
     }
 }

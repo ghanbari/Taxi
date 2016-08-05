@@ -19,6 +19,13 @@ class ServiceEvents extends Event
     const SERVICE_REQUESTED = 'service.requested';
 
     /**
+     * The event occurs when the passenger or agent cancel one service.
+     *
+     * The event listener method receives a FunPro\ServiceBundle\Event\ServiceEvent instance.
+     */
+    const SERVICE_CANCELED = 'service.canceled';
+
+    /**
      * The event occurs when the driver accept service.
      *
      * The event listener method receives a FunPro\ServiceBundle\Event\GetCarPointServiceEvent instance.

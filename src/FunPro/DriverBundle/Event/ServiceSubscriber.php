@@ -3,7 +3,6 @@
 namespace FunPro\DriverBundle\Event;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Doctrine\Common\Collections\Criteria;
 use FunPro\DriverBundle\Entity\Car;
 use FunPro\DriverBundle\Entity\CarLog;
 use FunPro\DriverBundle\Exception\CarStatusException;
@@ -35,7 +34,6 @@ class ServiceSubscriber implements EventSubscriberInterface
         $this->logger = $logger;
     }
 
-
     /**
      * Returns an array of event names this subscriber wants to listen to.
      *
@@ -58,24 +56,36 @@ class ServiceSubscriber implements EventSubscriberInterface
     {
         return array(
             ServiceEvents::SERVICE_ACCEPTED => array('onServiceAccept', 20),
+            ServiceEvents::SERVICE_CANCELED => array('onServiceCanceled', 20),
             ServiceEvents::SERVICE_READY => array('onServiceReady', 20),
             ServiceEvents::SERVICE_START => array('onServiceStart', 20),
             ServiceEvents::SERVICE_FINISH => array('onServiceFinish', 20),
         );
     }
 
-    public function onServiceAccept(GetCarPointServiceEvent $event)
+    public function onServiceCanceled(ServiceEvent $event)
     {
         $service = $event->getService();
         $car = $service->getCar();
 
-        #TODO: check service status, it must be requested(0)
-//        $criteria = Criteria::create()->orderBy('atTime', Criteria::DESC)->getFirstResult();
-//        $log = $service->getLogs()->matching($criteria);
-//        VarDumper::dump($log);
-//        $serviceLogRepository = $this->doctrine->getRepository('FunProServiceBundle:ServiceLog')
-//        $serviceStatus = $serviceLogRepository->getLastLog($service);
+        if (!$car) {
+            $this->logger->addInfo(
+                'Service haven\'t car, driver status willn\'t changed',
+                array('service' => $service->getId())
+            );
+            return;
+        }
 
+        $car->setStatus(Car::STATUS_WAKEFUL);
+        $carLog = new CarLog($car, Car::STATUS_WAKEFUL);
+        $this->logger->addInfo('Car\'s status changed to wakeful', array('carId' => $car->getId()));
+        $this->doctrine->getManager()->persist($carLog);
+    }
+
+    public function onServiceAccept(GetCarPointServiceEvent $event)
+    {
+        $service = $event->getService();
+        $car = $service->getCar();
 
         if (!$car) {
             $this->logger->addError('Service haven\'t car', array('service' => $service->getId()));

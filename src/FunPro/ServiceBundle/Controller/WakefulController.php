@@ -370,6 +370,8 @@ class WakefulController extends FOSRestController
      * @Rest\View()
      *
      * @return \FOS\RestBundle\View\View
+     *
+     * TODO: save request(lat & lng) into database(locations), round to 2 decimal
      */
     public function cgetAction()
     {

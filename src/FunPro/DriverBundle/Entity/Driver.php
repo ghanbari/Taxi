@@ -137,7 +137,7 @@ class Driver extends User implements SMSInterface
      * Set mobile
      *
      * @param string $mobile
-     * @return Passenger
+     * @return Driver
      */
     public function setMobile($mobile)
     {
@@ -172,7 +172,7 @@ class Driver extends User implements SMSInterface
     /**
      * Get contractNumber
      *
-     * @return string 
+     * @return string
      */
     public function getContractNumber()
     {
@@ -195,7 +195,7 @@ class Driver extends User implements SMSInterface
     /**
      * Get contact
      *
-     * @return array 
+     * @return array
      */
     public function getContact()
     {
@@ -219,7 +219,7 @@ class Driver extends User implements SMSInterface
     /**
      * Get nationalCode
      *
-     * @return string 
+     * @return string
      */
     public function getNationalCode()
     {
@@ -242,7 +242,7 @@ class Driver extends User implements SMSInterface
     /**
      * Get rate
      *
-     * @return string 
+     * @return string
      */
     public function getRate()
     {
@@ -252,10 +252,10 @@ class Driver extends User implements SMSInterface
     /**
      * Add cars
      *
-     * @param \FunPro\DriverBundle\Entity\Car $cars
+     * @param Car $cars
      * @return Driver
      */
-    public function addCar(\FunPro\DriverBundle\Entity\Car $cars)
+    public function addCar(Car $cars)
     {
         $this->cars[] = $cars;
 
@@ -265,9 +265,9 @@ class Driver extends User implements SMSInterface
     /**
      * Remove cars
      *
-     * @param \FunPro\DriverBundle\Entity\Car $cars
+     * @param Car $cars
      */
-    public function removeCar(\FunPro\DriverBundle\Entity\Car $cars)
+    public function removeCar(Car $cars)
     {
         $this->cars->removeElement($cars);
     }
@@ -275,7 +275,7 @@ class Driver extends User implements SMSInterface
     /**
      * Get cars
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return ArrayCollection
      */
     public function getCars()
     {
@@ -285,10 +285,10 @@ class Driver extends User implements SMSInterface
     /**
      * Set address
      *
-     * @param \FunPro\GeoBundle\Entity\Address $address
+     * @param Address $address
      * @return Driver
      */
-    public function setAddress(\FunPro\GeoBundle\Entity\Address $address = null)
+    public function setAddress(Address $address = null)
     {
         $this->address = $address;
 
@@ -298,7 +298,7 @@ class Driver extends User implements SMSInterface
     /**
      * Get address
      *
-     * @return \FunPro\GeoBundle\Entity\Address 
+     * @return Address
      */
     public function getAddress()
     {
@@ -308,10 +308,10 @@ class Driver extends User implements SMSInterface
     /**
      * Set agency
      *
-     * @param \FunPro\AgentBundle\Entity\Agency $agency
+     * @param Agency $agency
      * @return Driver
      */
-    public function setAgency(\FunPro\AgentBundle\Entity\Agency $agency)
+    public function setAgency(Agency $agency)
     {
         $this->agency = $agency;
 
@@ -321,7 +321,7 @@ class Driver extends User implements SMSInterface
     /**
      * Get agency
      *
-     * @return \FunPro\AgentBundle\Entity\Agency 
+     * @return Agency
      */
     public function getAgency()
     {

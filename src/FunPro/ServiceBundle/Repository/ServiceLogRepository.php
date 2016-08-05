@@ -3,6 +3,9 @@
 namespace FunPro\ServiceBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
+use FunPro\ServiceBundle\Entity\Service;
 
 /**
  * ServiceLogRepository
@@ -12,4 +15,22 @@ use Doctrine\ORM\EntityRepository;
  */
 class ServiceLogRepository extends EntityRepository
 {
+    /**
+     * @param Service $service
+     *
+     * @throws NoResultException
+     *
+     * @return array
+     */
+    public function getLastLog(Service $service)
+    {
+        $queryBuilder = $this->createQueryBuilder('s');
+
+        return $queryBuilder->where($queryBuilder->expr()->eq('s.service', ':service'))
+            ->orderBy('s.atTime', 'DESC')
+            ->setParameter('service', $service)
+            ->getQuery()
+            ->getMaxResults(1)
+            ->getSingleResult();
+    }
 }

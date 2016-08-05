@@ -2,6 +2,7 @@
 
 namespace FunPro\ServiceBundle\Controller;
 
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\PessimisticLockException;
 use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -13,8 +14,10 @@ use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\ServiceBundle\Entity\FloatingCost;
 use FunPro\ServiceBundle\Entity\PropagationList;
 use FunPro\ServiceBundle\Entity\Service;
+use FunPro\ServiceBundle\Entity\ServiceLog;
 use FunPro\ServiceBundle\Event\GetCarPointServiceEvent;
 use FunPro\ServiceBundle\Event\ServiceEvent;
+use FunPro\ServiceBundle\Exception\ServiceStatusException;
 use FunPro\ServiceBundle\ServiceEvents;
 use FunPro\ServiceBundle\Form\ServiceType;
 use JMS\Serializer\SerializationContext;
@@ -120,6 +123,11 @@ class ServiceController extends FOSRestController
 
                 $number = 1;
                 foreach ($propagationCars as $carId) {
+                    if ($number === 10) {
+                        #let only 10 custom driver
+                        break;
+                    }
+
                     $car = $manager->getRepository('FunProDriverBundle:Car')
                         ->findOneBy(array('id' => $carId, 'current' => true));
 
@@ -162,6 +170,88 @@ class ServiceController extends FOSRestController
     }
 
     /**
+     * Cancel service
+     *
+     * @ApiDoc(
+     *      section="Service",
+     *      resource=true,
+     *      views={"passenger"},
+     *      statusCodes={
+     *          204="When success",
+     *          400={
+     *              "Passenger can cancel service, only in n minute after request(code: 1)",
+     *              "Reason is not found(code: 2)",
+     *              "Service can be canceled when its status is requested, accepted or ready(code: 3)",
+     *          },
+     *          403= {
+     *              "when service is not requested by this passenger",
+     *          },
+     *      }
+     * )
+     *
+     * @ParamConverter(name="service", class="FunProServiceBundle:Service")
+     * @Security("is_authenticated() and service.getPassenger() == user")
+     *
+     * @Rest\RequestParam(name="reason", requirements="\d+", nullable=false, strict=true)
+     *
+     * @param $id
+     *
+     * @return \FOS\RestBundle\View\View
+     *
+     * TODO: user get negative point
+     */
+    public function deleteAction(Request $request, $id)
+    {
+        /** @var Service $service */
+        $service = $request->attributes->get('service');
+        $logger = $this->get('logger');
+        $translator = $this->get('translator');
+        $manager = $this->getDoctrine()->getManager();
+        $fetcher = $this->get('fos_rest.request.param_fetcher');
+        $reasonId = $fetcher->get('reason', true);
+
+        $authorizedTill = new \DateTime('-' . $this->getParameter('service.passenger.can_cancel_till'));
+        if ($authorizedTill >= $service->getCreatedAt()) {
+            $logger->addNotice('passenger can not cancel service, limited time');
+            $error = array(
+                'code' => 1,
+                'message' => $translator->trans('you.can.cancel.service.only.in.one.minute'),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
+
+        $canceledReason = $manager->getRepository('FunProServiceBundle:CanceledReason')->find($reasonId);
+
+        if (!$canceledReason) {
+            $logger->addError('reason is not exists');
+            $error = array(
+                'code' => 2,
+                'message' => $translator->trans('reason.is.not.exists'),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
+
+        $service->setCanceledBy($this->getUser());
+        $service->setCanceledAt(new \DateTime());
+        $service->setCanceledReason($canceledReason);
+
+        $event = new ServiceEvent($service);
+        try {
+            $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_CANCELED, $event);
+        } catch (ServiceStatusException $e) {
+            $error = array(
+                'code' => 3,
+                'message' => $translator->trans('you.can.cancel.service.only.when.status.is.requested.or.accepted'),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
+
+        $manager->flush();
+
+        return $this->view(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
      * Accept service by driver
      *
      * @ApiDoc(
@@ -200,15 +290,6 @@ class ServiceController extends FOSRestController
         $manager = $this->getDoctrine()->getManager();
         $driver = $this->getUser();
         $point = new Point($fetcher->get('longitude'), $fetcher->get('latitude'));
-
-        if (!$driver instanceof Driver) {
-            $context = SerializationContext::create()->setGroups('Public', 'Car');
-            $logger->addError(
-                'normal user have driver permission',
-                array($serializer->serialize($driver, 'json', $context))
-            );
-            throw $this->createAccessDeniedException();
-        }
 
         $car = $manager->getRepository('FunProDriverBundle:Car')->findOneBy(array(
             'driver' => $driver,
