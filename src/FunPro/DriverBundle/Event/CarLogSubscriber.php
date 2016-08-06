@@ -146,7 +146,7 @@ class CarLogSubscriber implements EventSubscriberInterface
             throw new \RuntimeException('driver\'s car is not defined');
         }
 
-        if ($car->getStatus() !== Car::STATUS_WAKEFUL or $car->getStatus() !== Car::STATUS_SERVICE_END) {
+        if ($car->getStatus() !== Car::STATUS_WAKEFUL and $car->getStatus() !== Car::STATUS_SERVICE_END) {
             $this->logger->addError(
                 'Car\'s status must be wakeful or service end till it can go sleep',
                 array('car' => $car->getId())
