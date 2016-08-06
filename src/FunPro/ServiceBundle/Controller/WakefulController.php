@@ -267,8 +267,8 @@ class WakefulController extends FOSRestController
             ->findOneByCar($car);
 
         if (!is_null($wakeful)) {
-            $manger->remove($wakeful);
             $this->get('event_dispatcher')->dispatch(CarEvents::CAR_SLEEP, new CarEvent($car));
+            $manger->remove($wakeful);
             $manger->flush();
 
             return $this->view(null, Response::HTTP_NO_CONTENT);

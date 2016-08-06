@@ -138,11 +138,10 @@ class CarLogSubscriber implements EventSubscriberInterface
      */
     public function onSleep(CarEvent $event)
     {
-        $wakeful = $event->getWakeful();
-        $car = $wakeful->getCar();
+        $car = $event->getCar();
 
         if (!$car) {
-            $this->logger->addError('driver\'s car is not defined', array('wakeful' => $wakeful->getId()));
+            $this->logger->addError('driver\'s car is not defined');
             throw new \RuntimeException('driver\'s car is not defined');
         }
 
