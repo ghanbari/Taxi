@@ -202,7 +202,12 @@ class GCM
         array_map($setStatus, $messages);
 
         if ($statusCode == 200 or $this->env = 'dev') {
-            $success = $serializer->deserialize($response->getContent(), 'FunPro\EngineBundle\GCM\Success', 'json');
+            try {
+                $success = $serializer->deserialize($response->getContent(), 'FunPro\EngineBundle\GCM\Success', 'json');
+            } catch (\JMS\Serializer\Exception\RuntimeException $e) {
+                $this->logger->addError('deserialization json error', array('message' => $e->getTraceAsString()));
+                return;
+            }
             $this->onSuccess($success, $messages);
         } else {
             $success = null;

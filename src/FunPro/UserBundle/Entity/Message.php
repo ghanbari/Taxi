@@ -81,7 +81,7 @@ class Message
     /**
      * @var array
      *
-     * @JS\Groups({"Public", "GCM"})
+     * @JS\Groups({"GCM"})
      * @JS\Since("1.0.0")
      * @JS\SerializedName("registration_ids")
      */
@@ -94,7 +94,7 @@ class Message
      *
      * @ORM\Column(name="collapse_key", nullable=true)
      *
-     * @JS\Groups({"Public", "GCM"})
+     * @JS\Groups({"GCM"})
      * @JS\Since("1.0.0")
      * @JS\SerializedName("collapse_key")
      */
@@ -173,7 +173,6 @@ class Message
      *
      * @JS\Groups({"Public", "GCM"})
      * @JS\Since("1.0.0")
-     * @JS\SerializedName("data")
      */
     protected $data;
 
@@ -181,6 +180,9 @@ class Message
      * @var string
      *
      * @ORM\Column(nullable=true)
+     *
+     * @JS\Groups({"Public", "GCM"})
+     * @JS\Since("1.0.0")
      */
     protected $title;
 
@@ -188,6 +190,9 @@ class Message
      * @var string
      *
      * @ORM\Column(type="text", nullable=true)
+     *
+     * @JS\Groups({"Public", "GCM"})
+     * @JS\Since("1.0.0")
      */
     protected $body;
 
@@ -195,6 +200,9 @@ class Message
      * @var string
      *
      * @ORM\Column(nullable=true)
+     *
+     * @JS\Groups({"Public", "GCM"})
+     * @JS\Since("1.0.0")
      */
     protected $icon;
 
@@ -202,6 +210,9 @@ class Message
      * @var string
      *
      * @ORM\Column(nullable=true)
+     *
+     * @JS\Groups({"Public", "GCM"})
+     * @JS\Since("1.0.0")
      */
     protected $sound;
 
@@ -209,6 +220,9 @@ class Message
      * @var string
      *
      * @ORM\Column(nullable=true)
+     *
+     * @JS\Groups({"Public", "GCM"})
+     * @JS\Since("1.0.0")
      */
     protected $badge;
 
@@ -216,6 +230,9 @@ class Message
      * @var string
      *
      * @ORM\Column(nullable=true)
+     *
+     * @JS\Groups({"Public", "GCM"})
+     * @JS\Since("1.0.0")
      */
     protected $tag;
 
@@ -223,6 +240,9 @@ class Message
      * @var string
      *
      * @ORM\Column(nullable=true)
+     *
+     * @JS\Groups({"Public", "GCM"})
+     * @JS\Since("1.0.0")
      */
     protected $color;
 
@@ -230,6 +250,10 @@ class Message
      * @var string
      *
      * @ORM\Column(nullable=true)
+     *
+     * @JS\Groups({"Public", "GCM"})
+     * @JS\Since("1.0.0")
+     * @JS\SerializedName("click_action")
      */
     protected $click_action;
 
