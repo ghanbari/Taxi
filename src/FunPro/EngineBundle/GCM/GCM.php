@@ -165,6 +165,10 @@ class GCM
 
             try {
                 $response = $browser->post('https://gcm-http.googleapis.com/gcm/send', $headers, $requestBody);
+                $this->logger->addInfo('gcm response', array(
+                    'content', $response->getContent(),
+                    'headers', $response->getHeaders(),
+                ));
                 $statusCode = $response->getStatusCode();
             } catch (RequestException $e) {
                 $this->logger->addError($e->getMessage(), array($serializer->serialize($e->getRequest(), 'json')));
