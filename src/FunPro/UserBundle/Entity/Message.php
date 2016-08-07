@@ -3,11 +3,12 @@
 namespace FunPro\UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use FunPro\ServiceBundle\Entity\Service;
 use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation as JS;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="FunPro\UserBundle\Repository\MessageRepository")
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  * @ORM\HasLifecycleCallbacks()
  */
@@ -15,6 +16,14 @@ class Message
 {
     const PRIORITY_NORMAL = 'normal';
     const PRIORITY_HIGH = 'high';
+
+    const MESSAGE_TYPE_SERVICE_REQUESTED    = 1;
+    const MESSAGE_TYPE_SERVICE_CANCELED     = 2;
+    const MESSAGE_TYPE_SERVICE_ACCEPTED     = 3;
+    const MESSAGE_TYPE_SERVICE_REJECTED     = 4;
+    const MESSAGE_TYPE_SERVICE_READY        = 5;
+    const MESSAGE_TYPE_SERVICE_STARTED      = 6;
+    const MESSAGE_TYPE_SERVICE_FINISHED     = 7;
 
     /**
      * Message database id
@@ -280,7 +289,8 @@ class Message
     /**
      * Expiration date (UTC)
      *
-     * A fixed UNIX epoch date expressed in seconds (UTC) that identifies when the notification is no longer valid and can be discarded.
+     * A fixed UNIX epoch date expressed in seconds (UTC) that identifies
+     * when the notification is no longer valid and can be discarded.
      * If the expiry value is non-zero, APNs tries to deliver the notification at least once.
      * Specify zero to request that APNs not store the notification at all.
      *
@@ -292,6 +302,26 @@ class Message
      * @JS\Since("1.0.0")
      */
     protected $expiry = 604800;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="type", type="smallint")
+     *
+     * @JS\Groups({"Public"})
+     * @JS\Since("1.0.0")
+     */
+    private $type;
+
+    /**
+     * @var Service
+     *
+     * @ORM\ManyToOne(targetEntity="FunPro\ServiceBundle\Entity\Service")
+     *
+     * @JS\Groups({"Service"})
+     * @JS\Since("1.0.0")
+     */
+    private $service;
 
     /**
      * Class constructor
@@ -831,6 +861,44 @@ class Message
     public function setUpdatedAt($updatedAt)
     {
         $this->updatedAt = $updatedAt;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param int $type
+     *
+     * @return $this
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    /**
+     * @return Service
+     */
+    public function getService()
+    {
+        return $this->service;
+    }
+
+    /**
+     * @param Service $service
+     *
+     * @return $this
+     */
+    public function setService(Service $service)
+    {
+        $this->service = $service;
         return $this;
     }
 }

@@ -65,83 +65,98 @@ class ServiceSubscriber implements EventSubscriberInterface
 
     public function onServiceCanceled(ServiceEvent $event)
     {
+        $logger = $this->logger;
         $service = $event->getService();
         $car = $service->getCar();
 
         if (!$car) {
-            $this->logger->addInfo(
+            $logger->addInfo(
                 'Service haven\'t car, driver status willn\'t changed',
                 array('service' => $service->getId())
             );
             return;
         }
 
-        $car->setStatus(Car::STATUS_WAKEFUL);
-        $carLog = new CarLog($car, Car::STATUS_WAKEFUL);
-        $this->logger->addInfo('Car\'s status changed to wakeful', array('carId' => $car->getId()));
+        if ($car->getStatus() === Car::STATUS_SERVICE_IN_AND_ACCEPT
+            or $car->getStatus() === Car::STATUS_SERVICE_IN_AND_PREPARE
+        ) {
+            $status = Car::STATUS_SERVICE_IN;
+        } else {
+            $status = Car::STATUS_WAKEFUL;
+        }
+
+        $car->setStatus($status);
+        $carLog = new CarLog($car, $status);
+        $logger->addInfo('Car\'s status changed to ' . Car::getStatusName($status), array('carId' => $car->getId()));
         $this->doctrine->getManager()->persist($carLog);
     }
 
     public function onServiceAccept(GetCarPointServiceEvent $event)
     {
+        $logger = $this->logger;
         $service = $event->getService();
         $car = $service->getCar();
 
         if (!$car) {
-            $this->logger->addError('Service haven\'t car', array('service' => $service->getId()));
+            $logger->addError('Service haven\'t car', array('service' => $service->getId()));
             throw new \LogicException('Service haven\'t car');
         }
 
-        if ($car->getStatus() !== Car::STATUS_WAKEFUL) {
-            $this->logger->addError(
-                'Car\'s status must be wakeful till it can accept one service',
+        if ($car->getStatus() !== Car::STATUS_WAKEFUL and $car->getStatus() !== Car::STATUS_SERVICE_IN) {
+            $logger->addError(
+                'Car\'s status must be wakeful or in_service till it can accept one service',
                 array('car' => $car->getId())
             );
-            throw new CarStatusException('status must be wakeful');
+            throw new CarStatusException('status must be wakeful or in service');
         }
 
-        $car->setStatus(Car::STATUS_SERVICE_ACCEPT);
-        $carLog = new CarLog($car, Car::STATUS_SERVICE_ACCEPT, $event->getPoint());
-        $this->logger->addInfo('Car\'s status changed to accepted', array('carId' => $car->getId()));
+        $status = $car->getStatus() === Car::STATUS_SERVICE_IN ?
+            Car::STATUS_SERVICE_IN_AND_ACCEPT : Car::STATUS_SERVICE_ACCEPT;
+
+        $car->setStatus($status);
+        $carLog = new CarLog($car, $status, $event->getPoint());
+        $logger->addInfo('Car\'s status changed to ' . Car::getStatusName($status), array('carId' => $car->getId()));
         $this->doctrine->getManager()->persist($carLog);
     }
 
     public function onServiceReady(GetCarPointServiceEvent $event)
     {
+        $logger = $this->logger;
         $service = $event->getService();
         $car = $service->getCar();
 
         if (!$car) {
-            $this->logger->addError('Service haven\'t car', array('service' => $service->getId()));
+            $logger->addError('Service haven\'t car', array('service' => $service->getId()));
             throw new \LogicException('Service haven\'t car');
         }
 
-        if ($car->getStatus() !== Car::STATUS_SERVICE_PREPARE) {
-            $this->logger->addError(
-                'Car\'s status must be prepare till it can send ready alarm',
+        if ($car->getStatus() !== Car::STATUS_SERVICE_PREPARE and $car->getStatus() !== Car::STATUS_SERVICE_READY) {
+            $logger->addError(
+                'Car\'s status must be prepare or ready till it can send ready alarm',
                 array('carId' => $car->getId())
             );
-            throw new CarStatusException('status must be prepare');
+            throw new CarStatusException('status must be prepare or ready');
         }
 
         $car->setStatus(Car::STATUS_SERVICE_READY);
         $carLog = new CarLog($car, Car::STATUS_SERVICE_READY, $event->getPoint());
-        $this->logger->addInfo('Car\'s status changed to ready', array('carId' => $car->getId()));
+        $logger->addInfo('Car\'s status changed to ready', array('carId' => $car->getId()));
         $this->doctrine->getManager()->persist($carLog);
     }
 
     public function onServiceStart(ServiceEvent $event)
     {
+        $logger = $this->logger;
         $service = $event->getService();
         $car = $service->getCar();
 
         if (!$car) {
-            $this->logger->addError('Service haven\'t car', array('service' => $service->getId()));
+            $logger->addError('Service haven\'t car', array('service' => $service->getId()));
             throw new \LogicException('Service haven\'t car');
         }
 
         if ($car->getStatus() !== Car::STATUS_SERVICE_READY) {
-            $this->logger->addError(
+            $logger->addError(
                 'Car\'s status must be ready till it can start service',
                 array('carId' => $car->getId())
             );
@@ -150,31 +165,49 @@ class ServiceSubscriber implements EventSubscriberInterface
 
         $car->setStatus(Car::STATUS_SERVICE_START);
         $carLog = new CarLog($car, Car::STATUS_SERVICE_START);
-        $this->logger->addInfo('Car\'s status changed to start', array('carId' => $car->getId()));
+        $logger->addInfo('Car\'s status changed to start', array('carId' => $car->getId()));
         $this->doctrine->getManager()->persist($carLog);
     }
 
     public function onServiceFinish(ServiceEvent $event)
     {
+        $logger = $this->logger;
         $service = $event->getService();
         $car = $service->getCar();
+        $currentStatus = $car->getStatus();
 
         if (!$car) {
-            $this->logger->addError('Service haven\'t car', array('service' => $service->getId()));
+            $logger->addError('Service haven\'t car', array('service' => $service->getId()));
             throw new \LogicException('Service haven\'t car');
         }
 
-        if ($car->getStatus() !== Car::STATUS_SERVICE_IN) {
-            $this->logger->addError(
-                'Car\'s status must be in service till it can stop service',
+        if ($currentStatus !== Car::STATUS_SERVICE_IN
+            and $currentStatus !== Car::STATUS_SERVICE_IN_AND_ACCEPT
+            and $currentStatus !== Car::STATUS_SERVICE_IN_AND_PREPARE
+        ) {
+            $logger->addError(
+                'Car\'s status must be in service or in_and_accept or in_and_prepare till it can stop service',
                 array('carId' => $car->getId())
             );
-            throw new CarStatusException('status must be in service');
+            throw new CarStatusException('status must be in service or in_and_accept or in_and_prepare ');
         }
 
         $car->setStatus(Car::STATUS_SERVICE_END);
         $carLog = new CarLog($car, Car::STATUS_SERVICE_END);
-        $this->logger->addInfo('Car\'s status changed to end', array('carId' => $car->getId()));
+        $logger->addInfo('Car\'s status changed to end', array('carId' => $car->getId()));
         $this->doctrine->getManager()->persist($carLog);
+
+        if ($currentStatus === Car::STATUS_SERVICE_IN_AND_ACCEPT) {
+            $newStatus = Car::STATUS_SERVICE_ACCEPT;
+        } elseif ($currentStatus === Car::STATUS_SERVICE_IN_AND_PREPARE) {
+            $newStatus = Car::STATUS_SERVICE_PREPARE;
+        }
+
+        if (isset($newStatus)) {
+            $car->setStatus($newStatus);
+            $carLog = new CarLog($car, $newStatus);
+            $logger->addInfo('Car\'s status changed to ' . Car::getStatusName($newStatus), array('carId' => $car->getId()));
+            $this->doctrine->getManager()->persist($carLog);
+        }
     }
 }

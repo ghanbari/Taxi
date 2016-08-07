@@ -24,7 +24,7 @@ class DriverRepository extends EntityRepository
     {
         $qb = $this->createQueryBuilder('dr');
 
-        $qb->select(array('dr', 'de'))
+        $qb->select(array('dr', 'de', 'c', 'w'))
             ->innerJoin('dr.devices', 'de')
             ->innerJoin('dr.cars', 'c')
             ->innerJoin('c.wakeful', 'w')
@@ -40,9 +40,32 @@ class DriverRepository extends EntityRepository
             ->getResult();
     }
 
+    /**
+     * @return \Doctrine\ORM\QueryBuilder
+     */
     public function getAllDriversQueryBuilder()
     {
         $qb = $this->createQueryBuilder('d');
         return $qb;
+    }
+
+    /**
+     * @param $driverId
+     *
+     * @return mixed
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getWithCar($driverId)
+    {
+        $qb = $this->createQueryBuilder('d');
+
+        return $qb->select(array('d', 'c'))
+            ->innerJoin('d.cars', 'c')
+            ->where($qb->expr()->eq('c.current', true))
+            ->andWhere($qb->expr()->eq('d.id', ':id'))
+            ->setParameter('id', $driverId)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

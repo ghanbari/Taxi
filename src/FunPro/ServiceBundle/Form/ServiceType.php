@@ -41,16 +41,12 @@ class ServiceType extends AbstractType
                 'required' => false,
             ))
             ->add('propagationList', Type\CollectionType::class, array(
-                'description' => 'array of cars ids',
-                'entry_type' => 'entity',
+                'description' => 'array of driver ids',
+                'entry_type' => 'text',
                 'allow_add' => true,
                 'allow_delete' => true,
                 'delete_empty' => true,
                 'mapped' => false,
-                'options' => array(
-                    'class' => 'FunPro\DriverBundle\Entity\Car',
-                    'choice_label' => 'plaque'
-                )
             ))
         ;
     }

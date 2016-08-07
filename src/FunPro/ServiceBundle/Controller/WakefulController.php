@@ -169,7 +169,7 @@ class WakefulController extends FOSRestController
         }
 
         if ($car->getStatus() === Car::STATUS_SLEEP) {
-            $logger->addError('Car\'s status must not be sleep', array('car' => $car->getId()));
+            $this->logger->addError('Car\'s status must not be sleep', array('car' => $car->getId()));
             $error = array(
                 'message' => $translator->trans('car.status.is.sleep'),
                 'code' => 2,
@@ -254,8 +254,8 @@ class WakefulController extends FOSRestController
             return $this->view($error, Response::HTTP_BAD_REQUEST);
         }
 
-        if ($car->getStatus() !== Car::STATUS_WAKEFUL and $car->getStatus() !== Car::STATUS_SERVICE_END) {
-            $logger->addError('Car\'s status must be wakeful or service end', array('car' => $car->getId()));
+        if ($car->getStatus() !== Car::STATUS_WAKEFUL or $car->getStatus() !== Car::STATUS_SERVICE_END) {
+            $this->logger->addError('Car\'s status must be wakeful or service end', array('car' => $car->getId()));
             $error = array(
                 'message' => $translator->trans('car.status.must.be.wakeful.or.end'),
                 'code' => 2,
@@ -267,8 +267,8 @@ class WakefulController extends FOSRestController
             ->findOneByCar($car);
 
         if (!is_null($wakeful)) {
-            $this->get('event_dispatcher')->dispatch(CarEvents::CAR_SLEEP, new CarEvent($car));
             $manger->remove($wakeful);
+            $this->get('event_dispatcher')->dispatch(CarEvents::CAR_SLEEP, new CarEvent($car));
             $manger->flush();
 
             return $this->view(null, Response::HTTP_NO_CONTENT);

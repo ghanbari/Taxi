@@ -3,7 +3,7 @@
 namespace FunPro\ServiceBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use FunPro\DriverBundle\Entity\Car;
+use FunPro\DriverBundle\Entity\Driver;
 use JMS\Serializer\Annotation as JS;
 use Gedmo\Mapping\Annotation as Gedmo;
 
@@ -17,10 +17,6 @@ class PropagationList
 {
     const ANSWER_ACCEPTED = 1;
     const ANSWER_REJECTED = 2;
-
-    const NOTIFY_NOT_SEND = 0;
-    const NOTIFY_SEND = 1;
-    const NOTIFY_DELIVER = 2;
 
     /**
      * @var int
@@ -43,15 +39,15 @@ class PropagationList
     private $service;
 
     /**
-     * @var Car
+     * @var Driver
      *
-     * @ORM\ManyToOne(targetEntity="FunPro\DriverBundle\Entity\Car")
-     * @ORM\JoinColumn(name="car_id", referencedColumnName="id", onDelete="restrict", nullable=false)
+     * @ORM\ManyToOne(targetEntity="FunPro\DriverBundle\Entity\Driver")
+     * @ORM\JoinColumn(name="driver_id", referencedColumnName="id", onDelete="restrict", nullable=false)
      *
      * @JS\Groups({"Passenger", "Agent", "Admin"})
      * @JS\Since("1.0.0")
      */
-    private $car;
+    private $driver;
 
     /**
      * @var integer
@@ -72,16 +68,6 @@ class PropagationList
      * @JS\Since("1.0.0")
      */
     private $answer;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(type="smallint")
-     *
-     * @JS\Groups({"Passenger", "Agent", "Admin"})
-     * @JS\Since("1.0.0")
-     */
-    private $notifyStatus;
 
     /**
      * @var \DateTime
@@ -107,15 +93,14 @@ class PropagationList
 
     /**
      * @param Service $service
-     * @param Car     $car
+     * @param Driver  $driver
      * @param int     $number
      */
-    public function __construct(Service $service, Car $car, $number)
+    public function __construct(Service $service, Driver $driver, $number)
     {
         $this->setService($service);
-        $this->setCar($car);
+        $this->setDriver($driver);
         $this->setNumber($number);
-        $this->setNotifyStatus(self::NOTIFY_NOT_SEND);
     }
 
     /**
@@ -172,29 +157,6 @@ class PropagationList
     public function getAnswer()
     {
         return $this->answer;
-    }
-
-    /**
-     * Set notifyStatus
-     *
-     * @param integer $notifyStatus
-     * @return PropagationList
-     */
-    public function setNotifyStatus($notifyStatus)
-    {
-        $this->notifyStatus = $notifyStatus;
-
-        return $this;
-    }
-
-    /**
-     * Get notifyStatus
-     *
-     * @return integer
-     */
-    public function getNotifyStatus()
-    {
-        return $this->notifyStatus;
     }
 
     /**
@@ -257,7 +219,7 @@ class PropagationList
         }
 
         $this->service = $service;
-        $service->addPropagationList($this);
+        $this->service->addPropagationList($this);
 
         return $this;
     }
@@ -273,25 +235,21 @@ class PropagationList
     }
 
     /**
-     * Set car
-     *
-     * @param Car $car
-     * @return PropagationList
+     * @return Driver
      */
-    public function setCar(Car $car)
+    public function getDriver()
     {
-        $this->car = $car;
-
-        return $this;
+        return $this->driver;
     }
 
     /**
-     * Get car
+     * @param Driver $driver
      *
-     * @return Car
+     * @return $this
      */
-    public function getCar()
+    public function setDriver($driver)
     {
-        return $this->car;
+        $this->driver = $driver;
+        return $this;
     }
 }

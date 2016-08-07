@@ -8,6 +8,7 @@ use FunPro\AgentBundle\Entity\Agent;
 use FunPro\DriverBundle\Entity\Car;
 use FunPro\GeoBundle\Doctrine\ValueObject\LineString;
 use FunPro\GeoBundle\Doctrine\ValueObject\Point;
+use FunPro\GeoBundle\Utility\Util;
 use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\UserBundle\Entity\User;
 use JMS\Serializer\Annotation as JS;
@@ -243,9 +244,9 @@ class Service
     private $route;
 
     /**
-     * @var double
+     * @var integer $distance distance based on meter
      *
-     * @ORM\Column(type="decimal", precision=6, scale=3, nullable=true)
+     * @ORM\Column(type="integer", nullable=true)
      *
      * @JS\Groups({"Passenger", "Driver", "Agent", "Admin"})
      * @JS\Since("1.0.0")
@@ -340,6 +341,7 @@ class Service
 
     public function __construct()
     {
+        $this->setEndPoint(null);
         $this->setType(self::TYPE_DISTANCE);
         $this->setDesire(self::DESIRE_SUGGEST);
         $this->setRoute(new LineString());
@@ -403,11 +405,11 @@ class Service
     /**
      * Set startPoint
      *
-     * @param point $startPoint
+     * @param Point $startPoint
      *
      * @return Service
      */
-    public function setStartPoint($startPoint)
+    public function setStartPoint(Point $startPoint)
     {
         $this->startPoint = $startPoint;
 
@@ -417,7 +419,7 @@ class Service
     /**
      * Get startPoint
      *
-     * @return point
+     * @return Point
      */
     public function getStartPoint()
     {
@@ -427,11 +429,11 @@ class Service
     /**
      * Set endPoint
      *
-     * @param point $endPoint
+     * @param Point $endPoint
      *
      * @return Service
      */
-    public function setEndPoint($endPoint)
+    public function setEndPoint(Point $endPoint = null)
     {
         $this->endPoint = $endPoint;
 
@@ -441,7 +443,7 @@ class Service
     /**
      * Get endPoint
      *
-     * @return point
+     * @return Point
      */
     public function getEndPoint()
     {
@@ -628,11 +630,11 @@ class Service
     /**
      * Set route
      *
-     * @param linestring $route
+     * @param LineString $route
      *
      * @return Service
      */
-    public function setRoute($route)
+    public function setRoute(LineString $route)
     {
         $this->route = $route;
 
@@ -642,7 +644,7 @@ class Service
     /**
      * Get route
      *
-     * @return linestring
+     * @return LineString
      */
     public function getRoute()
     {
@@ -652,7 +654,7 @@ class Service
     /**
      * Set distance
      *
-     * @param string $distance
+     * @param integer $distance
      *
      * @return Service
      */
@@ -666,7 +668,7 @@ class Service
     /**
      * Get distance
      *
-     * @return string
+     * @return integer
      */
     public function getDistance()
     {
@@ -798,7 +800,7 @@ class Service
      *
      * @return $this
      */
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt(\DateTime $createdAt)
     {
         $this->createdAt = $createdAt;
         return $this;
@@ -817,7 +819,7 @@ class Service
      *
      * @return $this
      */
-    public function setUpdatedAt($updatedAt)
+    public function setUpdatedAt(\DateTime $updatedAt)
     {
         $this->updatedAt = $updatedAt;
         return $this;
@@ -836,7 +838,7 @@ class Service
      *
      * @return $this
      */
-    public function setFloatingCosts($floatingCosts)
+    public function setFloatingCosts(ArrayCollection $floatingCosts)
     {
         $this->floatingCosts = $floatingCosts;
         return $this;
@@ -937,7 +939,7 @@ class Service
      *
      * @return $this
      */
-    public function setLogs($logs)
+    public function setLogs(ArrayCollection $logs)
     {
         $this->logs = $logs;
         return $this;
@@ -956,7 +958,7 @@ class Service
      *
      * @return $this
      */
-    public function setCanceledAt($canceledAt)
+    public function setCanceledAt(\DateTime $canceledAt)
     {
         $this->canceledAt = $canceledAt;
         return $this;
@@ -975,7 +977,7 @@ class Service
      *
      * @return $this
      */
-    public function setCanceledBy($canceledBy)
+    public function setCanceledBy(User $canceledBy)
     {
         $this->canceledBy = $canceledBy;
         return $this;
@@ -994,9 +996,16 @@ class Service
      *
      * @return $this
      */
-    public function setCanceledReason($canceledReason)
+    public function setCanceledReason(CanceledReason $canceledReason)
     {
         $this->canceledReason = $canceledReason;
         return $this;
+    }
+
+    public function updateDistance()
+    {
+        if ($this->getRoute()->count() > 1) {
+            $this->setDistance(Util::lengthOfLineString($this->getRoute()));
+        }
     }
 }

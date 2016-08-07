@@ -7,6 +7,11 @@ use Doctrine\DBAL\Types\Type;
 use FunPro\GeoBundle\Doctrine\ValueObject\LineString;
 use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 
+/**
+ * Class LineStringType
+ *
+ * @package FunPro\GeoBundle\Doctrine\Type
+ */
 class LineStringType extends Type
 {
     const LINESTRING = 'linestring';
@@ -46,8 +51,8 @@ class LineStringType extends Type
         $lineString = new LineString();
 
         $strPoints = array();
-        preg_match_all('@(?:LineString\()?(\d\s\d)+,?\s?(?:\))?@', $value, $strPoints);
-        foreach ($strPoints[1] as $strPoint) {
+        preg_match_all('/((?:\\d+\\.?(?:\\d+)?)\\s?){2}/', $value, $strPoints);
+        foreach ($strPoints[0] as $strPoint) {
             $arrayPoint = explode(' ', $strPoint);
             $point = new Point($arrayPoint[0], $arrayPoint[1]);
             $lineString->attach($point);
@@ -70,4 +75,4 @@ class LineStringType extends Type
     {
         return sprintf('AsText(%s)', $sqlExpr);
     }
-} 
+}

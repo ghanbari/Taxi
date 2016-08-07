@@ -21,4 +21,4 @@ class LineString extends \SplObjectStorage
 
         return $linestring;
     }
-} 
+}

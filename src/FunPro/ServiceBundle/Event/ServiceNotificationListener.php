@@ -148,12 +148,17 @@ class ServiceNotificationListener implements EventSubscriberInterface
         );
 
         if ($event->getService()->getPropagationType() !== Service::PROPAGATION_TYPE_ALL) {
-            #TODO: sending notification only to first driver
-            #TODO: monitoring and send notification to remain list members by cron job
-            /** @var PropagationList $firstPropagation */
-            $firstPropagation = $service->getPropagationList()->first();
-            $firstPropagation->setNotifyStatus(PropagationList::NOTIFY_SEND);
-            $drivers = array($firstPropagation->getCar()->getDriver());
+//            #TODO: sending notification only to first driver
+//            #TODO: monitoring and send notification to remain list members by cron job
+//            /** @var PropagationList $firstPropagation */
+//            $firstPropagation = $service->getPropagationList()->first();
+//            $drivers = array($firstPropagation->getDriver());
+
+            $drivers = array();
+            /** @var PropagationList $propagationList */
+            foreach ($service->getPropagationList() as $propagationList) {
+                $drivers[] = $propagationList->getDriver();
+            }
         } else {
             //TODO: Use Spatial Mysql Distance function for Mysql > 5.6.1
             $drivers = $this->doctrine->getRepository('FunProDriverBundle:Driver')
@@ -161,6 +166,7 @@ class ServiceNotificationListener implements EventSubscriberInterface
         }
 
         if (!is_array($drivers) or empty($drivers)) {
+            $logger->addNotice('any driver is not available');
             throw new DriverNotFound('driver.is.not.found', 400);
         }
 
@@ -183,6 +189,8 @@ class ServiceNotificationListener implements EventSubscriberInterface
             );
 
             $message = (new Message())
+                ->setType(Message::MESSAGE_TYPE_SERVICE_REQUESTED)
+                ->setService($service)
                 ->setData($data)
                 ->setPriority(Message::PRIORITY_HIGH)
                 ->setTimeToLive($this->parameterBag->get('gcm.ttl.service_request'));
@@ -212,6 +220,8 @@ class ServiceNotificationListener implements EventSubscriberInterface
         );
 
         $message = (new Message())
+            ->setType(Message::MESSAGE_TYPE_SERVICE_CANCELED)
+            ->setService($service)
             ->setData($data)
             ->setPriority(Message::PRIORITY_HIGH)
             ->setTimeToLive($this->parameterBag->get('gcm.ttl.service_cancel'));
@@ -238,6 +248,8 @@ class ServiceNotificationListener implements EventSubscriberInterface
             );
 
             $message = (new Message())
+                ->setType(Message::MESSAGE_TYPE_SERVICE_ACCEPTED)
+                ->setService($service)
                 ->setData($data)
                 ->setPriority(Message::PRIORITY_HIGH)
                 ->setTimeToLive($this->parameterBag->get('gcm.ttl.service_accept'));
@@ -258,6 +270,8 @@ class ServiceNotificationListener implements EventSubscriberInterface
         );
 
         $message = (new Message())
+            ->setType(Message::MESSAGE_TYPE_SERVICE_READY)
+            ->setService($service)
             ->setData($data)
             ->setPriority(Message::PRIORITY_HIGH)
             ->setTimeToLive($this->parameterBag->get('gcm.ttl.service_ready'));
@@ -274,6 +288,8 @@ class ServiceNotificationListener implements EventSubscriberInterface
         );
 
         $message = (new Message())
+            ->setType(Message::MESSAGE_TYPE_SERVICE_STARTED)
+            ->setService($service)
             ->setData($data)
             ->setPriority(Message::PRIORITY_HIGH)
             ->setTimeToLive($this->parameterBag->get('gcm.ttl.service_start'));
@@ -296,6 +312,8 @@ class ServiceNotificationListener implements EventSubscriberInterface
         );
 
         $message = (new Message())
+            ->setType(Message::MESSAGE_TYPE_SERVICE_FINISHED)
+            ->setService($service)
             ->setData($data)
             ->setPriority(Message::PRIORITY_HIGH)
             ->setTimeToLive($this->parameterBag->get('gcm.ttl.service_finish'));

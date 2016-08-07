@@ -13,7 +13,6 @@ use FunPro\UserBundle\Entity\Message;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use Symfony\Bridge\Monolog\Logger;
-use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 
 /**
  * Class GCM
@@ -165,7 +164,7 @@ class GCM
 
             try {
                 $response = $browser->post('https://gcm-http.googleapis.com/gcm/send', $headers, $requestBody);
-                $this->logger->addInfo('gcm response', array(
+                $this->logger->addInfo('gcm raw response', array(
                     'content', $response->getContent(),
                     'headers', $response->getHeaders(),
                 ));
@@ -193,7 +192,7 @@ class GCM
             ));
         } else {
             $messageContext = SerializationContext::create()->setGroups(array('Public', 'GCM'));
-            $this->logger->addInfo('gcm server response', array(
+            $this->logger->addInfo('gcm response', array(
                 'message' => $serializer->serialize($rawMessage, 'json', $messageContext),
                 'statusCode' => $statusCode,
                 'retry' => $retry,

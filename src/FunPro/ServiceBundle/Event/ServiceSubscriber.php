@@ -4,6 +4,9 @@ namespace FunPro\ServiceBundle\Event;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\Collections\Criteria;
+use FunPro\DriverBundle\CarEvents;
+use FunPro\DriverBundle\Entity\Car;
+use FunPro\DriverBundle\Event\GetMoveCarEvent;
 use FunPro\ServiceBundle\Entity\ServiceLog;
 use FunPro\ServiceBundle\Exception\ServiceStatusException;
 use FunPro\ServiceBundle\ServiceEvents;
@@ -69,6 +72,7 @@ class ServiceSubscriber implements EventSubscriberInterface
             ServiceEvents::SERVICE_READY     => array('onServiceReady', 10),
             ServiceEvents::SERVICE_START     => array('onServiceStart', 10),
             ServiceEvents::SERVICE_FINISH    => array('onServiceFinish', 10),
+            CarEvents::CAR_MOVE              => array('onService', 10),
         );
     }
 
@@ -239,6 +243,28 @@ class ServiceSubscriber implements EventSubscriberInterface
         );
     }
 
+    public function onService(GetMoveCarEvent $event)
+    {
+        $car = $event->getCar();
+        $status = $car->getStatus();
+
+        if ($status === Car::STATUS_SERVICE_IN or $status === Car::STATUS_SERVICE_IN_AND_ACCEPT
+            or $status === Car::STATUS_SERVICE_IN_AND_PREPARE
+        ) {
+            $service = $this->doctrine->getRepository('FunProServiceBundle:Service')
+                ->getDoingServiceFilterByCar($car);
+
+            if ($service) {
+                $route = clone $service->getRoute();
+                if ($route->count() === 0) {
+                    $route->attach($service->getStartPoint());
+                }
+                $route->attach($event->getCurrentLocation());
+                $service->setRoute($route);
+            }
+        }
+    }
+
     public function onServiceFinish(ServiceEvent $event)
     {
         $service = $event->getService();
@@ -256,6 +282,17 @@ class ServiceSubscriber implements EventSubscriberInterface
             );
             throw new ServiceStatusException('status must be started');
         }
+
+        if ($service->getEndPoint()->getLatitude()) {
+            $route = clone $service->getRoute();
+            if ($route->count() === 0) {
+                $route->attach($service->getStartPoint());
+            }
+            $route->attach($service->getEndPoint());
+            $service->setRoute($route);
+        }
+
+        $service->updateDistance();
 
         $log = new ServiceLog($event->getService(), ServiceLog::STATUS_FINISH);
         $this->doctrine->getManager()->persist($log);

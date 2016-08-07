@@ -119,6 +119,8 @@ class CarLogSubscriber implements EventSubscriberInterface
 
         if ($status === Car::STATUS_SERVICE_ACCEPT) {
             $status = Car::STATUS_SERVICE_PREPARE;
+        } elseif ($status === Car::STATUS_SERVICE_IN_AND_ACCEPT) {
+            $status = Car::STATUS_SERVICE_IN_AND_PREPARE;
         } elseif ($status === Car::STATUS_SERVICE_START) {
             $status = Car::STATUS_SERVICE_IN;
         } elseif ($status === Car::STATUS_SERVICE_END) {
@@ -127,7 +129,7 @@ class CarLogSubscriber implements EventSubscriberInterface
 
         $car->setStatus($status);
         $carLog = new CarLog($car, $status, $event->getCurrentLocation());
-        $this->logger->addInfo('Car\'s status changed to '.$status, array($car->getId()));
+        $this->logger->addInfo('Car\'s status changed to ' . Car::getStatusName($status), array($car->getId()));
         $this->doctrine->getManager()->persist($carLog);
     }
 

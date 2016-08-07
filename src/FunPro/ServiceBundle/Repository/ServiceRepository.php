@@ -3,7 +3,9 @@
 namespace FunPro\ServiceBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use FunPro\DriverBundle\Entity\Car;
 use FunPro\ServiceBundle\Entity\Service;
+use Proxies\__CG__\FunPro\ServiceBundle\Entity\ServiceLog;
 
 /**
  * ServiceRepository
@@ -32,5 +34,29 @@ class ServiceRepository extends EntityRepository
             ->setParameter('service_id', $id)
             ->getQuery()
             ->getSingleResult();
+    }
+
+    /**
+     * @param Car $car
+     *
+     * @return Service
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getDoingServiceFilterByCar(Car $car)
+    {
+        $qb = $this->createQueryBuilder('s');
+
+        $service = $qb->select(array('s', 'l'))
+            ->innerJoin('s.logs', 'l')
+            ->where($qb->expr()->eq('s.car', ':car'))
+            ->setParameter('car', $car)
+            ->orderBy('l.atTime', 'DESC')
+            ->getQuery()
+            ->setMaxResults(1)
+            ->getOneOrNullResult();
+
+        if ($service and $service->getLogs()->last()->getStatus() == ServiceLog::STATUS_START) {
+            return $service;
+        }
     }
 }

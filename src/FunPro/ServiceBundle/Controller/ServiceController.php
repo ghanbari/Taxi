@@ -2,19 +2,19 @@
 
 namespace FunPro\ServiceBundle\Controller;
 
-use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\PessimisticLockException;
 use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FunPro\DriverBundle\Entity\Car;
 use FunPro\DriverBundle\Entity\Driver;
 use FunPro\DriverBundle\Exception\DriverNotFound;
 use FunPro\GeoBundle\Doctrine\ValueObject\Point;
+use FunPro\GeoBundle\Utility\Util;
 use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\ServiceBundle\Entity\FloatingCost;
 use FunPro\ServiceBundle\Entity\PropagationList;
 use FunPro\ServiceBundle\Entity\Service;
-use FunPro\ServiceBundle\Entity\ServiceLog;
 use FunPro\ServiceBundle\Event\GetCarPointServiceEvent;
 use FunPro\ServiceBundle\Event\ServiceEvent;
 use FunPro\ServiceBundle\Exception\ServiceStatusException;
@@ -76,8 +76,9 @@ class ServiceController extends FOSRestController
      *          201="When success",
      *          400={
      *              "When form validation failed.",
-     *              "When specified car in propagationList is not found(code: 1)",
+     *              "When propagation list is larger than allowed number(code: 1)",
      *              "When any driver are not online(code: 2)",
+     *              "When specified Driver in propagationList is not found(code: 3)",
      *          },
      *          403= {
      *              "when csrf token is invalid",
@@ -114,38 +115,53 @@ class ServiceController extends FOSRestController
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $propagationCars = $form['propagationList']->getData();
-            if (!empty($propagationCars)) {
+            $propagationList = $form['propagationList']->getData();
+            $maxSize = $this->getParameter('service.propagation_list.max');
+            if ($count = count($propagationList) and $count > $maxSize) {
+                $logger->addError("you can select only $maxSize car for propagation list", array('count' => $count));
+                $error = array(
+                    'code' => 1,
+                    'message' => $translator->trans('max.size.for.propagation.list.is.%maxSize%', array('%maxSize%' => $maxSize))
+                );
+                return $this->view($error, Response::HTTP_BAD_REQUEST);
+            }
+
+            if (!empty($propagationList)) {
                 $logger->addInfo('Set propagationList');
-                $propagationType = count($propagationCars) === 1 ?
+                $propagationType = count($propagationList) === 1 ?
                     Service::PROPAGATION_TYPE_SINGLE : Service::PROPAGATION_TYPE_LIST;
                 $service->setPropagationType($propagationType);
 
-                $number = 1;
-                foreach ($propagationCars as $carId) {
-                    if ($number === 10) {
-                        #let only 10 custom driver
-                        break;
-                    }
+                $busyCounter = 0;
+                foreach ($propagationList as $number => $driverId) {
+                    /** @var Driver $driver */
+                    $driver = $manager->getRepository('FunProDriverBundle:Driver')->getWithCar($driverId);
 
-                    $car = $manager->getRepository('FunProDriverBundle:Car')
-                        ->findOneBy(array('id' => $carId, 'current' => true));
-
-                    if (!$car) {
-                        $logger->addError('Car is not found', array('carId' => $carId));
+                    if (!$driver) {
+                        $logger->addError('driver is not exists', array('driverId' => $driverId));
                         $error = array(
-                            'code' => 1,
-                            'message' => $translator->trans('car.is.not.found'),
-                            'carId' => $carId,
+                            'code' => 3,
+                            'message' => $translator->trans('driver.is.not.exists'),
                         );
                         return $this->view($error, Response::HTTP_BAD_REQUEST);
                     }
 
-                    $propagationCar = new PropagationList($service, $car, $number);
-                    $manager->persist($propagationCar);
-                    $number++;
+                    if ($driver->getCars()->first()->getStatus() !== Car::STATUS_WAKEFUL
+                        and $driver->getCars()->first()->getStatus() !== Car::STATUS_SERVICE_IN
+                        and $driver->getCars()->first()->getStatus() !== Car::STATUS_SERVICE_END
+                    ) {
+                        $logger->addNotice('driver is busy', array('driverId' => $driver->getId()));
+                        $busyCounter++;
+                        continue;
+                    }
+
+                    $propagationList = new PropagationList($service, $driver, $number - $busyCounter);
+                    $manager->persist($propagationList);
                 }
             }
+
+            $manager->persist($service);
+            $manager->flush();
 
             $logger->addInfo('Dispatch service requested event');
             $event = new ServiceEvent($service);
@@ -159,7 +175,6 @@ class ServiceController extends FOSRestController
                 return $this->view($error, Response::HTTP_BAD_REQUEST);
             }
 
-            $manager->persist($service);
             $manager->flush();
 
             return $this->view($service, Response::HTTP_CREATED)
@@ -381,16 +396,35 @@ class ServiceController extends FOSRestController
      */
     public function patchReadyAction(Request $request, $id)
     {
-        /** @var Service $service */
-        $service = $request->attributes->get('service');
-        $manager = $this->getDoctrine()->getManager();
-        $fetcher = $this->get('fos_rest.request.param_fetcher');
-        $point = new Point($fetcher->get('longitude'), $fetcher->get('latitude'));
         $logger = $this->get('logger');
+        $translator = $this->get('translator');
+        $fetcher = $this->get('fos_rest.request.param_fetcher');
+        $manager = $this->getDoctrine()->getManager();
 
-        # check driver location & request location
+        /** @var Service $service */
 
-        #TODO: check service status, it must be accepted
+        $service = $request->attributes->get('service');
+
+        $point = new Point($fetcher->get('longitude'), $fetcher->get('latitude'));
+        $startPoint = $service->getStartPoint();
+        $distance = Util::distance(
+            $startPoint->getLatitude(),
+            $startPoint->getLongitude(),
+            $point->getLatitude(),
+            $point->getLongitude()
+        );
+
+        if (($distance*1000) > $this->getParameter('service.driver.allowed_radius_for_ready')) {
+            $logger->addInfo('driver is not in allowed radius till he can send ready alarm', array(
+                'real' => $distance * 1000,
+                'allowed' => $this->getParameter('service.driver.allowed_radius_for_ready'),
+            ));
+            $error = array(
+                'code' => 1,
+                'message' => $translator->trans('driver.is.away.from.start.point'),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
 
         $event = new GetCarPointServiceEvent($service, $point);
         $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_READY, $event);
@@ -498,6 +532,7 @@ class ServiceController extends FOSRestController
             }
         }
 
+        #TODO: Convert CarStatusException to view
         $event = new ServiceEvent($service);
         $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_FINISH, $event);
         $manager->flush();
@@ -518,26 +553,35 @@ class ServiceController extends FOSRestController
      *      statusCodes={
      *          200="When success",
      *          403= {
-     *              "when you are not a user",
+     *              "when you have not access to service",
      *          },
      *      }
      * )
      *
      * @ParamConverter(name="service", class="FunPro\ServiceBundle\Entity\Service")
-     * @Security("has_role('ROLE_PASSENGER') or has_role('ROLE_DRIVER') or has_role('ROLE_AGENT')")
      *
      * @param $id
+     *
      * @return \FOS\RestBundle\View\View
      */
     public function getAction(Request $request, $id)
     {
+        $logger = $this->get('logger');
+        $translator = $this->get('translator');
         $context = new Context();
         $context->addGroups(array('Public', 'Point', 'Plaque', 'PassengerMobile', 'DriverMobile', 'Car'));
 
         $service = $request->attributes->get('service');
         $user = $this->getUser();
 
-        if ($user instanceof Driver) {
+        if ($user instanceof Driver and $service->getCar() === null) {
+            $message = $this->getDoctrine()->getRepository('FunProUserBundle:Message')
+                ->getRequestMessageToDriver($user, $service);
+            if (!$message) {
+                $logger->addWarning('how driver find out this id?, he no give any notification');
+                throw $this->createAccessDeniedException($translator->trans('you.not.recive.any.request'));
+            }
+        } elseif ($user instanceof Driver and $service->getCar()->getDriver() === $user) {
             $context->addGroup('Driver');
         } elseif ($service->getPassenger() === $user) {
             $context->addGroups(array('Passenger', 'PropagationList', 'Cost'));

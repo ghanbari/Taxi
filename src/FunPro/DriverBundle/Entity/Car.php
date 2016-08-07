@@ -19,14 +19,16 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Car
 {
-    const STATUS_SLEEP           = 0;
-    const STATUS_WAKEFUL         = 1;
-    const STATUS_SERVICE_ACCEPT  = 2;
-    const STATUS_SERVICE_PREPARE = 3;
-    const STATUS_SERVICE_READY   = 4;
-    const STATUS_SERVICE_START   = 5;
-    const STATUS_SERVICE_IN      = 6;
-    const STATUS_SERVICE_END     = 7;
+    const STATUS_SLEEP                      = 0;
+    const STATUS_WAKEFUL                    = 1;
+    const STATUS_SERVICE_ACCEPT             = 2;
+    const STATUS_SERVICE_PREPARE            = 3;
+    const STATUS_SERVICE_READY              = 4;
+    const STATUS_SERVICE_START              = 5;
+    const STATUS_SERVICE_IN                 = 6;
+    const STATUS_SERVICE_END                = 7;
+    const STATUS_SERVICE_IN_AND_ACCEPT      = 8;
+    const STATUS_SERVICE_IN_AND_PREPARE     = 9;
 
     /**
      * @var int
@@ -194,7 +196,7 @@ class Car
     /**
      * @var boolean
      *
-     * @ORM\Column(name="is_current", type="boolean", options={"default"=true})
+     * @ORM\Column(name="is_current", type="boolean", options={"default"=false})
      *
      * @JS\Groups({"Driver", "Admin"})
      * @JS\Since("1.0.0")
@@ -220,7 +222,7 @@ class Car
 
     public function __construct()
     {
-        //TODO: status must be disable by default
+        //TODO: entity listener: when persist a car, all old car status must be come NOT Current
         $this->setCurrent(true);
         $this->setRate(0);
         $this->setStatus(self::STATUS_SLEEP);
@@ -585,5 +587,33 @@ class Car
     public function getBrand()
     {
         return $this->brand;
+    }
+
+    public static function getStatusName($status)
+    {
+        switch ($status) {
+            case self::STATUS_SLEEP:
+                return 'sleep';
+            case self::STATUS_WAKEFUL:
+                return 'wakeful';
+            case self::STATUS_SERVICE_ACCEPT:
+                return 'accept';
+            case self::STATUS_SERVICE_PREPARE:
+                return 'prepare';
+            case self::STATUS_SERVICE_READY:
+                return 'ready';
+            case self::STATUS_SERVICE_START:
+                return 'start';
+            case self::STATUS_SERVICE_IN:
+                return 'in service';
+            case self::STATUS_SERVICE_END:
+                return 'end';
+            case self::STATUS_SERVICE_IN_AND_ACCEPT:
+                return 'in service and accept new service';
+            case self::STATUS_SERVICE_IN_AND_PREPARE:
+                return 'in service and prepare new service';
+            default:
+                return 'unknown';
+        }
     }
 }
