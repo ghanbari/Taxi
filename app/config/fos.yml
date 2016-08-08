@@ -36,7 +36,7 @@ fos_rest:
         enabled: true
     versioning:
         enabled:              true
-        default_version:      %api_current_version%
+        default_version:      "%api.version.current%"
         resolvers:
             media_type:
                 enabled:              true

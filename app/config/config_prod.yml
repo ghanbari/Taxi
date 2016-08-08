@@ -19,6 +19,16 @@ parameters:
 
 monolog:
     handlers:
+        crossed_file:
+            type: fingers_crossed
+            handler: file
+            action_level: error
+            excluded_404s: ["^/"]
+            channels: ['!event']
+        file:
+            type: rotating_file
+            path: "%kernel.logs_dir%/%kernel.environment%.log"
+            level: debug
         crossed:
             type: fingers_crossed
             handler: deduplicated
@@ -30,11 +40,7 @@ monolog:
             handler: grouped
         grouped:
             type: whatfailuregroup
-            members: [slack, file, rollbar]
-        file:
-            type: rotating_file
-            path: "%kernel.logs_dir%/%kernel.environment%.log"
-            level: debug
+            members: [slack, rollbar]
         slack:
             type: slack
             token: "xoxb-63535591344-yofIljobgRyy0FLMCGKvqwzZ"

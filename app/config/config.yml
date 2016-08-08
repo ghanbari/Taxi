@@ -16,8 +16,6 @@ imports:
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: fa
-    api_current_version: "1.0.0"
-    api_available_versions: ["1.0.0"]
 
 framework:
     #esi:             ~

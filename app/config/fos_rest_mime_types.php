@@ -1,6 +1,6 @@
 <?php
 
-$versions = array("1.0.0");
+$versions = $container->getParameter('api.version.available');
 
 $mimeTypes = array(
     'json' => array(

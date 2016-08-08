@@ -38,8 +38,9 @@ class ConfigController extends FOSRestController
     public function getGlobalAction()
     {
         $config = array(
-            'version.current' => $this->getParameter('api_current_version'),
-            'version.supported' => $this->getParameter('api_available_versions'),
+            'version.current' => $this->getParameter('api.version.current'),
+            'version.supported' => $this->getParameter('api.version.available'),
+            'version.supported.till' => $this->getParameter('api.version.supported_till'),
             'gcm.ttl.service_request' => $this->getParameter('gcm.ttl.service_request'),
             'login.max_failure_count' => $this->getParameter('login.max_failure_count'),
             'login.on_failure_lock_for' => $this->getParameter('login.on_failure_lock_for'),

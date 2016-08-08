@@ -15,8 +15,13 @@ parameters:
     mailer_user:       ~
     mailer_password:   ~
 
-    app_passenger.package_name: 'ir.vdevelop.passenger'
-    app_driver.package_name: 'ir.vdevelop.driver'
+    api.version.current: "1.0.0"
+    api.version.available: ["1.0.0"]
+    api.version.supported_till:
+        "1.0.0": "2016-05-05"
+
+    app.passenger.package_name: 'ir.vdevelop.passenger'
+    app.driver.package_name: 'ir.vdevelop.driver'
 
     sms_adapter:  buzz
     sms_provider: nik_sms

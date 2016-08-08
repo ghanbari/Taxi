@@ -21,22 +21,28 @@ web_profiler:
 
 monolog:
     handlers:
-        crossed:
+        crossed_file:
             type: fingers_crossed
-            handler: grouped
+            handler: file
             action_level: error
             excluded_404s: ["^/"]
-            channels: ['!event', '!php', '!doctrine']
-        grouped:
-            type: whatfailuregroup
-            members: [deduplicated, file, rollbar]
-        deduplicated:
-            type: deduplication
-            handler: slack
+            channels: ['!event']
         file:
             type: rotating_file
             path: "%kernel.logs_dir%/%kernel.environment%.log"
             level: debug
+        crossed:
+            type: fingers_crossed
+            handler: deduplicated
+            action_level: error
+            excluded_404s: ["^/"]
+            channels: ['!event', '!php', '!doctrine']
+        deduplicated:
+            type: deduplication
+            handler: grouped
+        grouped:
+            type: whatfailuregroup
+            members: [slack, rollbar]
         slack:
             type: slack
             token: "xoxb-63535591344-yofIljobgRyy0FLMCGKvqwzZ"
