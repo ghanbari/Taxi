@@ -339,6 +339,15 @@ class Service
      */
     private $canceledReason;
 
+    /**
+     * container for extra data related to service.
+     *
+     * not persisted to database and not serialized
+     *
+     * @var ArrayCollection
+     */
+    private $extraData;
+
     public function __construct()
     {
         $this->setEndPoint(null);
@@ -350,6 +359,7 @@ class Service
         $this->propagationList = new ArrayCollection();
         $this->setPropagationType(self::PROPAGATION_TYPE_ALL);
         $this->logs = new ArrayCollection();
+        $this->extraData = new ArrayCollection();
     }
 
     /**
@@ -1007,5 +1017,24 @@ class Service
         if ($this->getRoute()->count() > 1) {
             $this->setDistance(Util::lengthOfLineString($this->getRoute()));
         }
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getExtraData()
+    {
+        return $this->extraData;
+    }
+
+    /**
+     * @param ArrayCollection $extraData
+     *
+     * @return $this
+     */
+    public function setExtraData(ArrayCollection $extraData)
+    {
+        $this->extraData = $extraData;
+        return $this;
     }
 }

@@ -44,6 +44,7 @@ class ServiceController extends FOSRestController
         $options['method'] = 'POST';
         $options['action'] = $this->generateUrl('fun_pro_service_api_post_service');
         $options['validation_groups'] = array('Create', 'Point');
+        $options['allow_extra_fields'] = true;
 
         $form = $this->createForm(new ServiceType(), $service, $options);
         return $form;
@@ -88,13 +89,21 @@ class ServiceController extends FOSRestController
      * )
      *
      * @Security("has_role('ROLE_PASSENGER') or has_role('ROLE_AGENT')")
+     *
+     * @Rest\RequestParam(name="pickup_name", nullable=false, strict=true, requirements=".{3,100}")
+     * @Rest\RequestParam(name="dropoff_name", nullable=false, strict=true, requirements=".{3,100}")
      */
     public function postAction(Request $request)
     {
         $logger = $this->get('logger');
         $translator = $this->get('translator');
         $manager = $this->getDoctrine()->getManager();
+        $fetcher = $this->get('fos_rest.request.param_fetcher');
+
         $service = new Service();
+        $service->getExtraData()->add('dropoff_name', $fetcher->get('dropoff_name'));
+        $service->getExtraData()->add('pickup_name', $fetcher->get('pickup_name'));
+
         $context = new Context();
         $context->addGroups(['Public', 'Point', 'PropagationList']);
 

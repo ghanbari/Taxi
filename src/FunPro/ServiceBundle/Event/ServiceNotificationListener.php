@@ -145,7 +145,26 @@ class ServiceNotificationListener implements EventSubscriberInterface
             'type' => 'service',
             'id' => $service->getId(),
             'propagationType' => $event->getService()->getPropagationType(),
+            'pickup_latitude' => $service->getStartPoint()->getLatitude(),
+            'pickup_longitude'=> $service->getStartPoint()->getLongitude(),
+            'pickup_name' => $service->getExtraData()->get('pickup_name'),
+            'dropoff_latitude' => $service->getEndPoint() ? $service->getEndPoint()->getLatitude() : '',
+            'dropoff_longitude' => $service->getEndPoint() ? $service->getEndPoint()->getLongitude() : '',
+            'dropoff_name' => $service->getExtraData()->get('dropoff_name'),
         );
+
+        if ($service->getPassenger()) {
+            $data['user_type'] = 'user';
+            $data['user_id'] = $service->getPassenger()->getId();
+            $data['user_full_name'] = $service->getPassenger()->getName();
+            $data['user_avatar'] = $service->getPassenger()->getAvatarPath();
+            $data['user_phone'] = $service->getPassenger()->getMobile();
+        } else {
+            $data['user_type'] = 'place';
+            $data['user_id'] = $service->getAgent()->getId();
+            $data['user_full_name'] = $service->getAgent()->getName();
+            $data['user_phone'] = json_encode($service->getAgent()->getContacts());
+        }
 
         if ($event->getService()->getPropagationType() !== Service::PROPAGATION_TYPE_ALL) {
 //            #TODO: sending notification only to first driver
