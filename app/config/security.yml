@@ -13,6 +13,9 @@ security:
             id: fos_user.user_provider.username
 
     firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
         panel_login:
             pattern: ^/admin/login$
             form_login:
@@ -30,7 +33,7 @@ security:
                 path: fun_pro_admin_logout
                 target: fun_pro_admin_dashboard
         api:
-            pattern: ^/
+            pattern: ^/(?!doc|passenger$|passenger/confirm)
             host: api.%router.request_context.host%
             http_basic:
                 provider: fos_userbundle
@@ -41,7 +44,7 @@ security:
                 provider: fos_userbundle
                 require_previous_session: false
             logout:       true
-            anonymous: true
+            anonymous: false
         main:
             pattern: ^/
             http_basic:
@@ -57,5 +60,5 @@ security:
         - { path: ^/admin/, role: ROLE_ADMIN }
         - { path: ^/passenger$, methods: [POST], host: "api.%router.request_context.host%", role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/passenger/confirm$, methods: [POST], host: "api.%router.request_context.host%", role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/passenger, host: "api.%router.request_context.host%", role: ROLE_PASSENGER }
-        - { path: ^/driver, host: "api.%router.request_context.host%", role: ROLE_DRIVER }
+        - { path: ^/passenger, role: ROLE_PASSENGER }
+        - { path: ^/driver, role: ROLE_DRIVER }
