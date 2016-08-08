@@ -12,13 +12,10 @@ use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\PassengerBundle\Form\Type\RegisterType;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\Extension\Core\Type;
 use FOS\RestBundle\Context\Context;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Class PassengerController

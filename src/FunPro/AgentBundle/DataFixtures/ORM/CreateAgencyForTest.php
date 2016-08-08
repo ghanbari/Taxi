@@ -11,7 +11,6 @@ use FunPro\GeoBundle\Entity\Address;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\VarDumper\VarDumper;
 
 class CreateAgencyForTest extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {

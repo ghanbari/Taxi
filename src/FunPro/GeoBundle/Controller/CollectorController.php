@@ -4,7 +4,6 @@ namespace FunPro\GeoBundle\Controller;
 
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\GeoBundle\Entity\IpLocation;
 use FunPro\GeoBundle\Form\IpLocationType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -12,7 +11,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Class CollectorController
