@@ -254,7 +254,7 @@ class WakefulController extends FOSRestController
             return $this->view($error, Response::HTTP_BAD_REQUEST);
         }
 
-        if ($car->getStatus() !== Car::STATUS_WAKEFUL or $car->getStatus() !== Car::STATUS_SERVICE_END) {
+        if ($car->getStatus() !== Car::STATUS_WAKEFUL and $car->getStatus() !== Car::STATUS_SERVICE_END) {
             $logger->addError('Car\'s status must be wakeful or service end', array('car' => $car->getId()));
             $error = array(
                 'message' => $translator->trans('car.status.must.be.wakeful.or.end'),

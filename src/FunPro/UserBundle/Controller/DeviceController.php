@@ -221,4 +221,85 @@ class DeviceController extends FOSRestController
 
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
+
+    /**
+     * Get user's devices
+     *
+     * @ApiDoc(
+     *      section="Device",
+     *      resource=true,
+     *      output={
+     *          "class"="FunPro\UserBundle\Entity\Device",
+     *          "groups"={"Owner"},
+     *          "parsers"={"Nelmio\ApiDocBundle\Parser\JmsMetadataParser"},
+     *      },
+     *      statusCodes={
+     *          200="When success",
+     *          403= {
+     *              "when you are not login",
+     *          },
+     *      }
+     * )
+     *
+     * @Security("is_authenticated()")
+     */
+    public function cgetAction()
+    {
+        $user = $this->getUser();
+        $devices = $user->getDevices()->toArray();
+
+        if (empty($devices)) {
+            return $this->view(null, Response::HTTP_NO_CONTENT);
+        }
+
+        $context = (new Context())
+            ->addGroup('Owner');
+        return $this->view($devices, Response::HTTP_OK)
+            ->setSerializationContext($context);
+    }
+
+    /**
+     * Find user's device by device identifier
+     *
+     * @ApiDoc(
+     *      section="Device",
+     *      resource=true,
+     *      output={
+     *          "class"="FunPro\UserBundle\Entity\Device",
+     *          "groups"={"Owner"},
+     *          "parsers"={"Nelmio\ApiDocBundle\Parser\JmsMetadataParser"},
+     *      },
+     *      statusCodes={
+     *          200="When success",
+     *          404="When device is not exists",
+     *          403= {
+     *              "when you are not login",
+     *          },
+     *      }
+     * )
+     *
+     * @Security("is_authenticated()")
+     *
+     * @Rest\QueryParam(name="appName", nullable=false, description="application package name")
+     */
+    public function getAction($deviceIdentifier)
+    {
+        $translator = $this->get('translator');
+        $fetcher = $this->get('fos_rest.request.param_fetcher');
+
+        $user = $this->getUser();
+        $appName = $fetcher->get('appName');
+
+        $device = $this->getDoctrine()->getRepository('FunProUserBundle:Device')
+            ->findOneBy(array('owner' => $user, 'deviceIdentifier' => $deviceIdentifier, 'appName' => $appName));
+
+        if (!$device) {
+            throw $this->createNotFoundException($translator->trans('device.is.not.exists'));
+        }
+
+        $context = (new Context())
+            ->addGroup('Owner');
+        return $this->view($device, Response::HTTP_OK)
+            ->setSerializationContext($context);
+    }
 }
