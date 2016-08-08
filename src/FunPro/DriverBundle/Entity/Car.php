@@ -14,6 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Table(name="car")
  * @ORM\Entity(repositoryClass="FunPro\DriverBundle\Repository\CarRepository")
+ * @ORM\EntityListeners({"CarListener"})
  *
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
@@ -222,7 +223,6 @@ class Car
 
     public function __construct()
     {
-        //TODO: entity listener: when persist a car, all old car status must be come NOT Current
         $this->setCurrent(true);
         $this->setRate(0);
         $this->setStatus(self::STATUS_SLEEP);
