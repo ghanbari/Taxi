@@ -28,8 +28,8 @@ class CarListener
             ->createQueryBuilder('c');
 
         $query = $queryBuilder->update()
-            ->set('c.current', false)
-            ->where('c.driver', ':driver')
+            ->set('c.current', 0)
+            ->where($queryBuilder->expr()->eq('c.driver', ':driver'))
             ->setParameter('driver', $car->getDriver())
             ->getQuery();
 
