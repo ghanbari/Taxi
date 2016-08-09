@@ -181,7 +181,7 @@ class ServiceNotificationListener implements EventSubscriberInterface
         } else {
             //TODO: Use Spatial Mysql Distance function for Mysql > 5.6.1
             $drivers = $this->doctrine->getRepository('FunProDriverBundle:Driver')
-                ->getAllAround($service->getStartPoint(), $this->parameterBag->get('service.visible_radius'));
+                ->getAllFreeDriverAroundPoint($service->getStartPoint(), $this->parameterBag->get('service.visible_radius'));
         }
 
         if (!is_array($drivers) or empty($drivers)) {

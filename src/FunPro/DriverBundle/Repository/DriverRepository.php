@@ -20,7 +20,7 @@ class DriverRepository extends EntityRepository
      * @param integer $distance radius in meter
      * @return array
      */
-    public function getAllAround(Point $point, $distance)
+    public function getAllFreeDriverAroundPoint(Point $point, $distance)
     {
         $qb = $this->createQueryBuilder('dr');
 
@@ -29,10 +29,10 @@ class DriverRepository extends EntityRepository
             ->innerJoin('dr.cars', 'c')
             ->innerJoin('c.wakeful', 'w')
             ->where($qb->expr()->eq('c.current', ':current'))
-            ->andWhere($qb->expr()->eq('c.status', ':carStatus'))
+            ->andWhere($qb->expr()->in('c.status', ':carStatus'))
             ->andWhere($qb->expr()->lte('Distance(w.point, point_str(:location))', ':distance'))
             ->setParameter('current', true)
-            ->setParameter('carStatus', Car::STATUS_WAKEFUL)
+            ->setParameter('carStatus', array(Car::STATUS_WAKEFUL, Car::STATUS_SERVICE_IN, Car::STATUS_SERVICE_END))
             ->setParameter('location', $point)
             ->setParameter('distance', $distance/100000);
 
