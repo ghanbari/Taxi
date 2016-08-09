@@ -151,6 +151,7 @@ class ServiceNotificationListener implements EventSubscriberInterface
             'dropoff_latitude' => $service->getEndPoint() ? $service->getEndPoint()->getLatitude() : '',
             'dropoff_longitude' => $service->getEndPoint() ? $service->getEndPoint()->getLongitude() : '',
             'dropoff_name' => $service->getExtraData()->get('dropoff_name'),
+            'requested_at' => $this->serializer->serialize($service->getCreatedAt(), 'json'),
         );
 
         if ($service->getPassenger()) {

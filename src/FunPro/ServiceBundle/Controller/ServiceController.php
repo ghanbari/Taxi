@@ -101,8 +101,8 @@ class ServiceController extends FOSRestController
         $fetcher = $this->get('fos_rest.request.param_fetcher');
 
         $service = new Service();
-        $service->getExtraData()->add('dropoff_name', $fetcher->get('dropoff_name'));
-        $service->getExtraData()->add('pickup_name', $fetcher->get('pickup_name'));
+        $service->getExtraData()->set('dropoff_name', $fetcher->get('dropoff_name'));
+        $service->getExtraData()->set('pickup_name', $fetcher->get('pickup_name'));
 
         $context = new Context();
         $context->addGroups(['Public', 'Point', 'PropagationList']);
@@ -216,7 +216,7 @@ class ServiceController extends FOSRestController
      * @ParamConverter(name="service", class="FunProServiceBundle:Service")
      * @Security("is_authenticated() and service.getPassenger() == user")
      *
-     * @Rest\RequestParam(name="reason", requirements="\d+", nullable=false, strict=true)
+     * @Rest\QueryParam(name="reason", requirements="\d+", nullable=false, strict=true)
      *
      * @param $id
      *
