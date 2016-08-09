@@ -2,6 +2,7 @@
 
 namespace FunPro\UserBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
@@ -241,7 +242,7 @@ class Device
      */
     public function __construct()
     {
-        $this->messages = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->messages = new ArrayCollection();
     }
 
     public static function getStatusAvailable()
@@ -255,23 +256,24 @@ class Device
     /**
      * @ORM\PrePersist
      */
-    public function PrePersist() {
+    public function prePersist()
+    {
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
-
     }
 
     /**
      * @ORM\PreUpdate
      */
-    public function PreUpdate() {
+    public function preUpdate()
+    {
         $this->updatedAt = new \DateTime();
     }
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -294,7 +296,7 @@ class Device
     /**
      * Get deviceToken
      *
-     * @return string 
+     * @return string
      */
     public function getDeviceToken()
     {
@@ -317,7 +319,7 @@ class Device
     /**
      * Get deviceIdentifier
      *
-     * @return string 
+     * @return string
      */
     public function getDeviceIdentifier()
     {
@@ -340,7 +342,7 @@ class Device
     /**
      * Get soundAllowed
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getSoundAllowed()
     {
@@ -363,7 +365,7 @@ class Device
     /**
      * Get alertAllowed
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getAlertAllowed()
     {
@@ -386,7 +388,7 @@ class Device
     /**
      * Get deviceName
      *
-     * @return string 
+     * @return string
      */
     public function getDeviceName()
     {
@@ -409,7 +411,7 @@ class Device
     /**
      * Get os
      *
-     * @return string 
+     * @return string
      */
     public function getOs()
     {
@@ -432,7 +434,7 @@ class Device
     /**
      * Get status
      *
-     * @return string 
+     * @return string
      */
     public function getStatus()
     {
@@ -455,7 +457,7 @@ class Device
     /**
      * Get deviceModel
      *
-     * @return string 
+     * @return string
      */
     public function getDeviceModel()
     {
@@ -497,7 +499,7 @@ class Device
     /**
      * Get deviceVersion
      *
-     * @return string 
+     * @return string
      */
     public function getDeviceVersion()
     {
@@ -520,7 +522,7 @@ class Device
     /**
      * Get appVersion
      *
-     * @return string 
+     * @return string
      */
     public function getAppVersion()
     {
@@ -543,7 +545,7 @@ class Device
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt()
     {
@@ -566,7 +568,7 @@ class Device
     /**
      * Get updatedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getUpdatedAt()
     {
@@ -589,7 +591,7 @@ class Device
     /**
      * Get apiKey
      *
-     * @return string 
+     * @return string
      */
     public function getApiKey()
     {
@@ -622,7 +624,7 @@ class Device
     /**
      * Get messages
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return ArrayCollection
      */
     public function getMessages()
     {
@@ -645,7 +647,7 @@ class Device
     /**
      * Get owner
      *
-     * @return User 
+     * @return User
      */
     public function getOwner()
     {

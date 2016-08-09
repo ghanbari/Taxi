@@ -21,8 +21,6 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @Rest\NamePrefix("fun_pro_user_api_")
  * @Rest\RouteResource("device", pluralize=false)
- *
- * TODO: add more log
  */
 class DeviceController extends FOSRestController
 {
@@ -99,29 +97,21 @@ class DeviceController extends FOSRestController
         ));
 
         if ($persistentDevice) {
+            $deviceLogContext = SerializationContext::create()->setGroups(array('Owner'))->enableMaxDepthChecks();
             if ($device->getDeviceToken() === $persistentDevice->getDeviceToken()) {
-                $logger->addNotice(
-                    'device is exists and have same token',
-                    array(
-                        $serializer->serialize(
-                            $persistentDevice,
-                            'json',
-                            SerializationContext::create()->enableMaxDepthChecks()
-                        )
-                    )
-                );
+                $logger->addInfo('device is exists and have same token');
                 $context = (new Context())
                     ->addGroup('Owner')
                     ->setMaxDepth(1);
                 return $this->view($persistentDevice, Response::HTTP_OK)
                     ->setSerializationContext($context);
             } elseif ($persistentDevice->getOwner() !== $user) {
-                $logger->addNotice(
+                $logger->addWarning(
                     'you are not owner of this device',
                     array(
-                        $serializer->serialize($device, 'json', SerializationContext::create()->enableMaxDepthChecks()),
-                        $serializer->serialize($persistentDevice, 'json', SerializationContext::create()->enableMaxDepthChecks()),
-                        $serializer->serialize($this->getUser(), 'json', SerializationContext::create()->enableMaxDepthChecks()),
+                        'new_device' => $serializer->serialize($device, 'json', clone $deviceLogContext),
+                        'old_device' => $serializer->serialize($persistentDevice, 'json', clone $deviceLogContext),
+                        'userId' => $this->getUser()->getId(),
                     )
                 );
                 $error = array(
@@ -143,7 +133,7 @@ class DeviceController extends FOSRestController
         }
 
         if (($user->getDevices()->count() > 0) and !$user->isMultiDeviceAllowed()) {
-            $logger->addInfo("you have {$user->getDevices()->count()} device");
+            $logger->addDebug("you have {$user->getDevices()->count()} device");
 
             $error = array(
                 'code' => 2,
@@ -160,7 +150,7 @@ class DeviceController extends FOSRestController
             $manager->persist($device);
             $manager->flush();
 
-            $logger->addDebug('device was persisted');
+            $logger->addInfo('device was persisted');
 
             $context = (new Context())
                 ->addGroup('Owner')
@@ -196,19 +186,25 @@ class DeviceController extends FOSRestController
      */
     public function putTokenAction()
     {
+        $logger = $this->get('logger');
         $fetcher = $this->get('fos_rest.request.param_fetcher');
         $token = $fetcher->get('token');
+
         $device = $this->getDoctrine()->getRepository('FunProUserBundle:Device')->findOneBy(array(
             'deviceIdentifier' => $fetcher->get('deviceIdentifier'),
             'appName' => $fetcher->get('appName'),
         ));
 
         if (is_null($device)) {
+            $logger->addDebug('device is not exists', array(
+                'deviceIdentifier' => $fetcher->get('deviceIdentifier'),
+                'appName' => $fetcher->get('appName'),
+            ));
             throw $this->createNotFoundException('device is not exists');
         }
 
         if ($device->getOwner() and $device->getOwner() !== $this->getUser()) {
-            $this->get('logger')->addNotice('you are not device owner', array(
+            $logger->addDebug('you are not device owner', array(
                 'user' => $this->getUser()->getId(),
                 'device' => $device->getId(),
             ));
@@ -235,6 +231,7 @@ class DeviceController extends FOSRestController
      *      },
      *      statusCodes={
      *          200="When success",
+     *          204="When device is not exists",
      *          403= {
      *              "when you are not login",
      *          },
@@ -249,6 +246,7 @@ class DeviceController extends FOSRestController
         $devices = $user->getDevices()->toArray();
 
         if (empty($devices)) {
+            $this->get('logger')->addDebug('device is not registered');
             return $this->view(null, Response::HTTP_NO_CONTENT);
         }
 
@@ -294,6 +292,7 @@ class DeviceController extends FOSRestController
             ->findOneBy(array('owner' => $user, 'deviceIdentifier' => $deviceIdentifier, 'appName' => $appName));
 
         if (!$device) {
+            $this->get('logger')->addDebug('device is not found');
             throw $this->createNotFoundException($translator->trans('device.is.not.exists'));
         }
 

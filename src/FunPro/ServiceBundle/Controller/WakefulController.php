@@ -10,9 +10,6 @@ use FunPro\DriverBundle\CarEvents;
 use FunPro\DriverBundle\Entity\Car;
 use FunPro\DriverBundle\Entity\Driver;
 use FunPro\DriverBundle\Event\CarEvent;
-use FunPro\DriverBundle\Event\FilterMoveEvent;
-use FunPro\DriverBundle\Event\FilterSleepEvent;
-use FunPro\DriverBundle\Event\FilterWakefulEvent;
 use FunPro\DriverBundle\Event\GetMoveCarEvent;
 use FunPro\DriverBundle\Event\WakefulEvent;
 use FunPro\GeoBundle\Doctrine\ValueObject\Point;
@@ -106,12 +103,15 @@ class WakefulController extends FOSRestController
             $this->get('event_dispatcher')->dispatch(CarEvents::CAR_WAKEFUL, new WakefulEvent($wakeful));
             $manager->flush();
 
+            $logger->addInfo('driver\'s status change to wakeful');
+
             $context = (new Context())
                 ->addGroups(array('Public', 'Car', 'Point', 'CarStatus'))
                 ->setMaxDepth(true);
             return $this->view($wakeful, Response::HTTP_CREATED)
                 ->setSerializationContext($context);
         } catch (UniqueConstraintViolationException $e) {
+            $logger->addError('Your status are wakeful, why do you try again?', array('driverId' => $driver->getId()));
             $error = array(
                 'message' => $translator->trans('this.car.is.in.queue'),
                 'code' => 3,
@@ -169,7 +169,7 @@ class WakefulController extends FOSRestController
         }
 
         if ($car->getStatus() === Car::STATUS_SLEEP) {
-            $logger->addError('Car\'s status must not be sleep', array('car' => $car->getId()));
+            $logger->addWarning('Car\'s status must not be sleep', array('car' => $car->getId()));
             $error = array(
                 'message' => $translator->trans('car.status.is.sleep'),
                 'code' => 2,
@@ -201,6 +201,7 @@ class WakefulController extends FOSRestController
 
             return $this->view(null, Response::HTTP_NO_CONTENT);
         } else {
+            $logger->addError('Why you are not wakeful?', array('carId' => $car->getId()));
             $error = array(
                 'message' => $translator->trans('this.car.is.not.in.queue'),
                 'code' => 1,
@@ -255,7 +256,7 @@ class WakefulController extends FOSRestController
         }
 
         if ($car->getStatus() !== Car::STATUS_WAKEFUL and $car->getStatus() !== Car::STATUS_SERVICE_END) {
-            $logger->addError('Car\'s status must be wakeful or service end', array('car' => $car->getId()));
+            $logger->addWarning('Car\'s status must be wakeful or service end', array('car' => $car->getId()));
             $error = array(
                 'message' => $translator->trans('car.status.must.be.wakeful.or.end'),
                 'code' => 2,
@@ -271,8 +272,11 @@ class WakefulController extends FOSRestController
             $this->get('event_dispatcher')->dispatch(CarEvents::CAR_SLEEP, new CarEvent($car));
             $manger->flush();
 
+            $logger->addInfo('driver go sleep');
+
             return $this->view(null, Response::HTTP_NO_CONTENT);
         } else {
+            $logger->addError('Why you are not wakeful?', array('carId' => $car->getId()));
             $error = array(
                 'message' => $translator->trans('this.car.is.not.in.queue'),
                 'code' => 1,
@@ -359,6 +363,7 @@ class WakefulController extends FOSRestController
      *      statusCodes={
      *          200="When success",
      *          204="When no data is exists",
+     *          403="when you are not login",
      *      }
      * )
      *
@@ -366,12 +371,10 @@ class WakefulController extends FOSRestController
      *
      * @Rest\QueryParam(name="latitude", strict=true, requirements=@Assert\Type(type="numeric"), nullable=false)
      * @Rest\QueryParam(name="longitude", strict=true, requirements=@Assert\Type(type="numeric"), nullable=false)
-     * @Rest\QueryParam(name="limit", default=500, requirements=@Assert\Range(max="500"), description="Max of result")
+     * @Rest\QueryParam(name="limit", default=20, requirements=@Assert\Range(max="50"), description="Max of result")
      * @Rest\View()
      *
      * @return \FOS\RestBundle\View\View
-     *
-     * TODO: save request(lat & lng) into database(locations), round to 2 decimal
      */
     public function cgetAction()
     {
