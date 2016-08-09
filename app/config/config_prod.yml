@@ -22,7 +22,7 @@ monolog:
         crossed_file:
             type: fingers_crossed
             handler: file
-            action_level: error
+            action_level: warning
             excluded_404s: ["^/"]
             channels: ['!event']
         file:
