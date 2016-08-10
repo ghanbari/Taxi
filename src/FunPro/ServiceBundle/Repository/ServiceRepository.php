@@ -4,6 +4,7 @@ namespace FunPro\ServiceBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use FunPro\DriverBundle\Entity\Car;
+use FunPro\ServiceBundle\Entity\FloatingCost;
 use FunPro\ServiceBundle\Entity\Service;
 use Proxies\__CG__\FunPro\ServiceBundle\Entity\ServiceLog;
 
@@ -16,27 +17,50 @@ use Proxies\__CG__\FunPro\ServiceBundle\Entity\ServiceLog;
 class ServiceRepository extends EntityRepository
 {
     /**
-     * @param $id
+     * Get a service [hydrate: car, plaque, driver] by id
      *
-     * @return Service
+     * @param $serviceId
+     *
      * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
+     *
+     * @return Service
      */
-    public function getWithCar($id)
+    public function getWithCar($serviceId)
     {
-        $qb = $this->createQueryBuilder('r');
+        $queryBuilder = $this->createQueryBuilder('s');
 
-        return $qb->select(array('c', 'r', 'p', 'd'))
-            ->innerJoin('r.car', 'c')
+        return $queryBuilder->select(array('c', 's', 'p', 'd'))
+            ->innerJoin('s.car', 'c')
             ->innerJoin('c.plaque', 'p')
             ->innerJoin('c.driver', 'd')
-            ->where($qb->expr()->eq('r.id', ':service_id'))
-            ->setParameter('service_id', $id)
+            ->where($queryBuilder->expr()->eq('s.id', ':service_id'))
+            ->setParameter('service_id', $serviceId)
             ->getQuery()
             ->getSingleResult();
     }
 
     /**
+     * Calculate total cost of service
+     *
+     * @param Service $service
+     *
+     * @return int
+     */
+    public function getTotalCost(Service $service)
+    {
+        $cost = $service->getPrice();
+        /** @var FloatingCost $floatCost */
+        foreach ($service->getFloatingCosts() as $floatCost) {
+            $cost += $floatCost->getCost();
+        }
+
+        return $cost;
+    }
+
+    /**
+     * Get a service[hydrate: logs] that is doing by given car now.
+     *
      * @param Car $car
      *
      * @return Service
@@ -44,11 +68,11 @@ class ServiceRepository extends EntityRepository
      */
     public function getDoingServiceFilterByCar(Car $car)
     {
-        $qb = $this->createQueryBuilder('s');
+        $queryBuilder = $this->createQueryBuilder('s');
 
-        $service = $qb->select(array('s', 'l'))
+        $service = $queryBuilder->select(array('s', 'l'))
             ->innerJoin('s.logs', 'l')
-            ->where($qb->expr()->eq('s.car', ':car'))
+            ->where($queryBuilder->expr()->eq('s.car', ':car'))
             ->setParameter('car', $car)
             ->orderBy('l.atTime', 'DESC')
             ->getQuery()

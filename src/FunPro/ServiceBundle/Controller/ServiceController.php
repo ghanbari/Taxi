@@ -8,6 +8,7 @@ use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FunPro\DriverBundle\Entity\Car;
 use FunPro\DriverBundle\Entity\Driver;
+use FunPro\DriverBundle\Exception\CarStatusException;
 use FunPro\DriverBundle\Exception\DriverNotFound;
 use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\GeoBundle\Utility\Util;
@@ -207,14 +208,15 @@ class ServiceController extends FOSRestController
      *              "Reason is not found(code: 2)",
      *              "Service can be canceled when its status is requested, accepted or ready(code: 3)",
      *          },
+     *          404="Service is not exists.",
      *          403= {
-     *              "when service is not requested by this passenger",
+     *              "When service is not requested by this passenger",
      *          },
      *      }
      * )
      *
      * @ParamConverter(name="service", class="FunProServiceBundle:Service")
-     * @Security("is_authenticated() and service.getPassenger() == user")
+     * @Security("has_role('ROLE_PASSENGER') and service.getPassenger() == user")
      *
      * @Rest\QueryParam(name="reason", requirements="\d+", nullable=false, strict=true)
      *
@@ -286,6 +288,8 @@ class ServiceController extends FOSRestController
      *          204="When success",
      *          400={
      *              "You have not active car(code: 1)",
+     *              "Car status must be wakeful or in_service(code: 2)",
+     *              "Service status must be requested(code: 3)",
      *          },
      *          403={
      *              "when you are not driver",
@@ -355,8 +359,22 @@ class ServiceController extends FOSRestController
 
             $service->setCar($car);
             $event = new GetCarPointServiceEvent($service, $point);
-            $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_ACCEPTED, $event);
-            $manager->flush();
+            try {
+                $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_ACCEPTED, $event);
+                $manager->flush();
+            } catch (CarStatusException $e) {
+                $error = array(
+                    'code' => 2,
+                    'message' => $e->getMessage(),
+                );
+                return $this->view($error, Response::HTTP_BAD_REQUEST);
+            } catch (ServiceStatusException $e) {
+                $error = array(
+                    'code' => 3,
+                    'message' => $e->getMessage(),
+                );
+                return $this->view($error, Response::HTTP_BAD_REQUEST);
+            }
             $manager->getConnection()->commit();
         } catch (PessimisticLockException $e) {
             $manager->getConnection()->rollBack();
@@ -384,15 +402,12 @@ class ServiceController extends FOSRestController
      *      statusCodes={
      *          204="When success",
      *          400={
-     *              "When you will finish a service that not started",
-     *              "when status is not valid",
+     *              "Driver is away from start point(code: 1)",
+     *              "Car status must be prepare or ready(code: 2)",
+     *              "Service status is not accepted(code: 3)",
      *          },
      *          403= {
-     *              "when csrf token is invalid",
      *              "when you are not a driver or driver of this service",
-     *          },
-     *          409= {
-     *              "when you will start a started service or finish a finished service",
      *          },
      *      }
      * )
@@ -411,7 +426,6 @@ class ServiceController extends FOSRestController
         $manager = $this->getDoctrine()->getManager();
 
         /** @var Service $service */
-
         $service = $request->attributes->get('service');
 
         $point = new Point($fetcher->get('longitude'), $fetcher->get('latitude'));
@@ -436,8 +450,22 @@ class ServiceController extends FOSRestController
         }
 
         $event = new GetCarPointServiceEvent($service, $point);
-        $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_READY, $event);
-        $manager->flush();
+        try {
+            $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_READY, $event);
+            $manager->flush();
+        } catch (CarStatusException $e) {
+            $error = array(
+                'code' => 2,
+                'message' => $e->getMessage(),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        } catch (ServiceStatusException $e) {
+            $error = array(
+                'code' => 3,
+                'message' => $e->getMessage(),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
 
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
@@ -452,15 +480,11 @@ class ServiceController extends FOSRestController
      *      statusCodes={
      *          204="When success",
      *          400={
-     *              "When you will finish a service that not started",
-     *              "when status is not valid",
+     *              "When car status is not ready(code: 1)",
+     *              "When service status is not ready(code: 2)",
      *          },
      *          403= {
-     *              "when csrf token is invalid",
      *              "when you are not a driver or driver of this service",
-     *          },
-     *          409= {
-     *              "when you will start a started service or finish a finished service",
      *          },
      *      }
      * )
@@ -473,13 +497,24 @@ class ServiceController extends FOSRestController
         /** @var Service $service */
         $service = $request->attributes->get('service');
         $manager = $this->getDoctrine()->getManager();
-        $logger = $this->get('logger');
-
-        #TODO: check service status, it must be ready
 
         $event = new ServiceEvent($service);
-        $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_START, $event);
-        $manager->flush();
+        try {
+            $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_START, $event);
+            $manager->flush();
+        } catch (CarStatusException $e) {
+            $error = array(
+                'code' => 1,
+                'message' => $e->getMessage(),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        } catch (ServiceStatusException $e) {
+            $error = array(
+                'code' => 2,
+                'message' => $e->getMessage(),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
 
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
@@ -494,15 +529,13 @@ class ServiceController extends FOSRestController
      *      statusCodes={
      *          204="When success",
      *          400={
-     *              "When you will finish a service that not started",
-     *              "when status is not valid",
+     *              "Price must be positive and larger than zero(code: 1)",
+     *              "Max items for floating cost is ten(code: 2)",
+     *              "When car status is not in_service or in_and_accept or in_and_prepare(code: 3)",
+     *              "When service is not started(code: 4)",
      *          },
      *          403= {
-     *              "when csrf token is invalid",
      *              "when you are not a driver or driver of this service",
-     *          },
-     *          409= {
-     *              "when you will start a started service or finish a finished service",
      *          },
      *      }
      * )
@@ -529,22 +562,53 @@ class ServiceController extends FOSRestController
     {
         /** @var Service $service */
         $service = $request->attributes->get('service');
+        $logger = $this->get('logger');
+        $translator = $this->get('translator');
         $fetcher = $this->get('fos_rest.request.param_fetcher');
         $manager = $this->getDoctrine()->getManager();
 
-        #TODO: check service status, it must be in service
+        if ($fetcher->get('price') <= 0) {
+            $logger->addWarning('you must enter a positive number and larger than zero number');
+            $error = array(
+                'code' => 1,
+                'message' => $translator->trans('price.must.be.positive.and.larger.than.zero'),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
 
         $service->setPrice($fetcher->get('price'));
         if ($floatingCosts = $fetcher->get('floatingCost')) {
+            if (count($floatingCosts) > 10) {
+                $logger->addWarning('Max number of float items can be 10', array('count' => count($floatingCosts)));
+                $error = array(
+                    'code' => 2,
+                    'message' => $translator->trans('max.number.for.floating.is.ten'),
+                );
+                return $this->view($error, Response::HTTP_BAD_REQUEST);
+            }
+
             foreach ($floatingCosts as $floatCost) {
                 $manager->persist(new FloatingCost($service, intval($floatCost['amount']), $floatCost['description']));
             }
         }
 
-        #TODO: Convert CarStatusException to view
         $event = new ServiceEvent($service);
-        $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_FINISH, $event);
-        $manager->flush();
+        try {
+            $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_FINISH, $event);
+            $manager->flush();
+        } catch (CarStatusException $e) {
+            $error = array(
+                'code' => 3,
+                'message' => $e->getMessage(),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        } catch (ServiceStatusException $e) {
+            $error = array(
+                'code' => 4,
+                'message' => $e->getMessage(),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
 
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }

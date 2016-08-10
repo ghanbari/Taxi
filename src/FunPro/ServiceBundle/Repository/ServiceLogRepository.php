@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use FunPro\ServiceBundle\Entity\Service;
+use FunPro\ServiceBundle\Entity\ServiceLog;
 
 /**
  * ServiceLogRepository
@@ -16,11 +17,14 @@ use FunPro\ServiceBundle\Entity\Service;
 class ServiceLogRepository extends EntityRepository
 {
     /**
+     * Get current|last status of service
+     *
      * @param Service $service
      *
      * @throws NoResultException
+     * @throws NonUniqueResultException
      *
-     * @return array
+     * @return ServiceLog
      */
     public function getLastLog(Service $service)
     {
@@ -30,7 +34,7 @@ class ServiceLogRepository extends EntityRepository
             ->orderBy('s.atTime', 'DESC')
             ->setParameter('service', $service)
             ->getQuery()
-            ->getMaxResults(1)
+            ->setMaxResults(1)
             ->getSingleResult();
     }
 }

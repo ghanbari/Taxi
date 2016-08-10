@@ -12,6 +12,11 @@ use FunPro\ServiceBundle\ServiceEvents;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * Class ServiceSubscriber
+ *
+ * @package FunPro\DriverBundle\Event
+ */
 class ServiceSubscriber implements EventSubscriberInterface
 {
     /**
