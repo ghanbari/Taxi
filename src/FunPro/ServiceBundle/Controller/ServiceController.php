@@ -28,6 +28,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Class ServiceController
@@ -530,7 +531,7 @@ class ServiceController extends FOSRestController
      *          204="When success",
      *          400={
      *              "Price must be positive and larger than zero(code: 1)",
-     *              "Max items for floating cost is ten(code: 2)",
+     *              "Invalid format for floating cost or more that ten item is send(code: 2)",
      *              "When car status is not in_service or in_and_accept or in_and_prepare(code: 3)",
      *              "When service is not started(code: 4)",
      *          },
@@ -544,19 +545,7 @@ class ServiceController extends FOSRestController
      * @Security("has_role('ROLE_DRIVER') and service.getCar().getDriver() == user")
      *
      * @Rest\RequestParam(name="price", nullable=false, requirements="\d+", strict=true)
-     * @Rest\RequestParam(
-     *      name="floatingCost",
-     *      nullable=true,
-     *      strict=true,
-     *      requirements=@Assert\All({
-     *          @Assert\Collection(
-     *              fields={
-     *                  "amount"=@Assert\Required({@Assert\NotBlank, @Assert\Type(type="numeric")}),
-     *                  "description"=@Assert\Required({@Assert\NotBlank(), @Assert\Length(max="50")})
-     *              }
-     *          )
-     *      })
-     * )
+     * @Rest\RequestParam(name="floatingCost", nullable=true, strict=true)
      */
     public function patchFinishAction(Request $request, $id)
     {
@@ -577,12 +566,26 @@ class ServiceController extends FOSRestController
         }
 
         $service->setPrice($fetcher->get('price'));
-        if ($floatingCosts = $fetcher->get('floatingCost')) {
-            if (count($floatingCosts) > 10) {
-                $logger->addWarning('Max number of float items can be 10', array('count' => count($floatingCosts)));
+        $floatingCosts = json_decode($fetcher->get('floatingCost'), true);
+        if ($floatingCosts) {
+            $validator = $this->get('validator');
+            $errors = $validator->validate(
+                $floatingCosts,
+                array(
+                    new Assert\All(
+                        new Assert\Collection(array('fields' => array(
+                            'amount' => new Assert\Required(array(new Assert\NotBlank(), new Assert\Type('numeric'))),
+                            'description' => new Assert\Required(array(new Assert\NotBlank(), new Assert\Length(array('max' => 50)))))
+                        ))),
+                    new Assert\Count(array('max' => 10))
+                )
+            );
+
+            if (count($errors)) {
+                $logger->addError('invalid format for floating costs');
                 $error = array(
                     'code' => 2,
-                    'message' => $translator->trans('max.number.for.floating.is.ten'),
+                    'message' => $translator->trans('invalid.format.for.floatin.cost'),
                 );
                 return $this->view($error, Response::HTTP_BAD_REQUEST);
             }
