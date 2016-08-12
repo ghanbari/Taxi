@@ -28,6 +28,8 @@ class AppKernel extends Kernel
             new FunPro\GeoBundle\FunProGeoBundle(),
             new FunPro\ServiceBundle\FunProServiceBundle(),
             new FunPro\AdminBundle\FunProAdminBundle(),
+            new FunPro\FinancialBundle\FunProFinancialBundle(),
+            new FunPro\TicketBundle\FunProTicketBundle(),
             new KPhoen\SmsSenderBundle\KPhoenSmsSenderBundle(),
             new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(),
             new Liip\ImagineBundle\LiipImagineBundle(),

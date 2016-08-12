@@ -5,6 +5,7 @@ namespace FunPro\ServiceBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JS;
 use Symfony\Component\Validator\Constraints as Assert;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * FloatingCost
@@ -65,6 +66,15 @@ class FloatingCost
      * @JS\Since("1.0.0")
      */
     private $service;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime")
+     *
+     * @Gedmo\Timestampable(on="create")
+     */
+    private $createdAt;
 
     /**
      * @param Service $service
@@ -143,6 +153,25 @@ class FloatingCost
     public function setService($service)
     {
         $this->service = $service;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param \DateTime $createdAt
+     *
+     * @return $this
+     */
+    public function setCreatedAt(\DateTime $createdAt)
+    {
+        $this->createdAt = $createdAt;
         return $this;
     }
 }

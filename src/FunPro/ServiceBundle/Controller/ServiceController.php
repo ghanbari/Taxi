@@ -9,7 +9,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FunPro\DriverBundle\Entity\Car;
 use FunPro\DriverBundle\Entity\Driver;
 use FunPro\DriverBundle\Exception\CarStatusException;
-use FunPro\DriverBundle\Exception\DriverNotFound;
+use FunPro\DriverBundle\Exception\DriverNotFoundException;
 use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\GeoBundle\Utility\Util;
 use FunPro\PassengerBundle\Entity\Passenger;
@@ -28,7 +28,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Class ServiceController
@@ -178,7 +177,7 @@ class ServiceController extends FOSRestController
             $event = new ServiceEvent($service);
             try {
                 $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_REQUESTED, $event);
-            } catch (DriverNotFound $e) {
+            } catch (DriverNotFoundException $e) {
                 $error = array(
                     'code' => 2,
                     'message' => $translator->trans($e->getMessage()),
@@ -614,6 +613,46 @@ class ServiceController extends FOSRestController
         }
 
         return $this->view(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * Get last service of user
+     *
+     * @ApiDoc(
+     *      section="Service",
+     *      resource=true,
+     *      output={
+     *          "class"="FunPro\ServiceBundle\Entity\Service",
+     *          "groups"={"Passenger", "Driver", "Agent", "Admin", "Public", "Point"},
+     *      },
+     *      statusCodes={
+     *          200="When success",
+     *          204="When any service is not exists",
+     *          403= {
+     *              "when you are not login",
+     *          },
+     *      }
+     * )
+     *
+     * @Security("has_role('ROLE_PASSENGER') or has_role('ROLE_DRIVER')")
+     */
+    public function getLastAction()
+    {
+        $repository = $this->getDoctrine()->getRepository('FunProServiceBundle:Service');
+        $user = $this->getUser();
+        $context = new Context();
+
+        if ($user instanceof Driver) {
+            $service = $repository->getLastServiceOfDriver($user);
+            $context->addGroups(array('Public', 'Driver'));
+        } else {
+            $context->addGroups(array('Public', 'Passenger', 'Car'));
+            $service = $repository->getLastServiceOfPassenger($user);
+        }
+
+        $statusCode = $service ? Response::HTTP_OK : Response::HTTP_NO_CONTENT;
+        return $this->view($service, $statusCode)
+            ->setSerializationContext($context);
     }
 
     /**

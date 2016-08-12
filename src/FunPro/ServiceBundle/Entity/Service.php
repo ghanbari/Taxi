@@ -6,12 +6,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\AgentBundle\Entity\Agent;
 use FunPro\DriverBundle\Entity\Car;
+use FunPro\FinancialBundle\Entity\Currency;
 use FunPro\GeoBundle\Doctrine\ValueObject\LineString;
 use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\GeoBundle\Utility\Util;
 use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\UserBundle\Entity\User;
 use JMS\Serializer\Annotation as JS;
+use Proxies\__CG__\FunPro\ServiceBundle\Entity\ServiceLog;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -264,6 +266,16 @@ class Service
     private $price;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="real_price", type="integer", nullable=true, options={"default"="0"})
+     *
+     * @JS\Groups({"Passenger", "Driver", "Agent", "Admin"})
+     * @JS\Since("2.0.0")
+     */
+    private $realPrice;
+
+    /**
      * @var ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="FunPro\ServiceBundle\Entity\FloatingCost", mappedBy="service")
@@ -340,6 +352,17 @@ class Service
     private $canceledReason;
 
     /**
+     * @var Currency
+     *
+     * @ORM\ManyToOne(targetEntity="FunPro\FinancialBundle\Entity\Currency")
+     * @ORM\JoinColumn(name="currency_id", referencedColumnName="id")
+     *
+     * @JS\Groups({"Currency"})
+     * @JS\Since("1.0.0")
+     */
+    private $currency;
+
+    /**
      * container for extra data related to service.
      *
      * not persisted to database and not serialized
@@ -360,6 +383,88 @@ class Service
         $this->setPropagationType(self::PROPAGATION_TYPE_ALL);
         $this->logs = new ArrayCollection();
         $this->extraData = new ArrayCollection();
+    }
+
+    /**
+     * @JS\VirtualProperty()
+     * @JS\SerializedName("period")
+     * @JS\Type(name="integer")
+     * @JS\Groups({"Passenger", "Driver"})
+     * @JS\Since("1.0.0")
+     *
+     * @return array
+     */
+    public function getPeriod()
+    {
+        $fisrtLog = $this->logs->first();
+        $lastLog  = $this->logs->last();
+
+        if ($fisrtLog and $lastLog) {
+            $period = $lastLog->getAtTime()->getTimestamp() - $fisrtLog->getAtTime()->getTimestamp();
+        } else {
+            $period = -1;
+        }
+
+        return $period;
+    }
+
+    /**
+     * return service status
+     *
+     * @JS\VirtualProperty()
+     * @JS\SerializedName("status")
+     * @JS\Type(name="array")
+     * @JS\Groups({"Passenger", "Driver"})
+     * @JS\Since("1.0.0")
+     *
+     * @return array
+     */
+    public function getStatus()
+    {
+        if (!$this->logs->last()) {
+            return array(
+                'code' => ServiceLog::STATUS_REQUESTED,
+                'name' => 'requested',
+            );
+        }
+
+        switch ($this->logs->last()->getStatus()) {
+            case ServiceLog::STATUS_REQUESTED:
+                return array(
+                    'code' => ServiceLog::STATUS_REQUESTED,
+                    'name' => 'requested',
+                );
+            case ServiceLog::STATUS_CANCELED:
+                return array(
+                    'code' => ServiceLog::STATUS_CANCELED,
+                    'name' => 'canceled',
+                );
+            case ServiceLog::STATUS_REJECTED:
+                return array(
+                    'code' => ServiceLog::STATUS_REJECTED,
+                    'name' => 'rejected',
+                );
+            case ServiceLog::STATUS_ACCEPTED:
+                return array(
+                    'code' => ServiceLog::STATUS_ACCEPTED,
+                    'name' => 'accepted',
+                );
+            case ServiceLog::STATUS_READY:
+                return array(
+                    'code' => ServiceLog::STATUS_READY,
+                    'name' => 'ready',
+                );
+            case ServiceLog::STATUS_START:
+                return array(
+                    'code' => ServiceLog::STATUS_START,
+                    'name' => 'start',
+                );
+            case ServiceLog::STATUS_FINISH:
+                return array(
+                    'code' => ServiceLog::STATUS_FINISH,
+                    'name' => 'finish',
+                );
+        }
     }
 
     /**
@@ -1020,6 +1125,25 @@ class Service
     }
 
     /**
+     * @return Currency
+     */
+    public function getCurrency()
+    {
+        return $this->currency;
+    }
+
+    /**
+     * @param Currency $currency
+     *
+     * @return $this
+     */
+    public function setCurrency($currency)
+    {
+        $this->currency = $currency;
+        return $this;
+    }
+
+    /**
      * @return ArrayCollection
      */
     public function getExtraData()
@@ -1035,6 +1159,25 @@ class Service
     public function setExtraData(ArrayCollection $extraData)
     {
         $this->extraData = $extraData;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRealPrice()
+    {
+        return $this->realPrice;
+    }
+
+    /**
+     * @param integer $realPrice
+     *
+     * @return $this
+     */
+    public function setRealPrice($realPrice)
+    {
+        $this->realPrice = $realPrice;
         return $this;
     }
 }

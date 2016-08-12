@@ -24,6 +24,7 @@ class ServiceLog
     const STATUS_READY     = 3;
     const STATUS_START     = 4;
     const STATUS_FINISH    = 5;
+    const STATUS_PAYED     = 6;
 
     /**
      * @var int

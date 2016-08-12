@@ -1,3 +1,11 @@
+fun_pro_ticket:
+    resource: "@FunProTicketBundle/Resources/config/routing.yml"
+    type:     rest
+
+fun_pro_financial:
+    resource: "@FunProFinancialBundle/Resources/config/routing.yml"
+    type:     rest
+
 fun_pro_admin_res:
     resource: "@FunProAdminBundle/Resources/config/routing.yml"
     prefix:   /admin

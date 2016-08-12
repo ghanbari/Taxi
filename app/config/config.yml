@@ -61,9 +61,13 @@ doctrine:
         types:
             point: FunPro\GeoBundle\Doctrine\Type\PointType
             linestring: FunPro\GeoBundle\Doctrine\Type\LineStringType
+            geometry:   CrEOF\Spatial\DBAL\Types\GeometryType
+            polygon:    CrEOF\Spatial\DBAL\Types\Geometry\PolygonType
         mapping_types:
             point: point
             linestring: linestring
+            polygon: polygon
+            geometry: geometry
 
         # if using pdo_sqlite as your database driver:
         #   1. add the path in parameters.yml
@@ -80,6 +84,13 @@ doctrine:
             numeric_functions:
                 point_str: FunPro\GeoBundle\Doctrine\ORM\Query\Functions\PointStr
                 distance: FunPro\GeoBundle\Doctrine\ORM\Query\Functions\Distance
+                st_contains:     CrEOF\Spatial\ORM\Query\AST\Functions\MySql\STContains
+                contains:        CrEOF\Spatial\ORM\Query\AST\Functions\MySql\Contains
+                st_area:         CrEOF\Spatial\ORM\Query\AST\Functions\MySql\Area
+                st_geomfromtext: CrEOF\Spatial\ORM\Query\AST\Functions\MySql\GeomFromText
+                st_intersects:   CrEOF\Spatial\ORM\Query\AST\Functions\MySql\STIntersects
+                st_buffer:       CrEOF\Spatial\ORM\Query\AST\Functions\MySql\STBuffer
+                point:           CrEOF\Spatial\ORM\Query\AST\Functions\MySql\Point
         filters:
             softdeleteable:
                 class: Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter

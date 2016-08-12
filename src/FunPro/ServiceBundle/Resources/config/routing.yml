@@ -10,3 +10,8 @@ fun_pro_service_canceled_reason_api:
     resource: "@FunProServiceBundle/Controller/CanceledReasonController.php"
     type: rest
     parent: fun_pro_service_api
+
+fun_pro_service_api_report:
+    resource: "@FunProServiceBundle/Controller/ReportController.php"
+    type:     rest
+    parent:   fun_pro_service_api

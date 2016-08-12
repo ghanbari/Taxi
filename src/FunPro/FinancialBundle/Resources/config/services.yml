@@ -1,0 +1,11 @@
+services:
+    fun_pro_financial.payment_subsciber:
+        class: FunPro\FinancialBundle\Event\PaymentSubsciber
+        arguments: ["@doctrine", "@logger", "@=container.getParameterBag()", "@validator", "@serializer"]
+        tags:
+            - { name: kernel.event_subscriber }
+    fun_pro_financial.wallet_balance_calculator:
+        class: FunPro\FinancialBundle\Event\WalletBalanceCalculator
+        arguments: ["@logger"]
+        tags:
+            - { name: doctrine.event_subscriber }

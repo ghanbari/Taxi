@@ -7,4 +7,6 @@ imports:
     - { resource: "@FunProGeoBundle/Resources/config/services.yml" }
     - { resource: "@FunProServiceBundle/Resources/config/services.yml" }
     - { resource: "@FunProAdminBundle/Resources/config/services.yml" }
+    - { resource: "@FunProFinancialBundle/Resources/config/services.yml" }
+    - { resource: "@FunProTicketBundle/Resources/config/services.yml" }
     - { resource: monolog.yml }

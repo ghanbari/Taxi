@@ -250,7 +250,7 @@ class User extends BaseUser
     private $devices;
 
     /**
-     * @var string
+     * @var ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="FunPro\UserBundle\Entity\Token", mappedBy="user")
      *
@@ -267,7 +267,10 @@ class User extends BaseUser
      * @JS\Since("1.0.0")
      */
     private $apiKey;
-    
+
+    /**
+     * class constructor
+     */
     public function __construct()
     {
         parent::__construct();
@@ -293,7 +296,7 @@ class User extends BaseUser
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -316,7 +319,7 @@ class User extends BaseUser
     /**
      * Get age
      *
-     * @return integer 
+     * @return integer
      */
     public function getAge()
     {
@@ -339,7 +342,7 @@ class User extends BaseUser
     /**
      * Get sex
      *
-     * @return integer 
+     * @return integer
      */
     public function getSex()
     {
@@ -362,7 +365,7 @@ class User extends BaseUser
     /**
      * Get description
      *
-     * @return string 
+     * @return string
      */
     public function getDescription()
     {
@@ -407,9 +410,11 @@ class User extends BaseUser
     }
 
     /**
+     * @param File $avatar
+     *
      * @return File
      */
-    public function getAvatarFile(File $avatar=null)
+    public function getAvatarFile(File $avatar = null)
     {
         if (!is_null($avatar)) {
             $this->avatarFile = $avatar;
@@ -443,7 +448,7 @@ class User extends BaseUser
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt()
     {
@@ -482,7 +487,7 @@ class User extends BaseUser
     /**
      * Get deletedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDeletedAt()
     {
@@ -492,10 +497,10 @@ class User extends BaseUser
     /**
      * Set createdBy
      *
-     * @param \FunPro\UserBundle\Entity\User $createdBy
+     * @param User $createdBy
      * @return User
      */
-    public function setCreatedBy(\FunPro\UserBundle\Entity\User $createdBy = null)
+    public function setCreatedBy(User $createdBy = null)
     {
         $this->createdBy = $createdBy;
 
@@ -505,7 +510,7 @@ class User extends BaseUser
     /**
      * Get createdBy
      *
-     * @return \FunPro\UserBundle\Entity\User 
+     * @return User
      */
     public function getCreatedBy()
     {
@@ -515,10 +520,10 @@ class User extends BaseUser
     /**
      * Set deletedBy
      *
-     * @param \FunPro\UserBundle\Entity\User $deletedBy
+     * @param User $deletedBy
      * @return User
      */
-    public function setDeletedBy(\FunPro\UserBundle\Entity\User $deletedBy = null)
+    public function setDeletedBy(User $deletedBy = null)
     {
         $this->deletedBy = $deletedBy;
 
@@ -528,7 +533,7 @@ class User extends BaseUser
     /**
      * Get deletedBy
      *
-     * @return \FunPro\UserBundle\Entity\User 
+     * @return User
      */
     public function getDeletedBy()
     {

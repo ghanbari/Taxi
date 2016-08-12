@@ -4,6 +4,8 @@ namespace FunPro\ServiceBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use FunPro\DriverBundle\Entity\Car;
+use FunPro\DriverBundle\Entity\Driver;
+use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\ServiceBundle\Entity\FloatingCost;
 use FunPro\ServiceBundle\Entity\Service;
 use Proxies\__CG__\FunPro\ServiceBundle\Entity\ServiceLog;
@@ -38,6 +40,42 @@ class ServiceRepository extends EntityRepository
             ->setParameter('service_id', $serviceId)
             ->getQuery()
             ->getSingleResult();
+    }
+
+
+
+    public function getLastServiceOfDriver(Driver $driver)
+    {
+        $queryBuilder = $this->createQueryBuilder('s');
+
+        return $queryBuilder->select(array('s', 'p', 'l', 'c'))
+            ->innerJoin('s.logs', 'l')
+            ->innerJoin('s.car', 'car')
+            ->leftJoin('s.passenger', 'p')
+            ->leftJoin('s.agent', 'a')
+            ->leftJoin('s.canceledReason', 'c')
+            ->where($queryBuilder->expr()->eq('car.driver', ':driver'))
+            ->orderBy('l.atTime', 'DESC')
+            ->setParameter('driver', $driver)
+            ->getQuery()
+            ->setMaxResults(1)
+            ->getOneOrNullResult();
+    }
+
+    public function getLastServiceOfPassenger(Passenger $passenger)
+    {
+        $queryBuilder = $this->createQueryBuilder('s');
+
+        return $queryBuilder->select(array('s', 'l', 'c', 'car'))
+            ->innerJoin('s.logs', 'l')
+            ->leftJoin('s.car', 'car')
+            ->leftJoin('s.canceledReason', 'c')
+            ->where($queryBuilder->expr()->eq('s.passenger', ':passenger'))
+            ->orderBy('l.atTime', 'DESC')
+            ->setParameter('passenger', $passenger)
+            ->getQuery()
+            ->setMaxResults(1)
+            ->getOneOrNullResult();
     }
 
     /**

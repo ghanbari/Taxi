@@ -3,7 +3,7 @@
 namespace FunPro\ServiceBundle\Event;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use FunPro\DriverBundle\Exception\DriverNotFound;
+use FunPro\DriverBundle\Exception\DriverNotFoundException;
 use FunPro\EngineBundle\GCM\GCM;
 use FunPro\ServiceBundle\Entity\PropagationList;
 use FunPro\ServiceBundle\Entity\Service;
@@ -134,7 +134,7 @@ class ServiceNotificationListener implements EventSubscriberInterface
      *
      * @param ServiceEvent $event
      *
-     * @throws DriverNotFound
+     * @throws DriverNotFoundException
      */
     public function onServiceRequest(ServiceEvent $event)
     {
@@ -188,7 +188,7 @@ class ServiceNotificationListener implements EventSubscriberInterface
 
         if (!is_array($drivers) or empty($drivers)) {
             $logger->addNotice('any driver is not available');
-            throw new DriverNotFound('driver.is.not.found', 400);
+            throw new DriverNotFoundException('driver.is.not.found', 400);
         }
 
         $logger->addInfo(
@@ -201,7 +201,7 @@ class ServiceNotificationListener implements EventSubscriberInterface
             $devices = call_user_func_array('array_merge', $devices);
 
             if (!is_array($devices) or empty($devices)) {
-                throw new DriverNotFound('driver.device.is.not.found', 400);
+                throw new DriverNotFoundException('driver.device.is.not.found', 400);
             }
 
             $logger->addInfo(
@@ -219,7 +219,7 @@ class ServiceNotificationListener implements EventSubscriberInterface
             $this->gcm->queue($devices, $message);
         } else {
             $logger->addNotice('Any active device is not found');
-            throw new DriverNotFound('device.is.not.found', 400);
+            throw new DriverNotFoundException('device.is.not.found', 400);
         }
     }
 

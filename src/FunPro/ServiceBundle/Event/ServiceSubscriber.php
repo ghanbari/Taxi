@@ -7,6 +7,9 @@ use Doctrine\Common\Collections\Criteria;
 use FunPro\DriverBundle\CarEvents;
 use FunPro\DriverBundle\Entity\Car;
 use FunPro\DriverBundle\Event\GetMoveCarEvent;
+use FunPro\FinancialBundle\Entity\RegionBasePrice;
+use FunPro\FinancialBundle\Event\PaymentEvent;
+use FunPro\FinancialBundle\FinancialEvents;
 use FunPro\ServiceBundle\Entity\ServiceLog;
 use FunPro\ServiceBundle\Exception\ServiceStatusException;
 use FunPro\ServiceBundle\ServiceEvents;
@@ -73,6 +76,10 @@ class ServiceSubscriber implements EventSubscriberInterface
             ServiceEvents::SERVICE_START     => array('onServiceStart', 10),
             ServiceEvents::SERVICE_FINISH    => array('onServiceFinish', 10),
             CarEvents::CAR_MOVE              => array('onService', 10),
+            FinancialEvents::PAYMENT_EVENT   => array(
+                array('calculateRealPrice', 80),
+                array('onServicePayed', 10),
+            ),
         );
     }
 
@@ -81,12 +88,7 @@ class ServiceSubscriber implements EventSubscriberInterface
         $log = new ServiceLog($event->getService(), ServiceLog::STATUS_REQUESTED);
         $this->doctrine->getManager()->persist($log);
 
-        $logContext = SerializationContext::create()
-            ->setGroups(array('Public', 'Point', 'Admin'));
-        $this->logger->addInfo(
-            'New service was requested',
-            array($this->serializer->serialize($event->getService(), 'json', $logContext))
-        );
+        $this->logger->addInfo('New service is requested', array('service' => $event->getService()->getId()));
     }
 
     public function onServiceCanceled(ServiceEvent $event)
@@ -116,12 +118,7 @@ class ServiceSubscriber implements EventSubscriberInterface
         $log = new ServiceLog($event->getService(), ServiceLog::STATUS_CANCELED);
         $this->doctrine->getManager()->persist($log);
 
-        $logContext = SerializationContext::create()
-            ->setGroups(array('Public', 'Point', 'Admin'));
-        $this->logger->addInfo(
-            'Service was canceled',
-            array($this->serializer->serialize($event->getService(), 'json', $logContext))
-        );
+        $this->logger->addInfo('Service was canceled', array('service' => $service->getId()));
     }
 
     public function onServiceAccept(GetCarPointServiceEvent $event)
@@ -145,12 +142,7 @@ class ServiceSubscriber implements EventSubscriberInterface
         $log = new ServiceLog($event->getService(), ServiceLog::STATUS_ACCEPTED);
         $this->doctrine->getManager()->persist($log);
 
-        $logContext = SerializationContext::create()
-            ->setGroups(array('Public', 'Admin', 'Point', 'Car'));
-        $this->logger->addInfo(
-            'The driver accept service',
-            array($this->serializer->serialize($event->getService(), 'json', $logContext))
-        );
+        $this->logger->addInfo('the driver accept service', array('service' => $service->getId()));
     }
 
     public function onServiceReject(GetCarServiceEvent $event)
@@ -165,7 +157,7 @@ class ServiceSubscriber implements EventSubscriberInterface
             $logContext = SerializationContext::create()
                 ->setGroups(array('Public', 'ServiceLogs'));
             $this->logger->addError(
-                'Service status must be requested till it can change into accepted',
+                'Service status must be requested till it can change into rejected',
                 array($this->serializer->serialize($event->getService(), 'json', $logContext))
             );
             throw new ServiceStatusException('status must be requested');
@@ -174,15 +166,7 @@ class ServiceSubscriber implements EventSubscriberInterface
         $log = new ServiceLog($event->getService(), ServiceLog::STATUS_REJECTED);
         $this->doctrine->getManager()->persist($log);
 
-        $logContext = SerializationContext::create()
-            ->setGroups(array('Public', 'Admin', 'Point', 'Car'));
-        $this->logger->addInfo(
-            'The driver reject service',
-            array(
-                $this->serializer->serialize($event->getService(), 'json', $logContext),
-                $this->serializer->serialize($event->getCar(), 'json', $logContext),
-            )
-        );
+        $this->logger->addInfo('the driver reject service', array('service' => $service->getId()));
     }
 
     public function onServiceReady(GetCarPointServiceEvent $event)
@@ -193,11 +177,14 @@ class ServiceSubscriber implements EventSubscriberInterface
         $criteria->orderBy(array('atTime' => Criteria::DESC))->getFirstResult();
         $serviceLog = $service->getLogs()->matching($criteria);
 
-        if (!$serviceLog->first() or $serviceLog->first()->getStatus() !== ServiceLog::STATUS_ACCEPTED) {
+        if (!$serviceLog->first()
+            or ($serviceLog->first()->getStatus() !== ServiceLog::STATUS_ACCEPTED
+                and $serviceLog->first()->getStatus() !== ServiceLog::STATUS_READY)
+        ) {
             $logContext = SerializationContext::create()
                 ->setGroups(array('Public', 'ServiceLogs'));
             $this->logger->addError(
-                'Service status must be accepted till it can change into accepted',
+                'Service status must be accepted till it can change into ready',
                 array($this->serializer->serialize($event->getService(), 'json', $logContext))
             );
             throw new ServiceStatusException('status must be accepted');
@@ -206,12 +193,7 @@ class ServiceSubscriber implements EventSubscriberInterface
         $log = new ServiceLog($event->getService(), ServiceLog::STATUS_READY);
         $this->doctrine->getManager()->persist($log);
 
-        $logContext = SerializationContext::create()
-            ->setGroups(array('Public', 'Admin', 'Point', 'Car'));
-        $this->logger->addInfo(
-            'service is ready',
-            array($this->serializer->serialize($event->getService(), 'json', $logContext))
-        );
+        $this->logger->addInfo('Service is ready', array('service' => $service->getId()));
     }
 
     public function onServiceStart(ServiceEvent $event)
@@ -226,7 +208,7 @@ class ServiceSubscriber implements EventSubscriberInterface
             $logContext = SerializationContext::create()
                 ->setGroups(array('Public', 'ServiceLogs'));
             $this->logger->addError(
-                'Service status must be ready till it can change into accepted',
+                'Service status must be ready till it can change into started',
                 array($this->serializer->serialize($event->getService(), 'json', $logContext))
             );
             throw new ServiceStatusException('status must be ready');
@@ -235,12 +217,7 @@ class ServiceSubscriber implements EventSubscriberInterface
         $log = new ServiceLog($event->getService(), ServiceLog::STATUS_START);
         $this->doctrine->getManager()->persist($log);
 
-        $logContext = SerializationContext::create()
-            ->setGroups(array('Public', 'Admin', 'Point', 'Car'));
-        $this->logger->addInfo(
-            'service is started',
-            array($this->serializer->serialize($event->getService(), 'json', $logContext))
-        );
+        $this->logger->addInfo('Service is started', array('service' => $service->getId()));
     }
 
     public function onService(GetMoveCarEvent $event)
@@ -277,31 +254,69 @@ class ServiceSubscriber implements EventSubscriberInterface
             $logContext = SerializationContext::create()
                 ->setGroups(array('Public', 'ServiceLogs'));
             $this->logger->addError(
-                'Service status must be started till it can change into accepted',
+                'Service status must be started till it can change into finished',
                 array($this->serializer->serialize($event->getService(), 'json', $logContext))
             );
             throw new ServiceStatusException('status must be started');
         }
 
-        if ($service->getEndPoint()->getLatitude()) {
-            $route = clone $service->getRoute();
-            if ($route->count() === 0) {
-                $route->attach($service->getStartPoint());
-            }
-            $route->attach($service->getEndPoint());
-            $service->setRoute($route);
-        }
+        #FIXME: if passenger will end service before he arrive to specified end point.
+//        if ($service->getEndPoint()->getLatitude()) {
+//            $route = clone $service->getRoute();
+//            if ($route->count() === 0) {
+//                $route->attach($service->getStartPoint());
+//            }
+//            $route->attach($service->getEndPoint());
+//            $service->setRoute($route);
+//        }
 
         $service->updateDistance();
 
         $log = new ServiceLog($event->getService(), ServiceLog::STATUS_FINISH);
         $this->doctrine->getManager()->persist($log);
 
-        $logContext = SerializationContext::create()
-            ->setGroups(array('Public', 'Admin', 'Point', 'Car'));
-        $this->logger->addInfo(
-            'service is finished',
-            array($this->serializer->serialize($event->getService(), 'json', $logContext))
-        );
+        $this->logger->addInfo('Service is finished', array('service' => $service->getId()));
+    }
+
+    public function calculateRealPrice(PaymentEvent $event)
+    {
+        $transaction = $event->getTransaction();
+        $service = $transaction->getService();
+
+        $basePrice = $this->doctrine->getRepository('FunProFinancialBundle:RegionBasePrice')
+            ->getPriceInRegion($service->getStartPoint(), $transaction->getCurrency());
+
+        if ($basePrice) {
+            $service->setRealPrice(floor($basePrice->getPrice() * $service->getDistance()));
+        } else {
+            $this->logger->addWarning(
+                'any base price is not set for this region',
+                array('location' => $service->getStartPoint())
+            );
+        }
+    }
+
+    public function onServicePayed(PaymentEvent $event)
+    {
+        $service = $event->getTransaction()->getService();
+
+        $criteria = Criteria::create();
+        $criteria->orderBy(array('atTime' => Criteria::DESC))->getFirstResult();
+        $serviceLog = $service->getLogs()->matching($criteria);
+
+        if (!$serviceLog->first() or $serviceLog->first()->getStatus() !== ServiceLog::STATUS_FINISH) {
+            $logContext = SerializationContext::create()
+                ->setGroups(array('Public', 'ServiceLogs'));
+            $this->logger->addError(
+                'Service status must be finished till he can pay',
+                array($this->serializer->serialize($service, 'json', $logContext))
+            );
+            throw new ServiceStatusException('status must be finished');
+        }
+
+        $log = new ServiceLog($service, ServiceLog::STATUS_PAYED);
+        $this->doctrine->getManager()->persist($log);
+
+        $this->logger->addInfo('Service is payed', array('service' => $service->getId()));
     }
 }
