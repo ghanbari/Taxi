@@ -164,9 +164,9 @@ class PaymentController extends FOSRestController
      *              "when you are not owner of wallet(code: 1)",
      *          },
      *          404={
-     *              "Service is not exists(code: 1)"
-     *              "Wallet is not exists(code: 2)"
-     *              "Currency is not exists(code: 3)"
+     *              "Service is not exists(code: 1)",
+     *              "Wallet is not exists(code: 2)",
+     *              "Currency is not exists(code: 3)",
      *          },
      *      }
      * )
