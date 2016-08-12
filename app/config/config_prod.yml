@@ -50,5 +50,5 @@ monolog:
             level: INFO
         rollbar:
             type: rollbar
-            token: 7333aebd4ce54050af1ac6cb89da1700
+            token: 20ba5c4703374c789ea256850c073d52
             level: INFO

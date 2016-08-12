@@ -31,29 +31,6 @@ monolog:
             type: rotating_file
             path: "%kernel.logs_dir%/%kernel.environment%.log"
             level: debug
-        crossed:
-            type: fingers_crossed
-            handler: deduplicated
-            action_level: error
-            excluded_404s: ["^/"]
-            channels: ['!event', '!php', '!doctrine']
-        deduplicated:
-            type: deduplication
-            handler: grouped
-        grouped:
-            type: whatfailuregroup
-            members: [slack, rollbar]
-        slack:
-            type: slack
-            token: "xoxb-63535591344-yofIljobgRyy0FLMCGKvqwzZ"
-            channel: 'server-logs'
-            bot_name: FunPro_Logger
-            include_extra: true
-            level: INFO
-        rollbar:
-            type: rollbar
-            token: 7333aebd4ce54050af1ac6cb89da1700
-            level: INFO
 
 
 #swiftmailer:
