@@ -10,7 +10,14 @@ use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class CreateAgencyAdministratorForTest extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
+/**
+ * Class CreateAgencyAdministratorForTest
+ *
+ * @package FunPro\AgentBundle\DataFixtures\ORM
+ */
+class CreateAgencyAdministratorForTest extends AbstractFixture implements
+    OrderedFixtureInterface,
+    ContainerAwareInterface
 {
     /**
      * @var Container
@@ -39,12 +46,13 @@ class CreateAgencyAdministratorForTest extends AbstractFixture implements Ordere
 
         $userManager = $this->container->get('fos_user.user_manager');
         $credentials = $this->container->getParameter('test.agency.admin.credentials');
+        $host = $this->container->getParameter('router.request_context.host');
 
         foreach ($credentials as $username => $pass) {
             $user = $userManager->createUser();
             $user->setUsername($username);
             $user->setPlainPassword($pass);
-            $user->setEmail($username.'@itaxico.ir');
+            $user->setEmail($username.'@'.$host);
             $user->setEnabled(true);
             $user->setName($username);
             $user->addRole(User::ROLE_AGENCY_ADMIN);
@@ -66,4 +74,4 @@ class CreateAgencyAdministratorForTest extends AbstractFixture implements Ordere
     {
         return 20;
     }
-} 
+}

@@ -10,6 +10,11 @@ use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Class CreatePassengerForTest
+ *
+ * @package FunPro\EngineBundle\DataFixtures\ORM
+ */
 class CreatePassengerForTest extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
     /**
@@ -39,11 +44,12 @@ class CreatePassengerForTest extends AbstractFixture implements OrderedFixtureIn
         }
 
         $credentials = $this->container->getParameter('test.passenger.credentials');
+        $host = $this->container->getParameter('router.request_context.host');
         $i = 1;
 
         foreach ($credentials as $mobile => $pass) {
             $passenger = new Passenger();
-            $passenger->setEmail($mobile.'@itaxico.ir');
+            $passenger->setEmail($mobile.'@'.$host);
             $passenger->setUsername($mobile);
             $passenger->setPlainPassword($pass);
             $passenger->setMobile($mobile);
@@ -66,4 +72,4 @@ class CreatePassengerForTest extends AbstractFixture implements OrderedFixtureIn
     {
         return 20;
     }
-} 
+}

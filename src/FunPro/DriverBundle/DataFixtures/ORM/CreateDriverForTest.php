@@ -12,6 +12,11 @@ use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Class CreateDriverForTest
+ *
+ * @package FunPro\EngineBundle\DataFixtures\ORM
+ */
 class CreateDriverForTest extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
     /**
@@ -43,6 +48,7 @@ class CreateDriverForTest extends AbstractFixture implements OrderedFixtureInter
         $credentials = $this->container->getParameter('test.driver.credentials');
         $city = $manager->getRepository('FunProGeoBundle:City')->find(1);
         $agencies = array_keys($this->container->getParameter('test.agency.admin.credentials'));
+        $host = $this->container->getParameter('router.request_context.host');
         $i = 1;
 
         foreach ($credentials as $nationalCode => $pass) {
@@ -53,7 +59,7 @@ class CreateDriverForTest extends AbstractFixture implements OrderedFixtureInter
             } while ($isDuplicate);
 
             $driver = new Driver();
-            $driver->setEmail($nationalCode.'@itaxico.ir');
+            $driver->setEmail($nationalCode.'@'.$host);
             $driver->setUsername($nationalCode);
             $driver->setPlainPassword($pass);
             $driver->setNationalCode($nationalCode);
@@ -88,4 +94,4 @@ class CreateDriverForTest extends AbstractFixture implements OrderedFixtureInter
     {
         return 22;
     }
-} 
+}
