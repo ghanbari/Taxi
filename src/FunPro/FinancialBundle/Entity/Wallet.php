@@ -48,6 +48,7 @@ class Wallet
      * @ORM\JoinColumn(name="currency_id", referencedColumnName="id")
      *
      * @JS\Groups({"Currency"})
+     * @JS\MaxDepth(1)
      * @JS\Since("1.0.0")
      */
     private $currency;
