@@ -43,6 +43,7 @@ fos_rest:
                 regex:                '/(v|version)=(?P<version>[0-9\.]+)/'
     serializer:
         groups: ['Public']
+        serialize_null: true
     param_fetcher_listener:
         enabled: true
         force:   false
