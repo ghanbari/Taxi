@@ -266,6 +266,10 @@ class ServiceNotificationListener implements EventSubscriberInterface
                 'car_type' => $service->getCar()->getType(),
                 'plaque' => (string) $service->getCar()->getPlaque(),
                 'mobile' => $service->getCar()->getDriver()->getMobile(),
+                'pickup_latitude' => $service->getStartPoint()->getLatitude(),
+                'pickup_longitude'=> $service->getStartPoint()->getLongitude(),
+                'dropoff_latitude' => $service->getEndPoint() ? $service->getEndPoint()->getLatitude() : '',
+                'dropoff_longitude' => $service->getEndPoint() ? $service->getEndPoint()->getLongitude() : '',
             );
 
             $message = (new Message())
