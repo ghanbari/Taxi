@@ -207,16 +207,17 @@ class GCM
         if ($statusCode == 200 or $this->env = 'dev') {
             try {
                 $success = $serializer->deserialize($response->getContent(), 'FunPro\EngineBundle\GCM\Success', 'json');
+                $this->onSuccess($success, $messages);
             } catch (\JMS\Serializer\Exception\RuntimeException $e) {
                 $this->logger->addError('deserialization json error', array('message' => $e->getTraceAsString()));
                 return;
             }
-            $this->onSuccess($success, $messages);
         } else {
             $success = null;
         }
 
         if ($this->env === 'dev') {
+            $this->logger->addDebug('add message to data collector');
             $this->collector->add($messages, $success);
         }
     }
@@ -227,6 +228,7 @@ class GCM
      */
     private function onSuccess(Success $response, array $messages)
     {
+        $this->logger->addInfo('Process success response', array('multicast' => $response->getMulticastId()));
         $setMultiCast = function (Message $message) use ($response) {
             $message->setMulticastId($response->getMulticastId());
         };
@@ -245,6 +247,7 @@ class GCM
                 $messages[$i]->setGcmId($result[$i]['message_id']);
 
                 if (isset($result[$i]['registration_id'])) {
+                    $this->logger->addNotice('Device\'s token is updated');
                     $messages[$i]->getDevice()->setDeviceToken($result[$i]['registration_id']);
                 }
             } else {
