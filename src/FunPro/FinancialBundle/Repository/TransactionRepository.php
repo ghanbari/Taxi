@@ -12,4 +12,38 @@ use Doctrine\ORM\EntityRepository;
  */
 class TransactionRepository extends EntityRepository
 {
+    public function getAllFilterBy($min = null, $max = null, $direction = null, $type = null, $limit = 10, $offset = 0)
+    {
+        $queryBuilder = $this->createQueryBuilder('t');
+
+        $queryBuilder->select(array('t', 'w', 's'))
+            ->leftJoin('t.wallet', 'w')
+            ->leftJoin('t.service', 's');
+
+        if ($min) {
+            $queryBuilder->andWhere($queryBuilder->expr()->gte('t.amount', ':min'))
+                ->setParameter('min', $min);
+        }
+
+        if ($max) {
+            $queryBuilder->andWhere($queryBuilder->expr()->lte('t.amount', ':max'))
+                ->setParameter('max', $max);
+        }
+
+        if ($direction) {
+            $queryBuilder->andWhere($queryBuilder->expr()->eq('t.direction', ':dir'))
+                ->setParameter('dir', $direction);
+        }
+
+        if ($type) {
+            $queryBuilder->andWhere($queryBuilder->expr()->eq('t.type', ':type'))
+                ->setParameter('type', $type);
+        }
+
+        return $queryBuilder
+            ->setMaxResults($limit)
+            ->setFirstResult($offset)
+            ->getQuery()
+            ->getResult();
+    }
 }

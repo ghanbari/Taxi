@@ -120,6 +120,7 @@ class Transaction
      * @Assert\Type(type="FunPro\ServiceBundle\Entity\Service", groups={"Create", "Update"})
      *
      * @JS\Groups({"Service"})
+     * @JS\Type(name="FunPro\ServiceBundle\Entity\Service")
      * @JS\Since("1.0.0")
      */
     private $service;
@@ -213,7 +214,6 @@ class Transaction
      * @param User     $user
      * @param Currency $currency
      * @param integer  $amount
-     * @param integer  $direction
      * @param integer  $type
      * @param bool     $virtual
      * @param Wallet   $wallet
