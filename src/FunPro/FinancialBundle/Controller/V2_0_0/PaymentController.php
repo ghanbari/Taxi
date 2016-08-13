@@ -1,6 +1,6 @@
 <?php
 
-namespace FunPro\FinancialBundle\Controller;
+namespace FunPro\FinancialBundle\Controller\V2_0_0;
 
 use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -30,8 +30,6 @@ class PaymentController extends FOSRestController
 {
     /**
      * Get a list of user wallet that have enough balance
-     *
-     * @deprecated
      *
      * @ApiDoc(
      *      section="Payment",
@@ -114,7 +112,8 @@ class PaymentController extends FOSRestController
     /**
      * Get currencies available in this region
      *
-     * @deprecated
+     * @deprecated Because driver insert price, he must select currency for service
+     * @TODO: if we calculate price by distance, then user must select currency before system calculate
      *
      * @ApiDoc(
      *      section="Payment",
@@ -176,17 +175,21 @@ class PaymentController extends FOSRestController
      *          201="When success",
      *          400={
      *              "This service was payed(code: 1)",
+     *              "Currency is not used in region(code: 2)",
+     *              "You must send currency or wallet id(code: 3)",
      *              "Your wallet balance is not enough(code: 4)",
      *              "Gateway is not available(code: 5)",
      *              "Service is not finished(code: 6)",
      *          },
      *          403= {
      *              "when you are not a passenger",
+     *              "when you are not owner of wallet(code: 1)",
      *              "when you are not passenger of service(code: 2)",
      *          },
      *          404={
      *              "Service is not exists(code: 1)",
      *              "Wallet is not exists(code: 2)",
+     *              "Currency is not exists(code: 3)",
      *          },
      *      }
      * )
@@ -194,7 +197,8 @@ class PaymentController extends FOSRestController
      * @Security("has_role('ROLE_PASSENGER')")
      *
      * @Rest\RequestParam(name="serviceId", requirements="\d+", nullable=false, strict=true)
-     * @Rest\RequestParam(name="virtual", requirements="1", default="0", nullable=true, strict=true)
+     * @Rest\RequestParam(name="wallet", requirements="\d+", nullable=true, strict=true)
+     * @Rest\RequestParam(name="currency", requirements="\d+", nullable=true, strict=true)
      */
     public function postAction()
     {
@@ -205,7 +209,8 @@ class PaymentController extends FOSRestController
         $fetcher = $this->get('fos_rest.request.param_fetcher');
 
         $serviceId = $fetcher->get('serviceId');
-        $virtual = $fetcher->get('virtual');
+        $walletId = $fetcher->get('wallet');
+        $currencyId = $fetcher->get('currency');
 
         $serviceRepo = $manager->getRepository('FunProServiceBundle:Service');
         $service = $serviceRepo->find($serviceId);
@@ -255,17 +260,12 @@ class PaymentController extends FOSRestController
 
         $cost = $serviceRepo->getTotalCost($service);
 
-        $currency = $manager->getRepository('FunProFinancialBundle:Currency')->findOneByCode('IRR');
-
-        if ($virtual) {
-            $wallet = $manager->getRepository('FunProFinancialBundle:Wallet')->findOneBy(array(
-                'currency' => $currency,
-                'owner' => $this->getUser(),
-            ));
+        if ($walletId !== null) {
+            $wallet = $manager->getRepository('FunProFinancialBundle:Wallet')->find($walletId);
             $logger->addInfo('Payment method is credit');
 
             if (!$wallet) {
-                $logger->addError('wallet is not exists', array('user' => $this->getUser()));
+                $logger->addError('wallet is not exists', array('wallet' => $walletId));
                 $error = array(
                     'code' => 2,
                     'message' => $translator->trans('wallet.is.not.exists'),
@@ -273,13 +273,64 @@ class PaymentController extends FOSRestController
                 return $this->view($error, Response::HTTP_NOT_FOUND);
             }
 
+            if ($wallet->getOwner() !== $this->getUser()) {
+                $logger->addError(
+                    'you are not owner of this wallet',
+                    array(
+                        'wallet' => $walletId,
+                        'user' => $this->getUser()->getId(),
+                    )
+                );
+                $error = array(
+                    'code' => 1,
+                    'message' => $translator->trans('you.are.not.owner.of.wallet'),
+                );
+                return $this->view($error, Response::HTTP_FORBIDDEN);
+            }
+
             $service->setCurrency($wallet->getCurrency());
             $method = 'credit';
-        } else {
+        } elseif ($currencyId !== null) {
             $logger->addInfo('Payment method is cash');
+            $currency = $manager->getRepository('FunProFinancialBundle:Currency')->find($currencyId);
+
+            if (!$currency) {
+                $logger->addError('currency is not exists', array('currency' => $currencyId));
+                $error = array(
+                    'code' => 3,
+                    'message' => $translator->trans('currency.is.not.exists'),
+                );
+                return $this->view($error, Response::HTTP_NOT_FOUND);
+            }
+
+            $availableCurrencies = $this->getDoctrine()->getRepository('FunProFinancialBundle:Currency')
+                ->getAvailableInRegion($service->getStartPoint());
+
+            if (!in_array($currency, $availableCurrencies)) {
+                $context = SerializationContext::create()->setGroups(array('Point'));
+                $logger->addError(
+                    'currency is not used in this region',
+                    array(
+                        'currency' => $currencyId,
+                        'region' => $serializer->serialize($service->getStartPoint(), 'json', $context),
+                    )
+                );
+                $error = array(
+                    'code' => 2,
+                    'message' => $translator->trans('currency.is.not.used.in.region'),
+                );
+                return $this->view($error, Response::HTTP_BAD_REQUEST);
+            }
 
             $service->setCurrency($currency);
             $method = 'cash';
+        } else {
+            $logger->addError('you must send wallet or currency id');
+            $error = array(
+                'code' => 3,
+                'message' => $translator->trans('send.wallet.or.currency'),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
         }
 
         $transaction = new Transaction(
@@ -295,7 +346,7 @@ class PaymentController extends FOSRestController
                 $logger->addError(
                     'Your wallet balance is not enough',
                     array(
-                        'wallet' => $wallet->getId(),
+                        'wallet' => $walletId,
                         'balance' => $wallet->getBalance(),
                         'cost' => $cost,
                     )
