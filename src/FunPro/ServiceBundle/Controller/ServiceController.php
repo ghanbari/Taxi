@@ -699,7 +699,7 @@ class ServiceController extends FOSRestController
         } elseif ($user instanceof Driver and $service->getCar()->getDriver() === $user) {
             $context->addGroup('Driver');
         } elseif ($service->getPassenger() === $user) {
-            $context->addGroups(array('Passenger', 'PropagationList', 'Cost'));
+            $context->addGroups(array('Passenger', 'PropagationList', 'Cost', 'DriverInfo'));
         } elseif ($service->getAgent() and $service->getAgent()->getAdmin() === $user) {
             $context->addGroup('Agent');
         } else {
