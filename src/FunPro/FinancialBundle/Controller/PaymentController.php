@@ -2,6 +2,7 @@
 
 namespace FunPro\FinancialBundle\Controller;
 
+use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FunPro\FinancialBundle\Entity\Transaction;
@@ -42,7 +43,8 @@ class PaymentController extends FOSRestController
      *              "When service status is not end(code: 2)",
      *          },
      *          403= {
-     *              "when you are not login",
+     *              "when you are not passenger",
+     *              "when you are not passenger of service(code: 1)",
      *          },
      *      }
      * )
@@ -70,6 +72,21 @@ class PaymentController extends FOSRestController
             return $this->view($error, Response::HTTP_BAD_REQUEST);
         }
 
+        if ($service->getPassenger() !== $this->getUser()) {
+            $logger->addError(
+                'You are not passenger of service',
+                array(
+                    'serviceId' => $service->getId(),
+                    'user' => $this->getUser()->getId(),
+                )
+            );
+            $error = array(
+                'code' => 1,
+                'message' => $translator->trans('this.service.is.not.requested.by.you'),
+            );
+            return $this->view($error, Response::HTTP_FORBIDDEN);
+        }
+
         $serviceLogRepo = $manager->getRepository('FunProServiceBundle:ServiceLog');
         if ($serviceLogRepo->getLastLog($service)->getStatus() !== ServiceLog::STATUS_FINISH) {
             $logger->addWarning('options can only check after end of servie', array('serviceId' => $service->getId()));
@@ -88,7 +105,8 @@ class PaymentController extends FOSRestController
             ->getPayableWallets($service->getPassenger(), $serviceCost, $service->getStartPoint());
 
         $statusCode = is_null($wallets) ? Response::HTTP_NO_CONTENT : Response::HTTP_OK;
-        return $this->view($wallets, $statusCode);
+        $context = (new Context())->addGroups(array('Owner', 'Currency', 'Public'))->setMaxDepth(1);
+        return $this->view($wallets, $statusCode)->setSerializationContext($context);
     }
 
     /**
@@ -158,10 +176,12 @@ class PaymentController extends FOSRestController
      *              "You must send currency or wallet id(code: 3)",
      *              "Your wallet balance is not enough(code: 4)",
      *              "Gateway is not available(code: 5)",
+     *              "Service is not finished(code: 6)",
      *          },
      *          403= {
      *              "when you are not a passenger",
      *              "when you are not owner of wallet(code: 1)",
+     *              "when you are not passenger of service(code: 2)",
      *          },
      *          404={
      *              "Service is not exists(code: 1)",
@@ -201,12 +221,36 @@ class PaymentController extends FOSRestController
             return $this->view($error, Response::HTTP_NOT_FOUND);
         }
 
+        if ($service->getPassenger() !== $this->getUser()) {
+            $logger->addError(
+                'You are not passenger of service',
+                array(
+                    'serviceId' => $serviceId,
+                    'user' => $this->getUser()->getId(),
+                )
+            );
+            $error = array(
+                'code' => 2,
+                'message' => $translator->trans('this.service.is.not.requested.by.you'),
+            );
+            return $this->view($error, Response::HTTP_FORBIDDEN);
+        }
+
         $log = $manager->getRepository('FunProServiceBundle:ServiceLog')->getLastLog($service);
         if ($log->getStatus() == ServiceLog::STATUS_PAYED) {
             $logger->addWarning('You payed this service');
             $error = array(
                 'code' => 1,
                 'message' => $translator->trans('you.payed.service'),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($log->getStatus() !== ServiceLog::STATUS_FINISH) {
+            $logger->addError('Service is not finished', array('serviceId' => $serviceId));
+            $error = array(
+                'code' => 6,
+                'message' => $translator->trans('service.is.not.finished'),
             );
             return $this->view($error, Response::HTTP_BAD_REQUEST);
         }
@@ -339,8 +383,8 @@ class PaymentController extends FOSRestController
         $manager->persist($transaction);
         $logger->addInfo('main transaction is persisted');
 
-        $event = new PaymentEvent($transaction);
         try {
+            $event = new PaymentEvent($transaction);
             $this->get('event_dispatcher')->dispatch(FinancialEvents::PAYMENT_EVENT, $event);
             $manager->flush();
         } catch (InvalidTransactionException $e) {
