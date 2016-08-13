@@ -5,6 +5,7 @@ namespace FunPro\ServiceBundle\Repository;
 use Doctrine\ORM\EntityRepository;
 use FunPro\DriverBundle\Entity\Car;
 use FunPro\DriverBundle\Entity\Driver;
+use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\ServiceBundle\Entity\FloatingCost;
 use FunPro\ServiceBundle\Entity\Service;
@@ -42,8 +43,12 @@ class ServiceRepository extends EntityRepository
             ->getSingleResult();
     }
 
-
-
+    /**
+     * @param Driver $driver
+     *
+     * @return mixed
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     public function getLastServiceOfDriver(Driver $driver)
     {
         $queryBuilder = $this->createQueryBuilder('s');
@@ -62,6 +67,12 @@ class ServiceRepository extends EntityRepository
             ->getOneOrNullResult();
     }
 
+    /**
+     * @param Passenger $passenger
+     *
+     * @return mixed
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     public function getLastServiceOfPassenger(Passenger $passenger)
     {
         $queryBuilder = $this->createQueryBuilder('s');
@@ -120,5 +131,120 @@ class ServiceRepository extends EntityRepository
         if ($service and $service->getLogs()->last()->getStatus() == ServiceLog::STATUS_START) {
             return $service;
         }
+    }
+
+    /**
+     * @param Point     $origin
+     * @param Point     $destination
+     * @param \DateTime $from
+     * @param \DateTime $till
+     * @param int       $limit
+     * @param int       $offset
+     *
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    public function getFilterByQueryBuilder(
+        Point $origin = null,
+        Point $destination = null,
+        \DateTime $from = null,
+        \DateTime $till = null,
+        $limit = 10,
+        $offset = 0
+    ) {
+        $queryBuilder = $this->createQueryBuilder('s');
+
+        if ($origin) {
+            $queryBuilder->andWhere($queryBuilder->expr()->lte('Distance(s.startPoint, point_str(:origin))', 0.01))
+                ->setParameter('origin', $origin);
+        }
+
+        if ($destination) {
+            $queryBuilder->andWhere($queryBuilder->expr()->lte('Distance(s.endPoint, point_str(:destination))', 0.01))
+                ->setParameter('destination', $destination);
+        }
+
+        if ($from) {
+            $queryBuilder->andWhere($queryBuilder->expr()->gte('s.createdAt', ':from'))
+                ->setParameter('from', $from);
+        }
+
+        if ($till) {
+            $queryBuilder->andWhere($queryBuilder->expr()->lte('s.createdAt', ':till'))
+                ->setParameter('till', $till);
+        }
+
+        return $queryBuilder
+            ->setMaxResults($limit)
+            ->setFirstResult($offset);
+    }
+
+    /**
+     * @param Passenger $passenger
+     * @param Driver    $driver
+     * @param Point     $origin
+     * @param Point     $destination
+     * @param \DateTime $from
+     * @param \DateTime $till
+     * @param int       $limit
+     * @param int       $offset
+     *
+     * @return array
+     */
+    public function getPassengerServiceFilterBy(
+        Passenger $passenger,
+        Driver $driver = null,
+        Point $origin = null,
+        Point $destination = null,
+        \DateTime $from = null,
+        \DateTime $till = null,
+        $limit = 10,
+        $offset = 0
+    ) {
+        $queryBuilder = $this->getFilterByQueryBuilder($origin, $destination, $from, $till, $limit, $offset);
+
+        $queryBuilder->select(array('s', 'p', 'c', 'd', 'l'));
+        $queryBuilder
+            ->innerJoin('s.passenger', 'p')
+            ->innerJoin('s.car', 'c')
+            ->innerJoin('c.driver', 'd')
+            ->innerJoin('s.logs', 'l');
+
+        $queryBuilder->andWhere($queryBuilder->expr()->eq('s.passenger', ':passenger'))
+            ->setParameter('passenger', $passenger);
+
+        if ($driver) {
+            $queryBuilder->andWhere($queryBuilder->expr()->eq('c.driver', ':driver'))
+                ->setParameter('driver', $driver);
+        }
+
+        return $queryBuilder
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getDriverServiceFilterBy(
+        Driver $driver,
+        Point $origin = null,
+        Point $destination = null,
+        \DateTime $from = null,
+        \DateTime $till = null,
+        $limit = 10,
+        $offset = 0
+    ) {
+        $queryBuilder = $this->getFilterByQueryBuilder($origin, $destination, $from, $till, $limit, $offset);
+
+        $queryBuilder->select(array('s', 'p', 'l'));
+        $queryBuilder
+            ->innerJoin('s.passenger', 'p')
+            ->innerJoin('s.car', 'c')
+            ->innerJoin('c.driver', 'd')
+            ->innerJoin('s.logs', 'l');
+
+        $queryBuilder->andWhere($queryBuilder->expr()->eq('c.driver', ':driver'))
+            ->setParameter('driver', $driver);
+
+        return $queryBuilder
+            ->getQuery()
+            ->getResult();
     }
 }

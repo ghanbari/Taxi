@@ -13,7 +13,6 @@ use FunPro\GeoBundle\Utility\Util;
 use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\UserBundle\Entity\User;
 use JMS\Serializer\Annotation as JS;
-use Proxies\__CG__\FunPro\ServiceBundle\Entity\ServiceLog;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -117,6 +116,7 @@ class Service
      * @Assert\Valid()
      *
      * @JS\Groups({"Passenger", "Driver", "Admin", "Point"})
+     * @JS\Type(name="FunPro\GeoBundle\Doctrine\ValueObject\Point")
      * @JS\MaxDepth(1)
      * @JS\Since("1.0.0")
      */
@@ -242,6 +242,7 @@ class Service
      *
      * @JS\Groups({"Passenger", "Driver", "Admin"})
      * @JS\Since("1.0.0")
+     * @JS\Type(name="array<FunPro\GeoBundle\Doctrine\ValueObject\Point>")
      */
     private $route;
 

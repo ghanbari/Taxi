@@ -675,6 +675,8 @@ class ServiceController extends FOSRestController
      *
      * @ParamConverter(name="service", class="FunPro\ServiceBundle\Entity\Service")
      *
+     * @Rest\Get(requirements={"id"="\d+"})
+     *
      * @param $id
      *
      * @return \FOS\RestBundle\View\View
