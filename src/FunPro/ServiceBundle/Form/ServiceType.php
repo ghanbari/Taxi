@@ -22,10 +22,10 @@ class ServiceType extends AbstractType
                 'required' => false,
             ))
             ->add('startAddress', Type\TextareaType::class, array(
-                'required' => false,
+                'required' => true,
             ))
             ->add('endAddress', Type\TextareaType::class, array(
-                'required' => false,
+                'required' => true,
             ))
             ->add('type', Type\ChoiceType::class, array(
                 'choices' => Service::getTypes(),

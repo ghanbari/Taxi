@@ -98,9 +98,10 @@ class Service
     /**
      * @var string
      *
-     * @ORM\Column(name="start_address", length=500, nullable=true)
+     * @ORM\Column(name="start_address", length=500, options={"default"="???"})
      *
      * @Assert\Length(max="500", groups={"Create", "Update"})
+     * @Assert\NotNull(groups={"Create", "Update"})
      *
      * @JS\Groups({"Passenger", "Driver", "Agent", "Admin", "Point"})
      * @JS\Since("1.0.0")
@@ -125,9 +126,10 @@ class Service
     /**
      * @var string
      *
-     * @ORM\Column(name="end_address", length=500, nullable=true)
+     * @ORM\Column(name="end_address", length=500, options={"default"="???"})
      *
      * @Assert\Length(max="500", groups={"Create", "Update"})
+     * @Assert\NotNull(groups={"Create", "Update"})
      *
      * @JS\Groups({"Passenger", "Driver", "Admin", "Point"})
      * @JS\Since("1.0.0")
