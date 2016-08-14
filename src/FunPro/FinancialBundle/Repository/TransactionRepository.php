@@ -12,13 +12,31 @@ use Doctrine\ORM\EntityRepository;
  */
 class TransactionRepository extends EntityRepository
 {
-    public function getAllFilterBy($min = null, $max = null, $direction = null, $type = null, $limit = 10, $offset = 0)
-    {
+    public function getAllFilterBy(
+        \DateTime $from = null,
+        \Datetime $till = null,
+        $min = null,
+        $max = null,
+        $direction = null,
+        $type = null,
+        $limit = 10,
+        $offset = 0
+    ) {
         $queryBuilder = $this->createQueryBuilder('t');
 
         $queryBuilder->select(array('t', 'w', 's'))
             ->leftJoin('t.wallet', 'w')
             ->leftJoin('t.service', 's');
+
+        if ($from) {
+            $queryBuilder->andWhere($queryBuilder->expr()->gte('t.createdAt', ':from'))
+                ->setParameter('from', $from);
+        }
+
+        if ($till) {
+            $queryBuilder->andWhere($queryBuilder->expr()->lte('t.createdAt', ':till'))
+                ->setParameter('till', $till);
+        }
 
         if ($min) {
             $queryBuilder->andWhere($queryBuilder->expr()->gte('t.amount', ':min'))

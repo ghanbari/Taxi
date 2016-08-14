@@ -9,6 +9,7 @@ use FunPro\FinancialBundle\Entity\Transaction;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class ReportController
@@ -40,6 +41,8 @@ class ReportController extends FOSRestController
      *
      * @Security("has_role('ROLE_PASSENGER') or has_role('ROLE_DRIVER')")
      *
+     * @Rest\QueryParam(name="from", requirements=@Assert\Date(), nullable=true, strict=true)
+     * @Rest\QueryParam(name="till", requirements=@Assert\Date(), nullable=true, strict=true)
      * @Rest\QueryParam(name="min", nullable=true, requirements="\d+", strict=true)
      * @Rest\QueryParam(name="max", nullable=true, requirements="\d+", strict=true)
      * @Rest\QueryParam(name="direction", nullable=true, requirements="income|outcome", strict=true)
@@ -53,6 +56,9 @@ class ReportController extends FOSRestController
 
         $limit  = min(20, $fetcher->get('limit'));
         $offset = max(0, $fetcher->get('offset'));
+
+        $from = $fetcher->get('from') ? new \DateTime($fetcher->get('from')) : null;
+        $till = $fetcher->get('till') ? new \DateTime($fetcher->get('till')) : null;
 
         $min = $fetcher->get('min');
         $max = $fetcher->get('max');
@@ -71,7 +77,7 @@ class ReportController extends FOSRestController
         $type = $this->convertStringToTransactionType($fetcher->get('type'));
 
         $transactions = $this->getDoctrine()->getRepository('FunProFinancialBundle:Transaction')
-            ->getAllFilterBy($min, $max, $direction, $type, $limit, $offset);
+            ->getAllFilterBy($from, $till, $min, $max, $direction, $type, $limit, $offset);
 
         $statusCode = empty($transactions) ? Response::HTTP_NO_CONTENT : Response::HTTP_OK;
         $context = (new Context())->addGroups(array('Wallet', 'Service', 'Owner', 'Public'));
