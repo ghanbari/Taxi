@@ -7,12 +7,15 @@ use FunPro\ServiceBundle\Entity\Service;
 use FunPro\UserBundle\Entity\User;
 use JMS\Serializer\Annotation as JS;
 use Symfony\Component\Validator\Constraints as Assert;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Transaction
  *
  * @ORM\Table(name="transaction")
  * @ORM\Entity(repositoryClass="FunPro\FinancialBundle\Repository\TransactionRepository")
+ *
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
 class Transaction
 {
@@ -209,6 +212,22 @@ class Transaction
      * @JS\Since("1.0.0")
      */
     private $moveToWallet;
+
+    /**
+     * @var \Datetime
+     *
+     * @ORM\Column(name="created_at", type="datetime")
+     *
+     * @Gedmo\Timestampable(on="create")
+     */
+    private $createdAt;
+
+    /**
+     * @var \Datetime
+     *
+     * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
+     */
+    private $deletedAt;
 
     /**
      * @param User     $user
@@ -562,5 +581,43 @@ class Transaction
     public function getMoveToWallet()
     {
         return $this->moveToWallet;
+    }
+
+    /**
+     * @return \Datetime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param \Datetime $createdAt
+     *
+     * @return $this
+     */
+    public function setCreatedAt(\Datetime $createdAt)
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDeletedAt()
+    {
+        return $this->deletedAt;
+    }
+
+    /**
+     * @param mixed $deletedAt
+     *
+     * @return $this
+     */
+    public function setDeletedAt(mixed $deletedAt)
+    {
+        $this->deletedAt = $deletedAt;
+        return $this;
     }
 }
