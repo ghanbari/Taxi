@@ -417,7 +417,7 @@ class Service
      * @JS\VirtualProperty()
      * @JS\SerializedName("status")
      * @JS\Type(name="array")
-     * @JS\Groups({"Passenger", "Driver"})
+     * @JS\Groups({"Public"})
      * @JS\Since("1.0.0")
      *
      * @return array
