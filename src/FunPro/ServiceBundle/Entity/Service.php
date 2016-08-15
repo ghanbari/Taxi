@@ -467,6 +467,16 @@ class Service
                     'code' => ServiceLog::STATUS_FINISH,
                     'name' => 'finish',
                 );
+            case ServiceLog::STATUS_PAYED:
+                return array(
+                    'code' => ServiceLog::STATUS_PAYED,
+                    'name' => 'payed',
+                );
+            default:
+                return array(
+                    'code' => $this->logs->last()->getStatus(),
+                    'name' => 'unknown',
+                );
         }
     }
 
