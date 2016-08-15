@@ -84,15 +84,17 @@ doctrine:
             numeric_functions:
                 point_str: FunPro\GeoBundle\Doctrine\ORM\Query\Functions\PointStr
                 distance: FunPro\GeoBundle\Doctrine\ORM\Query\Functions\Distance
+                glength:         CrEOF\Spatial\ORM\Query\AST\Functions\MySql\GLength
+                linestring:      CrEOF\Spatial\ORM\Query\AST\Functions\MySql\LineString
                 st_contains:     CrEOF\Spatial\ORM\Query\AST\Functions\MySql\STContains
                 contains:        CrEOF\Spatial\ORM\Query\AST\Functions\MySql\Contains
-                st_area:         CrEOF\Spatial\ORM\Query\AST\Functions\MySql\Area
                 st_geomfromtext: CrEOF\Spatial\ORM\Query\AST\Functions\MySql\GeomFromText
-                st_intersects:   CrEOF\Spatial\ORM\Query\AST\Functions\MySql\STIntersects
-                st_buffer:       CrEOF\Spatial\ORM\Query\AST\Functions\MySql\STBuffer
                 point:           CrEOF\Spatial\ORM\Query\AST\Functions\MySql\Point
+                x:               CrEOF\Spatial\ORM\Query\AST\Functions\MySql\X
+                y:               CrEOF\Spatial\ORM\Query\AST\Functions\MySql\Y
             string_functions:
                 UNIX_TIMESTAMP: DoctrineExtensions\Query\Mysql\UnixTimestamp
+                GROUP_CONCAT:   DoctrineExtensions\Query\Mysql\GroupConcat
         filters:
             softdeleteable:
                 class: Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter
