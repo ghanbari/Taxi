@@ -3,6 +3,9 @@
 namespace FunPro\DriverBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use FunPro\DriverBundle\Entity\Car;
+use FunPro\DriverBundle\Entity\CarLog;
+use FunPro\DriverBundle\Entity\Driver;
 
 /**
  * CarLogRepository
@@ -12,4 +15,133 @@ use Doctrine\ORM\EntityRepository;
  */
 class CarLogRepository extends EntityRepository
 {
+    /**
+     * @param Driver    $driver
+     * @param \DateTime $start
+     *
+     * @return null|CarLog
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getFistWakeful(Driver $driver, \DateTime $start)
+    {
+        $queryBuilder = $this->createQueryBuilder('cl');
+
+        return $queryBuilder
+            ->innerJoin('cl.car', 'c')
+            ->where($queryBuilder->expr()->eq('c.driver', ':driver'))
+            ->andWhere($queryBuilder->expr()->eq('cl.status', Car::STATUS_WAKEFUL))
+            ->andWhere($queryBuilder->expr()->gte('cl.atTime', ':start'))
+            ->setParameter('driver', $driver)
+            ->setParameter('start', $start)
+            ->orderBy('cl.atTime', 'ASC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
+     * @param Driver    $driver
+     * @param \DateTime $end
+     *
+     * @return null|CarLog
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getLastSleep(Driver $driver, \DateTime $end)
+    {
+        $queryBuilder = $this->createQueryBuilder('cl');
+
+        return $queryBuilder
+            ->innerJoin('cl.car', 'c')
+            ->where($queryBuilder->expr()->eq('c.driver', ':driver'))
+            ->andWhere($queryBuilder->expr()->eq('cl.status', Car::STATUS_SLEEP))
+            ->andWhere($queryBuilder->expr()->lte('cl.atTime', ':end'))
+            ->setParameter('driver', $driver)
+            ->setParameter('end', $end)
+            ->orderBy('cl.atTime', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function getOnlineTime(Driver $driver, \DateTime $from, \Datetime $till)
+    {
+//        $firstWakeful = $this->getFistWakeful($driver, $from);
+//        $lastSleep    = $this->getLastSleep($driver, $till);
+//
+//        $start = $firstWakeful ? $firstWakeful->getAtTime() : $from->setTime(0, 0);
+//        $end   = $lastSleep    ? $lastSleep->getAtTime()    : new \DateTime();
+
+        $till = $till->setTime(23, 59, 59);
+        $queryBuilder = $this->createQueryBuilder('cl');
+
+        $result = $queryBuilder
+            ->innerJoin('cl.car', 'c')
+            ->where($queryBuilder->expr()->eq('c.driver', ':driver'))
+            ->andWhere($queryBuilder->expr()->in('cl.status', array(Car::STATUS_SLEEP, Car::STATUS_WAKEFUL)))
+            ->andWhere($queryBuilder->expr()->gte('cl.atTime', ':start'))
+            ->andWhere($queryBuilder->expr()->lte('cl.atTime', ':end'))
+            ->setParameter('driver', $driver)
+            ->setParameter('start', $from)
+            ->setParameter('end', $till)
+            ->orderBy('cl.atTime', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        $sumOfWakefulTime = 0;
+        $sumOfSleepTime   = 0;
+
+        /** @var CarLog $firstLog */
+        $firstLog  = array_shift($result);
+        /** @var CarLog $lastLog */
+        $lastLog  = array_pop($result);
+
+        if ($firstLog and $firstLog->getStatus() === Car::STATUS_SLEEP) {
+            $sumOfSleepTime += $firstLog->getAtTime()->getTimestamp();
+            $sumOfWakefulTime += (new \DateTime('today'))->getTimestamp();
+        } elseif ($firstLog) {
+            $sumOfWakefulTime += $firstLog->getAtTime()->getTimestamp();
+        } else {
+            return 0;
+        }
+
+        if ($lastLog and $lastLog->getStatus() === Car::STATUS_WAKEFUL) {
+            $sumOfWakefulTime += $lastLog->getAtTime()->getTimestamp();
+            $sumOfSleepTime   += (new \DateTime())->getTimestamp();
+        } elseif ($lastLog) {
+            $sumOfSleepTime += $lastLog->getAtTime()->getTimestamp();
+        } else {
+            return (new \DateTime())->getTimestamp() - $sumOfWakefulTime;
+        }
+
+        /** @var CarLog $log */
+        foreach ($result as $log) {
+            if ($log->getStatus() === Car::STATUS_WAKEFUL) {
+                $sumOfWakefulTime += $log->getAtTime()->getTimestamp();
+            } else {
+                $sumOfSleepTime += $log->getAtTime()->getTimestamp();
+            }
+        }
+
+        return $sumOfSleepTime - $sumOfWakefulTime;
+    }
+
+    public function getDistance(Driver $driver, \DateTime $from, \DateTime $till)
+    {
+        #TODO: how convert degree to meter?
+        $queryBuilder = $this->createQueryBuilder('l');
+        $total = $queryBuilder
+            ->select("glength(st_geomfromtext( concat( 'linestring(', GROUP_CONCAT(x(l.point), ' ', y(l.point)), ')' ) ))")
+            ->innerJoin('l.car', 'c')
+            ->where($queryBuilder->expr()->eq('c.driver', ':driver'))
+            ->andWhere($queryBuilder->expr()->gte('l.atTime', ':from'))
+            ->andWhere($queryBuilder->expr()->lte('l.atTime', ':till'))
+            ->setParameter('driver', $driver)
+            ->setParameter('from', $from)
+            ->setParameter('till', $till)
+            ->groupBy('c.id')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return $total * 100000;
+    }
 }

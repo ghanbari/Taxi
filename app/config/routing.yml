@@ -29,9 +29,9 @@ fun_pro_geo:
 #    resource: "@FunProAgentBundle/Resources/config/routing.yml"
 #    type:     rest
 #
-#fun_pro_driver:
-#    resource: "@FunProDriverBundle/Resources/config/routing.yml"
-#    type:     rest
+fun_pro_driver:
+    resource: "@FunProDriverBundle/Resources/config/routing.yml"
+    type:     rest
 
 fun_pro_passenger:
     resource: "@FunProPassengerBundle/Resources/config/routing.yml"

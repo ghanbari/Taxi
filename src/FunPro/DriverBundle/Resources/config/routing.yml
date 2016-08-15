@@ -1,0 +1,4 @@
+fun_pro_driver_report_api:
+    resource: "@FunProDriverBundle/Controller/ReportController.php"
+    type: rest
+    prefix: /driver
