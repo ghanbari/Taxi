@@ -112,7 +112,7 @@ class ServiceSubscriber implements EventSubscriberInterface
                 'Car\'s status must be wakeful or in_service till it can accept one service',
                 array(
                     'car' => $car->getId(),
-                    'status' => $car->getStatus(),
+                    'status' => Car::getStatusName($car->getStatus()),
                 )
             );
             throw new CarStatusException('status must be wakeful or in service');
@@ -143,7 +143,7 @@ class ServiceSubscriber implements EventSubscriberInterface
                 'Car\'s status must be prepare or ready till it can send ready alarm',
                 array(
                     'carId' => $car->getId(),
-                    'status' => $car->getStatus(),
+                    'status' => Car::getStatusName($car->getStatus()),
                 )
             );
             throw new CarStatusException('status must be prepare or ready');
@@ -171,7 +171,7 @@ class ServiceSubscriber implements EventSubscriberInterface
                 'Car\'s status must be ready till it can start service',
                 array(
                     'carId' => $car->getId(),
-                    'status' => $car->getStatus(),
+                    'status' => Car::getStatusName($car->getStatus()),
                 )
             );
             throw new CarStatusException('status must be ready');
@@ -203,7 +203,7 @@ class ServiceSubscriber implements EventSubscriberInterface
                 'Car\'s status must be in service or in_and_accept or in_and_prepare till it can stop service',
                 array(
                     'carId' => $car->getId(),
-                    'status' => $car->getStatus(),
+                    'status' => Car::getStatusName($car->getStatus()),
                 )
             );
             throw new CarStatusException('status must be in service or in_and_accept or in_and_prepare ');
