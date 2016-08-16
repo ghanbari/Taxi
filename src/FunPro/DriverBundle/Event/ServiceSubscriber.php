@@ -107,7 +107,9 @@ class ServiceSubscriber implements EventSubscriberInterface
             throw new \LogicException('Service haven\'t car');
         }
 
-        if ($car->getStatus() !== Car::STATUS_WAKEFUL and $car->getStatus() !== Car::STATUS_SERVICE_IN) {
+        if ($car->getStatus() !== Car::STATUS_WAKEFUL and $car->getStatus() !== Car::STATUS_SERVICE_IN
+            and $car->getStatus() !== Car::STATUS_SERVICE_END
+        ) {
             $logger->addError(
                 'Car\'s status must be wakeful or in_service till it can accept one service',
                 array(
@@ -138,15 +140,17 @@ class ServiceSubscriber implements EventSubscriberInterface
             throw new \LogicException('Service haven\'t car');
         }
 
-        if ($car->getStatus() !== Car::STATUS_SERVICE_PREPARE and $car->getStatus() !== Car::STATUS_SERVICE_READY) {
+        if ($car->getStatus() !== Car::STATUS_SERVICE_PREPARE and $car->getStatus() !== Car::STATUS_SERVICE_READY
+            and $car->getStatus() !== Car::STATUS_SERVICE_ACCEPT
+        ) {
             $logger->addError(
-                'Car\'s status must be prepare or ready till it can send ready alarm',
+                'Car\'s status must be prepare or ready or accept till it can send ready alarm',
                 array(
                     'carId' => $car->getId(),
                     'status' => Car::getStatusName($car->getStatus()),
                 )
             );
-            throw new CarStatusException('status must be prepare or ready');
+            throw new CarStatusException('status must be prepare or ready or accept');
         }
 
         $car->setStatus(Car::STATUS_SERVICE_READY);
