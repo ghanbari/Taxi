@@ -88,7 +88,10 @@ class CarLogSubscriber implements EventSubscriberInterface
         if ($car->getStatus() !== Car::STATUS_SLEEP) {
             $this->logger->addError(
                 'Car\'s status must be sleep till it change into wakeful',
-                array('car' => $car->getId())
+                array(
+                    'carId' => $car->getId(),
+                    'status' => Car::getStatusName($car->getStatus()),
+                )
             );
             throw new CarStatusException('status must be sleep');
         }
@@ -150,7 +153,10 @@ class CarLogSubscriber implements EventSubscriberInterface
         if ($car->getStatus() !== Car::STATUS_WAKEFUL and $car->getStatus() !== Car::STATUS_SERVICE_END) {
             $this->logger->addError(
                 'Car\'s status must be wakeful or service end till it can go sleep',
-                array('car' => $car->getId())
+                array(
+                    'carId' => $car->getId(),
+                    'status' => Car::getStatusName($car->getStatus()),
+                )
             );
             throw new CarStatusException('status must be wakeful or service end');
         }
