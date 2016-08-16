@@ -635,13 +635,17 @@ class ServiceController extends FOSRestController
         $repository = $this->getDoctrine()->getRepository('FunProServiceBundle:Service');
         $user = $this->getUser();
         $context = new Context();
+        $context->addGroups(array('Public', 'Point', 'Plaque', 'PassengerMobile', 'DriverMobile', 'Car', 'Cost'));
 
         if ($user instanceof Driver) {
             $service = $repository->getLastServiceOfDriver($user);
-            $context->addGroups(array('Public', 'Driver'));
-        } else {
-            $context->addGroups(array('Public', 'Passenger', 'Car'));
+            $context->addGroups(array('Driver'));
+        } elseif ($user instanceof Passenger) {
+            $context->addGroups(array('Passenger', 'PropagationList', 'DriverInfo'));
             $service = $repository->getLastServiceOfPassenger($user);
+        } else {
+            $this->get('logger')->addError('user type is not supported');
+            return $this->view(null, Response::HTTP_NOT_FOUND);
         }
 
         $statusCode = $service ? Response::HTTP_OK : Response::HTTP_NO_CONTENT;
@@ -680,7 +684,7 @@ class ServiceController extends FOSRestController
         $logger = $this->get('logger');
         $translator = $this->get('translator');
         $context = new Context();
-        $context->addGroups(array('Public', 'Point', 'Plaque', 'PassengerMobile', 'DriverMobile', 'Car'));
+        $context->addGroups(array('Public', 'Point', 'Plaque', 'PassengerMobile', 'DriverMobile', 'Car', 'Cost'));
 
         $service = $request->attributes->get('service');
         $user = $this->getUser();
@@ -695,7 +699,7 @@ class ServiceController extends FOSRestController
         } elseif ($user instanceof Driver and $service->getCar()->getDriver() === $user) {
             $context->addGroup('Driver');
         } elseif ($service->getPassenger() === $user) {
-            $context->addGroups(array('Passenger', 'PropagationList', 'Cost', 'DriverInfo'));
+            $context->addGroups(array('Passenger', 'PropagationList', 'DriverInfo'));
         } elseif ($service->getAgent() and $service->getAgent()->getAdmin() === $user) {
             $context->addGroup('Agent');
         } else {
