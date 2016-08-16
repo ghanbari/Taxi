@@ -49,6 +49,8 @@ fos_user_security:
 
 _liip_imagine:
     resource: "@LiipImagineBundle/Resources/config/routing.xml"
+    options:
+        expose: true
 
 fos_js_routing:
     resource: "@FOSJsRoutingBundle/Resources/config/routing/routing.xml"
