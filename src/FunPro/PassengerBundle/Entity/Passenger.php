@@ -27,7 +27,7 @@ class Passenger extends User implements SMSInterface
      * @Assert\NotBlank(groups={"Register", "Profile"})
      * @Assert\Regex(pattern="/09\d{9}/", groups={"Register", "Profile"})
      *
-     * @JS\Groups({"PassengerMobile", "Profile"})
+     * @JS\Groups({"PassengerMobile", "Profile", "Admin"})
      * @JS\Since("1.0.0")
      */
     protected $mobile;
@@ -40,7 +40,7 @@ class Passenger extends User implements SMSInterface
      *
      * @Assert\Type(type="FunPro\PassengerBundle\Entity\Passenger", groups={"Register", "Profile"})
      *
-     * @JS\Groups({"Referrer", "Profile"})
+     * @JS\Groups({"Referrer", "Profile", "Admin"})
      * @JS\MaxDepth(1)
      * @JS\Since("1.0.0")
      */
@@ -51,7 +51,7 @@ class Passenger extends User implements SMSInterface
      *
      * @ORM\Column(name="rate", type="decimal", precision=2, scale=1, options={"default"=0})
      *
-     * @JS\Groups({"Public"})
+     * @JS\Groups({"Public", "Admin"})
      * @JS\Since("1.0.0")
      */
     private $rate;
