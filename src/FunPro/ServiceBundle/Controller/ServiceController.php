@@ -297,8 +297,8 @@ class ServiceController extends FOSRestController
      *
      * @Security("has_role('ROLE_DRIVER')")
      *
-     * @Rest\RequestParam(name="latitude", nullable=false, requirements="\d+\.\d+", strict=true)
-     * @Rest\RequestParam(name="longitude", nullable=false, requirements="\d+\.\d+", strict=true)
+     * @Rest\RequestParam(name="latitude", allowBlank=false, nullable=false, requirements="\d+\.\d+", strict=true)
+     * @Rest\RequestParam(name="longitude", allowBlank=false, nullable=false, requirements="\d+\.\d+", strict=true)
      *
      * @param $id
      * @return \FOS\RestBundle\View\View
@@ -409,8 +409,8 @@ class ServiceController extends FOSRestController
      * @ParamConverter("service", class="FunProServiceBundle:Service")
      * @Security("has_role('ROLE_DRIVER') and service.getCar().getDriver() == user")
      *
-     * @Rest\RequestParam(name="latitude", nullable=false, requirements="\d+\.\d+", strict=true)
-     * @Rest\RequestParam(name="longitude", nullable=false, requirements="\d+\.\d+", strict=true)
+     * @Rest\RequestParam(name="latitude", allowBlank=false, nullable=false, requirements="\d+\.\d+", strict=true)
+     * @Rest\RequestParam(name="longitude", allowBlank=false, nullable=false, requirements="\d+\.\d+", strict=true)
      */
     public function patchReadyAction(Request $request, $id)
     {
@@ -537,7 +537,7 @@ class ServiceController extends FOSRestController
      * @ParamConverter("service", class="FunProServiceBundle:Service")
      * @Security("has_role('ROLE_DRIVER') and service.getCar().getDriver() == user")
      *
-     * @Rest\RequestParam(name="price", nullable=false, requirements="\d+", strict=true)
+     * @Rest\RequestParam(name="price", allowBlank=false, nullable=false, requirements="\d+", strict=true)
      * @Rest\RequestParam(name="floatingCost", nullable=true, strict=true)
      */
     public function patchFinishAction(Request $request, $id)
