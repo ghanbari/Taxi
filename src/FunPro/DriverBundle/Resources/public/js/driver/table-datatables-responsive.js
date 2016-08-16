@@ -52,7 +52,7 @@ var TableDatatablesResponsive = function () {
                 {name: "d.sex", data: "sex", "defaultContent": "", orderable: true, searchable: false},
                 {name: "d.rate", data: "rate", "defaultContent": 0, orderable: true, searchable: false},
                 {name: "d.description", data: "description", "defaultContent": "", orderable: false, searchable: false},
-                {name: "d.avatar", data: "avatar", "defaultContent": "", orderable: false, searchable: false},
+                {name: "d.avatar", data: "avatar_path", "defaultContent": "", orderable: false, searchable: false, className: "avatar"},
                 {name: "car", data: "id", orderable: false, searchable: false, className: "carList text-center"},
                 {name: "edit", "defaultContent": "<i class='btn btn-warning'>ویرایش</i>", orderable: false, searchable: false, className: "edit text-center"},
                 {name: "delete", "defaultContent": "<i class='btn btn-danger'>حذف</i>", orderable: false, searchable: false, className: "delete text-center"},
@@ -97,7 +97,9 @@ var TableDatatablesResponsive = function () {
 jQuery(document).ready(function() {
     TableDatatablesResponsive.init();
     $('#sample_2').on( 'draw.dt', function () {
-        var patt = /\d+/g;
+        $('td.avatar').each(function(index, item) {
+            $(item).html('<img src="' + Routing.generate('liip_imagine_filter', {filter: 'avatar_panel_thumb', path: $(item).text()}) + '" />');
+        });
         $('td.carList').each(function(index, item) {
             $(item).html("<a href='"+Routing.generate('fun_pro_admin_cget_driver_car', {driverId: $(item).text()})+"'><span class='btn btn-info glyphicon glyphicon-th-list'></span></a>");
         });
