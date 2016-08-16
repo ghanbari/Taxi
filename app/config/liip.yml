@@ -14,3 +14,6 @@ liip_imagine:
         avatar_mob_thumb:
             filters:
                 downscale: { max: [300, 300] }
+        avatar_panel_thumb:
+            filters:
+                downscale: { max: [90, 90] }
