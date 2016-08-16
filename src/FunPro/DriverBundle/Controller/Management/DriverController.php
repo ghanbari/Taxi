@@ -172,26 +172,26 @@ class DriverController extends FOSRestController
      *
      * @Security("has_role('ROLE_OPERATOR')")
      *
-     * @Rest\QueryParam(name="start", requirements="\d+", default="0", nullable=true)
-     * @Rest\QueryParam(name="length", requirements="\d+", default="10", nullable=true)
+     * @Rest\QueryParam(name="start", requirements="\d+", default="0", nullable=true, strict=true)
+     * @Rest\QueryParam(name="length", requirements="\d+", default="10", nullable=true, strict=true)
      * @Rest\View("FunProDriverBundle:Management/Driver:cget.html.twig")
      */
     public function cgetAction(Request $request)
     {
         $max = $this->getParameter('ui.data_table.max_per_page');
-        $offset = $this->get('fos_rest.request.param_fetcher')->get('start', 0);
-        $length = $this->get('fos_rest.request.param_fetcher')->get('length', 10);
+        $offset = $this->get('fos_rest.request.param_fetcher')->get('start');
+        $length = $this->get('fos_rest.request.param_fetcher')->get('length');
 
         $offset = max($offset, 0);
         $length = min($length, $max);
 
-        $qb = $this->getDoctrine()->getRepository('FunProDriverBundle:Driver')->getAllDriversQueryBuilder();
+        $queryBuilder = $this->getDoctrine()->getRepository('FunProDriverBundle:Driver')->getAllDriversQueryBuilder();
 
-        DataTable::orderBy($qb, $request);
-        DataTable::filterBy($qb, $request);
+        DataTable::orderBy($queryBuilder, $request);
+        DataTable::filterBy($queryBuilder, $request);
 
         $paginator = $this->get('knp_paginator');
-        $pagination = $paginator->paginate($qb, floor($offset / $length)+1, $length);
+        $pagination = $paginator->paginate($queryBuilder, floor($offset / $length)+1, $length);
 
         $context = (new Context())
             ->addGroup('Admin')
