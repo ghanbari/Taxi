@@ -52,6 +52,8 @@ class Car
      * @Assert\NotNull(groups={"Create", "Update"})
      * @Assert\Type(type="FunPro\DriverBundle\Entity\Driver", groups={"Create", "Update"})
      *
+     * TODO: Why driver must see his information
+     * TODO: Driver must change to DriverO, means 'Driver Object'
      * @JS\Groups({"Driver", "Admin", "DriverInfo"})
      * @JS\MaxDepth(1)
      * @JS\Since("1.0.0")

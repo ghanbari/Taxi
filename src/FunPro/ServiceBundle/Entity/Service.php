@@ -60,6 +60,7 @@ class Service
      *
      * @Assert\Type(type="FunPro\PassengerBundle\Entity\Passenger", groups={"Create"})
      *
+     * TODO: why passenger must see his information
      * @JS\Groups({"Passenger", "Driver", "Admin"})
      * @JS\MaxDepth(1)
      * @JS\Since("1.0.0")
@@ -74,6 +75,7 @@ class Service
      *
      * @Assert\Type(type="FunPro\AgentBundle\Entity\Agent", groups={"Create"})
      *
+     * TODO: why agent must see his information
      * @JS\Groups({"Driver", "Agent", "Admin"})
      * @JS\MaxDepth(1)
      * @JS\Since("1.0.0")
