@@ -3,6 +3,7 @@ fun_pro_passenger_api:
     type: rest
     options:
         version: true
+
 fun_pro_passenger_api_profile:
     resource: "@FunProPassengerBundle/Controller/ProfileController.php"
     type: rest

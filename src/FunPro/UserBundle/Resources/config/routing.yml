@@ -3,6 +3,11 @@ fun_pro_user_device_api:
     type: rest
     options:
         version: true
+
 fun_pro_user_config_api:
     resource: "@FunProUserBundle/Controller/ConfigController.php"
+    type: rest
+
+fun_pro_user_api_profile:
+    resource: "@FunProUserBundle/Controller/ProfileController.php"
     type: rest
