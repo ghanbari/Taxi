@@ -129,6 +129,8 @@ class ProfileController extends FOSRestController
     }
 
     /**
+     * Upload user avatar (field name: avatar)
+     *
      * @ApiDoc(
      *      section="Profile",
      *      resource=true,
