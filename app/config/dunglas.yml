@@ -6,10 +6,10 @@ dunglas_angular_csrf:
     cookie:
         name: XSRF-TOKEN
         expire: 0
-        path: /
+        path:   /
         domain: "api.%router.request_context.host%"
         secure: false
         set_on:
-            - { path: "^/url-pattern", route: "^route_name_pattern$", host: "example.com", methods: [GET, POST] }
+            - { route: "api", methods: [POST, PUT, DELETE, PATCH] }
     secure:
-        - { path: "^/url-pattern", route: "^route_name_pattern$", host: "example.com", methods: [GET, POST] }
+        - { route: "api", methods: [POST, PUT, DELETE, PATCH] }
