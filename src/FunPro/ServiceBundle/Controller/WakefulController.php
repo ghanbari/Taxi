@@ -238,12 +238,12 @@ class WakefulController extends FOSRestController
      */
     public function deleteAction()
     {
-        $manger = $this->getDoctrine()->getManager();
+        $manager = $this->getDoctrine()->getManager();
         $logger = $this->get('logger');
         $translator = $this->get('translator');
 
         $driver = $this->getUser();
-        $car = $manger->getRepository('FunProDriverBundle:Car')
+        $car = $manager->getRepository('FunProDriverBundle:Car')
             ->findOneBy(array('driver' => $driver, 'current' => true));
 
         if (!$car) {
@@ -264,13 +264,13 @@ class WakefulController extends FOSRestController
             return $this->view($error, Response::HTTP_BAD_REQUEST);
         }
 
-        $wakeful = $manger->getRepository('FunProServiceBundle:Wakeful')
+        $wakeful = $manager->getRepository('FunProServiceBundle:Wakeful')
             ->findOneByCar($car);
 
         if (!is_null($wakeful)) {
-            $manger->remove($wakeful);
+            $manager->remove($wakeful);
             $this->get('event_dispatcher')->dispatch(CarEvents::CAR_SLEEP, new CarEvent($car));
-            $manger->flush();
+            $manager->flush();
 
             $logger->addInfo('driver go sleep');
 
