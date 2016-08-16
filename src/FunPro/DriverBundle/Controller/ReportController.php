@@ -118,4 +118,44 @@ class ReportController extends FOSRestController
 
         return $this->view(array('total' => $total), Response::HTTP_OK);
     }
+
+    /**
+     * Get Distance, Service time & Online time of driver
+     *
+     * @ApiDoc(
+     *      section="Report",
+     *      resource=true,
+     *      views={"driver"},
+     *      statusCodes={
+     *          200="When success",
+     *          403= {
+     *              "when you are not driver",
+     *          },
+     *      }
+     * )
+     *
+     * @Security("has_role('ROLE_DRIVER')")
+     *
+     * @Rest\QueryParam(name="from", requirements=@Assert\Date(), nullable=false, strict=true)
+     * @Rest\QueryParam(name="till", requirements=@Assert\Date(), nullable=false, strict=true)
+     */
+    public function cgetAction()
+    {
+        $fetcher = $this->get('fos_rest.request.param_fetcher');
+
+        $from = new \DateTime($fetcher->get('from'));
+        $till = new \DateTime($fetcher->get('till'));
+        $data = array();
+
+        $data['distance'] = $this->getDoctrine()->getRepository('FunProDriverBundle:CarLog')
+            ->getDistance($this->getUser(), $from, $till);
+
+        $data['service_time'] = $this->getDoctrine()->getRepository('FunProServiceBundle:ServiceLog')
+            ->getServiceTime($this->getUser(), $from, $till);
+
+        $data['online_time'] = $this->getDoctrine()->getRepository('FunProDriverBundle:CarLog')
+            ->getOnlineTime($this->getUser(), $from, $till);
+
+        return $this->view($data, Response::HTTP_OK);
+    }
 }
