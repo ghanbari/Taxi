@@ -15,6 +15,10 @@ fun_pro_car_management:
     type: rest
     parent: fun_pro_driver_management
 
+fun_pro_passenger_management:
+    resource: "@FunProPassengerBundle/Controller/Management/PassengerController.php"
+    type:     rest
+
 fun_pro_admin_login:
     path: /login
     defaults: { _controller: FunProAdminBundle:Security:login }

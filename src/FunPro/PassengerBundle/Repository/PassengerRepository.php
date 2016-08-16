@@ -12,4 +12,12 @@ use Doctrine\ORM\EntityRepository;
  */
 class PassengerRepository extends EntityRepository
 {
+    /**
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    public function getQueryBuilder()
+    {
+        $qb = $this->createQueryBuilder('p');
+        return $qb;
+    }
 }
