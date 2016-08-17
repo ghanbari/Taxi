@@ -13,6 +13,11 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+/**
+ * Class PaymentSubsciber
+ *
+ * @package FunPro\FinancialBundle\Event
+ */
 class PaymentSubsciber implements EventSubscriberInterface
 {
     /**
@@ -83,50 +88,10 @@ class PaymentSubsciber implements EventSubscriberInterface
     {
         return array(
             FinancialEvents::PAYMENT_EVENT => array(
-                array('insertPassengerReward', 150),
                 array('insertDriverWage', 140),
                 array('insertDriverCommission', 130),
             ),
         );
-    }
-
-    public function insertPassengerReward(PaymentEvent $event)
-    {
-        $main = $event->getTransaction();
-        $parameters = $this->parameterBag;
-        $rewardPercent = $main->isVirtual() ?
-            $parameters->get('financial.payment.credit.reward') : $parameters->get('financial.payment.cash.reward');
-
-        $transaction = new Transaction(
-            $main->getUser(),
-            $main->getCurrency(),
-            $main->getAmount() * $rewardPercent / 100,
-            Transaction::TYPE_REWARD,
-            true
-        );
-
-        $wallet = $this->doctrine->getRepository('FunProFinancialBundle:Wallet')
-            ->getUserWallet($main->getUser(), $main->getCurrency());
-        $transaction->setWallet($wallet);
-        $transaction->setService($main->getService());
-        $transaction->setStatus(Transaction::STATUS_SUCCESS);
-
-        $errors = $this->validator->validate($transaction, null, array('Create', 'Pay', 'Reward'));
-        if (count($errors)) {
-            $transactionContext = SerializationContext::create()
-                ->setGroups(array('Admin', 'User', 'Service', 'Currency', 'CurrencyLog', 'Wallet', 'Gateway'));
-            $this->logger->addError(
-                'transaction is not valid',
-                array(
-                    'errors' => $this->serializer->serialize($errors, 'json'),
-                    'transaction' => $this->serializer->serialize($transaction, 'json', $transactionContext)
-                )
-            );
-            throw new InvalidTransactionException('transaction is not valid');
-        }
-
-        $this->doctrine->getManager()->persist($transaction);
-        $this->logger->addInfo('Reward transaction is persisted');
     }
 
     public function insertDriverWage(PaymentEvent $event)
@@ -174,7 +139,7 @@ class PaymentSubsciber implements EventSubscriberInterface
         $parameters = $this->parameterBag;
         $driver = $main->getService()->getCar()->getDriver();
         $commissionRate = $main->isVirtual() ?
-            $parameters->get('financial.payment.credit.commission') : $parameters->get('financial.payment.cash.commission');
+            $parameters->get('financial.commission.payment.credit') : $parameters->get('financial.commission.payment.cash');
 
         $transaction = new Transaction(
             $driver,
