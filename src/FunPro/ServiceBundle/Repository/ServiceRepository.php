@@ -53,7 +53,7 @@ class ServiceRepository extends EntityRepository
     {
         $queryBuilder = $this->createQueryBuilder('s');
 
-        return $queryBuilder->select(array('s', 'l', 'p', 'a', 'car'))
+        return $queryBuilder->select(array('s', 'p', 'a', 'car'))
             ->innerJoin('s.logs', 'l')
             ->innerJoin('s.car', 'car')
             ->leftJoin('s.passenger', 'p')
@@ -76,7 +76,7 @@ class ServiceRepository extends EntityRepository
     {
         $queryBuilder = $this->createQueryBuilder('s');
 
-        return $queryBuilder->select(array('s', 'l', 'p', 'car', 'c'))
+        return $queryBuilder->select(array('s', 'p', 'car', 'c'))
             ->innerJoin('s.logs', 'l')
             ->innerJoin('s.passenger', 'p')
             ->leftJoin('s.car', 'car')
@@ -119,7 +119,7 @@ class ServiceRepository extends EntityRepository
     {
         $queryBuilder = $this->createQueryBuilder('s');
 
-        $service = $queryBuilder->select(array('s', 'l'))
+        $service = $queryBuilder->select(array('s'))
             ->innerJoin('s.logs', 'l')
             ->where($queryBuilder->expr()->eq('s.car', ':car'))
             ->setParameter('car', $car)
