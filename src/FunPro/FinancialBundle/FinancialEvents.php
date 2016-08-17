@@ -15,4 +15,11 @@ class FinancialEvents
      * The Event listener receive an instance of FunPro\FinancialBundle\Event\PaymentEvent class
      */
     const PAYMENT_EVENT = 'financial.payment';
+
+    /**
+     * This event occur when one invited passenger complete register.
+     *
+     * The Event listener receive an instance of FunPro\UserBundle\Event\RegisterEvent class
+     */
+    const REWARD_REFERRER = 'financial.reward.referer';
 }

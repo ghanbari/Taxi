@@ -4,6 +4,13 @@ services:
         arguments: ["@doctrine", "@logger", "@=container.getParameterBag()", "@validator", "@serializer"]
         tags:
             - { name: kernel.event_subscriber }
+
+    fun_pro_financial.reward_subsciber:
+        class: FunPro\FinancialBundle\Event\RewardSubscriber
+        arguments: ["@doctrine", "@logger", "@=container.getParameterBag()", "@validator", "@serializer"]
+        tags:
+            - { name: kernel.event_subscriber }
+
     fun_pro_financial.wallet_balance_calculator:
         class: FunPro\FinancialBundle\Event\WalletBalanceCalculator
         arguments: ["@logger"]

@@ -7,9 +7,11 @@ use Doctrine\ORM\NoResultException;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
+use FunPro\FinancialBundle\FinancialEvents;
 use FunPro\UserBundle\Entity\Token;
 use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\PassengerBundle\Form\Type\RegisterType;
+use FunPro\UserBundle\Event\RegisterEvent;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -222,7 +224,7 @@ class PassengerController extends FOSRestController
             if ($userReferer) {
                 $logger->addInfo('set user referer', array('referer' => $referer));
                 $user->setReferrer($userReferer);
-                #TODO: add point to user(referer) wallet
+                $this->get('event_dispatcher')->dispatch(FinancialEvents::REWARD_REFERRER, new RegisterEvent($user));
             }
         }
         $manager->getConnection()->commit();
