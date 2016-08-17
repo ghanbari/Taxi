@@ -114,7 +114,7 @@ class Passenger extends User implements SMSInterface
     /**
      * Get rate
      *
-     * @return string 
+     * @return string
      */
     public function getRate()
     {
@@ -124,10 +124,10 @@ class Passenger extends User implements SMSInterface
     /**
      * Set referrer
      *
-     * @param \FunPro\PassengerBundle\Entity\Passenger $referrer
+     * @param Passenger $referrer
      * @return Passenger
      */
-    public function setReferrer(\FunPro\PassengerBundle\Entity\Passenger $referrer = null)
+    public function setReferrer(Passenger $referrer = null)
     {
         $this->referrer = $referrer;
 
@@ -137,7 +137,7 @@ class Passenger extends User implements SMSInterface
     /**
      * Get referrer
      *
-     * @return \FunPro\PassengerBundle\Entity\Passenger 
+     * @return Passenger
      */
     public function getReferrer()
     {
