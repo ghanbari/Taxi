@@ -58,10 +58,12 @@ parameters:
     service.driver.allowed_radius_for_ready: 500 #meter
     service.propagation_list.max: 10
 
-    financial.payment.cash.reward: 5 #in percent
-    financial.payment.credit.reward: 5 #in percent
-    financial.payment.cash.commission: 15
-    financial.payment.credit.commission: 15
+    financial.reward.referer: 1000
+    financial.reward.referer.default_currency: IRR
+    financial.reward.payment.cash: 5 #in percent
+    financial.reward.payment.credit: 5 #in percent
+    financial.commission.payment.cash: 15
+    financial.commission.payment.credit: 15
 
     ui.data_table.per_page: 10
     ui.data_table.max_per_page: 100
