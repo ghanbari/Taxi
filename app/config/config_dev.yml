@@ -21,12 +21,6 @@ web_profiler:
 
 monolog:
     handlers:
-        crossed_file:
-            type: fingers_crossed
-            handler: file
-            action_level: warning
-            excluded_404s: ["^/"]
-            channels: ['!event']
         file:
             type: rotating_file
             path: "%kernel.logs_dir%/%kernel.environment%.log"
