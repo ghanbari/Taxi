@@ -39,9 +39,7 @@ class ReportController extends FOSRestController
      *      },
      *      statusCodes={
      *          201="When success",
-     *          400="When form validation failed.",
      *          403= {
-     *              "when csrf token is invalid",
      *              "when you are a user and you are login in currently",
      *          },
      *      }
