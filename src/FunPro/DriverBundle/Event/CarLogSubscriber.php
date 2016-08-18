@@ -98,7 +98,7 @@ class CarLogSubscriber implements EventSubscriberInterface
 
         $car->setStatus(Car::STATUS_WAKEFUL);
         $carLog = new CarLog($car, $car->getStatus(), $event->getWakeful()->getPoint());
-        $this->logger->addInfo('Car\'s status changed to wakeful', array($car->getId()));
+        $this->logger->addInfo('Car\'s status changed to wakeful', array('carId' => $car->getId()));
         $this->doctrine->getManager()->persist($carLog);
     }
 
@@ -132,7 +132,7 @@ class CarLogSubscriber implements EventSubscriberInterface
 
         $car->setStatus($status);
         $carLog = new CarLog($car, $status, $event->getCurrentLocation());
-        $this->logger->addInfo('Car\'s status changed to ' . Car::getStatusName($status), array($car->getId()));
+        $this->logger->addInfo('Car\'s status changed to ' . Car::getStatusName($status), array('carId' => $car->getId()));
         $this->doctrine->getManager()->persist($carLog);
     }
 
@@ -163,7 +163,7 @@ class CarLogSubscriber implements EventSubscriberInterface
 
         $car->setStatus(Car::STATUS_SLEEP);
         $carLog = new CarLog($car, $car->getStatus());
-        $this->logger->addInfo('Car\'s status changed to sleep', array($car->getId()));
+        $this->logger->addInfo('Car\'s status changed to sleep', array('carId' => $car->getId()));
         $this->doctrine->getManager()->persist($carLog);
     }
 }
