@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityRepository;
 use FunPro\DriverBundle\Entity\Driver;
 use FunPro\ServiceBundle\Entity\Service;
 use FunPro\UserBundle\Entity\Message;
+use FunPro\UserBundle\Entity\User;
 
 /**
  * MessageRepository
@@ -28,5 +29,22 @@ class MessageRepository extends EntityRepository
             ->setParameter('driver', $driver)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    public function getAllNonDownloaded(User $user)
+    {
+        $queryBuilder = $this->createQueryBuilder('m');
+
+        return $queryBuilder
+            ->innerJoin('m.device', 'd')
+            ->where($queryBuilder->expr()->eq('d.owner', ':owner'))
+            ->andWhere($queryBuilder->expr()->eq('m.download', ':false'))
+            ->andWhere($queryBuilder->expr()->gte('m.createdAt', ':time'))
+            ->setParameter('owner', $user)
+            ->setParameter('false', false)
+            ->setParameter('time', new \DateTime('-2 hour'))
+            ->getQuery()
+            ->setMaxResults(100)
+            ->getResult();
     }
 }

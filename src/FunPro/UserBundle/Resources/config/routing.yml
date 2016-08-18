@@ -8,6 +8,10 @@ fun_pro_user_config_api:
     resource: "@FunProUserBundle/Controller/ConfigController.php"
     type: rest
 
-fun_pro_user_api_profile:
+fun_pro_user_profile_api:
     resource: "@FunProUserBundle/Controller/ProfileController.php"
+    type: rest
+
+fun_pro_user_notification_api:
+    resource: "@FunProUserBundle/Controller/NotificationController.php"
     type: rest

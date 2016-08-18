@@ -324,11 +324,32 @@ class Message
     private $service;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_downloaded", type="boolean", options={"default"=false})
+     *
+     * @JS\Exclude()
+     */
+    private $download;
+
+    /**
+     * @ORM\PostLoad()
+     *
+     * TODO: Does message show in admin panel or fetch in another place?
+     * TODO: if those are not fetch in another place, we must use "select trigger" for change download value
+     */
+    public function onLoad()
+    {
+        $this->setDownload(true);
+    }
+
+    /**
      * Class constructor
      */
     public function __construct()
     {
         $this->createdAt = new \DateTime();
+        $this->setDownload(false);
     }
 
     /**
@@ -899,6 +920,25 @@ class Message
     public function setService(Service $service)
     {
         $this->service = $service;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isDownload()
+    {
+        return $this->download;
+    }
+
+    /**
+     * @param boolean $download
+     *
+     * @return $this
+     */
+    public function setDownload($download)
+    {
+        $this->download = $download;
         return $this;
     }
 }
