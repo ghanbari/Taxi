@@ -127,6 +127,8 @@ class CarLogRepository extends EntityRepository
 
     public function getDistance(Driver $driver, \DateTime $from, \DateTime $till)
     {
+        $this->getEntityManager()->getConnection()->executeQuery('SET SESSION group_concat_max_len = 5555555');
+
         #TODO: how convert degree to meter?
         $queryBuilder = $this->createQueryBuilder('l');
         $total = $queryBuilder
@@ -135,6 +137,7 @@ class CarLogRepository extends EntityRepository
             ->where($queryBuilder->expr()->eq('c.driver', ':driver'))
             ->andWhere($queryBuilder->expr()->gte('l.atTime', ':from'))
             ->andWhere($queryBuilder->expr()->lte('l.atTime', ':till'))
+            ->andWhere($queryBuilder->expr()->isNotNull('l.point'))
             ->setParameter('driver', $driver)
             ->setParameter('from', $from)
             ->setParameter('till', $till)
