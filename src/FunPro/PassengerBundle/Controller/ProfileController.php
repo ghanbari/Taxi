@@ -33,10 +33,12 @@ class ProfileController extends FOSRestController
      */
     public function createEditForm(Passenger $passenger)
     {
+        $requestFormat = $this->get('request_stack')->getCurrentRequest()->getRequestFormat('html');
         $form = $this->createForm(new ProfileType(), $passenger, array(
             'action' => $this->generateUrl('fun_pro_passenger_api_put_passenger_profile'),
             'method' => 'PUT',
             'validation_groups' => array('Profile'),
+            'csrf_protection' => $requestFormat === 'html' ?: false,
         ));
 
         return $form;

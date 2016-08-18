@@ -33,7 +33,8 @@ class IpLocationType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'FunPro\GeoBundle\Entity\IpLocation'
+            'data_class' => 'FunPro\GeoBundle\Entity\IpLocation',
+            'csrf_protection' => false,
         ));
     }
 

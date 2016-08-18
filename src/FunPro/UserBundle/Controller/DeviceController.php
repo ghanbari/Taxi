@@ -26,9 +26,11 @@ class DeviceController extends FOSRestController
 {
     public function createCreateForm(Device $device)
     {
+        $requestFormat = $this->get('request_stack')->getCurrentRequest()->getRequestFormat('html');
         $form = $this->createForm(DeviceType::class, $device, array(
             'action' => $this->generateUrl('fun_pro_user_api_post_device'),
             'method' => 'POST',
+            'csrf_protection' => $requestFormat === 'html' ?: false,
         ));
 
         return $form;

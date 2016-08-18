@@ -42,6 +42,8 @@ class ServiceController extends FOSRestController
 {
     public function getForm(Service $service)
     {
+        $requestFormat = $this->get('request_stack')->getCurrentRequest()->getRequestFormat('html');
+        $options['csrf_protection'] = $requestFormat === 'html' ?: false;
         $options['method'] = 'POST';
         $options['action'] = $this->generateUrl('fun_pro_service_api_post_service');
         $options['validation_groups'] = array('Create', 'Point');
