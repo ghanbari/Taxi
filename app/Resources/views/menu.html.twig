@@ -1,0 +1,46 @@
+<div class="hor-menu  ">
+    <ul class="nav navbar-nav">
+        <li class="menu-dropdown classic-menu-dropdown active">
+            <a href="javascript:;"> داشبورد
+                <span class="arrow"></span>
+            </a>
+            <ul class="dropdown-menu pull-left">
+                <li class=" active">
+                    <a href="{{ path('fun_pro_admin_dashboard') }}" class="nav-link  active">
+                        <i class="icon-bar-chart"></i> نمای پیش فرض
+                        <span class="badge badge-success">1</span>
+                    </a>
+                </li>
+                {#<li class=" ">#}
+                {#<a href="dashboard_3.html" class="nav-link  ">#}
+                {#<i class="icon-graph"></i> نمودارها#}
+                {#<span class="badge badge-danger">3</span>#}
+                {#</a>#}
+                {#</li>#}
+            </ul>
+        </li>
+        <li class="menu-dropdown classic-menu-dropdown ">
+            <a href="javascript:;"> رانندگان
+                <span class="arrow"></span>
+            </a>
+            <ul class="dropdown-menu pull-left">
+                <li class=" ">
+                    <a href="{{ url('fun_pro_admin_cget_driver') }}" class="nav-link">لیست رانندگان</a>
+                </li>
+                <li class=" ">
+                    <a href="{{ path('fun_pro_admin_new_driver') }}" class="nav-link">افزودن راننده</a>
+                </li>
+            </ul>
+        </li>
+        <li class="menu-dropdown classic-menu-dropdown ">
+            <a href="javascript:;">کاربران
+                <span class="arrow"></span>
+            </a>
+            <ul class="dropdown-menu pull-left">
+                <li class=" ">
+                    <a href="{{ url('fun_pro_admin_cget_passenger') }}" class="nav-link">لیست کاربران</a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>
