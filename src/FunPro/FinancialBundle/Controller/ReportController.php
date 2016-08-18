@@ -21,6 +21,43 @@ use Symfony\Component\Validator\Constraints as Assert;
 class ReportController extends FOSRestController
 {
     /**
+     * Get User wallets
+     *
+     * @ApiDoc(
+     *      section="Report",
+     *      resource=true,
+     *      output={
+     *          "class"="FunPro\FinancialBundle\Entity\Wallet",
+     *          "groups"={"Owner", "Public"},
+     *          "parsers"={"Nelmio\ApiDocBundle\Parser\JmsMetadataParser"},
+     *      },
+     *      statusCodes={
+     *          200="When success",
+     *          403= {
+     *              "when you are a user and you are login in currently",
+     *          },
+     *      }
+     * )
+     *
+     * @Security("is_authenticated()")
+     *
+     * @return \FOS\RestBundle\View\View
+     */
+    public function getWalletAction()
+    {
+        $manager = $this->getDoctrine()->getManager();
+
+        #TODO: must return all wallet in all currency
+        $currency = $this->getDoctrine()->getRepository('FunProFinancialBundle:Currency')->findOneByCode('IRR');
+
+        $wallet = $manager->getRepository('FunProFinancialBundle:Wallet')
+            ->getUserWallet($this->getUser(), $currency);
+
+        $context = (new Context())->addGroups(array('Owner', 'Currency', 'Public'))->setMaxDepth(1);
+        return $this->view($wallet, Response::HTTP_OK)->setSerializationContext($context);
+    }
+
+    /**
      * Get list of user transaction paginated
      *
      * @ApiDoc(
