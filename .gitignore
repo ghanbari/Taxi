@@ -1,7 +1,9 @@
 /web/images/*
-/web/images/avatars/.gitkeep
 !/web/images/.gitkeep
 !/web/images/avatars/.gitkeep
+!/web/images/cars/.gitkeep
+!/web/images/avatars/default_avatar.jpg
+!/web/images/cars/default_car.jpg
 /web/assets
 /web/bundles/
 /app/bootstrap.php.cache

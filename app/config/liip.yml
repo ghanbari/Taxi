@@ -1,5 +1,6 @@
 parameters:
     filesystem.avatar.path: "%kernel.root_dir%/../web/images/avatars"
+    filesystem.car_image.path: "%kernel.root_dir%/../web/images/cars"
 
 liip_imagine:
     resolvers:
@@ -10,10 +11,23 @@ liip_imagine:
         avatar:
             filesystem:
                 data_root: "%filesystem.avatar.path%"
+        car:
+            filesystem:
+                data_root: "%filesystem.car_image.path%"
     filter_sets:
-        avatar_mob_thumb:
+        mob_avatar_thumb:
+            data_loader: 'avatar'
             filters:
                 downscale: { max: [300, 300] }
-        avatar_panel_thumb:
+        panel_avatar_thumb:
+            data_loader: 'avatar'
             filters:
                 downscale: { max: [90, 90] }
+        panel_monitoring_avatar_thumb:
+            data_loader: 'avatar'
+            filters:
+                downscale: { max: [139, 139] }
+        panel_monitoring_car_thumb:
+            data_loader: 'car'
+            filters:
+                downscale: { max: [139, 139] }
