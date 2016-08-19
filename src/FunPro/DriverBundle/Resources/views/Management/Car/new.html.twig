@@ -148,6 +148,14 @@
                                             <span class="help-block">{% if form.description.vars.errors|length %}{{ form_errors(form.description) }}{% endif %}</span>
                                         </div>
                                     </div>
+                                    <div class="form-group form-md-line-input {% if form.imageFile.vars.errors|length %}has-error{% elseif (form.imageFile.vars.submitted) %}has-success{% endif %}">
+                                        <label class="col-md-2 control-label" for="form_control_1">تصویر ماشین</label>
+                                        <div class="col-md-10">
+                                            {{ form_widget(form.imageFile) }}
+                                            <div class="form-control-focus"> </div>
+                                            <span class="help-block">{% if form.imageFile.vars.errors|length %}{{ form_errors(form.imageFile) }}{% endif %}</span>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="form-actions">
                                     <div class="row">

@@ -7,6 +7,11 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type;
 
+/**
+ * Class CarType
+ *
+ * @package FunPro\DriverBundle\Form
+ */
 class CarType extends AbstractType
 {
     /**
@@ -28,6 +33,7 @@ class CarType extends AbstractType
                 'scale' => 2,
             ))
             ->add('description', Type\TextareaType::class, array('required' => false))
+            ->add('imageFile', Type\FileType::class)
         ;
     }
     

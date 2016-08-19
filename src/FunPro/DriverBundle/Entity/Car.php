@@ -7,7 +7,9 @@ use FunPro\ServiceBundle\Entity\Wakeful;
 use FunPro\UserBundle\Entity\User;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as JS;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * Car
@@ -17,6 +19,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\EntityListeners({"CarListener"})
  *
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
+ *
+ * @Vich\Uploadable()
  */
 class Car
 {
@@ -222,6 +226,29 @@ class Car
      * @ORM\OneToOne(targetEntity="FunPro\ServiceBundle\Entity\Wakeful", mappedBy="car")
      */
     private $wakeful;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="image", nullable=true)
+     */
+    private $image;
+
+    /**
+     * @var File
+     *
+     * @Vich\UploadableField(fileNameProperty="image", mapping="car_image")
+     */
+    private $imageFile;
+
+    /**
+     * @var \Datetime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
+     *
+     * @Gedmo\Timestampable(on="update")
+     */
+    private $updatedAt;
 
     public function __construct()
     {
@@ -631,5 +658,69 @@ class Car
             default:
                 return 'unknown';
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    /**
+     * @param string $image
+     *
+     * @return $this
+     */
+    public function setImage($image)
+    {
+        $this->image = $image;
+        return $this;
+    }
+
+    /**
+     * @return File
+     */
+    public function getImageFile()
+    {
+        return $this->imageFile;
+    }
+
+    /**
+     * @param File $image
+     *
+     * @internal param File $imageFile
+     *
+     * @return $this
+     */
+    public function setImageFile(File $image = null)
+    {
+        $this->imageFile = $image;
+
+        if ($image) {
+            $this->updatedAt = new \DateTime('now');
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return \Datetime
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * @param \Datetime $updatedAt
+     *
+     * @return $this
+     */
+    public function setUpdatedAt(\Datetime $updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+        return $this;
     }
 }

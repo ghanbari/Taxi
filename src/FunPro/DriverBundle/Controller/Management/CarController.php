@@ -9,6 +9,7 @@ use FunPro\DriverBundle\Entity\Car;
 use FunPro\DriverBundle\Form\CarType;
 use FunPro\EngineBundle\Utility\DataTable;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -45,6 +46,7 @@ class CarController extends FOSRestController
 
     /**
      * @ParamConverter("driver", class="FunProDriverBundle:Driver", options={"id"="driverId"})
+     * @Security("has_role('ROLE_OPERATOR')")
      *
      * @Rest\View("FunProDriverBundle:Management/Car:new.html.twig")
      *
@@ -62,6 +64,7 @@ class CarController extends FOSRestController
 
     /**
      * @ParamConverter("driver", class="FunProDriverBundle:Driver", options={"id"="driverId"})
+     * @Security("has_role('ROLE_OPERATOR')")
      *
      * @Rest\View("FunProDriverBundle:Management/Car:new.html.twig")
      *
@@ -89,25 +92,53 @@ class CarController extends FOSRestController
     }
 
     /**
+     * @ParamConverter("car", class="FunProDriverBundle:Car")
+     * @Security("has_role('ROLE_OPERATOR')")
      *
      * @Rest\Get("/driver/car/{id}/edit", requirements={"id"="\d+"})
+     * @Rest\View("FunProDriverBundle:Management/Car:new.html.twig")
      *
      * @param $id
+     *
+     * @return \Symfony\Component\Form\Form
      */
-    public function editAction($id)
+    public function editAction(Request $request, $id)
     {
+        $car = $request->attributes->get('car');
+        $form = $this->getForm($car, 'PUT');
 
+        return $form;
     }
 
     /**
-     * @Rest\Put("/driver/car/{id}", requirements={"id"="\d+"})
+     * @ParamConverter("car", class="FunProDriverBundle:Car")
+     * @Security("has_role('ROLE_OPERATOR')")
      *
-     * @param $driverId
+     * @Rest\Put("/driver/car/{id}", requirements={"id"="\d+"})
+     * @Rest\View("FunProDriverBundle:Management/Car:new.html.twig")
+     *
      * @param $id
+     *
+     * @return \FOS\RestBundle\View\View
      */
-    public function putAction($driverId, $id)
+    public function putAction(Request $request, $id)
     {
+        $car = $request->attributes->get('car');
+        $form = $this->getForm($car, 'PUT');
+        $form->handleRequest($request);
 
+        if ($form->isValid()) {
+            $this->getDoctrine()->getManager()->persist($car);
+            $this->getDoctrine()->getManager()->flush();
+
+            $this->addFlash('info', $this->get('translator')->trans('car.updated'));
+            return $this->routeRedirectView(
+                'fun_pro_admin_cget_driver_car',
+                array('driverId' => $car->getDriver()->getId())
+            );
+        }
+
+        return $this->view($form, Response::HTTP_BAD_REQUEST);
     }
 
     /**

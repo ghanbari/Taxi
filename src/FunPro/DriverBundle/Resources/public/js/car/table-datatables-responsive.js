@@ -50,7 +50,7 @@ var TableDatatablesResponsive = function () {
                 }
             },
             columns: [
-                {"defaultContent": "", name: "c.id", orderable: true, searchable: false},
+                {"defaultContent": "", name: "c.id", data: "id", orderable: true, searchable: false, className: "carId"},
                 {name: "c.plaque", data: "plaque", orderable: false, searchable: false, className: "plaque", "createdCell": addPlaque},
                 {name: "c.brand", data: "brand", orderable: true, searchable: true},
                 {name: "c.type", data: "type", orderable: true, searchable: true},
@@ -104,6 +104,10 @@ jQuery(document).ready(function() {
     TableDatatablesResponsive.init();
 
     $('#sample_2').on( 'draw.dt', function () {
+        $('.edit').on('click', function() {
+            document.location.href = Routing.generate('fun_pro_admin_edit_driver_car', {id: $(this).parent().find('.carId').text()})
+        });
+
         $('.isCurrent').each(function(index, item) {
             if ($(item).text() == 'true') {
                 $(item).html('<button class="btn btn-info glyphicon glyphicon-ok changeStatus"></button>')
