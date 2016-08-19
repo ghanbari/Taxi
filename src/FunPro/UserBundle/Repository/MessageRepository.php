@@ -43,9 +43,9 @@ class MessageRepository extends EntityRepository
             ->andWhere($queryBuilder->expr()->gte('m.createdAt', ':time'))
             ->setParameter('owner', $user)
             ->setParameter('false', false)
-            ->setParameter('time', new \DateTime('-2 hour'))
+            ->setParameter('time', new \DateTime('-15 minute'))
             ->getQuery()
-            ->setMaxResults(100)
+            ->setMaxResults(20)
             ->getResult();
     }
 }
