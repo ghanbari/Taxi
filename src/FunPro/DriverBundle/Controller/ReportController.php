@@ -2,6 +2,7 @@
 
 namespace FunPro\DriverBundle\Controller;
 
+use Doctrine\ORM\NoResultException;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -113,8 +114,12 @@ class ReportController extends FOSRestController
         $from = new \DateTime($fetcher->get('from'));
         $till = new \DateTime($fetcher->get('till'));
 
-        $total = $this->getDoctrine()->getRepository('FunProDriverBundle:CarLog')
-            ->getDistance($this->getUser(), $from, $till);
+        try {
+            $total = $this->getDoctrine()->getRepository('FunProDriverBundle:CarLog')
+                ->getDistance($this->getUser(), $from, $till);
+        } catch (NoResultException $e) {
+            $total = 0;
+        }
 
         return $this->view(array('total' => $total), Response::HTTP_OK);
     }
