@@ -9,7 +9,6 @@ use JMS\Serializer\Annotation as JS;
 
 /**
  * @ORM\Entity(repositoryClass="FunPro\UserBundle\Repository\MessageRepository")
- * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  * @ORM\HasLifecycleCallbacks()
  */
 class Message
