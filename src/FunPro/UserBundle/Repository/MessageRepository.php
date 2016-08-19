@@ -36,6 +36,7 @@ class MessageRepository extends EntityRepository
         $queryBuilder = $this->createQueryBuilder('m');
 
         return $queryBuilder
+            ->select(array('m', 'd'))
             ->innerJoin('m.device', 'd')
             ->where($queryBuilder->expr()->eq('d.owner', ':owner'))
             ->andWhere($queryBuilder->expr()->eq('m.download', ':false'))

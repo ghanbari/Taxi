@@ -62,7 +62,8 @@ class Message
      *
      * @ORM\ManyToOne(targetEntity="FunPro\UserBundle\Entity\Device", inversedBy="messages")
      *
-     * @JS\Groups({"Public"})
+     * @JS\Groups({"Device"})
+     * @JS\Type(name="FunPro\UserBundle\Entity\Device")
      * @JS\Since("1.0.0")
      */
     protected $device;

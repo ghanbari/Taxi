@@ -2,6 +2,7 @@
 
 namespace FunPro\UserBundle\Controller;
 
+use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -47,7 +48,8 @@ class NotificationController extends FOSRestController
         $this->getDoctrine()->getManager()->flush();
 
         $statusCode = empty($messages) ? Response::HTTP_NO_CONTENT : Response::HTTP_OK;
-        return $this->view($messages, $statusCode);
+        $context = (new Context())->addGroups(array('Public', 'Owner', 'Device'));
+        return $this->view($messages, $statusCode)->setSerializationContext($context);
     }
 
     public function getAction($id)
