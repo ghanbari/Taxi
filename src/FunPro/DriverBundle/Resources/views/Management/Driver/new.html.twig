@@ -134,6 +134,13 @@
                                         {% if form.contact.vars.errors|length %}{{ form_errors(form.contact) }}{% endif %}
                                     </span>
                                 </div>
+                                <div class="form-group form-md-line-input {% if form.avatarFile.vars.errors|length %}has-error{% elseif (form.avatarFile.vars.submitted) %}has-success{% endif %}">
+                                    {{ form_widget(form.avatarFile) }}
+                                    <label for="form_control_1">تصویر راننده</label>
+                                    <span class="help-block"><br />
+                                        {% if form.avatarFile.vars.errors|length %}{{ form_errors(form.avatarFile) }}{% endif %}
+                                    </span>
+                                </div>
                                 <div class="form-group form-md-line-input has-info">
                                     {{ form_widget(form.agency, {'attr': {'placeholder':'اژانس مورد نظر را انتخاب کنید'}}) }}
                                     <label for="form_control_1">آزانس مورد نظر را انتخاب نمایید</label>

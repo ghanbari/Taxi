@@ -10,6 +10,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class DriverType extends AbstractType
 {
@@ -37,7 +38,9 @@ class DriverType extends AbstractType
             ->add('mobile', Type\TextType::class)
             ->add('contractNumber', Type\TextType::class)
             ->add('nationalCode', Type\TextType::class)
-//            ->add('avatar')
+            ->add('avatarFile', VichImageType::class, array(
+                'required' => false,
+            ))
             ->add('contact', Type\CollectionType::class, array(
                 'entry_type' => Type\TextType::class,
                 'allow_add' => true,

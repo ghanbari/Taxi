@@ -9,6 +9,7 @@ use FOS\UserBundle\Model\User as BaseUser;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation as JS;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * User
@@ -62,6 +63,8 @@ use JMS\Serializer\Annotation as JS;
  * ### Username s are nullable, because prevent spam passenger username ###
  *
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
+ *
+ * @Vich\Uploadable()
  */
 class User extends BaseUser
 {
@@ -156,7 +159,8 @@ class User extends BaseUser
     /**
      * @var File
      *
-     * @TODO: add validations
+     * @Vich\UploadableField(fileNameProperty="avatar", mapping="user_avatar")
+     *
      * @Assert\Image(groups={"Profile"})
      */
     protected $avatarFile;
