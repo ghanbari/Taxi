@@ -4,4 +4,14 @@ FunPro\DriverBundle\Entity\Driver:
             - NotBlank: ~
         email:
             - Email:
-                groups: ["Register", "Profile"]
+                groups: ["Register", "Update"]
+        username:
+            - NotBlank:
+                groups: ['Register']
+                message: 'fos_user.username.blank'
+            - Length:
+                min: 2
+                max: 255
+                minMessage: 'fos_user.username.short'
+                maxMessage: 'fos_user.username.long'
+                groups: ['Update', 'Register']

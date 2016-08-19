@@ -42,15 +42,15 @@ class DriverController extends FOSRestController
                 break;
             case 'PUT':
                 $options['action'] = $this->generateUrl('fun_pro_admin_put_driver', array('id' => $driver->getId()));
-                $options['validation_groups'] = array('Profile', 'AddressUpdate', 'Point');
+                $options['validation_groups'] = array('Update', 'AddressUpdate', 'Point');
                 break;
             case 'DELETE':
                 $options['action'] = $this->generateUrl('fun_pro_admin_delete_driver', array('id' => $driver->getId()));
                 break;
         }
 
-//        $requestFormat = $this->get('request_stack')->getCurrentRequest()->getRequestFormat('html');
-//        $options['csrf_protection'] = $requestFormat == 'html' ?: false;
+        $requestFormat = $this->get('request_stack')->getCurrentRequest()->getRequestFormat('html');
+        $options['csrf_protection'] = $requestFormat == 'html' ?: false;
 
         $form = $this->createForm(DriverType::class, $driver, $options);
 
@@ -148,7 +148,6 @@ class DriverController extends FOSRestController
      */
     public function putAction(Request $request, $id)
     {
-        $id = intval($id);
         $driver = $request->attributes->get('driver');
         $form = $this->getForm($driver, 'PUT');
         $form->handleRequest($request);

@@ -43,7 +43,7 @@ var TableDatatablesResponsive = function () {
                 }
             },
             columns: [
-                {"defaultContent": "", name: "d.id", orderable: true, searchable: false},
+                {"defaultContent": "", name: "d.id", data: "id", orderable: true, searchable: false, className: "driverId"},
                 {name: "d.contractNumber", data: "contractNumber", orderable: true, searchable: true},
                 {name: "d.name", data: "name", orderable: true, searchable: true},
                 {name: "d.nationalCode", data: "nationalCode", orderable: true, searchable: true},
@@ -97,10 +97,15 @@ var TableDatatablesResponsive = function () {
 jQuery(document).ready(function() {
     TableDatatablesResponsive.init();
     $('#sample_2').on( 'draw.dt', function () {
+        $('.edit').on('click', function() {
+            document.location.href = Routing.generate('fun_pro_admin_edit_driver', {id: $(this).parent().find('.driverId').text()})
+        });
+
         $('td.avatar').each(function(index, item) {
             var avatar = $(item).text() ? $(item).text() : 'default_avatar.jpg';
             $(item).html('<img src="' + Routing.generate('liip_imagine_filter', {filter: 'panel_avatar_thumb', path: avatar}) + '" />');
         });
+
         $('td.carList').each(function(index, item) {
             $(item).html("<a href='"+Routing.generate('fun_pro_admin_cget_driver_car', {driverId: $(item).text()})+"'><span class='btn btn-info glyphicon glyphicon-th-list'></span></a>");
         });

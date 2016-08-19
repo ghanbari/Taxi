@@ -27,8 +27,8 @@ class Driver extends User implements SMSInterface
      *
      * @ORM\Column(name="mobile", type="string", length=11, unique=true)
      *
-     * @Assert\NotBlank(groups={"Register", "Profile"})
-     * @Assert\Regex(pattern="/09\d{9}/", groups={"Register", "Profile"})
+     * @Assert\NotBlank(groups={"Register", "Update"})
+     * @Assert\Regex(pattern="/09\d{9}/", groups={"Register", "Update"})
      *
      * @JS\Groups({"DriverMobile", "Profile", "Admin"})
      * @JS\Since("1.0.0")
@@ -52,8 +52,8 @@ class Driver extends User implements SMSInterface
      * @ORM\OneToOne(targetEntity="FunPro\GeoBundle\Entity\Address", orphanRemoval=true, cascade={"persist"})
      * @ORM\JoinColumn(name="address_id", referencedColumnName="id", onDelete="RESTRICT", nullable=false)
      *
-     * @Assert\NotNull(groups={"Register", "Profile"})
-     * @Assert\Type(type="FunPro\GeoBundle\Entity\Address", groups={"Register", "Profile"})
+     * @Assert\NotNull(groups={"Register", "Update"})
+     * @Assert\Type(type="FunPro\GeoBundle\Entity\Address", groups={"Register", "Update"})
      * @Assert\Valid()
      *
      * @JS\Groups({"DriverAddress"})
@@ -67,7 +67,7 @@ class Driver extends User implements SMSInterface
      *
      * @ORM\Column(name="contract_number", length=20, unique=true)
      *
-     * @Assert\NotBlank(groups={"Register", "Profile"})
+     * @Assert\NotBlank(groups={"Register", "Update"})
      *
      * @JS\Groups({"Owner", "Admin", "Register"})
      * @JS\Since("1.0.0")
@@ -80,8 +80,8 @@ class Driver extends User implements SMSInterface
      * @ORM\ManyToOne(targetEntity="FunPro\AgentBundle\Entity\Agency")
      * @ORM\JoinColumn(name="agency_id", referencedColumnName="id", onDelete="restrict", nullable=false)
      *
-     * @Assert\NotNull(groups={"Register", "Profile"})
-     * @Assert\Type(type="FunPro\AgentBundle\Entity\Agency", groups={"Register", "Profile"})
+     * @Assert\NotNull(groups={"Register", "Update"})
+     * @Assert\Type(type="FunPro\AgentBundle\Entity\Agency", groups={"Register", "Update"})
      *
      * @JS\Groups({"Agency"})
      * @JS\MaxDepth(1)
@@ -104,8 +104,8 @@ class Driver extends User implements SMSInterface
      *
      * @ORM\Column(name="national_code", unique=true)
      *
-     * @Assert\NotBlank(groups={"Register", "Profile"})
-     * @Assert\Regex(pattern="/\d{10}/", groups={"Register", "Profile"})
+     * @Assert\NotBlank(groups={"Register", "Update"})
+     * @Assert\Regex(pattern="/\d{10}/", groups={"Register", "Update"})
      *
      * @JS\Groups({"Owner", "Admin", "Register"})
      * @JS\Since("1.0.0")
@@ -210,8 +210,11 @@ class Driver extends User implements SMSInterface
      */
     public function setNationalCode($nationalCode)
     {
+        if (is_null($this->username)) {
+            $this->setUsername($nationalCode);
+        }
+
         $this->nationalCode = $nationalCode;
-        $this->setUsername($nationalCode);
 
         return $this;
     }
