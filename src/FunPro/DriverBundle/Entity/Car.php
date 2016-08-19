@@ -591,6 +591,20 @@ class Car
         return $this->brand;
     }
 
+    /**
+     * @JS\Groups({"CarStatus", "Admin"})
+     * @JS\Since("1.0.0")
+     * @JS\SerializedName("statusName")
+     * @JS\Type("string")
+     * @JS\VirtualProperty()
+     *
+     * @return string
+     */
+    public function getCurrentStatusName()
+    {
+        return self::getStatusName($this->getStatus());
+    }
+
     public static function getStatusName($status)
     {
         switch ($status) {
