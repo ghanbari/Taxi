@@ -231,6 +231,9 @@ class Car
      * @var string
      *
      * @ORM\Column(name="image", nullable=true)
+     *
+     * @JS\Groups({"Public", "Admin"})
+     * @JS\Since("1.0.0")
      */
     private $image;
 
