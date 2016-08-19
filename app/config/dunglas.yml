@@ -11,5 +11,7 @@ dunglas_angular_csrf:
         secure: false
         set_on:
             - { route: "api" }
+            - { host: "api.%router.request_context.host%" }
     secure:
         - { route: "api", methods: [POST, PUT, DELETE, PATCH] }
+        - { host: "api.%router.request_context.host%", methods: [POST, PUT, DELETE, PATCH] }
