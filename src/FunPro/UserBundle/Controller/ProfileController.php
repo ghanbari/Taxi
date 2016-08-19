@@ -75,7 +75,7 @@ class ProfileController extends FOSRestController
         $this->get('logger')->addInfo('update user avatar');
 
         return $this->view(
-            array('name' => $name, 'path' => $this->get('liip_imagine.cache.manager')->getBrowserPath("images/avatars/$name", 'avatar_mob_thumb')),
+            array('name' => $name, 'path' => $this->get('liip_imagine.cache.manager')->getBrowserPath("images/avatars/$name", 'mob_avatar_thumb')),
             Response::HTTP_CREATED
         );
     }

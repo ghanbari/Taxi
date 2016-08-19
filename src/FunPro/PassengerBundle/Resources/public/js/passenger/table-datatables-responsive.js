@@ -50,7 +50,7 @@ var TableDatatablesResponsive = function () {
                 {name: "p.sex", data: "sex", "defaultContent": "", orderable: true, searchable: false},
                 {name: "p.rate", data: "rate", "defaultContent": 0, orderable: true, searchable: false},
                 {name: "p.description", data: "description", "defaultContent": "", orderable: false, searchable: false},
-                {name: "p.avatar", data: "avatar_path", "defaultContent": "", orderable: false, searchable: false, className: "avatar"},
+                {name: "p.avatar", data: "avatar", "defaultContent": "", orderable: false, searchable: false, className: "avatar"},
                 //{name: "edit", "defaultContent": "<i class='btn btn-warning'>ویرایش</i>", orderable: false, searchable: false, className: "edit text-center"},
                 //{name: "delete", "defaultContent": "<i class='btn btn-danger'>حذف</i>", orderable: false, searchable: false, className: "delete text-center"},
             ],
@@ -95,7 +95,8 @@ jQuery(document).ready(function() {
     TableDatatablesResponsive.init();
     $('#sample_2').on( 'draw.dt', function () {
         $('td.avatar').each(function(index, item) {
-            $(item).html('<img src="' + Routing.generate('liip_imagine_filter', {filter: 'avatar_panel_thumb', path: $(item).text()}) + '" />');
+            var avatar = $(item).text() ? $(item).text() : 'default_avatar.jpg';
+            $(item).html('<img src="' + Routing.generate('liip_imagine_filter', {filter: 'panel_avatar_thumb', path: avatar}) + '" />');
         });
     } );
 });
