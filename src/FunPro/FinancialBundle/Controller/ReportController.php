@@ -17,6 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @package FunPro\FinancialBundle\Controller
  *
  * @Rest\RouteResource(resource="report", pluralize=false)
+ * @Rest\NamePrefix("fun_pro_financial_api_")
  */
 class ReportController extends FOSRestController
 {
