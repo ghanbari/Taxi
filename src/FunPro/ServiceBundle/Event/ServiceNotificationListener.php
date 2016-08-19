@@ -3,6 +3,7 @@
 namespace FunPro\ServiceBundle\Event;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use FunPro\DriverBundle\Entity\Driver;
 use FunPro\DriverBundle\Exception\DriverNotFoundException;
 use FunPro\EngineBundle\GCM\GCM;
 use FunPro\ServiceBundle\Entity\PropagationList;
@@ -112,24 +113,6 @@ class ServiceNotificationListener implements EventSubscriberInterface
     }
 
     /**
-     * @param User $user
-     *
-     * @return array
-     */
-    protected function getActiveDevices(User $user)
-    {
-        $devices = array();
-        /** @var Device $device */
-        foreach ($user->getDevices()->toArray() as $device) {
-            if ($device->getStatus() === Device::STATUS_ACTIVE) {
-                $devices[] = $device;
-            }
-        }
-
-        return $devices;
-    }
-
-    /**
      * Send notification to given drivers when service is requested
      *
      * @param ServiceEvent $event
@@ -197,7 +180,12 @@ class ServiceNotificationListener implements EventSubscriberInterface
             array_map(array($this, 'getEntitiesIds'), $drivers)
         );
 
-        $devices = array_map(array($this, 'getActiveDevices'), $drivers);
+        $devices = array_map(
+            function (Driver $driver) {
+                return $driver->getDevices()->toArray();
+            },
+            $drivers
+        );
         if ($devices) {
             $devices = call_user_func_array('array_merge', $devices);
 

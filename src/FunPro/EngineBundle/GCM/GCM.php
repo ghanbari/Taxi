@@ -121,11 +121,14 @@ class GCM
                 /** @var Message[] $messages */
                 $messages = array();
 
+                /** @var Device $device */
                 foreach ($partialDevices as $device) {
                     $persistableMessage = clone $rawMessage;
                     $persistableMessage->setDevice($device);
                     $this->doctrine->getManager()->persist($persistableMessage);
-                    $messages[] = $persistableMessage;
+                    if ($device->getStatus() === Device::STATUS_ACTIVE) {
+                        $messages[] = $persistableMessage;
+                    }
                 }
 
                 $this->sendRequest($messages, $rawMessage);
