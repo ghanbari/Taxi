@@ -18,7 +18,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="driver")
  * @ORM\Entity(repositoryClass="FunPro\DriverBundle\Repository\DriverRepository")
  *
- * @UniqueEntity("mobile", groups={"Register"})
+ * @UniqueEntity("mobile", groups={"Register", "Update"})
+ * @UniqueEntity("contractNumber", groups={"Register", "Update"})
+ * @UniqueEntity("nationalCode", groups={"Register", "Update"})
  */
 class Driver extends User implements SMSInterface
 {
