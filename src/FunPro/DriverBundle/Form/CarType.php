@@ -33,7 +33,9 @@ class CarType extends AbstractType
                 'scale' => 2,
             ))
             ->add('description', Type\TextareaType::class, array('required' => false))
-            ->add('imageFile', Type\FileType::class)
+            ->add('imageFile', Type\FileType::class, array(
+                'required' => false,
+            ))
         ;
     }
     
