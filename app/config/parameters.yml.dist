@@ -39,6 +39,7 @@ parameters:
     gcm.ttl.service_ready: 300
     gcm.ttl.service_start: 600
     gcm.ttl.service_finish: 1000
+    gcm.enabled: true
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt

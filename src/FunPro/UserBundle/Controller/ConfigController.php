@@ -45,6 +45,7 @@ class ConfigController extends FOSRestController
             'gcm.ttl.service_start' => $this->getParameter('gcm.ttl.service_start'),
             'gcm.ttl.service_finish' => $this->getParameter('gcm.ttl.service_finish'),
             'gcm.ttl.service_cancel' => $this->getParameter('gcm.ttl.service_cancel'),
+            'gcm.enabled' => $this->getParameter('gcm.enabled'),
             'login.max_failure_count' => $this->getParameter('login.max_failure_count'),
             'login.on_failure_lock_for' => $this->getParameter('login.on_failure_lock_for'),
             'register.max_token_request' => $this->getParameter('register.max_token_request'),
