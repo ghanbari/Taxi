@@ -33,12 +33,12 @@ parameters:
     nik_sms.from: ''
 
     gcm.api_key: ''
-    gcm.ttl.service_request: 15
-    gcm.ttl.service_accept: 15
-    gcm.ttl.service_ready: 15
-    gcm.ttl.service_start: 15
-    gcm.ttl.service_finish: 15
-    gcm.ttl.service_cancel: 15
+    gcm.ttl.service_request: 300
+    gcm.ttl.service_cancel: 600
+    gcm.ttl.service_accept: 300
+    gcm.ttl.service_ready: 300
+    gcm.ttl.service_start: 600
+    gcm.ttl.service_finish: 1000
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
