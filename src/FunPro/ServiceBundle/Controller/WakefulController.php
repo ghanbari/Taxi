@@ -49,6 +49,7 @@ class WakefulController extends FOSRestController
      *              "When driver's car is not defined(code: 1)",
      *              "When car's status is not sleep(code: 2)",
      *              "When car is in queue(code: 3)",
+     *              "Coordinate is blank or zero(code: 4)",
      *          },
      *          403= {
      *              "when you are not a driver",
@@ -69,6 +70,18 @@ class WakefulController extends FOSRestController
         $manager = $this->getDoctrine()->getManager();
         $logger = $this->get('logger');
         $translator = $this->get('translator');
+        $fetcher = $this->get('fos_rest.request.param_fetcher');
+        $lat = $fetcher->get('latitude', true);
+        $lon = $fetcher->get('longitude', true);
+
+        if (empty($Lon) or empty($lat)) {
+            $this->get('logger')->addWarning('coordinate is null');
+            $error = array(
+                'code' => 4,
+                'message' => $this->get('translator')->trans('coordinate.is.null'),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
 
         $driver = $this->getUser();
         $car = $manager->getRepository('FunProDriverBundle:Car')
@@ -91,10 +104,6 @@ class WakefulController extends FOSRestController
             );
             return $this->view($error, Response::HTTP_BAD_REQUEST);
         }
-
-        $fetcher = $this->get('fos_rest.request.param_fetcher');
-        $lat = $fetcher->get('latitude', true);
-        $lon = $fetcher->get('longitude', true);
 
         $wakeful = new Wakeful($car, new Point($lon, $lat));
 
@@ -132,6 +141,7 @@ class WakefulController extends FOSRestController
      *          400= {
      *              "When driver's car is not defined(code: 1)",
      *              "When car's status is sleep(code: 2)",
+     *              "Coordinate is blank or zero(code: 3)",
      *          },
      *          404="If you aren't in queue(code: 1)",
      *          403= {
@@ -154,6 +164,18 @@ class WakefulController extends FOSRestController
         $logger = $this->get('logger');
         $translator = $this->get('translator');
         $serializer = $this->get('jms_serializer');
+        $fetcher = $this->get('fos_rest.request.param_fetcher');
+        $lat = $fetcher->get('latitude', true);
+        $lon = $fetcher->get('longitude', true);
+
+        if (empty($Lon) or empty($lat)) {
+            $this->get('logger')->addWarning('coordinate is null');
+            $error = array(
+                'code' => 3,
+                'message' => $this->get('translator')->trans('coordinate.is.null'),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
 
         $driver = $this->getUser();
         $car = $manager->getRepository('FunProDriverBundle:Car')
@@ -181,9 +203,6 @@ class WakefulController extends FOSRestController
             ->findOneByCar($car);
 
         if (!is_null($wakeful)) {
-            $fetcher = $this->get('fos_rest.request.param_fetcher');
-            $lat = $fetcher->get('latitude', true);
-            $lon = $fetcher->get('longitude', true);
             $currentLocation = new Point($lon, $lat);
             $previousLocation = $wakeful->getPoint();
 
@@ -363,6 +382,7 @@ class WakefulController extends FOSRestController
      *      statusCodes={
      *          200="When success",
      *          204="When no data is exists",
+     *          400="Coordinate is blank or zero(code: 1)",
      *          403="when you are not login",
      *      }
      * )
@@ -382,6 +402,15 @@ class WakefulController extends FOSRestController
         $lat = $fetcher->get('latitude', true);
         $lon = $fetcher->get('longitude', true);
         $limit = intval($fetcher->get('limit', true));
+
+        if (empty($Lon) or empty($lat)) {
+            $this->get('logger')->addWarning('coordinate is null');
+            $error = array(
+                'code' => 1,
+                'message' => $this->get('translator')->trans('coordinate.is.null'),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
 
         if ($this->getUser() and $this->getUser() instanceof Driver) {
             $disappear = $this->getUser();
