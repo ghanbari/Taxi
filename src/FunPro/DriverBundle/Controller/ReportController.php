@@ -152,8 +152,12 @@ class ReportController extends FOSRestController
         $till = new \DateTime($fetcher->get('till'));
         $data = array();
 
-        $data['distance'] = $this->getDoctrine()->getRepository('FunProDriverBundle:CarLog')
-            ->getDistance($this->getUser(), $from, $till);
+        try {
+            $data['distance'] = $this->getDoctrine()->getRepository('FunProDriverBundle:CarLog')
+                ->getDistance($this->getUser(), $from, $till);
+        } catch (NoResultException $e) {
+            $data['distance'] = 0;
+        }
 
         $data['service_time'] = $this->getDoctrine()->getRepository('FunProServiceBundle:ServiceLog')
             ->getServiceTime($this->getUser(), $from, $till);
