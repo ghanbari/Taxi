@@ -41,7 +41,13 @@ class TicketType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'FunPro\TicketBundle\Entity\Ticket'
+            'data_class' => 'FunPro\TicketBundle\Entity\Ticket',
+            'allow_extra_fields' => true,
         ));
+    }
+
+    public function getBlockPrefix()
+    {
+        return '';
     }
 }

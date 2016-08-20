@@ -70,6 +70,8 @@ class TicketController extends FOSRestController
      *
      * @Security("has_role('ROLE_PASSENGER')")
      *
+     * @Rest\RequestParam(name="data", nullable=true, strict=true)
+     *
      * @param Request $request
      *
      * @return \FOS\RestBundle\View\View
@@ -79,8 +81,12 @@ class TicketController extends FOSRestController
         $ticket = new Ticket();
         $form = $this->getForm($ticket);
         $form->handleRequest($request);
+        $fetcher = $this->get('fos_rest.request.param_fetcher');
 
         if ($form->isValid()) {
+            if ($data = $fetcher->get('data')) {
+                $ticket->setData(json_decode($data));
+            }
             $this->getDoctrine()->getManager()->persist($ticket);
             $this->getDoctrine()->getManager()->flush();
 

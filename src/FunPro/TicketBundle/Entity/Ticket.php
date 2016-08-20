@@ -198,10 +198,21 @@ class Ticket
     private $updatedAt;
 
     /**
+     * @var array
+     *
+     * @ORM\Column(name="data", type="array", nullable=true)
+     *
+     * @JS\Groups({"Owner", "Admin"})
+     * @JS\Since("1.0.0")
+     */
+    private $data;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
+        $this->data = array();
         $this->children = new ArrayCollection();
     }
 
@@ -562,5 +573,24 @@ class Ticket
     public function getChildren()
     {
         return $this->children;
+    }
+
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return $this
+     */
+    public function setData(array $data)
+    {
+        $this->data = $data;
+        return $this;
     }
 }
