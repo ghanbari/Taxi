@@ -1,10 +1,29 @@
 FunPro\DriverBundle\Entity\Driver:
+    constraints:
+        - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity:
+            fields: usernameCanonical
+            errorPath: username
+            message: 'fos_user.username.already_used'
+            groups: ["Register", "Update"]
+        - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity:
+             fields: emailCanonical
+             errorPath: email
+             message: 'fos_user.email.already_used'
+             groups: ["Register", "Update"]
+
     properties:
         name:
             - NotBlank: ~
         email:
             - Email:
                 groups: ["Register", "Update"]
+                message: 'fos_user.email.invalid'
+            - Length:
+                min: 2
+                max: 254
+                minMessage: 'fos_user.email.short'
+                maxMessage: 'fos_user.email.long'
+                groups: ['Update', 'Register']
         username:
             - NotBlank:
                 groups: ['Register']
@@ -15,3 +34,12 @@ FunPro\DriverBundle\Entity\Driver:
                 minMessage: 'fos_user.username.short'
                 maxMessage: 'fos_user.username.long'
                 groups: ['Update', 'Register']
+        plainPassword:
+            - NotBlank:
+                message: 'fos_user.password.blank'
+                groups: ['ChangePassword', 'ResetPassword', 'Register']
+            - Length:
+                min: 2
+                max: 4096
+                minMessage: 'fos_user.password.short'
+                groups: ['Update', 'Register', 'ResetPassword', 'ChangePassword']
