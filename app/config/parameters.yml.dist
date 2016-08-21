@@ -20,9 +20,9 @@ parameters:
     api.version.supported_till:
         "1.0.0": "2016-05-05"
 
-    android.passenger.package_name: 'ir.vdevelop.passenger'
-    android.driver.package_name: 'ir.vdevelop.driver'
-    android.download.url: 'http://vdeveloper.ir/takc/v1.apk'
+    app.passenger.package_name: 'ir.vdevelop.passenger'
+    app.driver.package_name: 'ir.vdevelop.driver'
+    app.android.download.url: 'http://vdeveloper.ir/takc/v1.apk'
 
     sms_adapter:  buzz
     sms_provider: nik_sms
