@@ -60,9 +60,11 @@ class ProfileController extends FOSRestController
 
         $data['service_time'] = $this->getDoctrine()->getRepository('FunProServiceBundle:ServiceLog')
             ->getServiceTime($this->getUser(), $from, $till);
+        $data['service_time'] = gmdate('H:i', $data['service_time']);
 
         $data['online_time'] = $this->getDoctrine()->getRepository('FunProDriverBundle:CarLog')
             ->getOnlineTime($this->getUser(), $from, $till);
+        $data['online_time'] = gmdate('H:i', $data['online_time']);
 
         $car = $this->getDoctrine()->getRepository('FunProDriverBundle:Car')
             ->findOneBy(array('driver' => $driver, 'current' => true));
