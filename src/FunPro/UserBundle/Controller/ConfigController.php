@@ -39,7 +39,7 @@ class ConfigController extends FOSRestController
             'version.current' => $this->getParameter('api.version.current'),
             'version.supported' => $this->getParameter('api.version.available'),
             'version.supported.till' => $this->getParameter('api.version.supported_till'),
-            'app.download.url' => $this->getParameter('app.download.url'),
+            'android.download.url' => $this->getParameter('app.download.url'),
             'gcm.ttl.service_request' => $this->getParameter('gcm.ttl.service_request'),
             'gcm.ttl.service_accept' => $this->getParameter('gcm.ttl.service_accept'),
             'gcm.ttl.service_ready' => $this->getParameter('gcm.ttl.service_ready'),
