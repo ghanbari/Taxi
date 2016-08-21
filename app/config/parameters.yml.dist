@@ -22,6 +22,7 @@ parameters:
 
     app.passenger.package_name: 'ir.vdevelop.passenger'
     app.driver.package_name: 'ir.vdevelop.driver'
+    app.download.url: 'http://vdeveloper.ir/takc/v1.apk'
 
     sms_adapter:  buzz
     sms_provider: nik_sms
