@@ -55,6 +55,8 @@ fos_rest:
         enabled: true
         codes:
             'FunPro\DriverBundle\Exception\CarStatusException': 400
+            'FunPro\UserBundle\Exception\DeviceNotFoundException': 400
         messages:
             'Symfony\Component\HttpKernel\Exception\NotFoundHttpException': true
             'FunPro\DriverBundle\Exception\CarStatusException': true
+            'FunPro\UserBundle\Exception\DeviceNotFoundException': true
