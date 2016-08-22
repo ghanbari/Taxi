@@ -20,6 +20,9 @@ class DeviceRepository extends EntityRepository
             ->where($queryBuilder->expr()->eq('d.owner', ':owner'))
             ->setParameter('owner', $user)
             ->getQuery()
-            ->execute();
+            ->setHint(
+                \Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER,
+                'Gedmo\SoftDeleteable\Query\TreeWalker\SoftDeleteableWalker'
+            )->execute();
     }
 }
