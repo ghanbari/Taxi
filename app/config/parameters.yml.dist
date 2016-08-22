@@ -54,8 +54,8 @@ parameters:
     register.max_token_request: 10
     register.reset_token_request_after_second: 86400
 
-    device.gps.retry: 15
-    device.notification.retry: 8
+    device.gps.retry: 15000
+    device.notification.retry: 8000
 
     # visible radius for driver is differ from passenger
     service.visible_radius: 7000 #meter
