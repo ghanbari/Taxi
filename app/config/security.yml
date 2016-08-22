@@ -51,7 +51,7 @@ security:
             guard:
                 authenticators:
                     - fun_pro_engine.device_token_authenticator
-            stateless: true
+            stateless: false #csrf
             anonymous: false
         main:
             pattern: ^/
