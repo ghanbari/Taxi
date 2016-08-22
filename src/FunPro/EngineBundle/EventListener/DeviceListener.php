@@ -11,8 +11,10 @@ use FunPro\UserBundle\Exception\DeviceNotFoundException;
 use FunPro\UserBundle\Exception\MultiDeviceException;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -59,6 +61,9 @@ class DeviceListener implements EventSubscriberInterface
             KernelEvents::REQUEST => array(
                 array('onKernelRequest', 7),
             ),
+            KernelEvents::RESPONSE => array(
+                array('onKernelResponse', 7),
+            ),
         );
     }
 
@@ -97,5 +102,17 @@ class DeviceListener implements EventSubscriberInterface
             );
             throw new MultiDeviceException;
         }
+    }
+
+    public function onKernelResponse(FilterResponseEvent $event)
+    {
+        if ($event->getRequestType() === HttpKernelInterface::SUB_REQUEST
+            or !$event->getRequest()->attributes->has('currentDevice')
+        ) {
+            return;
+        }
+
+        $response = $event->getResponse();
+        $response->headers->set('X-Device-Status', $event->getRequest()->attributes->get('currentDevice'));
     }
 }
