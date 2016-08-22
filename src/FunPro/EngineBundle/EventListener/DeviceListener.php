@@ -5,7 +5,9 @@ namespace FunPro\EngineBundle\EventListener;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use FunPro\DriverBundle\Entity\Driver;
 use FunPro\PassengerBundle\Entity\Passenger;
+use FunPro\UserBundle\Entity\Device;
 use FunPro\UserBundle\Exception\DeviceNotFoundException;
+use FunPro\UserBundle\Exception\MultiDeviceException;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
@@ -67,34 +69,31 @@ class DeviceListener implements EventSubscriberInterface
         $request = $event->getRequest();
         $token = $this->storage->getToken();
 
-        if ($token and $token->isAuthenticated()
-            and ($token->getUser() instanceof Driver or $token->getUser() instanceof Passenger)
-        ) {
-            $this->logger->addInfo('check for device information');
-            if (!$request->headers->has('X-DEVICE-ID')) {
-                $this->logger->addInfo('X-DEVICE-ID header is not exists');
-                throw new BadRequestHttpException('You must send device\'s id as X-DEVICE-ID header');
-            }
+        $user = $token->getUser();
 
-            $deviceId = $request->headers->get('X-DEVICE-ID');
-            $device = $this->registry->getRepository('FunProUserBundle:Device')
-                ->findOneByDeviceIdentifier($deviceId);
+        if (!$request->headers->has('X-AUTH-TOKEN')) {
+            return;
+        }
 
-            if (!$device) {
-                $this->logger->addError('device is not exists', array('deviceId' => $deviceId));
-                throw new DeviceNotFoundException('device is not exists');
-            }
+        $this->logger->addInfo('check for device information');
 
-            if ($device->getOwner() !== $token->getUser()) {
-                $this->logger->addError(
-                    'you are not owner of device',
-                    array(
-                        'deviceId' => $deviceId,
-                        'userId' => $token->getUser()->getId(),
-                    )
-                );
-                throw new AccessDeniedException('You are not owner of device');
-            }
+        /** @var Device $device */
+        $device = $this->registry->getRepository('FunProUserBundle:Device')->findOneBy(array(
+            'owner' => $user,
+            'apiKey' => $request->headers->get('X-AUTH-TOKEN'),
+        ));
+
+        $request->attributes->set('currentDevice', $device);
+
+        if (($user->getDevices()->count() > 1) and !$user->isMultiDeviceAllowed()) {
+            $this->logger->addError(
+                'user can not have multi device',
+                array(
+                    'count' => $user->getDevices()->count(),
+                    'userId' => $user->getId(),
+                )
+            );
+            throw new MultiDeviceException;
         }
     }
 }

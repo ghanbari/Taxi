@@ -3,20 +3,17 @@
 namespace FunPro\UserBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JS;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
- * @ORM\Entity
- * @ORM\Table(
- *      name="device",
- *      uniqueConstraints={@ORM\UniqueConstraint(name="device_identifier_UNIQUE", columns={"device_identifier", "app_name"})}
- * )
+ * @ORM\Entity(repositoryClass="FunPro\UserBundle\Repository\DeviceRepository")
+ * @ORM\Table(name="device")
  * @ORM\HasLifecycleCallbacks()
  *
- * @UniqueEntity(fields={"deviceIdentifier", "appName"})
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
 class Device
 {
@@ -195,6 +192,13 @@ class Device
      * @JS\Since("1.0.0")
      */
     private $updatedAt;
+
+    /**
+     * @var \Datetime
+     *
+     * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
+     */
+    private $deletedAt;
     
     /**
      * @ORM\OneToMany(targetEntity="FunPro\UserBundle\Entity\Message", mappedBy="device")
@@ -573,6 +577,25 @@ class Device
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * @return \Datetime
+     */
+    public function getDeletedAt()
+    {
+        return $this->deletedAt;
+    }
+
+    /**
+     * @param \Datetime $deletedAt
+     *
+     * @return $this
+     */
+    public function setDeletedAt(\Datetime $deletedAt)
+    {
+        $this->deletedAt = $deletedAt;
+        return $this;
     }
 
     /**

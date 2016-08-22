@@ -4,17 +4,15 @@ namespace FunPro\EngineBundle\Authentication;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use FunPro\DriverBundle\Entity\Driver;
-use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\UserBundle\Entity\Device;
+use FunPro\UserBundle\Entity\User;
 use FunPro\UserBundle\Exception\DeviceNotFoundException;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Http\Authentication\DefaultAuthenticationSuccessHandler;
 use Symfony\Component\Security\Http\HttpUtils;
 
@@ -58,55 +56,70 @@ class SuccessHandler extends DefaultAuthenticationSuccessHandler
         $this->registry = $registry;
     }
 
-
     /**
      * {@inheritDoc}
      */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token)
     {
-        if ($token->getUser() instanceof Driver or $token->getUser() instanceof Passenger) {
-            $this->logger->addInfo('check for device information');
-            if (!$request->headers->has('X-DEVICE-ID')) {
-                $this->logger->addInfo('X-DEVICE-ID header is not exists');
-                throw new BadRequestHttpException('You must send device\'s id as X-DEVICE-ID header');
-            }
+        /** @var User $user */
+        $user = $token->getUser();
+//        if ($user instanceof Driver) {
+//            $this->logger->addInfo('check for device information');
+//
+//            if ($user->getDevices()->count() === 0) {
+//                $this->logger->addInfo('skip check device, because user have not any device');
+//                $response = $this->getResponse($request, $token);
+//                $response->headers->add(array('X-Device-Status' => 'NotFound'));
+//                return $response;
+//            }
+//
+//            if (!$request->headers->has('X-AUTH-TOKEN')) {
+//                $this->logger->addInfo('X-AUTH-TOKEN header is not exists, remove all old devices');
+//                $this->registry->getRepository('FunProUserBundle:Device')->removeUserDevices($user);
+//                $this->registry->getManager()->flush();
+//                $response = $this->getResponse($request, $token);
+//                $response->headers->add(array('X-Device-Status' => 'Reset'));
+//                return $response;
+//            }
+//
+//            $apiKey = $request->headers->get('X-AUTH-TOKEN');
+//            /** @var Device $device */
+//            $device = $this->registry->getRepository('FunProUserBundle:Device')->findOneBy(array(
+//                'owner' => $user,
+//                'apiKey' => $apiKey,
+//            ));
+//
+//            if (!$device) {
+//                $this->logger->addError(
+//                    'device is not exists',
+//                    array(
+//                        'apiKey' => substr($apiKey, 0, 20),
+//                        'userId' => $user->getId(),
+//                    )
+//                );
+//                throw new DeviceNotFoundException('device is not exists');
+//            } else {
+//                $device->setLastLoginAt(new \DateTime());
+//                $this->registry->getManager()->flush();
+//                $response = $this->getResponse($request, $token);
+//                $response->headers->add(array(
+//                    'X-Device-Status' => $device->getStatus() === Device::STATUS_ACTIVE ? 'Ok' : 'InActive',
+//                ));
+//                return $response;
+//            }
+//        }
 
-            $deviceId = $request->headers->get('X-DEVICE-ID');
-            /** @var Device $device */
-            $device = $this->registry->getRepository('FunProUserBundle:Device')
-                ->findOneByDeviceIdentifier($deviceId);
+        return $this->getResponse($request, $token);
+    }
 
-            if (!$device) {
-                $this->logger->addError('device is not exists', array('deviceId' => $deviceId));
-                throw new DeviceNotFoundException('device is not exists');
-            }
-
-            if ($device->getOwner() !== $token->getUser()) {
-                $this->logger->addError(
-                    'you are not owner of device',
-                    array(
-                        'deviceId' => $deviceId,
-                        'userId' => $token->getUser()->getId(),
-                    )
-                );
-
-                if ($request->isXmlHttpRequest()) {
-                    return new JsonResponse(
-                        array(
-                            'code' => 100,
-                            'message' => 'You are not owner of device'
-                        ),
-                        JsonResponse::HTTP_BAD_REQUEST
-                    );
-                } else {
-                    throw new AccessDeniedException('You are not owner of device');
-                }
-            } else {
-                $device->setLastLoginAt(new \DateTime());
-                $this->registry->getManager()->flush();
-            }
-        }
-
+    /**
+     * @param Request        $request
+     * @param TokenInterface $token
+     *
+     * @return JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse|Response
+     */
+    public function getResponse(Request $request, TokenInterface $token)
+    {
         if ($request->isXmlHttpRequest()) {
             $response = new JsonResponse(array('code' => Response::HTTP_OK, 'username' => $token->getUsername()));
         } else {
