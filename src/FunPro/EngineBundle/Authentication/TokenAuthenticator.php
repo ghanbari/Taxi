@@ -12,12 +12,7 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Doctrine\ORM\EntityManager;
 
-/**
- * Class DeviceTokenAuthenticator
- *
- * @package FunPro\EngineBundle\Authentication
- */
-class DeviceTokenAuthenticator extends AbstractGuardAuthenticator
+class TokenAuthenticator extends AbstractGuardAuthenticator
 {
     /**
      * @var Device
@@ -27,14 +22,11 @@ class DeviceTokenAuthenticator extends AbstractGuardAuthenticator
     /**
      * @var EntityManager
      */
-    private $manager;
+    private $em;
 
-    /**
-     * @param EntityManager $manager
-     */
-    public function __construct(EntityManager $manager)
+    public function __construct(EntityManager $em)
     {
-        $this->manager = $manager;
+        $this->em = $em;
     }
 
     /**
@@ -52,54 +44,36 @@ class DeviceTokenAuthenticator extends AbstractGuardAuthenticator
         );
     }
 
-    /**
-     * @param mixed                 $credentials
-     * @param UserProviderInterface $userProvider
-     *
-     * @return \FunPro\UserBundle\Entity\User|null|UserInterface
-     */
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
         $apiKey = $credentials['token'];
 
-        $this->device = $this->manager->getRepository('FunProUserBundle:Device')->findOneByApiKey($apiKey);
-        $user = $this->device->getOwner();
+        $this->device = $this->em->getRepository('FunProUserBundle:Device')->findOneByApiKey($apiKey);
+
+        if (is_null($this->device)) {
+            $user = $this->em->getRepository('FunProUserBundle:User')->findOneByApiKey($apiKey);
+        } else {
+            $user = $this->device->getOwner();
+        }
 
         return $user;
     }
 
-    /**
-     * @param mixed         $credentials
-     * @param UserInterface $user
-     *
-     * @return bool
-     */
     public function checkCredentials($credentials, UserInterface $user)
     {
         return true;
     }
 
-    /**
-     * @param Request        $request
-     * @param TokenInterface $token
-     * @param string         $providerKey
-     *
-     * @return null|\Symfony\Component\HttpFoundation\Response
-     */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
-        $this->device->setLastLoginAt(new \DateTime());
-        $this->manager->flush();
+        if (!is_null($this->device)) {
+            $this->device->setLastLoginAt(new \DateTime());
+            $this->em->flush();
+        }
 
         return null;
     }
 
-    /**
-     * @param Request                 $request
-     * @param AuthenticationException $exception
-     *
-     * @return null|JsonResponse|\Symfony\Component\HttpFoundation\Response
-     */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
         $data = array(
@@ -111,11 +85,6 @@ class DeviceTokenAuthenticator extends AbstractGuardAuthenticator
 
     /**
      * Called when authentication is needed, but it's not sent
-     *
-     * @param Request                 $request
-     * @param AuthenticationException $authException
-     *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function start(Request $request, AuthenticationException $authException = null)
     {
@@ -126,9 +95,6 @@ class DeviceTokenAuthenticator extends AbstractGuardAuthenticator
         return new JsonResponse($data, 401);
     }
 
-    /**
-     * @return bool
-     */
     public function supportsRememberMe()
     {
         return false;

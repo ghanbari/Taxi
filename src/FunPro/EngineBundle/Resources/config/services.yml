@@ -42,12 +42,8 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
-    fun_pro_engine.user_token_authenticator:
-        class: FunPro\EngineBundle\Authentication\UserTokenAuthenticator
-        arguments: ['@doctrine.orm.entity_manager']
-
-    fun_pro_engine.device_token_authenticator:
-        class: FunPro\EngineBundle\Authentication\DeviceTokenAuthenticator
+    fun_pro_engine.token_authenticator:
+        class: FunPro\EngineBundle\Authentication\TokenAuthenticator
         arguments: ['@doctrine.orm.entity_manager']
 
     fun_pro_engine.device_checker:
