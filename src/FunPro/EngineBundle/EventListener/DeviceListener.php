@@ -6,6 +6,7 @@ use Doctrine\Bundle\DoctrineBundle\Registry;
 use FunPro\DriverBundle\Entity\Driver;
 use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\UserBundle\Entity\Device;
+use FunPro\UserBundle\Entity\User;
 use FunPro\UserBundle\Exception\DeviceNotFoundException;
 use FunPro\UserBundle\Exception\MultiDeviceException;
 use Symfony\Bridge\Monolog\Logger;
@@ -69,13 +70,14 @@ class DeviceListener implements EventSubscriberInterface
         $request = $event->getRequest();
         $token = $this->storage->getToken();
 
-        $user = $token->getUser();
-
         if (!$request->headers->has('X-AUTH-TOKEN')) {
             return;
         }
 
         $this->logger->addInfo('check for device information');
+
+        /** @var User $user */
+        $user = $token->getUser();
 
         /** @var Device $device */
         $device = $this->registry->getRepository('FunProUserBundle:Device')->findOneBy(array(
