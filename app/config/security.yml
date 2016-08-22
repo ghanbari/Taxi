@@ -33,7 +33,7 @@ security:
                 path: fun_pro_admin_logout
                 target: fun_pro_admin_dashboard
         api_create_device:
-            pattern: ^/(doc|passenger$|passenger/confirm|config/global|device$)
+            pattern: ^/(doc|passenger$|passenger/confirm|config/global|device$/login_check)
             host: api.%router.request_context.host%
             http_basic:
                 provider: fos_userbundle
