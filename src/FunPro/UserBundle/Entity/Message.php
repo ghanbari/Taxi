@@ -61,7 +61,7 @@ class Message
      *
      * FIXME: must use softdelete for this entity
      * @ORM\ManyToOne(targetEntity="FunPro\UserBundle\Entity\Device", inversedBy="messages")
-     * @ORM\JoinColumn(name="device_id", referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="device_id", referencedColumnName="id")
      *
      * @JS\Groups({"Device"})
      * @JS\Type(name="FunPro\UserBundle\Entity\Device")
