@@ -74,7 +74,7 @@ class WakefulController extends FOSRestController
         $lat = $fetcher->get('latitude', true);
         $lon = $fetcher->get('longitude', true);
 
-        if (empty($Lon) or empty($lat)) {
+        if (empty($lon) or empty($lat)) {
             $this->get('logger')->addWarning('coordinate is null');
             $error = array(
                 'code' => 4,
@@ -168,7 +168,7 @@ class WakefulController extends FOSRestController
         $lat = $fetcher->get('latitude', true);
         $lon = $fetcher->get('longitude', true);
 
-        if (empty($Lon) or empty($lat)) {
+        if (empty($lon) or empty($lat)) {
             $this->get('logger')->addWarning('coordinate is null');
             $error = array(
                 'code' => 3,
@@ -403,7 +403,7 @@ class WakefulController extends FOSRestController
         $lon = $fetcher->get('longitude', true);
         $limit = intval($fetcher->get('limit', true));
 
-        if (empty($Lon) or empty($lat)) {
+        if (empty($lon) or empty($lat)) {
             $this->get('logger')->addWarning('coordinate is null');
             $error = array(
                 'code' => 1,
