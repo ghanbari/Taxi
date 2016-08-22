@@ -242,6 +242,36 @@ class Device
     private $lastLoginAt;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="play_service_version", length=100, nullable=true)
+     *
+     * @JS\Groups({"Owner", "Admin"})
+     * @JS\Since("1.0.0")
+     */
+    private $playServiceVersion;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="device_date_time", type="string", nullable=true)
+     *
+     * @JS\Groups({"Owner", "Admin"})
+     * @JS\Since("1.0.0")
+     */
+    private $deviceDateTime;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="device_timezone", length=50, nullable=true)
+     *
+     * @JS\Groups({"Owner", "Admin"})
+     * @JS\Since("1.0.0")
+     */
+    private $deviceTimezone;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -691,5 +721,62 @@ class Device
     public function setLastLoginAt($lastLoginAt)
     {
         $this->lastLoginAt = $lastLoginAt;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDeviceDateTime()
+    {
+        return $this->deviceDateTime;
+    }
+
+    /**
+     * @param string $deviceDateTime
+     *
+     * @return $this
+     */
+    public function setDeviceDateTime($deviceDateTime)
+    {
+        $this->deviceDateTime = $deviceDateTime;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDeviceTimezone()
+    {
+        return $this->deviceTimezone;
+    }
+
+    /**
+     * @param string $deviceTimezone
+     *
+     * @return $this
+     */
+    public function setDeviceTimezone($deviceTimezone)
+    {
+        $this->deviceTimezone = $deviceTimezone;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPlayServiceVersion()
+    {
+        return $this->playServiceVersion;
+    }
+
+    /**
+     * @param string $playServiceVersion
+     *
+     * @return $this
+     */
+    public function setPlayServiceVersion($playServiceVersion)
+    {
+        $this->playServiceVersion = $playServiceVersion;
+        return $this;
     }
 }

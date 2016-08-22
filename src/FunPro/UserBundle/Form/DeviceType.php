@@ -24,6 +24,9 @@ class DeviceType extends AbstractType
             ->add('deviceVersion', Type\TextType::class)
             ->add('appVersion', Type\TextType::class)
             ->add('appName', Type\TextType::class)
+            ->add('playServiceVersion', Type\TextType::class)
+            ->add('deviceDateTime', Type\TextType::class)
+            ->add('deviceTimezone', Type\TextType::class)
         ;
     }
     
