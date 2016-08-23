@@ -123,6 +123,7 @@ class ServiceLog
     public function setAtTime()
     {
         $this->atTime = new \DateTime();
+        $this->service->setStatus($this->status);
     }
 
     /**
