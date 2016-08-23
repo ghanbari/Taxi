@@ -107,10 +107,11 @@ class DeviceTokenAuthenticator extends AbstractGuardAuthenticator
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
         $data = array(
-            'message' => strtr($exception->getMessageKey(), $exception->getMessageData())
+            'message' => 'token expired',
+            'code' => 498,
         );
 
-        return new JsonResponse($data, 403);
+        return new JsonResponse($data, 401);
     }
 
     /**

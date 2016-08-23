@@ -122,11 +122,7 @@ class UserTokenAuthenticator extends AbstractGuardAuthenticator
      */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
-        $data = array(
-            'message' => strtr($exception->getMessageKey(), $exception->getMessageData())
-        );
-
-        return new JsonResponse($data, 403);
+        return;
     }
 
     /**
