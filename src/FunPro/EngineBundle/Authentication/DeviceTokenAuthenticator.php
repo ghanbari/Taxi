@@ -111,7 +111,8 @@ class DeviceTokenAuthenticator extends AbstractGuardAuthenticator
             'code' => 498,
         );
 
-        return new JsonResponse($data, 401);
+        #we can not handle 401 response in volley
+        return new JsonResponse($data, 498);
     }
 
     /**

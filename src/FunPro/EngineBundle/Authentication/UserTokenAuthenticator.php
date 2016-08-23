@@ -6,6 +6,7 @@ use FunPro\UserBundle\Entity\User;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
@@ -59,7 +60,9 @@ class UserTokenAuthenticator extends AbstractGuardAuthenticator
      */
     public function getCredentials(Request $request)
     {
-        if ($this->storage->getToken() and $this->storage->getToken()->isAuthenticated()) {
+        if ($this->storage->getToken() and $this->storage->getToken()->isAuthenticated()
+            and !$this->storage->getToken() instanceof AnonymousToken
+        ) {
             $this->logger->addDebug('user is authenticated, cancel guard');
             return;
         }
