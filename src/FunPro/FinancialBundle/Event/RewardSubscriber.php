@@ -6,7 +6,6 @@ use Doctrine\Bundle\DoctrineBundle\Registry;
 use FunPro\FinancialBundle\Entity\Transaction;
 use FunPro\FinancialBundle\Exception\InvalidTransactionException;
 use FunPro\FinancialBundle\FinancialEvents;
-use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\UserBundle\Event\RegisterEvent;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;

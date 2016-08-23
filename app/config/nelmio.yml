@@ -17,7 +17,7 @@ nelmio_api_doc:
             method:           accept_header
             default_format:   json
         authentication:
-            delivery:             http
-            type:                 basic
-            custom_endpoint:      false
+            delivery:           header
+            name:               X-AUTH-TOKEN
+            custom_endpoint:    false
         entity_to_choice:     true

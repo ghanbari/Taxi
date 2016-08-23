@@ -5,8 +5,8 @@ namespace FunPro\GeoBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\UserBundle\Entity\User;
-use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation as JS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * IpLocation

@@ -3,10 +3,10 @@
 namespace FunPro\UserBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation as JS;
 use Gedmo\Mapping\Annotation as Gedmo;
+use JMS\Serializer\Annotation as JS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="FunPro\UserBundle\Repository\DeviceRepository")

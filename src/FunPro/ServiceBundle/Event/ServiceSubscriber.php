@@ -10,7 +10,6 @@ use FunPro\DriverBundle\Event\GetMoveCarEvent;
 use FunPro\FinancialBundle\Entity\RegionBasePrice;
 use FunPro\FinancialBundle\Entity\Transaction;
 use FunPro\FinancialBundle\Event\PaymentEvent;
-use FunPro\FinancialBundle\Exception\InvalidTransactionException;
 use FunPro\FinancialBundle\FinancialEvents;
 use FunPro\ServiceBundle\Entity\ServiceLog;
 use FunPro\ServiceBundle\Exception\ServiceStatusException;

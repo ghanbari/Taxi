@@ -2,8 +2,8 @@
 
 namespace FunPro\TicketBundle\Controller;
 
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Controller\FOSRestController;
 use FunPro\TicketBundle\Entity\Ticket;
 use FunPro\TicketBundle\Form\TicketType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;

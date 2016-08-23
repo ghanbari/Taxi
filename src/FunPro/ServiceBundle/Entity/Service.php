@@ -12,10 +12,10 @@ use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\GeoBundle\Utility\Util;
 use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\UserBundle\Entity\User;
+use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as JS;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
-use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Service

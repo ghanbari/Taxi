@@ -2,8 +2,8 @@
 
 namespace FunPro\GeoBundle\Controller;
 
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Controller\FOSRestController;
 use FunPro\GeoBundle\Entity\IpLocation;
 use FunPro\GeoBundle\Form\IpLocationType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;

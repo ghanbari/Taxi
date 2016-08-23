@@ -3,8 +3,8 @@
 namespace FunPro\FinancialBundle\Controller;
 
 use FOS\RestBundle\Context\Context;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Controller\FOSRestController;
 use FunPro\FinancialBundle\Entity\Transaction;
 use FunPro\FinancialBundle\Entity\Wallet;
 use FunPro\FinancialBundle\Event\PaymentEvent;

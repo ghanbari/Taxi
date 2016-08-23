@@ -3,9 +3,9 @@
 namespace FunPro\UserBundle\Repository;
 
 use DateTime;
-use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\Query\QueryException;
 use FunPro\UserBundle\Entity\Token;
 use FunPro\UserBundle\Entity\User;
 

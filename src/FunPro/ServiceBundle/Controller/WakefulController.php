@@ -4,8 +4,9 @@ namespace FunPro\ServiceBundle\Controller;
 
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\Query;
-use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Controller\FOSRestController;
 use FunPro\DriverBundle\CarEvents;
 use FunPro\DriverBundle\Entity\Car;
 use FunPro\DriverBundle\Entity\Driver;
@@ -19,7 +20,6 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints as Assert;
-use FOS\RestBundle\Context\Context;
 
 /**
  * Class WakefulController

@@ -3,12 +3,12 @@
 namespace FunPro\DriverBundle\Controller;
 
 use Doctrine\ORM\NoResultException;
+use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use FunPro\DriverBundle\Entity\Driver;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
-use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**

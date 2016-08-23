@@ -5,9 +5,9 @@ namespace FunPro\TicketBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\UserBundle\Entity\User;
-use Symfony\Component\Validator\Constraints as Assert;
-use JMS\Serializer\Annotation as JS;
 use Gedmo\Mapping\Annotation as Gedmo;
+use JMS\Serializer\Annotation as JS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Ticket

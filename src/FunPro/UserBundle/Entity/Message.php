@@ -4,8 +4,8 @@ namespace FunPro\UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\ServiceBundle\Entity\Service;
-use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation as JS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="FunPro\UserBundle\Repository\MessageRepository")

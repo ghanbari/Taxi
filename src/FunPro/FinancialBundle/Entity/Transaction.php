@@ -5,9 +5,9 @@ namespace FunPro\FinancialBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\ServiceBundle\Entity\Service;
 use FunPro\UserBundle\Entity\User;
+use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as JS;
 use Symfony\Component\Validator\Constraints as Assert;
-use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Transaction

@@ -7,9 +7,9 @@ use FunPro\GeoBundle\Form\AddressType;
 use FunPro\UserBundle\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class DriverType extends AbstractType

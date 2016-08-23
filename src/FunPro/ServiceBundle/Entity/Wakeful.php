@@ -5,8 +5,8 @@ namespace FunPro\ServiceBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\DriverBundle\Entity\Car;
 use FunPro\GeoBundle\Doctrine\ValueObject\Point;
-use Symfony\Component\Validator\Constraints\DateTime;
 use JMS\Serializer\Annotation as JS;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
  * Wakeful

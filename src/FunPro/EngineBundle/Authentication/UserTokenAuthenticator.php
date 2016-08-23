@@ -2,18 +2,18 @@
 
 namespace FunPro\EngineBundle\Authentication;
 
+use Doctrine\ORM\EntityManager;
 use FunPro\UserBundle\Entity\User;
 use Symfony\Bridge\Monolog\Logger;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
-use Doctrine\ORM\EntityManager;
+use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 
 /**
  * Class UserTokenAuthenticator

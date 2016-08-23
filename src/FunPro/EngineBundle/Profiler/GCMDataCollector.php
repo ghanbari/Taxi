@@ -3,7 +3,6 @@
 namespace FunPro\EngineBundle\Profiler;
 
 use FunPro\EngineBundle\GCM\Success;
-use FunPro\UserBundle\Entity\Message;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;

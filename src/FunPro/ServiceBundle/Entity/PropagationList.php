@@ -4,8 +4,8 @@ namespace FunPro\ServiceBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\DriverBundle\Entity\Driver;
-use JMS\Serializer\Annotation as JS;
 use Gedmo\Mapping\Annotation as Gedmo;
+use JMS\Serializer\Annotation as JS;
 
 /**
  * PropagationList

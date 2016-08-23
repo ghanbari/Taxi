@@ -4,8 +4,8 @@ namespace FunPro\AgentBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\UserBundle\Entity\User;
-use JMS\Serializer\Annotation as JS;
 use Gedmo\Mapping\Annotation as Gedmo;
+use JMS\Serializer\Annotation as JS;
 
 /**
  * Agent
