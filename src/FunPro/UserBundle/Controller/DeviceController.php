@@ -66,7 +66,7 @@ class DeviceController extends FOSRestController
      *      },
      *      statusCodes={
      *          201="When success",
-     *          204="When your device is exists and update it",
+     *          200="When your device is exists and update it",
      *          400={
      *              "When form validation failed.",
      *          },
@@ -113,7 +113,7 @@ class DeviceController extends FOSRestController
                 $context = (new Context())
                     ->addGroup('Owner')
                     ->setMaxDepth(1);
-                return $this->view(null, Response::HTTP_NO_CONTENT)
+                return $this->view($persistentDevice, Response::HTTP_OK)
                     ->setSerializationContext($context);
             }
         }

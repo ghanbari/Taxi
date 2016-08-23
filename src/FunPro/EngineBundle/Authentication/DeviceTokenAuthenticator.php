@@ -63,9 +63,12 @@ class DeviceTokenAuthenticator extends AbstractGuardAuthenticator
         $apiKey = $credentials['token'];
 
         $this->device = $this->manager->getRepository('FunProUserBundle:Device')->findOneByApiKey($apiKey);
-        $user = $this->device->getOwner();
 
-        return $user;
+        if ($this->device) {
+            return $this->device->getOwner();
+        }
+
+        return;
     }
 
     /**
