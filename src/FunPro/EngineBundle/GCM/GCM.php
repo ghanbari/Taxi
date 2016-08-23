@@ -57,6 +57,7 @@ class GCM
      * )
      */
     private $entries = array();
+
     /**
      * @var Logger
      */
