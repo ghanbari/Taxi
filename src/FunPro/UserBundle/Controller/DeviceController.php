@@ -82,8 +82,6 @@ class DeviceController extends FOSRestController
      *
      * @Security("is_authenticated() and has_role('ROLE_USER')")
      *
-     * @Rest\Post("/driver/device", name="driver_post_device", options={"method_prefix"=false})
-     * @Rest\Post("/passenger/device", name="passenger_post_device", options={"method_prefix"=false})
      */
     public function postAction(Request $request)
     {
