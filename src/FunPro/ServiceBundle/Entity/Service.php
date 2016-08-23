@@ -368,16 +368,19 @@ class Service
     private $currency;
 
     /**
-     * container for extra data related to service.
+     * @var integer
      *
-     * not persisted to database and not serialized
+     * @ORM\Column(name="status", type="smallint")
      *
-     * @var ArrayCollection
+     * @JS\Groups({"Public"})
+     * @JS\SerializedName("statusNumber")
+     * @JS\Since("1.0.0")
      */
-    private $extraData;
+    private $status;
 
     public function __construct()
     {
+        $this->setStatus(ServiceLog::STATUS_REQUESTED);
         $this->setEndPoint(null);
         $this->setType(self::TYPE_DISTANCE);
         $this->setDesire(self::DESIRE_SUGGEST);
@@ -418,67 +421,33 @@ class Service
      *
      * @JS\VirtualProperty()
      * @JS\SerializedName("status")
-     * @JS\Type(name="array")
+     * @JS\Type(name="string")
      * @JS\Groups({"Public"})
      * @JS\Since("1.0.0")
      *
      * @return array
      */
-    public function getStatus()
+    public function getStatusName()
     {
-        if (!$this->logs->last()) {
-            return array(
-                'code' => ServiceLog::STATUS_REQUESTED,
-                'name' => 'requested',
-            );
-        }
-
-        switch ($this->logs->last()->getStatus()) {
+        switch ($this->status) {
             case ServiceLog::STATUS_REQUESTED:
-                return array(
-                    'code' => ServiceLog::STATUS_REQUESTED,
-                    'name' => 'requested',
-                );
+                return 'requested';
             case ServiceLog::STATUS_CANCELED:
-                return array(
-                    'code' => ServiceLog::STATUS_CANCELED,
-                    'name' => 'canceled',
-                );
+                return 'canceled';
             case ServiceLog::STATUS_REJECTED:
-                return array(
-                    'code' => ServiceLog::STATUS_REJECTED,
-                    'name' => 'rejected',
-                );
+                return 'rejected';
             case ServiceLog::STATUS_ACCEPTED:
-                return array(
-                    'code' => ServiceLog::STATUS_ACCEPTED,
-                    'name' => 'accepted',
-                );
+                return 'accepted';
             case ServiceLog::STATUS_READY:
-                return array(
-                    'code' => ServiceLog::STATUS_READY,
-                    'name' => 'ready',
-                );
+                return 'ready';
             case ServiceLog::STATUS_START:
-                return array(
-                    'code' => ServiceLog::STATUS_START,
-                    'name' => 'start',
-                );
+                return 'start';
             case ServiceLog::STATUS_FINISH:
-                return array(
-                    'code' => ServiceLog::STATUS_FINISH,
-                    'name' => 'finish',
-                );
+                return 'finish';
             case ServiceLog::STATUS_PAYED:
-                return array(
-                    'code' => ServiceLog::STATUS_PAYED,
-                    'name' => 'payed',
-                );
+                return 'payed';
             default:
-                return array(
-                    'code' => $this->logs->last()->getStatus(),
-                    'name' => 'unknown',
-                );
+                return 'unknown';
         }
     }
 
@@ -1194,5 +1163,49 @@ class Service
     {
         $this->realPrice = $realPrice;
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * Set status
+     *
+     * @param integer $status
+     * @return Service
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Add logs
+     *
+     * @param ServiceLog $logs
+     * @return Service
+     */
+    public function addLog(ServiceLog $logs)
+    {
+        $this->logs[] = $logs;
+
+        return $this;
+    }
+
+    /**
+     * Remove logs
+     *
+     * @param ServiceLog $logs
+     */
+    public function removeLog(ServiceLog $logs)
+    {
+        $this->logs->removeElement($logs);
     }
 }
