@@ -4,6 +4,7 @@ namespace FunPro\EngineBundle\EventListener;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use FunPro\DriverBundle\Entity\Driver;
+use FunPro\EngineBundle\Authentication\DeviceTokenAuthenticator;
 use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\UserBundle\Entity\Device;
 use FunPro\UserBundle\Entity\User;
@@ -75,29 +76,19 @@ class DeviceListener implements EventSubscriberInterface
         $request = $event->getRequest();
         $token = $this->storage->getToken();
 
-        if (!$request->headers->has('X-AUTH-TOKEN')) {
+        if (!$request->attributes->has('currentDevice')) {
+            $this->logger->addInfo('skip device checker');
             return;
         }
 
         $this->logger->addInfo('check for device information');
 
-        /** @var User $user */
-        $user = $token->getUser();
-
-        /** @var Device $device */
-        $device = $this->registry->getRepository('FunProUserBundle:Device')->findOneBy(array(
-            'owner' => $user,
-            'apiKey' => $request->headers->get('X-AUTH-TOKEN'),
-        ));
-
-        $request->attributes->set('currentDevice', $device);
-
-        if (($user->getDevices()->count() > 1) and !$user->isMultiDeviceAllowed()) {
+        if (($token->getUser()->getDevices()->count() > 1) and !$token->isMultiDeviceAllowed()) {
             $this->logger->addError(
                 'user can not have multi device',
                 array(
-                    'count' => $user->getDevices()->count(),
-                    'userId' => $user->getId(),
+                    'count' => $token->getUser()->getDevices()->count(),
+                    'userId' => $token->getUser()->getId(),
                 )
             );
             throw new MultiDeviceException;
@@ -113,6 +104,6 @@ class DeviceListener implements EventSubscriberInterface
         }
 
         $response = $event->getResponse();
-        $response->headers->set('X-Device-Status', $event->getRequest()->attributes->get('currentDevice'));
+        $response->headers->set('X-Device-Status', $event->getRequest()->attributes->get('currentDevice')->getStatus());
     }
 }

@@ -30,7 +30,7 @@ services:
 
     security.authentication.success_handler:
         class: FunPro\EngineBundle\Authentication\SuccessHandler
-        arguments: ["@security.http_utils", "@doctrine", "@security.token_storage", "@logger", {}]
+        arguments: ["@security.http_utils", {}]
 
     security.authentication.failure_handler:
         class:  FunPro\EngineBundle\Authentication\FailureHandler
@@ -44,7 +44,7 @@ services:
 
     fun_pro_engine.user_token_authenticator:
         class: FunPro\EngineBundle\Authentication\UserTokenAuthenticator
-        arguments: ['@doctrine.orm.entity_manager']
+        arguments: ['@doctrine.orm.entity_manager', '@security.token_storage', '@logger']
 
     fun_pro_engine.device_token_authenticator:
         class: FunPro\EngineBundle\Authentication\DeviceTokenAuthenticator

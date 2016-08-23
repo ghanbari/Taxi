@@ -88,6 +88,7 @@ class DeviceTokenAuthenticator extends AbstractGuardAuthenticator
      */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
+        $request->attributes->set('currentDevice', $this->device);
         $this->device->setLastLoginAt(new \DateTime());
         $this->manager->flush();
 

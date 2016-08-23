@@ -33,7 +33,7 @@ security:
                 path: fun_pro_admin_logout
                 target: fun_pro_admin_dashboard
         api_create_device:
-            pattern: ^/(doc|passenger$|passenger/confirm|device$|login_check)
+            pattern: ^/(doc|passenger$|passenger/confirm|device$|login_check|config/global)
             host: api.%router.request_context.host%
             http_basic:
                 provider: fos_userbundle
@@ -51,8 +51,8 @@ security:
             guard:
                 authenticators:
                     - fun_pro_engine.device_token_authenticator
-            stateless: false #csrf
-            anonymous: true
+            stateless: true
+            anonymous: false
         main:
             pattern: ^/
             http_basic:

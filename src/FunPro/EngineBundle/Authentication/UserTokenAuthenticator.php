@@ -3,8 +3,10 @@
 namespace FunPro\EngineBundle\Authentication;
 
 use FunPro\UserBundle\Entity\User;
+use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -30,11 +32,25 @@ class UserTokenAuthenticator extends AbstractGuardAuthenticator
     private $manager;
 
     /**
-     * @param EntityManager $manager
+     * @var TokenStorage
      */
-    public function __construct(EntityManager $manager)
+    private $storage;
+
+    /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
+     * @param EntityManager         $manager
+     * @param TokenStorage $storage
+     * @param Logger                $logger
+     */
+    public function __construct(EntityManager $manager, TokenStorage $storage, Logger $logger)
     {
         $this->manager = $manager;
+        $this->storage = $storage;
+        $this->logger = $logger;
     }
 
     /**
@@ -43,6 +59,11 @@ class UserTokenAuthenticator extends AbstractGuardAuthenticator
      */
     public function getCredentials(Request $request)
     {
+        if ($this->storage->getToken() and $this->storage->getToken()->isAuthenticated()) {
+            $this->logger->addDebug('user is authenticated, cancel guard');
+            return;
+        }
+
         if (!$token = $request->headers->get('X-AUTH-TOKEN')) {
             return;
         }
