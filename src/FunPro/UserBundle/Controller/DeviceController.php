@@ -5,6 +5,7 @@ namespace FunPro\UserBundle\Controller;
 use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FunPro\DriverBundle\Entity\Driver;
 use FunPro\UserBundle\Entity\Device;
 use FunPro\UserBundle\Entity\User;
 use FunPro\UserBundle\Form\DeviceType;
@@ -28,9 +29,11 @@ class DeviceController extends FOSRestController
 {
     public function createCreateForm(Device $device)
     {
+        $uri = $this->getUser() instanceof Driver ? $this->generateUrl('fun_pro_user_api_driver_post_device')
+            : $this->generateUrl('fun_pro_user_api_passenger_post_device');
         $requestFormat = $this->get('request_stack')->getCurrentRequest()->getRequestFormat('html');
         $form = $this->createForm(DeviceType::class, $device, array(
-            'action' => $this->generateUrl('fun_pro_user_api_post_device'),
+            'action' => $uri,
             'method' => 'POST',
             'csrf_protection' => $requestFormat === 'html' ?: false,
         ));
@@ -78,6 +81,9 @@ class DeviceController extends FOSRestController
      * )
      *
      * @Security("is_authenticated() and has_role('ROLE_USER')")
+     *
+     * @Rest\Post("/driver/device", name="driver_post_device", options={"method_prefix"=false})
+     * @Rest\Post("/passenger/device", name="passenger_post_device", options={"method_prefix"=false})
      */
     public function postAction(Request $request)
     {
