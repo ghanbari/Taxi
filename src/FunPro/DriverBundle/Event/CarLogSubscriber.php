@@ -6,6 +6,7 @@ use Doctrine\Bundle\DoctrineBundle\Registry;
 use FunPro\DriverBundle\CarEvents;
 use FunPro\DriverBundle\Entity\Car;
 use FunPro\DriverBundle\Entity\CarLog;
+use FunPro\DriverBundle\Entity\CarRoute;
 use FunPro\DriverBundle\Exception\CarStatusException;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -59,23 +60,24 @@ class CarLogSubscriber implements EventSubscriberInterface
     {
         return array(
             CarEvents::CAR_WAKEFUL => array(
+                array('checkCarStatusForWakeful', 255),
                 array('onWakeful', 20),
+                array('createRoute', 18),
             ),
             CarEvents::CAR_MOVE => array(
+                array('checkCarStatusForMove', 255),
                 array('onMove', 20),
+                array('updateRoute', 18),
             ),
             CarEvents::CAR_SLEEP => array(
+                array('checkCarStatusForSleep', 255),
                 array('onSleep', 20),
+                array('finishRoute', 18),
             ),
         );
     }
 
-    /**
-     * change car status into wakeful
-     *
-     * @param WakefulEvent $event
-     */
-    public function onWakeful(WakefulEvent $event)
+    public function checkCarStatusForWakeful(WakefulEvent $event)
     {
         $wakeful = $event->getWakeful();
         $car = $wakeful->getCar();
@@ -95,6 +97,17 @@ class CarLogSubscriber implements EventSubscriberInterface
             );
             throw new CarStatusException('status must be sleep');
         }
+    }
+
+    /**
+     * change car status into wakeful
+     *
+     * @param WakefulEvent $event
+     */
+    public function onWakeful(WakefulEvent $event)
+    {
+        $wakeful = $event->getWakeful();
+        $car = $wakeful->getCar();
 
         $car->setStatus(Car::STATUS_WAKEFUL);
         $carLog = new CarLog($car, $car->getStatus(), $event->getWakeful()->getPoint());
@@ -102,12 +115,16 @@ class CarLogSubscriber implements EventSubscriberInterface
         $this->doctrine->getManager()->persist($carLog);
     }
 
-    /**
-     * @param GetMoveCarEvent $event
-     *
-     * @throws CarStatusException
-     */
-    public function onMove(GetMoveCarEvent $event)
+    public function createRoute(WakefulEvent $event)
+    {
+        $wakeful = $event->getWakeful();
+        $car = $wakeful->getCar();
+
+        $route = new CarRoute($car);
+//        $route->getRoute()->addPoint(new )
+    }
+
+    public function checkCarStatusForMove(GetMoveCarEvent $event)
     {
         $car = $event->getCar();
         $status = $car->getStatus();
@@ -119,6 +136,17 @@ class CarLogSubscriber implements EventSubscriberInterface
             );
             throw new CarStatusException('status must not be sleep');
         }
+    }
+
+    /**
+     * @param GetMoveCarEvent $event
+     *
+     * @throws CarStatusException
+     */
+    public function onMove(GetMoveCarEvent $event)
+    {
+        $car = $event->getCar();
+        $status = $car->getStatus();
 
         if ($status === Car::STATUS_SERVICE_ACCEPT) {
             $status = Car::STATUS_SERVICE_PREPARE;
@@ -136,12 +164,11 @@ class CarLogSubscriber implements EventSubscriberInterface
         $this->doctrine->getManager()->persist($carLog);
     }
 
-    /**
-     * @param CarEvent $event
-     *
-     * @throws CarStatusException
-     */
-    public function onSleep(CarEvent $event)
+    public function updateRoute(GetMoveCarEvent $event)
+    {
+    }
+
+    public function checkCarStatusForSleep(CarEvent $event)
     {
         $car = $event->getCar();
 
@@ -160,10 +187,24 @@ class CarLogSubscriber implements EventSubscriberInterface
             );
             throw new CarStatusException('status must be wakeful or service end');
         }
+    }
+
+    /**
+     * @param CarEvent $event
+     *
+     * @throws CarStatusException
+     */
+    public function onSleep(CarEvent $event)
+    {
+        $car = $event->getCar();
 
         $car->setStatus(Car::STATUS_SLEEP);
         $carLog = new CarLog($car, $car->getStatus());
         $this->logger->addInfo('Car\'s status changed to sleep', array('carId' => $car->getId()));
         $this->doctrine->getManager()->persist($carLog);
+    }
+
+    public function finishRoute()
+    {
     }
 }

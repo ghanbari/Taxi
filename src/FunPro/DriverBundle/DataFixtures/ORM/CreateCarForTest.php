@@ -6,14 +6,16 @@ use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use FunPro\DriverBundle\Entity\Car;
-use FunPro\DriverBundle\Entity\Driver;
 use FunPro\DriverBundle\Entity\Plaque;
-use FunPro\GeoBundle\Doctrine\ValueObject\Point;
-use FunPro\GeoBundle\Entity\Address;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Class CreateCarForTest
+ *
+ * @package FunPro\EngineBundle\DataFixtures\ORM
+ */
 class CreateCarForTest extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
     /**
@@ -43,27 +45,26 @@ class CreateCarForTest extends AbstractFixture implements OrderedFixtureInterfac
         }
 
         $credentials = $this->container->getParameter('test.driver.credentials');
-        $i = 1;
 
-        foreach ($credentials as $nationalCode => $pass) {
+        $countOfDriver = count($credentials);
+        for ($counter = 1; $counter <= $countOfDriver; $counter++) {
             $car = new Car();
             $car->setBorn(new \DateTime());
             $car->setColor('red');
             $car->setType('405');
             $car->setBrand('Iran Khodro');
-            $car->setDriver($this->getReference('driver-' . $i));
+            $car->setDriver($this->getReference('driver-' . $counter));
             $car->setCurrent(true);
 
             $plaque = (new Plaque())
                 ->setFirstNumber(22)
-                ->setAreaCode("‌ب")
-                ->setSecondNumber(rand(1, 999))
-                ->setCityNumber(rand(10, 99));
+                ->setAreaCode('‌ب')
+                ->setSecondNumber(mt_rand(1, 999))
+                ->setCityNumber(mt_rand(10, 99));
             $car->setPlaque($plaque);
 
             $manager->persist($car);
-            $this->setReference('car-' . $i, $car);
-            $i++;
+            $this->setReference('car-' . $counter, $car);
         }
 
         $manager->flush();
@@ -78,4 +79,4 @@ class CreateCarForTest extends AbstractFixture implements OrderedFixtureInterfac
     {
         return 23;
     }
-} 
+}

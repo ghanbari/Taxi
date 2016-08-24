@@ -2,9 +2,13 @@
 
 namespace FunPro\GeoBundle\Utility;
 
-use FunPro\GeoBundle\Doctrine\ValueObject\LineString;
-use FunPro\GeoBundle\Doctrine\ValueObject\Point;
+use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 
+/**
+ * Class Util
+ *
+ * @package FunPro\GeoBundle\Utility
+ */
 class Util
 {
     /**
@@ -58,23 +62,22 @@ class Util
         }
     }
 
+    /**
+     * @param LineString $lineString
+     *
+     * @return float|int
+     */
     public static function lengthOfLineString(LineString $lineString)
     {
         $length = 0;
-        $lineString2 = clone $lineString;
-        
-        /** @var Point $firstPoint */
-        foreach ($lineString as $firstPoint) {
-            $lineString2->next();
-            /** @var Point $secondPoint */
-            $secondPoint = $lineString2->current();
-
-            if ($secondPoint) {
+        $count = count($lineString->toArray());
+        for ($counter = 0; $counter < $count; $counter++) {
+            if (($counter+1) != $count) {
                 $length += self::distance(
-                    $firstPoint->getLatitude(),
-                    $firstPoint->getLongitude(),
-                    $secondPoint->getLatitude(),
-                    $secondPoint->getLongitude()
+                    $lineString->getPoint($counter)->getLatitude(),
+                    $lineString->getPoint($counter)->getLongitude(),
+                    $lineString->getPoint($counter+1)->getLatitude(),
+                    $lineString->getPoint($counter+1)->getLongitude()
                 );
             }
         }

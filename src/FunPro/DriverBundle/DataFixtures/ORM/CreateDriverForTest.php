@@ -2,11 +2,11 @@
 
 namespace FunPro\EngineBundle\DataFixtures\ORM;
 
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use FunPro\DriverBundle\Entity\Driver;
-use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\GeoBundle\Entity\Address;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -49,7 +49,7 @@ class CreateDriverForTest extends AbstractFixture implements OrderedFixtureInter
         $city = $manager->getRepository('FunProGeoBundle:City')->find(1);
         $agencies = array_keys($this->container->getParameter('test.agency.admin.credentials'));
         $host = $this->container->getParameter('router.request_context.host');
-        $i = 1;
+        $counter = 1;
 
         foreach ($credentials as $nationalCode => $pass) {
             do {
@@ -63,12 +63,12 @@ class CreateDriverForTest extends AbstractFixture implements OrderedFixtureInter
             $driver->setUsername($nationalCode);
             $driver->setPlainPassword($pass);
             $driver->setNationalCode($nationalCode);
-            $driver->setName('driver-'.$i);
+            $driver->setName('driver-'.$counter);
             $driver->setEnabled(true);
             $driver->setApiKey($apiKey);
-            $driver->setContractNumber($i);
+            $driver->setContractNumber($counter);
             $driver->setMobile('09' . substr($nationalCode, 1));
-            $driver->setAgency($this->getReference('agency-'. $agencies[rand(0, count($agencies)-1)]));
+            $driver->setAgency($this->getReference('agency-'. $agencies[mt_rand(0, count($agencies)-1)]));
 
             $address = new Address();
             $address->setTitle('test');
@@ -78,8 +78,8 @@ class CreateDriverForTest extends AbstractFixture implements OrderedFixtureInter
             $driver->setAddress($address);
 
             $manager->persist($driver);
-            $this->setReference('driver-'.$i, $driver);
-            $i++;
+            $this->setReference('driver-'.$counter, $driver);
+            $counter++;
         }
 
         $manager->flush();

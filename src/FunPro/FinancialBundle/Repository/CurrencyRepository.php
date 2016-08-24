@@ -2,8 +2,8 @@
 
 namespace FunPro\FinancialBundle\Repository;
 
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\ORM\EntityRepository;
-use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 
 /**
  * CurrencyRepository
@@ -18,7 +18,7 @@ class CurrencyRepository extends EntityRepository
         $queryBuilder = $this->createQueryBuilder('c');
 
         return $queryBuilder->innerJoin('c.regions', 'r')
-            ->where(('ST_Contains(r.region, point_str(:point)) = true'))
+            ->where(('ST_Contains(r.region, geomfromtext(:point)) = true'))
             ->setParameter('point', $point)
             ->getQuery()
             ->getResult();

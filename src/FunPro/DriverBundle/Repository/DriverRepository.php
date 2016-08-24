@@ -2,9 +2,9 @@
 
 namespace FunPro\DriverBundle\Repository;
 
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\ORM\EntityRepository;
 use FunPro\DriverBundle\Entity\Car;
-use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 
 /**
  * driverRepository
@@ -22,21 +22,21 @@ class DriverRepository extends EntityRepository
      */
     public function getAllFreeDriverAroundPoint(Point $point, $distance)
     {
-        $qb = $this->createQueryBuilder('dr');
+        $queryBuilder = $this->createQueryBuilder('dr');
 
-        $qb->select(array('dr', 'de', 'c', 'w'))
+        $queryBuilder->select(array('dr', 'de', 'c', 'w'))
             ->innerJoin('dr.devices', 'de')
             ->innerJoin('dr.cars', 'c')
             ->innerJoin('c.wakeful', 'w')
-            ->where($qb->expr()->eq('c.current', ':current'))
-            ->andWhere($qb->expr()->in('c.status', ':carStatus'))
-            ->andWhere($qb->expr()->lte('Distance(w.point, point_str(:location))', ':distance'))
+            ->where($queryBuilder->expr()->eq('c.current', ':current'))
+            ->andWhere($queryBuilder->expr()->in('c.status', ':carStatus'))
+            ->andWhere($queryBuilder->expr()->lte('glength(linestring(w.point, geomfromtext(:location)))', ':distance'))
             ->setParameter('current', true)
             ->setParameter('carStatus', array(Car::STATUS_WAKEFUL, Car::STATUS_SERVICE_IN, Car::STATUS_SERVICE_END))
             ->setParameter('location', $point)
             ->setParameter('distance', $distance/100000);
 
-        return $qb->getQuery()
+        return $queryBuilder->getQuery()
             ->getResult();
     }
 
@@ -45,8 +45,8 @@ class DriverRepository extends EntityRepository
      */
     public function getAllDriversQueryBuilder()
     {
-        $qb = $this->createQueryBuilder('d');
-        return $qb;
+        $queryBuilder = $this->createQueryBuilder('d');
+        return $queryBuilder;
     }
 
     /**
@@ -58,12 +58,12 @@ class DriverRepository extends EntityRepository
      */
     public function getWithCar($driverId)
     {
-        $qb = $this->createQueryBuilder('d');
+        $queryBuilder = $this->createQueryBuilder('d');
 
-        return $qb->select(array('d', 'c'))
+        return $queryBuilder->select(array('d', 'c'))
             ->innerJoin('d.cars', 'c')
-            ->where($qb->expr()->eq('c.current', true))
-            ->andWhere($qb->expr()->eq('d.id', ':id'))
+            ->where($queryBuilder->expr()->eq('c.current', true))
+            ->andWhere($queryBuilder->expr()->eq('d.id', ':id'))
             ->setParameter('id', $driverId)
             ->getQuery()
             ->getOneOrNullResult();

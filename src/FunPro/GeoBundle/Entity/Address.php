@@ -2,8 +2,8 @@
 
 namespace FunPro\GeoBundle\Entity;
 
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\ORM\Mapping as ORM;
-use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use JMS\Serializer\Annotation as JS;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -97,7 +97,7 @@ class Address
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -120,7 +120,7 @@ class Address
     /**
      * Get title
      *
-     * @return string 
+     * @return string
      */
     public function getTitle()
     {
@@ -166,7 +166,7 @@ class Address
     /**
      * Get postalCode
      *
-     * @return string 
+     * @return string
      */
     public function getPostalCode()
     {
@@ -189,7 +189,7 @@ class Address
     /**
      * Get address
      *
-     * @return string 
+     * @return string
      */
     public function getAddress()
     {
@@ -199,10 +199,10 @@ class Address
     /**
      * Set city
      *
-     * @param \FunPro\GeoBundle\Entity\City $city
+     * @param City $city
      * @return Address
      */
-    public function setCity(\FunPro\GeoBundle\Entity\City $city = null)
+    public function setCity(City $city = null)
     {
         $this->city = $city;
 
@@ -212,7 +212,7 @@ class Address
     /**
      * Get city
      *
-     * @return \FunPro\GeoBundle\Entity\City 
+     * @return City
      */
     public function getCity()
     {

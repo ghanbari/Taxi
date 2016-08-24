@@ -2,14 +2,14 @@
 
 namespace FunPro\ServiceBundle\Repository;
 
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\ORM\EntityRepository;
 use FunPro\DriverBundle\Entity\Car;
 use FunPro\DriverBundle\Entity\Driver;
-use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\ServiceBundle\Entity\FloatingCost;
 use FunPro\ServiceBundle\Entity\Service;
-use Proxies\__CG__\FunPro\ServiceBundle\Entity\ServiceLog;
+use FunPro\ServiceBundle\Entity\ServiceLog;
 
 /**
  * ServiceRepository
@@ -154,12 +154,12 @@ class ServiceRepository extends EntityRepository
         $queryBuilder = $this->createQueryBuilder('s');
 
         if ($origin) {
-            $queryBuilder->andWhere($queryBuilder->expr()->lte('Distance(s.startPoint, point_str(:origin))', 0.01))
+            $queryBuilder->andWhere($queryBuilder->expr()->lte('Distance(s.startPoint, geomfromtext(:origin))', 0.01))
                 ->setParameter('origin', $origin);
         }
 
         if ($destination) {
-            $queryBuilder->andWhere($queryBuilder->expr()->lte('Distance(s.endPoint, point_str(:destination))', 0.01))
+            $queryBuilder->andWhere($queryBuilder->expr()->lte('Distance(s.endPoint, geomfromtext(:destination))', 0.01))
                 ->setParameter('destination', $destination);
         }
 

@@ -2,7 +2,7 @@
 
 namespace FunPro\ServiceBundle\Event;
 
-use FunPro\GeoBundle\Doctrine\ValueObject\Point;
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use FunPro\ServiceBundle\Entity\Service;
 
 /**
@@ -28,7 +28,7 @@ class GetCarPointServiceEvent extends ServiceEvent
     }
 
     /**
-     * @return mixed
+     * @return Point
      */
     public function getPoint()
     {
@@ -36,11 +36,11 @@ class GetCarPointServiceEvent extends ServiceEvent
     }
 
     /**
-     * @param mixed $point
+     * @param Point $point
      *
      * @return $this
      */
-    public function setPoint($point)
+    public function setPoint(Point $point)
     {
         $this->point = $point;
         return $this;

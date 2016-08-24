@@ -2,16 +2,21 @@
 
 namespace FunPro\AgentBundle\DataFixtures\ORM;
 
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use FunPro\AgentBundle\Entity\Agency;
-use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\GeoBundle\Entity\Address;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Class CreateAgencyForTest
+ *
+ * @package FunPro\AgentBundle\DataFixtures\ORM
+ */
 class CreateAgencyForTest extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
     /**
@@ -42,7 +47,8 @@ class CreateAgencyForTest extends AbstractFixture implements OrderedFixtureInter
         $credentials = $this->container->getParameter('test.agency.admin.credentials');
         $city = $manager->getRepository('FunProGeoBundle:City')->find(1);
 
-        foreach ($credentials as $username => $pass) {
+        $userNames = array_keys($credentials);
+        foreach ($userNames as $username) {
             $user = $this->getReference('agency-admin-' . $username);
 
             $address = new Address();
@@ -74,4 +80,4 @@ class CreateAgencyForTest extends AbstractFixture implements OrderedFixtureInter
     {
         return 21;
     }
-} 
+}

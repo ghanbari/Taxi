@@ -10,6 +10,11 @@ use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class AddressType
+ *
+ * @package FunPro\GeoBundle\Form
+ */
 class AddressType extends AbstractType
 {
     /**

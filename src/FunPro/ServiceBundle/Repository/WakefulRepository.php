@@ -2,11 +2,11 @@
 
 namespace FunPro\ServiceBundle\Repository;
 
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use FunPro\DriverBundle\Entity\Car;
 use FunPro\DriverBundle\Entity\Driver;
-use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\ServiceBundle\Entity\Wakeful;
 
 /**
@@ -36,7 +36,7 @@ class WakefulRepository extends EntityRepository
         $queryBuilder->select(array('w', 'c', 'd'))
             ->join('w.car', 'c')
             ->join('c.driver', 'd')
-            ->where($queryBuilder->expr()->lte('distance(w.point, point_str(:point))', ':distance'))
+            ->where($queryBuilder->expr()->lte('glength(linestring(w.point, geomfromtext(:point)))', ':distance'))
             ->setParameter('point', new Point($longitude, $latitude))
             ->setParameter('distance', $distance / 100000);
 

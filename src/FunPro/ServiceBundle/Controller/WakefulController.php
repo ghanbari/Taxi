@@ -2,6 +2,7 @@
 
 namespace FunPro\ServiceBundle\Controller;
 
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\Query;
 use FOS\RestBundle\Context\Context;
@@ -13,7 +14,6 @@ use FunPro\DriverBundle\Entity\Driver;
 use FunPro\DriverBundle\Event\CarEvent;
 use FunPro\DriverBundle\Event\GetMoveCarEvent;
 use FunPro\DriverBundle\Event\WakefulEvent;
-use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\ServiceBundle\Entity\Wakeful;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;

@@ -2,6 +2,7 @@
 
 namespace FunPro\ServiceBundle\Controller;
 
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\ORM\PessimisticLockException;
 use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -10,7 +11,6 @@ use FunPro\DriverBundle\Entity\Car;
 use FunPro\DriverBundle\Entity\Driver;
 use FunPro\DriverBundle\Exception\CarStatusException;
 use FunPro\DriverBundle\Exception\DriverNotFoundException;
-use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\GeoBundle\Utility\Util;
 use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\ServiceBundle\Entity\FloatingCost;

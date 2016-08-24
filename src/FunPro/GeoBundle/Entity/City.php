@@ -2,8 +2,9 @@
 
 namespace FunPro\GeoBundle\Entity;
 
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as JS;
 
@@ -106,7 +107,7 @@ class City
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -117,7 +118,7 @@ class City
      */
     public function __construct()
     {
-        $this->children = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->children = new ArrayCollection();
     }
 
     /**
@@ -136,7 +137,7 @@ class City
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -146,10 +147,10 @@ class City
     /**
      * Set point
      *
-     * @param point $point
+     * @param Point $point
      * @return City
      */
-    public function setPoint($point)
+    public function setPoint(Point $point)
     {
         $this->point = $point;
 
@@ -159,7 +160,7 @@ class City
     /**
      * Get point
      *
-     * @return point 
+     * @return Point
      */
     public function getPoint()
     {
@@ -182,7 +183,7 @@ class City
     /**
      * Get lft
      *
-     * @return integer 
+     * @return integer
      */
     public function getLft()
     {
@@ -205,7 +206,7 @@ class City
     /**
      * Get rgt
      *
-     * @return integer 
+     * @return integer
      */
     public function getRgt()
     {
@@ -228,7 +229,7 @@ class City
     /**
      * Get lvl
      *
-     * @return integer 
+     * @return integer
      */
     public function getLvl()
     {
@@ -238,10 +239,10 @@ class City
     /**
      * Set parent
      *
-     * @param \FunPro\GeoBundle\Entity\City $parent
+     * @param City $parent
      * @return City
      */
-    public function setParent(\FunPro\GeoBundle\Entity\City $parent = null)
+    public function setParent(City $parent = null)
     {
         $this->parent = $parent;
 
@@ -251,7 +252,7 @@ class City
     /**
      * Get parent
      *
-     * @return \FunPro\GeoBundle\Entity\City 
+     * @return City
      */
     public function getParent()
     {
@@ -261,10 +262,10 @@ class City
     /**
      * Add children
      *
-     * @param \FunPro\GeoBundle\Entity\City $children
+     * @param City $children
      * @return City
      */
-    public function addChild(\FunPro\GeoBundle\Entity\City $children)
+    public function addChild(City $children)
     {
         $this->children[] = $children;
 
@@ -274,9 +275,9 @@ class City
     /**
      * Remove children
      *
-     * @param \FunPro\GeoBundle\Entity\City $children
+     * @param City $children
      */
-    public function removeChild(\FunPro\GeoBundle\Entity\City $children)
+    public function removeChild(City $children)
     {
         $this->children->removeElement($children);
     }
@@ -284,7 +285,7 @@ class City
     /**
      * Get children
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return ArrayCollection
      */
     public function getChildren()
     {

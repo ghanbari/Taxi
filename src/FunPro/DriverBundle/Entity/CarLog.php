@@ -2,8 +2,8 @@
 
 namespace FunPro\DriverBundle\Entity;
 
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\ORM\Mapping as ORM;
-use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use JMS\Serializer\Annotation as JS;
 
 /**
@@ -133,10 +133,10 @@ class CarLog
     /**
      * Set point
      *
-     * @param point $point
+     * @param Point $point
      * @return CarLog
      */
-    public function setPoint($point)
+    public function setPoint(Point $point)
     {
         $this->point = $point;
 
@@ -146,7 +146,7 @@ class CarLog
     /**
      * Get point
      *
-     * @return point
+     * @return Point
      */
     public function getPoint()
     {

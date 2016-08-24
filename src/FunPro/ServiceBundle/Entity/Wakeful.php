@@ -2,9 +2,9 @@
 
 namespace FunPro\ServiceBundle\Entity;
 
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\DriverBundle\Entity\Car;
-use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use JMS\Serializer\Annotation as JS;
 use Symfony\Component\Validator\Constraints\DateTime;
 
@@ -105,10 +105,10 @@ class Wakeful
     /**
      * Set point
      *
-     * @param point $point
+     * @param Point $point
      * @return Wakeful
      */
-    public function setPoint($point)
+    public function setPoint(Point $point)
     {
         $this->point = $point;
         $this->setAtTime(new \DateTime());
@@ -119,7 +119,7 @@ class Wakeful
     /**
      * Get point
      *
-     * @return point
+     * @return Point
      */
     public function getPoint()
     {

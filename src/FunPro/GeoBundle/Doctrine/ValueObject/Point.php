@@ -3,7 +3,6 @@
 namespace FunPro\GeoBundle\Doctrine\ValueObject;
 
 use JMS\Serializer\Annotation as JS;
-
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**

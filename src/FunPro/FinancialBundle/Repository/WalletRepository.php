@@ -2,10 +2,10 @@
 
 namespace FunPro\FinancialBundle\Repository;
 
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\ORM\EntityRepository;
 use FunPro\FinancialBundle\Entity\Currency;
 use FunPro\FinancialBundle\Entity\Wallet;
-use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\UserBundle\Entity\User;
 
 /**
@@ -53,7 +53,7 @@ class WalletRepository extends EntityRepository
             ->innerJoin('c.regions', 'r')
             ->where($queryBuilder->expr()->eq('w.owner', ':owner'))
             ->andWhere($queryBuilder->expr()->gte('w.balance', ':cost'))
-            ->andWhere('ST_Contains(r.region, point_str(:point)) = true')
+            ->andWhere('ST_Contains(r.region, geomfromtext(:point)) = true')
             ->setParameter('owner', $user)
             ->setParameter('cost', $cost)
             ->setParameter('point', $point)

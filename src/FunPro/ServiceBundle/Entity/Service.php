@@ -2,13 +2,13 @@
 
 namespace FunPro\ServiceBundle\Entity;
 
+use CrEOF\Spatial\PHP\Types\Geometry\LineString;
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\AgentBundle\Entity\Agent;
 use FunPro\DriverBundle\Entity\Car;
 use FunPro\FinancialBundle\Entity\Currency;
-use FunPro\GeoBundle\Doctrine\ValueObject\LineString;
-use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\GeoBundle\Utility\Util;
 use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\UserBundle\Entity\User;
@@ -88,7 +88,7 @@ class Service
      * @ORM\Column(name="start_point", type="point")
      *
      * @Assert\NotNull(groups={"Create"})
-     * @Assert\Type(type="FunPro\GeoBundle\Doctrine\ValueObject\Point", groups={"Create"})
+     * @Assert\Type(type="CrEOF\Spatial\PHP\Types\Geometry\Point", groups={"Create"})
      * @Assert\Valid()
      *
      * @JS\Groups({"Passenger", "Driver", "Agent", "Admin", "Point"})
@@ -115,11 +115,11 @@ class Service
      *
      * @ORM\Column(name="end_point", type="point", nullable=true)
      *
-     * @Assert\Type(type="FunPro\GeoBundle\Doctrine\ValueObject\Point", groups={"Create"})
+     * @Assert\Type(type="CrEOF\Spatial\PHP\Types\Geometry\Point", groups={"Create"})
      * @Assert\Valid()
      *
      * @JS\Groups({"Passenger", "Driver", "Admin", "Point"})
-     * @JS\Type(name="FunPro\GeoBundle\Doctrine\ValueObject\Point")
+     * @JS\Type(name="CrEOF\Spatial\PHP\Types\Geometry\Point")
      * @JS\MaxDepth(1)
      * @JS\Since("1.0.0")
      */
@@ -246,7 +246,7 @@ class Service
      *
      * @JS\Groups({"Passenger", "Driver", "Admin"})
      * @JS\Since("1.0.0")
-     * @JS\Type(name="array<FunPro\GeoBundle\Doctrine\ValueObject\Point>")
+     * @JS\Type(name="CrEOF\Spatial\PHP\Types\Geometry\LineString")
      */
     private $route;
 
@@ -384,7 +384,6 @@ class Service
         $this->setEndPoint(null);
         $this->setType(self::TYPE_DISTANCE);
         $this->setDesire(self::DESIRE_SUGGEST);
-        $this->setRoute(new LineString());
         $this->setCreatedAt(new \DateTime());
         $this->floatingCosts = new ArrayCollection();
         $this->propagationList = new ArrayCollection();
@@ -482,6 +481,9 @@ class Service
         );
     }
 
+    /**
+     * @return array
+     */
     public static function getPropaginationTypes()
     {
         return array(
@@ -1103,7 +1105,7 @@ class Service
 
     public function updateDistance()
     {
-        if ($this->getRoute()->count() > 1) {
+        if (count($this->getRoute()->toArray()) > 1) {
             $this->setDistance(Util::lengthOfLineString($this->getRoute()));
         }
     }

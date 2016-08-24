@@ -2,10 +2,10 @@
 
 namespace FunPro\ServiceBundle\Controller;
 
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
-use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\PassengerBundle\Entity\Passenger;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;

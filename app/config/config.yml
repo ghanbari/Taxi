@@ -60,8 +60,10 @@ doctrine:
         password: "%database_password%"
         charset:  UTF8
         types:
-            point: FunPro\GeoBundle\Doctrine\Type\PointType
-            linestring: FunPro\GeoBundle\Doctrine\Type\LineStringType
+#            point: FunPro\GeoBundle\Doctrine\Type\PointType
+#            linestring: FunPro\GeoBundle\Doctrine\Type\LineStringType
+            point:      CrEOF\Spatial\DBAL\Types\Geometry\PointType
+            linestring: CrEOF\Spatial\DBAL\Types\Geometry\LineStringType
             geometry:   CrEOF\Spatial\DBAL\Types\GeometryType
             polygon:    CrEOF\Spatial\DBAL\Types\Geometry\PolygonType
         mapping_types:
@@ -83,8 +85,8 @@ doctrine:
         auto_mapping: true
         dql:
             numeric_functions:
-                point_str: FunPro\GeoBundle\Doctrine\ORM\Query\Functions\PointStr
-                distance: FunPro\GeoBundle\Doctrine\ORM\Query\Functions\Distance
+#                point_str: FunPro\GeoBundle\Doctrine\ORM\Query\Functions\PointStr
+#                distance: FunPro\GeoBundle\Doctrine\ORM\Query\Functions\Distance
                 glength:         CrEOF\Spatial\ORM\Query\AST\Functions\MySql\GLength
                 linestring:      CrEOF\Spatial\ORM\Query\AST\Functions\MySql\LineString
                 st_contains:     CrEOF\Spatial\ORM\Query\AST\Functions\MySql\STContains
