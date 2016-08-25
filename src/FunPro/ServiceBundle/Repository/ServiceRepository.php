@@ -82,8 +82,10 @@ class ServiceRepository extends EntityRepository
             ->leftJoin('s.car', 'car')
             ->leftJoin('s.canceledReason', 'c')
             ->where($queryBuilder->expr()->eq('s.passenger', ':passenger'))
+            ->andWhere($queryBuilder->expr()->neq('s.status', ':status'))
             ->orderBy('l.atTime', 'DESC')
             ->setParameter('passenger', $passenger)
+            ->setParameter('status', ServiceLog::STATUS_REQUESTED)
             ->getQuery()
             ->setMaxResults(1)
             ->getOneOrNullResult();
