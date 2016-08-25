@@ -152,6 +152,7 @@ class ServiceController extends FOSRestController
                         return $this->view($error, Response::HTTP_BAD_REQUEST);
                     }
 
+                    #FIXME: If driver have multi car, do this work probably?
                     if ($driver->getCars()->first()->getStatus() !== Car::STATUS_WAKEFUL
                         and $driver->getCars()->first()->getStatus() !== Car::STATUS_SERVICE_IN
                         and $driver->getCars()->first()->getStatus() !== Car::STATUS_SERVICE_END
