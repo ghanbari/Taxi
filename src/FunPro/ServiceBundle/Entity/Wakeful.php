@@ -11,10 +11,7 @@ use Symfony\Component\Validator\Constraints\DateTime;
 /**
  * Wakeful
  *
- * @ORM\Table(
- *      name="wakeful",
- *      indexes={@ORM\Index(name="wakeful_spatial_point", columns={"point"})}
- * )
+ * @ORM\Table(name="wakeful")
  * @ORM\Entity(repositoryClass="FunPro\ServiceBundle\Repository\WakefulRepository")
  * @ORM\HasLifecycleCallbacks()
  */
