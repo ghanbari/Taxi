@@ -11,6 +11,7 @@ imports:
     - { resource: vich.yml }
     - { resource: dunglas.yml }
     - { resource: fos_rest_mime_types.php }
+    - { resource: jms_trans.yml }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
