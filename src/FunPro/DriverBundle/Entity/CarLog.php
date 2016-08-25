@@ -9,7 +9,7 @@ use JMS\Serializer\Annotation as JS;
 /**
  * DriverLog
  *
- * @ORM\Table(name="driver_log")
+ * @ORM\Table(name="car_log")
  * @ORM\Entity(repositoryClass="FunPro\DriverBundle\Repository\CarLogRepository")
  * @ORM\HasLifecycleCallbacks()
  */
