@@ -174,9 +174,11 @@ class ServiceController extends FOSRestController
             try {
                 $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_REQUESTED, $event);
             } catch (DriverNotFoundException $e) {
+                /** @Ignore */
+                $message = $translator->trans($e->getMessage());
                 $error = array(
                     'code' => 2,
-                    'message' => $translator->trans($e->getMessage()),
+                    'message' => $message,
                 );
                 return $this->view($error, Response::HTTP_BAD_REQUEST);
             }
