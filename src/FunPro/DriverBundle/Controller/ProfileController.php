@@ -51,6 +51,15 @@ class ProfileController extends FOSRestController
         $till = new \DateTime($fetcher->get('till'));
         $data = array();
 
+        # user can only get report for 30 day
+        if (($till->getTimestamp() - $from->getTimestamp()) > 2592000) {
+            $error = array(
+                'code' => 1,
+                'message' => $this->get('translator')->trans('you.can.get.report.for.30.day'),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
+
         try {
             $data['distance'] = $this->getDoctrine()->getRepository('FunProDriverBundle:CarLog')
                 ->getDistance($this->getUser(), $from, $till);

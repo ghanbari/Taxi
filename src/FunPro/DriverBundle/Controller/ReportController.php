@@ -47,6 +47,15 @@ class ReportController extends FOSRestController
         $from = new \DateTime($fetcher->get('from'));
         $till = new \DateTime($fetcher->get('till'));
 
+        # user can only get report for 30 day
+        if (($till->getTimestamp() - $from->getTimestamp()) > 2592000) {
+            $error = array(
+                'code' => 1,
+                'message' => $this->get('translator')->trans('you.can.get.report.for.30.day'),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
+
         $total = $this->getDoctrine()->getRepository('FunProDriverBundle:CarLog')
             ->getOnlineTime($this->getUser(), $from, $till);
 
@@ -80,6 +89,15 @@ class ReportController extends FOSRestController
         $from = new \DateTime($fetcher->get('from'));
         $till = new \DateTime($fetcher->get('till'));
 
+        # user can only get report for 30 day
+        if (($till->getTimestamp() - $from->getTimestamp()) > 2592000) {
+            $error = array(
+                'code' => 1,
+                'message' => $this->get('translator')->trans('you.can.get.report.for.30.day'),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
+
         $total = $this->getDoctrine()->getRepository('FunProServiceBundle:ServiceLog')
             ->getServiceTime($this->getUser(), $from, $till);
 
@@ -112,6 +130,15 @@ class ReportController extends FOSRestController
 
         $from = new \DateTime($fetcher->get('from'));
         $till = new \DateTime($fetcher->get('till'));
+
+        # user can only get report for 30 day
+        if (($till->getTimestamp() - $from->getTimestamp()) > 2592000) {
+            $error = array(
+                'code' => 1,
+                'message' => $this->get('translator')->trans('you.can.get.report.for.30.day'),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
 
         try {
             $total = $this->getDoctrine()->getRepository('FunProDriverBundle:CarLog')
