@@ -2,7 +2,7 @@
 
 namespace FunPro\GeoBundle\Entity;
 
-use CrEOF\Spatial\PHP\Types\Geometry\Point;
+use CrEOF\Spatial\PHP\Types\Geometry\Point as SPoint;
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\UserBundle\Entity\User;
 use JMS\Serializer\Annotation as JS;
@@ -29,7 +29,7 @@ class IpLocation
     private $id;
 
     /**
-     * @var Point
+     * @var SPoint
      *
      * @ORM\Column(name="location", type="point")
      *
@@ -112,7 +112,7 @@ class IpLocation
     }
 
     /**
-     * @return Point
+     * @return SPoint
      */
     public function getLocation()
     {
@@ -120,7 +120,7 @@ class IpLocation
     }
 
     /**
-     * @param Point $location
+     * @param SPoint $location
      *
      * @return $this
      */
