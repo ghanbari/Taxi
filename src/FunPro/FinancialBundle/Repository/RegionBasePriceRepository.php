@@ -20,10 +20,10 @@ class RegionBasePriceRepository extends EntityRepository
 
         return $queryBuilder->select(array('rbp'))
             ->innerJoin('rbp.region', 'r')
-            ->where('ST_Contains(r.region, geomfromtext(:point)) = true')
+            ->where('ST_Contains(r.region, st_geomfromtext(:point)) = true')
             ->andWhere($queryBuilder->expr()->eq('rbp.currency', ':currency'))
             ->setParameter('currency', $currency)
-            ->setParameter('point', $point)
+            ->setParameter('point', "point($point)")
             ->getQuery()
             ->setMaxResults(1)
             ->getOneOrNullResult();

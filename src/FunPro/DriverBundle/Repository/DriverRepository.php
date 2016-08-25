@@ -30,10 +30,10 @@ class DriverRepository extends EntityRepository
             ->innerJoin('c.wakeful', 'w')
             ->where($queryBuilder->expr()->eq('c.current', ':current'))
             ->andWhere($queryBuilder->expr()->in('c.status', ':carStatus'))
-            ->andWhere($queryBuilder->expr()->lte('glength(linestring(w.point, geomfromtext(:location)))', ':distance'))
+            ->andWhere($queryBuilder->expr()->lte('glength(linestring(w.point, st_geomfromtext(:location)))', ':distance'))
             ->setParameter('current', true)
             ->setParameter('carStatus', array(Car::STATUS_WAKEFUL, Car::STATUS_SERVICE_IN, Car::STATUS_SERVICE_END))
-            ->setParameter('location', $point)
+            ->setParameter('location', "point($point)")
             ->setParameter('distance', $distance/100000);
 
         return $queryBuilder->getQuery()

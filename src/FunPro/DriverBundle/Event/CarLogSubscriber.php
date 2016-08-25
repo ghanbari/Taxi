@@ -2,6 +2,7 @@
 
 namespace FunPro\DriverBundle\Event;
 
+use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use FunPro\DriverBundle\CarEvents;
 use FunPro\DriverBundle\Entity\Car;
@@ -62,7 +63,6 @@ class CarLogSubscriber implements EventSubscriberInterface
             CarEvents::CAR_WAKEFUL => array(
                 array('checkCarStatusForWakeful', 255),
                 array('onWakeful', 20),
-                array('createRoute', 18),
             ),
             CarEvents::CAR_MOVE => array(
                 array('checkCarStatusForMove', 255),
@@ -77,6 +77,9 @@ class CarLogSubscriber implements EventSubscriberInterface
         );
     }
 
+    /**
+     * @param WakefulEvent $event
+     */
     public function checkCarStatusForWakeful(WakefulEvent $event)
     {
         $wakeful = $event->getWakeful();
@@ -115,15 +118,9 @@ class CarLogSubscriber implements EventSubscriberInterface
         $this->doctrine->getManager()->persist($carLog);
     }
 
-    public function createRoute(WakefulEvent $event)
-    {
-        $wakeful = $event->getWakeful();
-        $car = $wakeful->getCar();
-
-        $route = new CarRoute($car);
-//        $route->getRoute()->addPoint(new )
-    }
-
+    /**
+     * @param GetMoveCarEvent $event
+     */
     public function checkCarStatusForMove(GetMoveCarEvent $event)
     {
         $car = $event->getCar();
@@ -164,10 +161,31 @@ class CarLogSubscriber implements EventSubscriberInterface
         $this->doctrine->getManager()->persist($carLog);
     }
 
+    /**
+     * @param GetMoveCarEvent $event
+     */
     public function updateRoute(GetMoveCarEvent $event)
     {
+        $car = $event->getCar();
+        $route = $this->doctrine->getRepository('FunProDriverBundle:CarRoute')->findOneBy(array(
+            'car' => $car,
+            'finished' => false,
+        ));
+
+        if ($route) {
+            $linestring = $route->getRoute();
+            $linestring->addPoint($event->getCurrentLocation());
+            $route->setRoute(clone $linestring);
+        } else {
+            $route = new CarRoute($car);
+            $route->setRoute(new LineString(array($event->getPreviousLocation(), $event->getCurrentLocation())));
+            $this->doctrine->getManager()->persist($route);
+        }
     }
 
+    /**
+     * @param CarEvent $event
+     */
     public function checkCarStatusForSleep(CarEvent $event)
     {
         $car = $event->getCar();
@@ -204,7 +222,16 @@ class CarLogSubscriber implements EventSubscriberInterface
         $this->doctrine->getManager()->persist($carLog);
     }
 
-    public function finishRoute()
+    /**
+     * @param CarEvent $event
+     */
+    public function finishRoute(CarEvent $event)
     {
+        $car = $event->getCar();
+        $route = $this->doctrine->getRepository('FunProDriverBundle:CarRoute')->findOneBy(array(
+            'car' => $car,
+            'finished' => false,
+        ));
+        $route->setFinished(true);
     }
 }

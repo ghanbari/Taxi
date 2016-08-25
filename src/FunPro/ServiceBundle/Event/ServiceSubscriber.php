@@ -2,6 +2,7 @@
 
 namespace FunPro\ServiceBundle\Event;
 
+use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\Collections\Criteria;
 use FunPro\DriverBundle\CarEvents;
@@ -42,6 +43,11 @@ class ServiceSubscriber implements EventSubscriberInterface
      */
     private $serializer;
 
+    /**
+     * @param Registry   $doctrine
+     * @param Logger     $logger
+     * @param Serializer $serializer
+     */
     public function __construct(Registry $doctrine, Logger $logger, Serializer $serializer)
     {
         $this->doctrine = $doctrine;
@@ -70,17 +76,37 @@ class ServiceSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            ServiceEvents::SERVICE_REQUESTED => array('onServiceRequest', 10),
-            ServiceEvents::SERVICE_CANCELED => array('onServiceCanceled', 10),
-            ServiceEvents::SERVICE_ACCEPTED  => array('onServiceAccept', 10),
-            ServiceEvents::SERVICE_REJECTED  => array('onServiceReject', 10),
-            ServiceEvents::SERVICE_READY     => array('onServiceReady', 10),
-            ServiceEvents::SERVICE_START     => array('onServiceStart', 10),
+            ServiceEvents::SERVICE_REQUESTED => array(
+                array('onServiceRequest', 10),
+            ),
+            ServiceEvents::SERVICE_CANCELED  => array(
+                array('checkServiceStatusPreCancel', 150),
+                array('onServiceCanceled', 10),
+            ),
+            ServiceEvents::SERVICE_ACCEPTED  => array(
+                array('checkServiceStatusPreAccept', 150),
+                array('onServiceAccept', 10),
+            ),
+            ServiceEvents::SERVICE_REJECTED  => array(
+                array('checkServiceStatusPreReject', 150),
+                array('onServiceReject', 10),
+            ),
+            ServiceEvents::SERVICE_READY     => array(
+                array('checkServiceStatusPreReady', 150),
+                array('onServiceReady', 10),
+            ),
+            ServiceEvents::SERVICE_START     => array(
+                array('checkServiceStatusPreStart', 150),
+                array('onServiceStart', 10),
+            ),
             ServiceEvents::SERVICE_FINISH    => array(
+                array('checkServiceStatusPreFinish', 150),
                 array('onServiceFinish', 10),
                 array('autoPay', 5),
             ),
-            CarEvents::CAR_MOVE              => array('onService', 10),
+            CarEvents::CAR_MOVE              => array(
+                array('onService', 10),
+            ),
             FinancialEvents::PAYMENT_EVENT   => array(
                 array('calculateRealPrice', 80),
                 array('onServicePayed', 10),
@@ -102,13 +128,9 @@ class ServiceSubscriber implements EventSubscriberInterface
     /**
      * @param ServiceEvent $event
      */
-    public function onServiceCanceled(ServiceEvent $event)
+    public function checkServiceStatusPreCancel(ServiceEvent $event)
     {
         $service = $event->getService();
-
-        $criteria = Criteria::create();
-        $criteria->orderBy(array('atTime' => Criteria::DESC))->getFirstResult();
-        $serviceLog = $service->getLogs()->matching($criteria);
 
         $allowedStatus = array(
             ServiceLog::STATUS_REQUESTED,
@@ -116,7 +138,7 @@ class ServiceSubscriber implements EventSubscriberInterface
             ServiceLog::STATUS_READY,
         );
 
-        if (!$serviceLog->first() or !in_array($serviceLog->first()->getStatus(), $allowedStatus)) {
+        if (!in_array($service->getStatus(), $allowedStatus)) {
             $logContext = SerializationContext::create()
                 ->setGroups(array('Public', 'ServiceLogs'));
             $this->logger->addNotice(
@@ -125,6 +147,14 @@ class ServiceSubscriber implements EventSubscriberInterface
             );
             throw new ServiceStatusException('status must be requested');
         }
+    }
+
+    /**
+     * @param ServiceEvent $event
+     */
+    public function onServiceCanceled(ServiceEvent $event)
+    {
+        $service = $event->getService();
 
         $log = new ServiceLog($event->getService(), ServiceLog::STATUS_CANCELED);
         $this->doctrine->getManager()->persist($log);
@@ -135,15 +165,11 @@ class ServiceSubscriber implements EventSubscriberInterface
     /**
      * @param GetCarPointServiceEvent $event
      */
-    public function onServiceAccept(GetCarPointServiceEvent $event)
+    public function checkServiceStatusPreAccept(GetCarPointServiceEvent $event)
     {
         $service = $event->getService();
 
-        $criteria = Criteria::create();
-        $criteria->orderBy(array('atTime' => Criteria::DESC))->getFirstResult();
-        $serviceLog = $service->getLogs()->matching($criteria);
-
-        if (!$serviceLog->first() or $serviceLog->first()->getStatus() !== ServiceLog::STATUS_REQUESTED) {
+        if ($service->getStatus() !== ServiceLog::STATUS_REQUESTED) {
             $logContext = SerializationContext::create()
                 ->setGroups(array('Public', 'ServiceLogs'));
             $this->logger->addError(
@@ -152,6 +178,14 @@ class ServiceSubscriber implements EventSubscriberInterface
             );
             throw new ServiceStatusException('status must be requested');
         }
+    }
+
+    /**
+     * @param GetCarPointServiceEvent $event
+     */
+    public function onServiceAccept(GetCarPointServiceEvent $event)
+    {
+        $service = $event->getService();
 
         $log = new ServiceLog($event->getService(), ServiceLog::STATUS_ACCEPTED);
         $this->doctrine->getManager()->persist($log);
@@ -162,15 +196,11 @@ class ServiceSubscriber implements EventSubscriberInterface
     /**
      * @param GetCarServiceEvent $event
      */
-    public function onServiceReject(GetCarServiceEvent $event)
+    public function checkServiceStatusPreReject(GetCarServiceEvent $event)
     {
         $service = $event->getService();
-
-        $criteria = Criteria::create();
-        $criteria->orderBy(array('atTime' => Criteria::DESC))->getFirstResult();
-        $serviceLog = $service->getLogs()->matching($criteria);
-
-        if (!$serviceLog->first() or $serviceLog->first()->getStatus() !== ServiceLog::STATUS_REQUESTED) {
+        #TODO: when multi driver select for service, when first driver accept, service status is changed
+        if ($service->getStatus() !== ServiceLog::STATUS_REQUESTED) {
             $logContext = SerializationContext::create()
                 ->setGroups(array('Public', 'ServiceLogs'));
             $this->logger->addError(
@@ -179,6 +209,14 @@ class ServiceSubscriber implements EventSubscriberInterface
             );
             throw new ServiceStatusException('status must be requested');
         }
+    }
+
+    /**
+     * @param GetCarServiceEvent $event
+     */
+    public function onServiceReject(GetCarServiceEvent $event)
+    {
+        $service = $event->getService();
 
         $log = new ServiceLog($event->getService(), ServiceLog::STATUS_REJECTED);
         $this->doctrine->getManager()->persist($log);
@@ -189,17 +227,12 @@ class ServiceSubscriber implements EventSubscriberInterface
     /**
      * @param GetCarPointServiceEvent $event
      */
-    public function onServiceReady(GetCarPointServiceEvent $event)
+    public function checkServiceStatusPreReady(GetCarPointServiceEvent $event)
     {
         $service = $event->getService();
 
-        $criteria = Criteria::create();
-        $criteria->orderBy(array('atTime' => Criteria::DESC))->getFirstResult();
-        $serviceLog = $service->getLogs()->matching($criteria);
-
-        if (!$serviceLog->first()
-            or ($serviceLog->first()->getStatus() !== ServiceLog::STATUS_ACCEPTED
-                and $serviceLog->first()->getStatus() !== ServiceLog::STATUS_READY)
+        if ($service->getStatus() !== ServiceLog::STATUS_ACCEPTED
+                and $service->getStatus() !== ServiceLog::STATUS_READY
         ) {
             $logContext = SerializationContext::create()
                 ->setGroups(array('Public', 'ServiceLogs'));
@@ -209,9 +242,20 @@ class ServiceSubscriber implements EventSubscriberInterface
             );
             throw new ServiceStatusException('status must be accepted');
         }
+    }
 
-        $log = new ServiceLog($event->getService(), ServiceLog::STATUS_READY);
-        $this->doctrine->getManager()->persist($log);
+    /**
+     * @param GetCarPointServiceEvent $event
+     */
+    public function onServiceReady(GetCarPointServiceEvent $event)
+    {
+        $service = $event->getService();
+
+        # Unique db key on status & service
+        if ($service->getStatus() !== ServiceLog::STATUS_READY) {
+            $log = new ServiceLog($event->getService(), ServiceLog::STATUS_READY);
+            $this->doctrine->getManager()->persist($log);
+        }
 
         $this->logger->addInfo('Service is ready', array('service' => $service->getId()));
     }
@@ -219,15 +263,11 @@ class ServiceSubscriber implements EventSubscriberInterface
     /**
      * @param ServiceEvent $event
      */
-    public function onServiceStart(ServiceEvent $event)
+    public function checkServiceStatusPreStart(ServiceEvent $event)
     {
         $service = $event->getService();
 
-        $criteria = Criteria::create();
-        $criteria->orderBy(array('atTime' => Criteria::DESC))->getFirstResult();
-        $serviceLog = $service->getLogs()->matching($criteria);
-
-        if (!$serviceLog->first() or $serviceLog->first()->getStatus() !== ServiceLog::STATUS_READY) {
+        if ($service->getStatus() !== ServiceLog::STATUS_READY) {
             $logContext = SerializationContext::create()
                 ->setGroups(array('Public', 'ServiceLogs'));
             $this->logger->addError(
@@ -236,6 +276,14 @@ class ServiceSubscriber implements EventSubscriberInterface
             );
             throw new ServiceStatusException('status must be ready');
         }
+    }
+
+    /**
+     * @param ServiceEvent $event
+     */
+    public function onServiceStart(ServiceEvent $event)
+    {
+        $service = $event->getService();
 
         $log = new ServiceLog($event->getService(), ServiceLog::STATUS_START);
         $this->doctrine->getManager()->persist($log);
@@ -258,12 +306,13 @@ class ServiceSubscriber implements EventSubscriberInterface
                 ->getDoingServiceFilterByCar($car);
 
             if ($service) {
-                $route = clone $service->getRoute();
-                if ($route->count() === 0) {
-                    $route->attach($service->getStartPoint());
+                if ($service->getRoute()) {
+                    $route = $service->getRoute();
+                    $route->addPoint($event->getCurrentLocation());
+                    $service->setRoute(clone $route);
+                } else {
+                    $service->setRoute(new LineString(array($service->getStartPoint(), $event->getCurrentLocation())));
                 }
-                $route->attach($event->getCurrentLocation());
-                $service->setRoute($route);
             }
         }
     }
@@ -271,15 +320,11 @@ class ServiceSubscriber implements EventSubscriberInterface
     /**
      * @param ServiceEvent $event
      */
-    public function onServiceFinish(ServiceEvent $event)
+    public function checkServiceStatusPreFinish(ServiceEvent $event)
     {
         $service = $event->getService();
 
-        $criteria = Criteria::create();
-        $criteria->orderBy(array('atTime' => Criteria::DESC))->getFirstResult();
-        $serviceLog = $service->getLogs()->matching($criteria);
-
-        if (!$serviceLog->first() or $serviceLog->first()->getStatus() !== ServiceLog::STATUS_START) {
+        if ($service->getStatus() !== ServiceLog::STATUS_START) {
             $logContext = SerializationContext::create()
                 ->setGroups(array('Public', 'ServiceLogs'));
             $this->logger->addError(
@@ -298,6 +343,14 @@ class ServiceSubscriber implements EventSubscriberInterface
 //            $route->attach($service->getEndPoint());
 //            $service->setRoute($route);
 //        }
+    }
+
+    /**
+     * @param ServiceEvent $event
+     */
+    public function onServiceFinish(ServiceEvent $event)
+    {
+        $service = $event->getService();
 
         $service->updateDistance();
 

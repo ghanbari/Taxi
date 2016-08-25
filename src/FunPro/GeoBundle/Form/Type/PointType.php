@@ -28,7 +28,7 @@ class PointType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'CrEOF\Spatial\PHP\Types\Geometry\Point',
+            'data_class' => 'FunPro\GeoBundle\Entity\Point',
         ));
     }
 }

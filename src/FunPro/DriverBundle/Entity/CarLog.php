@@ -136,7 +136,7 @@ class CarLog
      * @param Point $point
      * @return CarLog
      */
-    public function setPoint(Point $point)
+    public function setPoint(Point $point = null)
     {
         $this->point = $point;
 

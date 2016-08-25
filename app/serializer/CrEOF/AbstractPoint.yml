@@ -1,0 +1,9 @@
+CrEOF\Spatial\PHP\Types\AbstractPoint:
+    exclusion_policy: NONE
+    properties:
+        x:
+            groups: ["Point"]
+            serialized_name: longitude
+        y:
+            groups: ["Point"]
+            serialized_name: latitude

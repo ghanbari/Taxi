@@ -2,7 +2,7 @@
 
 namespace FunPro\GeoBundle\Entity;
 
-use CrEOF\Spatial\PHP\Types\Geometry\Point;
+use CrEOF\Spatial\PHP\Types\Geometry\Point as SPoint;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -41,7 +41,7 @@ class City
     private $name;
 
     /**
-     * @var Point
+     * @var SPoint
      *
      * @ORM\Column(type="point", nullable=true)
      *
@@ -147,10 +147,10 @@ class City
     /**
      * Set point
      *
-     * @param Point $point
+     * @param SPoint $point
      * @return City
      */
-    public function setPoint(Point $point)
+    public function setPoint(SPoint $point)
     {
         $this->point = $point;
 
@@ -160,7 +160,7 @@ class City
     /**
      * Get point
      *
-     * @return Point
+     * @return SPoint
      */
     public function getPoint()
     {

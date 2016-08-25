@@ -52,6 +52,7 @@ class CarRoute
      * @var \Datetime
      *
      * @ORM\Column(name="created_at", type="datetime")
+     * @Gedmo\Timestampable(on="create")
      *
      * @JS\Groups({"Owner", "Admin"})
      * @JS\Since("1.0.0")
@@ -62,6 +63,7 @@ class CarRoute
      * @var \Datetime
      *
      * @ORM\Column(name="update_at", type="datetime", nullable=true)
+     * @Gedmo\Timestampable(on="update")
      *
      * @JS\Groups({"Owner", "Admin"})
      * @JS\Since("1.0.0")
@@ -119,19 +121,6 @@ class CarRoute
     }
 
     /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     * @return CarRoute
-     */
-    public function setCreatedAt($createdAt)
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
      * Get createdAt
      *
      * @return \DateTime
@@ -139,19 +128,6 @@ class CarRoute
     public function getCreatedAt()
     {
         return $this->createdAt;
-    }
-
-    /**
-     * Set updateAt
-     *
-     * @param \DateTime $updateAt
-     * @return CarRoute
-     */
-    public function setUpdateAt($updateAt)
-    {
-        $this->updateAt = $updateAt;
-
-        return $this;
     }
 
     /**

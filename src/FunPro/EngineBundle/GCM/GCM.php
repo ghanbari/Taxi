@@ -7,6 +7,7 @@ use Buzz\Client\Curl;
 use Buzz\Exception\RequestException;
 use Buzz\Exception\RuntimeException;
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\ORM\ORMException;
 use FunPro\EngineBundle\Profiler\GCMDataCollector;
 use FunPro\UserBundle\Entity\Device;
 use FunPro\UserBundle\Entity\Message;
@@ -126,15 +127,24 @@ class GCM
                 foreach ($partialDevices as $device) {
                     $persistableMessage = clone $rawMessage;
                     $persistableMessage->setDevice($device);
-                    $this->doctrine->getManager()->persist($persistableMessage);
+                    try {
+                        $this->doctrine->getManager()->persist($persistableMessage);
+                    } catch (ORMException $e) {
+                        $this->logger->addError('Reset entity manager');
+                        $this->doctrine->resetManager();
+                    }
                     if ($device->getStatus() === Device::STATUS_ACTIVE) {
                         $messages[] = $persistableMessage;
                     }
                 }
 
-                $this->sendRequest($messages, $rawMessage);
+                if (!empty($messages)) {
+                    $this->sendRequest($messages, $rawMessage);
+                    $this->doctrine->getManager()->flush();
+                } else {
+                    $this->logger->addInfo('Queue is empty');
+                }
 
-                $this->doctrine->getManager()->flush();
                 $this->doctrine->getManager()->clear();
             }
         }
