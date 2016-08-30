@@ -85,7 +85,7 @@ class TicketController extends FOSRestController
 
         if ($form->isValid()) {
             if ($data = $fetcher->get('data')) {
-                $ticket->setData(json_decode($data));
+                $ticket->setData(json_decode($data, true));
             }
             $this->getDoctrine()->getManager()->persist($ticket);
             $this->getDoctrine()->getManager()->flush();
