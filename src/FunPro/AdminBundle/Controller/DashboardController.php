@@ -2,15 +2,23 @@
 
 namespace FunPro\AdminBundle\Controller;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Controller\Annotations as Rest;
 
-class DashboardController
+/**
+ * Class DashboardController
+ *
+ * @package FunPro\AdminBundle\Controller
+ *
+ * @Rest\NamePrefix("fun_pro_admin_")
+ * @Rest\RouteResource(resource="dashboard")
+ */
+class DashboardController extends FOSRestController
 {
     /**
-     * @Template
      */
     public function indexAction()
     {
-        return array('title' => 'test');
+        return $this->routeRedirectView('fun_pro_admin_map_monitor');
     }
-} 
+}
