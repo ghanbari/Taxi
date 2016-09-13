@@ -140,11 +140,11 @@ class GCM
 
                 if (!empty($messages)) {
                     $this->sendRequest($messages, $rawMessage);
-                    $this->doctrine->getManager()->flush();
                 } else {
                     $this->logger->addInfo('Queue is empty');
                 }
 
+                $this->doctrine->getManager()->flush();
                 $this->doctrine->getManager()->clear();
             }
         }
