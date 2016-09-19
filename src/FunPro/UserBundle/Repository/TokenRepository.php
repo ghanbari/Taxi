@@ -3,6 +3,7 @@
 namespace FunPro\UserBundle\Repository;
 
 use DateTime;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query\QueryException;
@@ -17,6 +18,37 @@ use FunPro\UserBundle\Entity\User;
  */
 class TokenRepository extends EntityRepository
 {
+    public function createToken(User $user, $expireAfter)
+    {
+        $queryBuilder = $this->createQueryBuilder('t');
+
+        $token = $queryBuilder->select('t')
+            ->where($queryBuilder->expr()->eq('t.user', ':user'))
+            ->andWhere($queryBuilder->expr()->lte('t.createdAt', ':expireDate'))
+            ->andWhere($queryBuilder->expr()->eq('t.expired', false))
+            ->setParameter('user', $user)
+            ->setParameter('expireDate', new \DateTime("+$expireAfter second"))
+            ->getQuery()
+            ->getSingleResult();
+
+        if (!$token) {
+            do {
+                try {
+                    $verifyNumber = random_int(11111, 99999);
+                    $token = new Token($verifyNumber);
+                    $token->setUser($user);
+                    $this->getEntityManager()->persist($token);
+                    $this->getEntityManager()->flush();
+                    $tokenIsValid = true;
+                } catch (UniqueConstraintViolationException $e) {
+                    $tokenIsValid = false;
+                }
+            } while (!$tokenIsValid);
+        }
+
+        return $token;
+    }
+
     /**
      * @param User $user
      *

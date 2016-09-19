@@ -32,6 +32,8 @@ parameters:
     nik_sms.user: ''
     nik_sms.pass: ''
     nik_sms.from: ''
+    avanak.user: ''
+    avanak.pass: ''
 
     gcm.api_key: ''
     gcm.ttl.service_request: 300
@@ -51,8 +53,9 @@ parameters:
 
     login.max_failure_count: 10
     login.on_failure_lock_for: 24 #hour
+    register.token_expire_after: 3600
     register.max_token_request: 10
-    register.reset_token_request_after_second: 86400
+    register.reset_token_counter_after_second: 86400
 
     device.gps.retry: 15000
     device.notification.retry: 8000

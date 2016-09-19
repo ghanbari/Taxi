@@ -50,7 +50,7 @@ class ConfigController extends FOSRestController
             'login.max_failure_count' => $this->getParameter('login.max_failure_count'),
             'login.on_failure_lock_for' => $this->getParameter('login.on_failure_lock_for'),
             'register.max_token_request' => $this->getParameter('register.max_token_request'),
-            'register.reset_token_request_after_second' => $this->getParameter('register.reset_token_request_after_second'),
+            'register.reset_token_counter_after_second' => $this->getParameter('register.reset_token_counter_after_second'),
             'device.gps.retry' => $this->getParameter('device.gps.retry'),
             'device.notification.retry' => $this->getParameter('device.notification.retry'),
             'service.visible_radius' => $this->getParameter('service.visible_radius'),

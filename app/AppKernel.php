@@ -36,6 +36,7 @@ class AppKernel extends Kernel
             new Vich\UploaderBundle\VichUploaderBundle(),
             new Dunglas\AngularCsrfBundle\DunglasAngularCsrfBundle(),
             new JMS\TranslationBundle\JMSTranslationBundle(),
+            new JMS\JobQueueBundle\JMSJobQueueBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'), true)) {
