@@ -79,7 +79,7 @@ class PassengerController extends FOSRestController
         }
 
         $token = $this->getDoctrine()->getRepository('FunProUserBundle:Token')
-            ->createToken($this->getUser(), $this->getParameter('register.token_expire_after'));
+            ->createToken($passenger, $this->getParameter('register.token_expire_after'));
 
         $period = new \DateTime('-' . $this->getParameter('register.reset_token_counter_after_second') . 'seconds');
         $tokenRequestedCount = $manager->getRepository('FunProUserBundle:Token')
