@@ -79,19 +79,6 @@ class CreditCard
     }
 
     /**
-     * Set number
-     *
-     * @param string $number
-     * @return CreditCard
-     */
-    public function setNumber($number)
-    {
-        $this->number = $number;
-
-        return $this;
-    }
-
-    /**
      * Get number
      *
      * @return string
@@ -102,14 +89,15 @@ class CreditCard
     }
 
     /**
-     * Set expireAt
+     * Set number
      *
-     * @param \DateTime $expireAt
+     * @param string $number
+     *
      * @return CreditCard
      */
-    public function setExpireAt($expireAt)
+    public function setNumber($number)
     {
-        $this->expireAt = $expireAt;
+        $this->number = $number;
 
         return $this;
     }
@@ -125,14 +113,15 @@ class CreditCard
     }
 
     /**
-     * Set bank
+     * Set expireAt
      *
-     * @param Bank $bank
+     * @param \DateTime $expireAt
+     *
      * @return CreditCard
      */
-    public function setBank(Bank $bank = null)
+    public function setExpireAt($expireAt)
     {
-        $this->bank = $bank;
+        $this->expireAt = $expireAt;
 
         return $this;
     }
@@ -148,14 +137,15 @@ class CreditCard
     }
 
     /**
-     * Set owner
+     * Set bank
      *
-     * @param User $owner
+     * @param Bank $bank
+     *
      * @return CreditCard
      */
-    public function setOwner(User $owner = null)
+    public function setBank(Bank $bank = null)
     {
-        $this->owner = $owner;
+        $this->bank = $bank;
 
         return $this;
     }
@@ -168,5 +158,19 @@ class CreditCard
     public function getOwner()
     {
         return $this->owner;
+    }
+
+    /**
+     * Set owner
+     *
+     * @param User $owner
+     *
+     * @return CreditCard
+     */
+    public function setOwner(User $owner = null)
+    {
+        $this->owner = $owner;
+
+        return $this;
     }
 }

@@ -93,15 +93,6 @@ class CarLog
     }
 
     /**
-     * Set atTime
-     * @ORM\PrePersist()
-     */
-    public function setAtTime()
-    {
-        $this->atTime = new \DateTime();
-    }
-
-    /**
      * Get atTime
      *
      * @return \DateTime
@@ -109,6 +100,15 @@ class CarLog
     public function getAtTime()
     {
         return $this->atTime;
+    }
+
+    /**
+     * Set atTime
+     * @ORM\PrePersist()
+     */
+    public function setAtTime()
+    {
+        $this->atTime = new \DateTime();
     }
 
     /**
@@ -131,19 +131,6 @@ class CarLog
     }
 
     /**
-     * Set point
-     *
-     * @param Point $point
-     * @return CarLog
-     */
-    public function setPoint(Point $point = null)
-    {
-        $this->point = $point;
-
-        return $this;
-    }
-
-    /**
      * Get point
      *
      * @return Point
@@ -154,14 +141,15 @@ class CarLog
     }
 
     /**
-     * Set car
+     * Set point
      *
-     * @param Car $car
+     * @param Point $point
+     *
      * @return CarLog
      */
-    public function setCar(Car $car = null)
+    public function setPoint(Point $point = null)
     {
-        $this->car = $car;
+        $this->point = $point;
 
         return $this;
     }
@@ -174,5 +162,19 @@ class CarLog
     public function getCar()
     {
         return $this->car;
+    }
+
+    /**
+     * Set car
+     *
+     * @param Car $car
+     *
+     * @return CarLog
+     */
+    public function setCar(Car $car = null)
+    {
+        $this->car = $car;
+
+        return $this;
     }
 }

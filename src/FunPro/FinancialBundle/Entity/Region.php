@@ -80,6 +80,7 @@ class Region
      * Add currencies
      *
      * @param Currency $currencies
+     *
      * @return Region
      */
     public function addCurrency(Currency $currencies)

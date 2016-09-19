@@ -11,7 +11,7 @@ class PlaqueType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param array                $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -19,10 +19,9 @@ class PlaqueType extends AbstractType
             ->add('firstNumber', Type\NumberType::class)
             ->add('secondNumber', Type\NumberType::class)
             ->add('cityNumber', Type\NumberType::class)
-            ->add('areaCode', Type\TextType::class, array('attr'=>array('maxlength'=>1)))
-        ;
+            ->add('areaCode', Type\TextType::class, array('attr' => array('maxlength' => 1)));
     }
-    
+
     /**
      * @param OptionsResolver $resolver
      */

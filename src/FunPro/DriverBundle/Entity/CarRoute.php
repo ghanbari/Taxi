@@ -4,8 +4,8 @@ namespace FunPro\DriverBundle\Entity;
 
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation as JS;
 use Gedmo\Mapping\Annotation as Gedmo;
+use JMS\Serializer\Annotation as JS;
 
 /**
  * CarRoute
@@ -98,19 +98,6 @@ class CarRoute
     }
 
     /**
-     * Set route
-     *
-     * @param LineString $route
-     * @return CarRoute
-     */
-    public function setRoute($route)
-    {
-        $this->route = $route;
-
-        return $this;
-    }
-
-    /**
      * Get route
      *
      * @return Linestring
@@ -118,6 +105,20 @@ class CarRoute
     public function getRoute()
     {
         return $this->route;
+    }
+
+    /**
+     * Set route
+     *
+     * @param LineString $route
+     *
+     * @return CarRoute
+     */
+    public function setRoute($route)
+    {
+        $this->route = $route;
+
+        return $this;
     }
 
     /**
@@ -141,19 +142,6 @@ class CarRoute
     }
 
     /**
-     * Set car
-     *
-     * @param Car $car
-     * @return CarRoute
-     */
-    public function setCar(Car $car = null)
-    {
-        $this->car = $car;
-
-        return $this;
-    }
-
-    /**
      * Get car
      *
      * @return Car
@@ -161,6 +149,20 @@ class CarRoute
     public function getCar()
     {
         return $this->car;
+    }
+
+    /**
+     * Set car
+     *
+     * @param Car $car
+     *
+     * @return CarRoute
+     */
+    public function setCar(Car $car = null)
+    {
+        $this->car = $car;
+
+        return $this;
     }
 
     /**

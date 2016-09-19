@@ -16,13 +16,13 @@ class Message
     const PRIORITY_NORMAL = 'normal';
     const PRIORITY_HIGH = 'high';
 
-    const MESSAGE_TYPE_SERVICE_REQUESTED    = 1;
-    const MESSAGE_TYPE_SERVICE_CANCELED     = 2;
-    const MESSAGE_TYPE_SERVICE_ACCEPTED     = 3;
-    const MESSAGE_TYPE_SERVICE_REJECTED     = 4;
-    const MESSAGE_TYPE_SERVICE_READY        = 5;
-    const MESSAGE_TYPE_SERVICE_STARTED      = 6;
-    const MESSAGE_TYPE_SERVICE_FINISHED     = 7;
+    const MESSAGE_TYPE_SERVICE_REQUESTED = 1;
+    const MESSAGE_TYPE_SERVICE_CANCELED = 2;
+    const MESSAGE_TYPE_SERVICE_ACCEPTED = 3;
+    const MESSAGE_TYPE_SERVICE_REJECTED = 4;
+    const MESSAGE_TYPE_SERVICE_READY = 5;
+    const MESSAGE_TYPE_SERVICE_STARTED = 6;
+    const MESSAGE_TYPE_SERVICE_FINISHED = 7;
 
     /**
      * Message database id
@@ -335,6 +335,15 @@ class Message
     private $download;
 
     /**
+     * Class constructor
+     */
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime();
+        $this->setDownload(false);
+    }
+
+    /**
      * @ORM\PostLoad()
      *
      * TODO: Does message show in admin panel or fetch in another place?
@@ -346,18 +355,10 @@ class Message
     }
 
     /**
-     * Class constructor
-     */
-    public function __construct()
-    {
-        $this->createdAt = new \DateTime();
-        $this->setDownload(false);
-    }
-
-    /**
      * @ORM\PreUpdate
      */
-    public function PreUpdate() {
+    public function PreUpdate()
+    {
         $this->updatedAt = new \DateTime();
     }
 
@@ -400,25 +401,6 @@ class Message
     }
 
     /**
-     * @return mixed
-     */
-    public function getBadge()
-    {
-        return $this->badge;
-    }
-
-    /**
-     * @param string $badge
-     *
-     * @return $this
-     */
-    public function setBadge($badge)
-    {
-        $this->badge = $badge;
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getBody()
@@ -428,30 +410,12 @@ class Message
 
     /**
      * @param string $body
+     *
      * @return $this
      */
     public function setBody($body)
     {
         $this->body = $body;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getClickAction()
-    {
-        return $this->click_action;
-    }
-
-    /**
-     * @param string $click_action
-     *
-     * @return $this
-     */
-    public function setClickAction($click_action)
-    {
-        $this->click_action = $click_action;
         return $this;
     }
 
@@ -471,25 +435,6 @@ class Message
     public function setCollapseKey($collapseKey)
     {
         $this->collapseKey = $collapseKey;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getColor()
-    {
-        return $this->color;
-    }
-
-    /**
-     * @param mixed $color
-     *
-     * @return $this
-     */
-    public function setColor($color)
-    {
-        $this->color = $color;
         return $this;
     }
 
@@ -627,25 +572,6 @@ class Message
     }
 
     /**
-     * @return string
-     */
-    public function getIcon()
-    {
-        return $this->icon;
-    }
-
-    /**
-     * @param string $icon
-     *
-     * @return $this
-     */
-    public function setIcon($icon)
-    {
-        $this->icon = $icon;
-        return $this;
-    }
-
-    /**
      * @return mixed
      */
     public function getId()
@@ -684,6 +610,139 @@ class Message
             'color' => $this->getColor(),
             'click_action' => $this->getClickAction(),
         );
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string $title
+     *
+     * @return $this
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBadge()
+    {
+        return $this->badge;
+    }
+
+    /**
+     * @param string $badge
+     *
+     * @return $this
+     */
+    public function setBadge($badge)
+    {
+        $this->badge = $badge;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIcon()
+    {
+        return $this->icon;
+    }
+
+    /**
+     * @param string $icon
+     *
+     * @return $this
+     */
+    public function setIcon($icon)
+    {
+        $this->icon = $icon;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSound()
+    {
+        return $this->sound;
+    }
+
+    /**
+     * @param string $sound
+     *
+     * @return $this
+     */
+    public function setSound($sound)
+    {
+        $this->sound = $sound;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTag()
+    {
+        return $this->tag;
+    }
+
+    /**
+     * @param mixed $tag
+     *
+     * @return $this
+     */
+    public function setTag($tag)
+    {
+        $this->tag = $tag;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getColor()
+    {
+        return $this->color;
+    }
+
+    /**
+     * @param mixed $color
+     *
+     * @return $this
+     */
+    public function setColor($color)
+    {
+        $this->color = $color;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getClickAction()
+    {
+        return $this->click_action;
+    }
+
+    /**
+     * @param string $click_action
+     *
+     * @return $this
+     */
+    public function setClickAction($click_action)
+    {
+        $this->click_action = $click_action;
+        return $this;
     }
 
     /**
@@ -728,6 +787,7 @@ class Message
      * add a register id to message
      *
      * @param $registrationIds
+     *
      * @return $this
      */
     public function addRegistrationIds($registrationIds)
@@ -752,25 +812,6 @@ class Message
     public function setRestrictedPackageName($restrictedPackageName)
     {
         $this->restrictedPackageName = $restrictedPackageName;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSound()
-    {
-        return $this->sound;
-    }
-
-    /**
-     * @param string $sound
-     *
-     * @return $this
-     */
-    public function setSound($sound)
-    {
-        $this->sound = $sound;
         return $this;
     }
 
@@ -813,25 +854,6 @@ class Message
     }
 
     /**
-     * @return mixed
-     */
-    public function getTag()
-    {
-        return $this->tag;
-    }
-
-    /**
-     * @param mixed $tag
-     *
-     * @return $this
-     */
-    public function setTag($tag)
-    {
-        $this->tag = $tag;
-        return $this;
-    }
-
-    /**
      * @return int
      */
     public function getTimeToLive()
@@ -851,25 +873,6 @@ class Message
     }
 
     /**
-     * @return string
-     */
-    public function getTitle()
-    {
-        return $this->title;
-    }
-
-    /**
-     * @param string $title
-     *
-     * @return $this
-     */
-    public function setTitle($title)
-    {
-        $this->title = $title;
-        return $this;
-    }
-
-    /**
      * @return \DateTime
      */
     public function getUpdatedAt()
@@ -879,6 +882,7 @@ class Message
 
     /**
      * @param \DateTime $updatedAt
+     *
      * @return $this
      */
     public function setUpdatedAt($updatedAt)

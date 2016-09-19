@@ -93,19 +93,6 @@ class Wallet
     }
 
     /**
-     * Set name
-     *
-     * @param string $name
-     * @return Wallet
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
      * Get name
      *
      * @return string
@@ -116,14 +103,15 @@ class Wallet
     }
 
     /**
-     * Set balance
+     * Set name
      *
-     * @param double $balance
+     * @param string $name
+     *
      * @return Wallet
      */
-    public function setBalance($balance)
+    public function setName($name)
     {
-        $this->balance = $balance;
+        $this->name = $name;
 
         return $this;
     }
@@ -139,14 +127,15 @@ class Wallet
     }
 
     /**
-     * Set currency
+     * Set balance
      *
-     * @param Currency $currency
+     * @param double $balance
+     *
      * @return Wallet
      */
-    public function setCurrency(Currency $currency = null)
+    public function setBalance($balance)
     {
-        $this->currency = $currency;
+        $this->balance = $balance;
 
         return $this;
     }
@@ -162,14 +151,15 @@ class Wallet
     }
 
     /**
-     * Set owner
+     * Set currency
      *
-     * @param User $owner
+     * @param Currency $currency
+     *
      * @return Wallet
      */
-    public function setOwner(User $owner = null)
+    public function setCurrency(Currency $currency = null)
     {
-        $this->owner = $owner;
+        $this->currency = $currency;
 
         return $this;
     }
@@ -182,5 +172,19 @@ class Wallet
     public function getOwner()
     {
         return $this->owner;
+    }
+
+    /**
+     * Set owner
+     *
+     * @param User $owner
+     *
+     * @return Wallet
+     */
+    public function setOwner(User $owner = null)
+    {
+        $this->owner = $owner;
+
+        return $this;
     }
 }

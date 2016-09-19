@@ -4,7 +4,6 @@ namespace FunPro\ServiceBundle\Event;
 
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Doctrine\Common\Collections\Criteria;
 use FunPro\DriverBundle\CarEvents;
 use FunPro\DriverBundle\Entity\Car;
 use FunPro\DriverBundle\Event\GetMoveCarEvent;
@@ -79,35 +78,35 @@ class ServiceSubscriber implements EventSubscriberInterface
             ServiceEvents::SERVICE_REQUESTED => array(
                 array('onServiceRequest', 10),
             ),
-            ServiceEvents::SERVICE_CANCELED  => array(
+            ServiceEvents::SERVICE_CANCELED => array(
                 array('checkServiceStatusPreCancel', 150),
                 array('onServiceCanceled', 10),
             ),
-            ServiceEvents::SERVICE_ACCEPTED  => array(
+            ServiceEvents::SERVICE_ACCEPTED => array(
                 array('checkServiceStatusPreAccept', 150),
                 array('onServiceAccept', 10),
             ),
-            ServiceEvents::SERVICE_REJECTED  => array(
+            ServiceEvents::SERVICE_REJECTED => array(
                 array('checkServiceStatusPreReject', 150),
                 array('onServiceReject', 10),
             ),
-            ServiceEvents::SERVICE_READY     => array(
+            ServiceEvents::SERVICE_READY => array(
                 array('checkServiceStatusPreReady', 150),
                 array('onServiceReady', 10),
             ),
-            ServiceEvents::SERVICE_START     => array(
+            ServiceEvents::SERVICE_START => array(
                 array('checkServiceStatusPreStart', 150),
                 array('onServiceStart', 10),
             ),
-            ServiceEvents::SERVICE_FINISH    => array(
+            ServiceEvents::SERVICE_FINISH => array(
                 array('checkServiceStatusPreFinish', 150),
                 array('onServiceFinish', 10),
                 array('autoPay', 5),
             ),
-            CarEvents::CAR_MOVE              => array(
+            CarEvents::CAR_MOVE => array(
                 array('onService', 10),
             ),
-            FinancialEvents::PAYMENT_EVENT   => array(
+            FinancialEvents::PAYMENT_EVENT => array(
                 array('calculateRealPrice', 80),
                 array('onServicePayed', 10),
             ),
@@ -232,7 +231,7 @@ class ServiceSubscriber implements EventSubscriberInterface
         $service = $event->getService();
 
         if ($service->getStatus() !== ServiceLog::STATUS_ACCEPTED
-                and $service->getStatus() !== ServiceLog::STATUS_READY
+            and $service->getStatus() !== ServiceLog::STATUS_READY
         ) {
             $logContext = SerializationContext::create()
                 ->setGroups(array('Public', 'ServiceLogs'));

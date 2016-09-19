@@ -114,19 +114,6 @@ class PropagationList
     }
 
     /**
-     * Set number
-     *
-     * @param integer $number
-     * @return PropagationList
-     */
-    public function setNumber($number)
-    {
-        $this->number = $number;
-
-        return $this;
-    }
-
-    /**
      * Get number
      *
      * @return integer
@@ -137,14 +124,15 @@ class PropagationList
     }
 
     /**
-     * Set answer
+     * Set number
      *
-     * @param integer $answer
+     * @param integer $number
+     *
      * @return PropagationList
      */
-    public function setAnswer($answer)
+    public function setNumber($number)
     {
-        $this->answer = $answer;
+        $this->number = $number;
 
         return $this;
     }
@@ -160,14 +148,15 @@ class PropagationList
     }
 
     /**
-     * Set createdAt
+     * Set answer
      *
-     * @param \DateTime $createdAt
+     * @param integer $answer
+     *
      * @return PropagationList
      */
-    public function setCreatedAt($createdAt)
+    public function setAnswer($answer)
     {
-        $this->createdAt = $createdAt;
+        $this->answer = $answer;
 
         return $this;
     }
@@ -183,14 +172,15 @@ class PropagationList
     }
 
     /**
-     * Set updatedAt
+     * Set createdAt
      *
-     * @param \DateTime $updatedAt
+     * @param \DateTime $createdAt
+     *
      * @return PropagationList
      */
-    public function setUpdatedAt($updatedAt)
+    public function setCreatedAt($createdAt)
     {
-        $this->updatedAt = $updatedAt;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
@@ -203,6 +193,30 @@ class PropagationList
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * Set updatedAt
+     *
+     * @param \DateTime $updatedAt
+     *
+     * @return PropagationList
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get service
+     *
+     * @return Service
+     */
+    public function getService()
+    {
+        return $this->service;
     }
 
     /**
@@ -222,16 +236,6 @@ class PropagationList
         $this->service->addPropagationList($this);
 
         return $this;
-    }
-
-    /**
-     * Get service
-     *
-     * @return Service
-     */
-    public function getService()
-    {
-        return $this->service;
     }
 
     /**

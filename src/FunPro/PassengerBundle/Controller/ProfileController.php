@@ -25,24 +25,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 class ProfileController extends FOSRestController
 {
     /**
-     * @param Passenger $passenger
-     *
-     * @return \Symfony\Component\Form\Form
-     */
-    public function createEditForm(Passenger $passenger)
-    {
-        $requestFormat = $this->get('request_stack')->getCurrentRequest()->getRequestFormat('html');
-        $form = $this->createForm(new ProfileType(), $passenger, array(
-            'action' => $this->generateUrl('fun_pro_passenger_api_put_passenger_profile'),
-            'method' => 'PUT',
-            'validation_groups' => array('Profile'),
-            'csrf_protection' => $requestFormat === 'html' ?: false,
-        ));
-
-        return $form;
-    }
-
-    /**
      * Update user profile.
      *
      * @ApiDoc(
@@ -91,6 +73,24 @@ class ProfileController extends FOSRestController
         }
 
         return $this->view($form, Response::HTTP_BAD_REQUEST);
+    }
+
+    /**
+     * @param Passenger $passenger
+     *
+     * @return \Symfony\Component\Form\Form
+     */
+    public function createEditForm(Passenger $passenger)
+    {
+        $requestFormat = $this->get('request_stack')->getCurrentRequest()->getRequestFormat('html');
+        $form = $this->createForm(new ProfileType(), $passenger, array(
+            'action' => $this->generateUrl('fun_pro_passenger_api_put_passenger_profile'),
+            'method' => 'PUT',
+            'validation_groups' => array('Profile'),
+            'csrf_protection' => $requestFormat === 'html' ?: false,
+        ));
+
+        return $form;
     }
 
     /**

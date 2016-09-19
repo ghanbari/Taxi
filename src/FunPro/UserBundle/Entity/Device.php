@@ -32,7 +32,7 @@ class Device
      * @JS\Since("1.0.0")
      */
     private $id;
-    
+
     /**
      * @var string Device token
      *
@@ -58,7 +58,7 @@ class Device
      * @JS\Since("1.0.0")
      */
     private $deviceIdentifier;
-    
+
     /**
      * @var boolean
      *
@@ -70,7 +70,7 @@ class Device
      * @JS\Since("1.0.0")
      */
     private $soundAllowed = false;
-    
+
     /**
      * @var boolean
      *
@@ -82,7 +82,7 @@ class Device
      * @JS\Since("1.0.0")
      */
     private $alertAllowed = false;
-    
+
     /**
      * @var string
      *
@@ -95,7 +95,7 @@ class Device
      * @JS\Since("1.0.0")
      */
     private $deviceName;
-    
+
     /**
      * @var string
      *
@@ -108,7 +108,7 @@ class Device
      * @JS\Since("1.0.0")
      */
     private $os;
-    
+
     /**
      * @var string
      *
@@ -120,7 +120,7 @@ class Device
      * @JS\Since("1.0.0")
      */
     private $status = self::STATUS_ACTIVE;
-    
+
     /**
      * @var string
      *
@@ -133,7 +133,7 @@ class Device
      * @JS\Since("1.0.0")
      */
     private $deviceModel;
-    
+
     /**
      * @var string
      *
@@ -159,7 +159,7 @@ class Device
      * @JS\Since("1.0.0")
      */
     private $appName;
-    
+
     /**
      * @var string
      *
@@ -172,7 +172,7 @@ class Device
      * @JS\Since("1.0.0")
      */
     private $appVersion;
-    
+
     /**
      * @var \DateTime
      *
@@ -182,7 +182,7 @@ class Device
      * @JS\Since("1.0.0")
      */
     private $createdAt;
-    
+
     /**
      * @var \DateTime
      *
@@ -199,7 +199,7 @@ class Device
      * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
      */
     private $deletedAt;
-    
+
     /**
      * @ORM\OneToMany(targetEntity="FunPro\UserBundle\Entity\Message", mappedBy="device")
      *
@@ -315,19 +315,6 @@ class Device
     }
 
     /**
-     * Set deviceToken
-     *
-     * @param string $deviceToken
-     * @return Device
-     */
-    public function setDeviceToken($deviceToken)
-    {
-        $this->deviceToken = $deviceToken;
-
-        return $this;
-    }
-
-    /**
      * Get deviceToken
      *
      * @return string
@@ -338,14 +325,15 @@ class Device
     }
 
     /**
-     * Set deviceIdentifier
+     * Set deviceToken
      *
-     * @param string $deviceIdentifier
+     * @param string $deviceToken
+     *
      * @return Device
      */
-    public function setDeviceIdentifier($deviceIdentifier)
+    public function setDeviceToken($deviceToken)
     {
-        $this->deviceIdentifier = $deviceIdentifier;
+        $this->deviceToken = $deviceToken;
 
         return $this;
     }
@@ -361,14 +349,15 @@ class Device
     }
 
     /**
-     * Set soundAllowed
+     * Set deviceIdentifier
      *
-     * @param boolean $soundAllowed
+     * @param string $deviceIdentifier
+     *
      * @return Device
      */
-    public function setSoundAllowed($soundAllowed)
+    public function setDeviceIdentifier($deviceIdentifier)
     {
-        $this->soundAllowed = $soundAllowed;
+        $this->deviceIdentifier = $deviceIdentifier;
 
         return $this;
     }
@@ -384,14 +373,15 @@ class Device
     }
 
     /**
-     * Set alertAllowed
+     * Set soundAllowed
      *
-     * @param boolean $alertAllowed
+     * @param boolean $soundAllowed
+     *
      * @return Device
      */
-    public function setAlertAllowed($alertAllowed)
+    public function setSoundAllowed($soundAllowed)
     {
-        $this->alertAllowed = $alertAllowed;
+        $this->soundAllowed = $soundAllowed;
 
         return $this;
     }
@@ -407,14 +397,15 @@ class Device
     }
 
     /**
-     * Set deviceName
+     * Set alertAllowed
      *
-     * @param string $deviceName
+     * @param boolean $alertAllowed
+     *
      * @return Device
      */
-    public function setDeviceName($deviceName)
+    public function setAlertAllowed($alertAllowed)
     {
-        $this->deviceName = $deviceName;
+        $this->alertAllowed = $alertAllowed;
 
         return $this;
     }
@@ -430,14 +421,15 @@ class Device
     }
 
     /**
-     * Set os
+     * Set deviceName
      *
-     * @param string $os
+     * @param string $deviceName
+     *
      * @return Device
      */
-    public function setOs($os)
+    public function setDeviceName($deviceName)
     {
-        $this->os = $os;
+        $this->deviceName = $deviceName;
 
         return $this;
     }
@@ -453,14 +445,15 @@ class Device
     }
 
     /**
-     * Set status
+     * Set os
      *
-     * @param string $status
+     * @param string $os
+     *
      * @return Device
      */
-    public function setStatus($status)
+    public function setOs($os)
     {
-        $this->status = $status;
+        $this->os = $os;
 
         return $this;
     }
@@ -476,14 +469,15 @@ class Device
     }
 
     /**
-     * Set deviceModel
+     * Set status
      *
-     * @param string $deviceModel
+     * @param string $status
+     *
      * @return Device
      */
-    public function setDeviceModel($deviceModel)
+    public function setStatus($status)
     {
-        $this->deviceModel = $deviceModel;
+        $this->status = $status;
 
         return $this;
     }
@@ -496,6 +490,20 @@ class Device
     public function getDeviceModel()
     {
         return $this->deviceModel;
+    }
+
+    /**
+     * Set deviceModel
+     *
+     * @param string $deviceModel
+     *
+     * @return Device
+     */
+    public function setDeviceModel($deviceModel)
+    {
+        $this->deviceModel = $deviceModel;
+
+        return $this;
     }
 
     /**
@@ -518,19 +526,6 @@ class Device
     }
 
     /**
-     * Set deviceVersion
-     *
-     * @param string $deviceVersion
-     * @return Device
-     */
-    public function setDeviceVersion($deviceVersion)
-    {
-        $this->deviceVersion = $deviceVersion;
-
-        return $this;
-    }
-
-    /**
      * Get deviceVersion
      *
      * @return string
@@ -541,14 +536,15 @@ class Device
     }
 
     /**
-     * Set appVersion
+     * Set deviceVersion
      *
-     * @param string $appVersion
+     * @param string $deviceVersion
+     *
      * @return Device
      */
-    public function setAppVersion($appVersion)
+    public function setDeviceVersion($deviceVersion)
     {
-        $this->appVersion = $appVersion;
+        $this->deviceVersion = $deviceVersion;
 
         return $this;
     }
@@ -564,14 +560,15 @@ class Device
     }
 
     /**
-     * Set createdAt
+     * Set appVersion
      *
-     * @param \DateTime $createdAt
+     * @param string $appVersion
+     *
      * @return Device
      */
-    public function setCreatedAt($createdAt)
+    public function setAppVersion($appVersion)
     {
-        $this->createdAt = $createdAt;
+        $this->appVersion = $appVersion;
 
         return $this;
     }
@@ -587,14 +584,15 @@ class Device
     }
 
     /**
-     * Set updatedAt
+     * Set createdAt
      *
-     * @param \DateTime $updatedAt
+     * @param \DateTime $createdAt
+     *
      * @return Device
      */
-    public function setUpdatedAt($updatedAt)
+    public function setCreatedAt($createdAt)
     {
-        $this->updatedAt = $updatedAt;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
@@ -607,6 +605,20 @@ class Device
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * Set updatedAt
+     *
+     * @param \DateTime $updatedAt
+     *
+     * @return Device
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
     }
 
     /**
@@ -629,19 +641,6 @@ class Device
     }
 
     /**
-     * Set apiKey
-     *
-     * @param string $apiKey
-     * @return Device
-     */
-    public function setApiKey($apiKey)
-    {
-        $this->apiKey = $apiKey;
-
-        return $this;
-    }
-
-    /**
      * Get apiKey
      *
      * @return string
@@ -652,9 +651,24 @@ class Device
     }
 
     /**
+     * Set apiKey
+     *
+     * @param string $apiKey
+     *
+     * @return Device
+     */
+    public function setApiKey($apiKey)
+    {
+        $this->apiKey = $apiKey;
+
+        return $this;
+    }
+
+    /**
      * Add messages
      *
      * @param Message $messages
+     *
      * @return Device
      */
     public function addMessage(Message $messages)
@@ -685,19 +699,6 @@ class Device
     }
 
     /**
-     * Set owner
-     *
-     * @param User $owner
-     * @return Device
-     */
-    public function setOwner(User $owner = null)
-    {
-        $this->owner = $owner;
-
-        return $this;
-    }
-
-    /**
      * Get owner
      *
      * @return User
@@ -705,6 +706,20 @@ class Device
     public function getOwner()
     {
         return $this->owner;
+    }
+
+    /**
+     * Set owner
+     *
+     * @param User $owner
+     *
+     * @return Device
+     */
+    public function setOwner(User $owner = null)
+    {
+        $this->owner = $owner;
+
+        return $this;
     }
 
     /**

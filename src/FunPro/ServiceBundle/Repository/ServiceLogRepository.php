@@ -67,7 +67,7 @@ class ServiceLogRepository extends EntityRepository
             ->getScalarResult();
 
         $serviceIds = array_map(
-            function($item) {
+            function ($item) {
                 return $item['id'];
             },
             $serviceIds

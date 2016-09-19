@@ -27,7 +27,7 @@ class LoginSubscriber implements EventSubscriberInterface
 
     /**
      * @param Registry $doctrine
-     * @param $maxFailureCount
+     * @param          $maxFailureCount
      */
     public function __construct(Registry $doctrine, $maxFailureCount)
     {

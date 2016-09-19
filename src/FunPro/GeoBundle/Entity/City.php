@@ -105,15 +105,6 @@ class City
     private $children;
 
     /**
-     * Get id
-     *
-     * @return integer
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-    /**
      * Constructor
      */
     public function __construct()
@@ -122,16 +113,13 @@ class City
     }
 
     /**
-     * Set name
+     * Get id
      *
-     * @param string $name
-     * @return City
+     * @return integer
      */
-    public function setName($name)
+    public function getId()
     {
-        $this->name = $name;
-
-        return $this;
+        return $this->id;
     }
 
     /**
@@ -145,14 +133,15 @@ class City
     }
 
     /**
-     * Set point
+     * Set name
      *
-     * @param SPoint $point
+     * @param string $name
+     *
      * @return City
      */
-    public function setPoint(SPoint $point)
+    public function setName($name)
     {
-        $this->point = $point;
+        $this->name = $name;
 
         return $this;
     }
@@ -168,14 +157,15 @@ class City
     }
 
     /**
-     * Set lft
+     * Set point
      *
-     * @param integer $lft
+     * @param SPoint $point
+     *
      * @return City
      */
-    public function setLft($lft)
+    public function setPoint(SPoint $point)
     {
-        $this->lft = $lft;
+        $this->point = $point;
 
         return $this;
     }
@@ -191,14 +181,15 @@ class City
     }
 
     /**
-     * Set rgt
+     * Set lft
      *
-     * @param integer $rgt
+     * @param integer $lft
+     *
      * @return City
      */
-    public function setRgt($rgt)
+    public function setLft($lft)
     {
-        $this->rgt = $rgt;
+        $this->lft = $lft;
 
         return $this;
     }
@@ -214,14 +205,15 @@ class City
     }
 
     /**
-     * Set lvl
+     * Set rgt
      *
-     * @param integer $lvl
+     * @param integer $rgt
+     *
      * @return City
      */
-    public function setLvl($lvl)
+    public function setRgt($rgt)
     {
-        $this->lvl = $lvl;
+        $this->rgt = $rgt;
 
         return $this;
     }
@@ -237,14 +229,15 @@ class City
     }
 
     /**
-     * Set parent
+     * Set lvl
      *
-     * @param City $parent
+     * @param integer $lvl
+     *
      * @return City
      */
-    public function setParent(City $parent = null)
+    public function setLvl($lvl)
     {
-        $this->parent = $parent;
+        $this->lvl = $lvl;
 
         return $this;
     }
@@ -260,9 +253,24 @@ class City
     }
 
     /**
+     * Set parent
+     *
+     * @param City $parent
+     *
+     * @return City
+     */
+    public function setParent(City $parent = null)
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+    /**
      * Add children
      *
      * @param City $children
+     *
      * @return City
      */
     public function addChild(City $children)

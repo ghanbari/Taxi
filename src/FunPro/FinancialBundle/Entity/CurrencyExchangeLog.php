@@ -69,19 +69,6 @@ class CurrencyExchangeLog
     }
 
     /**
-     * Set exchange
-     *
-     * @param string $exchange
-     * @return CurrencyExchangeLog
-     */
-    public function setExchange($exchange)
-    {
-        $this->exchange = $exchange;
-
-        return $this;
-    }
-
-    /**
      * Get exchange
      *
      * @return string
@@ -92,14 +79,15 @@ class CurrencyExchangeLog
     }
 
     /**
-     * Set createdAt
+     * Set exchange
      *
-     * @param \DateTime $createdAt
+     * @param string $exchange
+     *
      * @return CurrencyExchangeLog
      */
-    public function setCreatedAt($createdAt)
+    public function setExchange($exchange)
     {
-        $this->createdAt = $createdAt;
+        $this->exchange = $exchange;
 
         return $this;
     }
@@ -115,14 +103,15 @@ class CurrencyExchangeLog
     }
 
     /**
-     * Set currency
+     * Set createdAt
      *
-     * @param Currency $currency
+     * @param \DateTime $createdAt
+     *
      * @return CurrencyExchangeLog
      */
-    public function setCurrency(Currency $currency = null)
+    public function setCreatedAt($createdAt)
     {
-        $this->currency = $currency;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
@@ -135,5 +124,19 @@ class CurrencyExchangeLog
     public function getCurrency()
     {
         return $this->currency;
+    }
+
+    /**
+     * Set currency
+     *
+     * @param Currency $currency
+     *
+     * @return CurrencyExchangeLog
+     */
+    public function setCurrency(Currency $currency = null)
+    {
+        $this->currency = $currency;
+
+        return $this;
     }
 }

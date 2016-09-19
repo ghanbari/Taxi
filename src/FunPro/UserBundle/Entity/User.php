@@ -68,22 +68,22 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  */
 class User extends BaseUser
 {
-    const SEX_MALE   = 0;
+    const SEX_MALE = 0;
     const SEX_FEMALE = 1;
 
-    const TYPE_ADMIN        = 1;
-    const TYPE_OPERATOR     = 2;
-    const TYPE_MARKETER     = 3;
+    const TYPE_ADMIN = 1;
+    const TYPE_OPERATOR = 2;
+    const TYPE_MARKETER = 3;
     const TYPE_AGENCY_ADMIN = 4;
-    const TYPE_DRIVER       = 5;
-    const TYPE_PASSENGER    = 6;
+    const TYPE_DRIVER = 5;
+    const TYPE_PASSENGER = 6;
 
-    const ROLE_ADMIN        = 'ROLE_ADMIN';
-    const ROLE_OPERATOR     = 'ROLE_OPERATOR';
-    const ROLE_MARKETER     = 'ROLE_MARKETER';
+    const ROLE_ADMIN = 'ROLE_ADMIN';
+    const ROLE_OPERATOR = 'ROLE_OPERATOR';
+    const ROLE_MARKETER = 'ROLE_MARKETER';
     const ROLE_AGENCY_ADMIN = 'ROLE_AGENCY_ADMIN';
-    const ROLE_DRIVER       = 'ROLE_DRIVER';
-    const ROLE_PASSENGER    = 'ROLE_PASSENGER';
+    const ROLE_DRIVER = 'ROLE_DRIVER';
+    const ROLE_PASSENGER = 'ROLE_PASSENGER';
 
     /**
      * @var int
@@ -285,19 +285,6 @@ class User extends BaseUser
     }
 
     /**
-     * Set name
-     *
-     * @param string $name
-     * @return User
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
      * Get name
      *
      * @return string
@@ -308,14 +295,15 @@ class User extends BaseUser
     }
 
     /**
-     * Set age
+     * Set name
      *
-     * @param integer $age
+     * @param string $name
+     *
      * @return User
      */
-    public function setAge($age)
+    public function setName($name)
     {
-        $this->age = $age;
+        $this->name = $name;
 
         return $this;
     }
@@ -331,14 +319,15 @@ class User extends BaseUser
     }
 
     /**
-     * Set sex
+     * Set age
      *
-     * @param integer $sex
+     * @param integer $age
+     *
      * @return User
      */
-    public function setSex($sex)
+    public function setAge($age)
     {
-        $this->sex = $sex;
+        $this->age = $age;
 
         return $this;
     }
@@ -354,14 +343,15 @@ class User extends BaseUser
     }
 
     /**
-     * Set description
+     * Set sex
      *
-     * @param string $description
+     * @param integer $sex
+     *
      * @return User
      */
-    public function setDescription($description)
+    public function setSex($sex)
     {
-        $this->description = $description;
+        $this->sex = $sex;
 
         return $this;
     }
@@ -377,26 +367,17 @@ class User extends BaseUser
     }
 
     /**
-     * Set avatar
+     * Set description
      *
-     * @param string $avatar
+     * @param string $description
+     *
      * @return User
      */
-    public function setAvatar($avatar)
+    public function setDescription($description)
     {
-        $this->avatar = $avatar;
+        $this->description = $description;
 
         return $this;
-    }
-
-    /**
-     * Get avatar
-     *
-     * @return string
-     */
-    public function getAvatar()
-    {
-        return $this->avatar;
     }
 
     /**
@@ -415,6 +396,30 @@ class User extends BaseUser
         } else {
             return 'images/cache/mob_avatar_thumb/images/avatars/default_avatar.jpg';
         }
+    }
+
+    /**
+     * Get avatar
+     *
+     * @return string
+     */
+    public function getAvatar()
+    {
+        return $this->avatar;
+    }
+
+    /**
+     * Set avatar
+     *
+     * @param string $avatar
+     *
+     * @return User
+     */
+    public function setAvatar($avatar)
+    {
+        $this->avatar = $avatar;
+
+        return $this;
     }
 
     /**
@@ -441,19 +446,6 @@ class User extends BaseUser
     }
 
     /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     * @return User
-     */
-    public function setCreatedAt(\DateTime $createdAt)
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
      * Get createdAt
      *
      * @return \DateTime
@@ -464,11 +456,17 @@ class User extends BaseUser
     }
 
     /**
-     * @param \DateTime $updatedAt
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     *
+     * @return User
      */
-    public function setUpdatedAt(\DateTime $updatedAt)
+    public function setCreatedAt(\DateTime $createdAt)
     {
-        $this->updatedAt = $updatedAt;
+        $this->createdAt = $createdAt;
+
+        return $this;
     }
 
     /**
@@ -480,16 +478,11 @@ class User extends BaseUser
     }
 
     /**
-     * Set deletedAt
-     *
-     * @param \DateTime $deletedAt
-     * @return User
+     * @param \DateTime $updatedAt
      */
-    public function setDeletedAt(\DateTime $deletedAt)
+    public function setUpdatedAt(\DateTime $updatedAt)
     {
-        $this->deletedAt = $deletedAt;
-
-        return $this;
+        $this->updatedAt = $updatedAt;
     }
 
     /**
@@ -503,14 +496,15 @@ class User extends BaseUser
     }
 
     /**
-     * Set createdBy
+     * Set deletedAt
      *
-     * @param User $createdBy
+     * @param \DateTime $deletedAt
+     *
      * @return User
      */
-    public function setCreatedBy(User $createdBy = null)
+    public function setDeletedAt(\DateTime $deletedAt)
     {
-        $this->createdBy = $createdBy;
+        $this->deletedAt = $deletedAt;
 
         return $this;
     }
@@ -526,14 +520,15 @@ class User extends BaseUser
     }
 
     /**
-     * Set deletedBy
+     * Set createdBy
      *
-     * @param User $deletedBy
+     * @param User $createdBy
+     *
      * @return User
      */
-    public function setDeletedBy(User $deletedBy = null)
+    public function setCreatedBy(User $createdBy = null)
     {
-        $this->deletedBy = $deletedBy;
+        $this->createdBy = $createdBy;
 
         return $this;
     }
@@ -549,14 +544,15 @@ class User extends BaseUser
     }
 
     /**
-     * Set wrongPasswordCount
+     * Set deletedBy
      *
-     * @param integer $wrongPasswordCount
+     * @param User $deletedBy
+     *
      * @return User
      */
-    public function setWrongPasswordCount($wrongPasswordCount)
+    public function setDeletedBy(User $deletedBy = null)
     {
-        $this->wrongPasswordCount = $wrongPasswordCount;
+        $this->deletedBy = $deletedBy;
 
         return $this;
     }
@@ -572,9 +568,24 @@ class User extends BaseUser
     }
 
     /**
+     * Set wrongPasswordCount
+     *
+     * @param integer $wrongPasswordCount
+     *
+     * @return User
+     */
+    public function setWrongPasswordCount($wrongPasswordCount)
+    {
+        $this->wrongPasswordCount = $wrongPasswordCount;
+
+        return $this;
+    }
+
+    /**
      * Add tokens
      *
      * @param Token $tokens
+     *
      * @return User
      */
     public function addToken(Token $tokens)

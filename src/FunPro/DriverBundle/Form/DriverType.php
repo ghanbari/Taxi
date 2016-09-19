@@ -16,7 +16,7 @@ class DriverType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param array                $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -51,10 +51,9 @@ class DriverType extends AbstractType
                 'choice_label' => 'name'
             ))
             ->add('address', AddressType::class)
-            ->add('email', Type\EmailType::class, array('required'=>false))
-        ;
+            ->add('email', Type\EmailType::class, array('required' => false));
     }
-    
+
     /**
      * @param OptionsResolver $resolver
      */

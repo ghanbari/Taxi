@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  *
  * @package FunPro\FinancialBundle\Event
  */
-class RewardSubscriber implements  EventSubscriberInterface
+class RewardSubscriber implements EventSubscriberInterface
 {
     /**
      * @var Registry
@@ -59,7 +59,8 @@ class RewardSubscriber implements  EventSubscriberInterface
         ParameterBagInterface $parameterBag,
         ValidatorInterface $validator,
         Serializer $serializer
-    ) {
+    )
+    {
         $this->logger = $logger;
         $this->parameterBag = $parameterBag;
         $this->doctrine = $doctrine;

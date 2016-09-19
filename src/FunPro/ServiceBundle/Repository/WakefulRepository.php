@@ -2,7 +2,6 @@
 
 namespace FunPro\ServiceBundle\Repository;
 
-use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use FunPro\DriverBundle\Entity\Car;
@@ -21,6 +20,35 @@ class WakefulRepository extends EntityRepository
      * @param        $longitude
      * @param        $latitude
      * @param int    $distance in kilometer
+     * @param int    $limit
+     * @param Driver $disappear
+     *
+     * @return Wakeful[]
+     */
+    public function getAllFreeAndNearWakeful(
+        $longitude,
+        $latitude,
+        $distance = 2000,
+        $limit = 500,
+        Driver $disappear = null
+    )
+    {
+        $queryBuilder = $this->getAllNearWakefulQueryBuilder($longitude, $latitude, $distance, $disappear);
+
+        $wakefuls = $queryBuilder
+            ->andWhere($queryBuilder->expr()->in('c.status', ':status'))
+            ->setParameter('status', array(Car::STATUS_WAKEFUL, Car::STATUS_SERVICE_END))
+            ->getQuery()
+            ->setMaxResults($limit)
+            ->getResult();
+
+        return $wakefuls;
+    }
+
+    /**
+     * @param        $longitude
+     * @param        $latitude
+     * @param int    $distance in kilometer
      * @param Driver $disappear
      *
      * @return QueryBuilder
@@ -30,7 +58,8 @@ class WakefulRepository extends EntityRepository
         $latitude,
         $distance = 2000,
         Driver $disappear = null
-    ) {
+    )
+    {
         $queryBuilder = $this->createQueryBuilder('w');
 
         $queryBuilder->select(array('w', 'c', 'd'))
@@ -57,41 +86,14 @@ class WakefulRepository extends EntityRepository
      *
      * @return Wakeful[]
      */
-    public function getAllFreeAndNearWakeful(
-        $longitude,
-        $latitude,
-        $distance = 2000,
-        $limit = 500,
-        Driver $disappear = null
-    ) {
-        $queryBuilder = $this->getAllNearWakefulQueryBuilder($longitude, $latitude, $distance, $disappear);
-
-        $wakefuls = $queryBuilder
-            ->andWhere($queryBuilder->expr()->in('c.status', ':status'))
-            ->setParameter('status', array(Car::STATUS_WAKEFUL, Car::STATUS_SERVICE_END))
-            ->getQuery()
-            ->setMaxResults($limit)
-            ->getResult();
-
-        return $wakefuls;
-    }
-
-    /**
-     * @param        $longitude
-     * @param        $latitude
-     * @param int    $distance in kilometer
-     * @param int    $limit
-     * @param Driver $disappear
-     *
-     * @return Wakeful[]
-     */
     public function getAllNearWakeful(
         $longitude,
         $latitude,
         $distance = 2000,
         $limit = 500,
         Driver $disappear = null
-    ) {
+    )
+    {
         $queryBuilder = $this->getAllNearWakefulQueryBuilder($longitude, $latitude, $distance, $disappear);
 
         $wakefuls = $queryBuilder

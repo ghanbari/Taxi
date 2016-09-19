@@ -75,20 +75,6 @@ class Passenger extends User implements SMSInterface
     }
 
     /**
-     * Set mobile
-     *
-     * @param string $mobile
-     * @return Passenger
-     */
-    public function setMobile($mobile)
-    {
-        $this->mobile = $mobile;
-        $this->setUsername($mobile);
-
-        return $this;
-    }
-
-    /**
      * Get mobile
      *
      * @return string
@@ -99,14 +85,16 @@ class Passenger extends User implements SMSInterface
     }
 
     /**
-     * Set rate
+     * Set mobile
      *
-     * @param string $rate
+     * @param string $mobile
+     *
      * @return Passenger
      */
-    public function setRate($rate)
+    public function setMobile($mobile)
     {
-        $this->rate = $rate;
+        $this->mobile = $mobile;
+        $this->setUsername($mobile);
 
         return $this;
     }
@@ -122,14 +110,15 @@ class Passenger extends User implements SMSInterface
     }
 
     /**
-     * Set referrer
+     * Set rate
      *
-     * @param Passenger $referrer
+     * @param string $rate
+     *
      * @return Passenger
      */
-    public function setReferrer(Passenger $referrer = null)
+    public function setRate($rate)
     {
-        $this->referrer = $referrer;
+        $this->rate = $rate;
 
         return $this;
     }
@@ -145,11 +134,39 @@ class Passenger extends User implements SMSInterface
     }
 
     /**
+     * Set referrer
+     *
+     * @param Passenger $referrer
+     *
+     * @return Passenger
+     */
+    public function setReferrer(Passenger $referrer = null)
+    {
+        $this->referrer = $referrer;
+
+        return $this;
+    }
+
+    /**
      * @return int
      */
     public function getWrongTokenCount()
     {
         return $this->wrongTokenCount;
+    }
+
+    /**
+     * Set wrongTokenCount
+     *
+     * @param integer $wrongTokenCount
+     *
+     * @return Passenger
+     */
+    public function setWrongTokenCount($wrongTokenCount)
+    {
+        $this->wrongTokenCount = $wrongTokenCount;
+
+        return $this;
     }
 
     /**
@@ -163,18 +180,5 @@ class Passenger extends User implements SMSInterface
     public function resetWrongTokenCount()
     {
         $this->wrongTokenCount = 0;
-    }
-
-    /**
-     * Set wrongTokenCount
-     *
-     * @param integer $wrongTokenCount
-     * @return Passenger
-     */
-    public function setWrongTokenCount($wrongTokenCount)
-    {
-        $this->wrongTokenCount = $wrongTokenCount;
-
-        return $this;
     }
 }

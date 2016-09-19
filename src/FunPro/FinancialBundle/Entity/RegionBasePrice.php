@@ -9,7 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(
  *      name="region_base_price",
- *      uniqueConstraints={@ORM\UniqueConstraint(name="currency_in_region_UNIQUE", columns={"currency_id", "region_id"})}
+ *      uniqueConstraints={@ORM\UniqueConstraint(name="currency_in_region_UNIQUE", columns={"currency_id",
+ *      "region_id"})}
  * )
  * @ORM\Entity(repositoryClass="FunPro\FinancialBundle\Repository\RegionBasePriceRepository")
  */
@@ -70,19 +71,6 @@ class RegionBasePrice
     }
 
     /**
-     * Set price
-     *
-     * @param integer $price
-     * @return RegionBasePrice
-     */
-    public function setPrice($price)
-    {
-        $this->price = $price;
-
-        return $this;
-    }
-
-    /**
      * Get price
      *
      * @return integer
@@ -93,14 +81,15 @@ class RegionBasePrice
     }
 
     /**
-     * Set currency
+     * Set price
      *
-     * @param Currency $currency
+     * @param integer $price
+     *
      * @return RegionBasePrice
      */
-    public function setCurrency(Currency $currency = null)
+    public function setPrice($price)
     {
-        $this->currency = $currency;
+        $this->price = $price;
 
         return $this;
     }
@@ -116,14 +105,15 @@ class RegionBasePrice
     }
 
     /**
-     * Set region
+     * Set currency
      *
-     * @param Region $region
+     * @param Currency $currency
+     *
      * @return RegionBasePrice
      */
-    public function setRegion(Region $region = null)
+    public function setCurrency(Currency $currency = null)
     {
-        $this->region = $region;
+        $this->currency = $currency;
 
         return $this;
     }
@@ -136,5 +126,19 @@ class RegionBasePrice
     public function getRegion()
     {
         return $this->region;
+    }
+
+    /**
+     * Set region
+     *
+     * @param Region $region
+     *
+     * @return RegionBasePrice
+     */
+    public function setRegion(Region $region = null)
+    {
+        $this->region = $region;
+
+        return $this;
     }
 }

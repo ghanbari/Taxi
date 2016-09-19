@@ -86,19 +86,6 @@ class Currency
     }
 
     /**
-     * Set name
-     *
-     * @param string $name
-     * @return Currency
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
      * Get name
      *
      * @return string
@@ -109,14 +96,15 @@ class Currency
     }
 
     /**
-     * Set code
+     * Set name
      *
-     * @param string $code
+     * @param string $name
+     *
      * @return Currency
      */
-    public function setCode($code)
+    public function setName($name)
     {
-        $this->code = $code;
+        $this->name = $name;
 
         return $this;
     }
@@ -132,14 +120,15 @@ class Currency
     }
 
     /**
-     * Set enable
+     * Set code
      *
-     * @param boolean $enable
+     * @param string $code
+     *
      * @return Currency
      */
-    public function setEnable($enable)
+    public function setCode($code)
     {
-        $this->enable = $enable;
+        $this->code = $code;
 
         return $this;
     }
@@ -152,6 +141,20 @@ class Currency
     public function getEnable()
     {
         return $this->enable;
+    }
+
+    /**
+     * Set enable
+     *
+     * @param boolean $enable
+     *
+     * @return Currency
+     */
+    public function setEnable($enable)
+    {
+        $this->enable = $enable;
+
+        return $this;
     }
 
     /**

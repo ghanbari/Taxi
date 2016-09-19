@@ -17,7 +17,7 @@ class TicketType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param array                $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -31,10 +31,9 @@ class TicketType extends AbstractType
             ->add('type', Type\ChoiceType::class, array(
                 'choices' => Ticket::getValidType(),
                 'choices_as_values' => true,
-            ))
-        ;
+            ));
     }
-    
+
     /**
      * @param OptionsResolver $resolver
      */

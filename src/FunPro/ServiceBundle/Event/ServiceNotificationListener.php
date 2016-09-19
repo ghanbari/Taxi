@@ -61,7 +61,8 @@ class ServiceNotificationListener implements EventSubscriberInterface
         Logger $logger,
         Serializer $serializer,
         ParameterBagInterface $parameterBag
-    ) {
+    )
+    {
         $this->gcm = $gcm;
         $this->doctrine = $doctrine;
         $this->logger = $logger;
@@ -92,22 +93,12 @@ class ServiceNotificationListener implements EventSubscriberInterface
         return array(
             ServiceEvents::SERVICE_REQUESTED => array('onServiceRequest', 5),
             ServiceEvents::SERVICE_CANCELED => array('onServiceCanceled', 5),
-            ServiceEvents::SERVICE_ACCEPTED  => array('onServiceAccept', 5),
-            ServiceEvents::SERVICE_REJECTED  => array('onServiceReject', 5),
-            ServiceEvents::SERVICE_READY     => array('onServiceReady', 5),
-            ServiceEvents::SERVICE_START     => array('onServiceStart', 5),
-            ServiceEvents::SERVICE_FINISH    => array('onServiceFinish', 5),
+            ServiceEvents::SERVICE_ACCEPTED => array('onServiceAccept', 5),
+            ServiceEvents::SERVICE_REJECTED => array('onServiceReject', 5),
+            ServiceEvents::SERVICE_READY => array('onServiceReady', 5),
+            ServiceEvents::SERVICE_START => array('onServiceStart', 5),
+            ServiceEvents::SERVICE_FINISH => array('onServiceFinish', 5),
         );
-    }
-
-    /**
-     * @param $entity
-     *
-     * @return integer
-     */
-    protected function getEntitiesIds($entity)
-    {
-        return $entity->getId();
     }
 
     /**
@@ -127,7 +118,7 @@ class ServiceNotificationListener implements EventSubscriberInterface
             'id' => $service->getId(),
             'propagationType' => $event->getService()->getPropagationType(),
             'pickup_latitude' => $service->getStartPoint()->getLatitude(),
-            'pickup_longitude'=> $service->getStartPoint()->getLongitude(),
+            'pickup_longitude' => $service->getStartPoint()->getLongitude(),
             'pickup_name' => $service->getStartAddress(),
             'dropoff_latitude' => $service->getEndPoint() ? $service->getEndPoint()->getLatitude() : '',
             'dropoff_longitude' => $service->getEndPoint() ? $service->getEndPoint()->getLongitude() : '',
@@ -252,10 +243,10 @@ class ServiceNotificationListener implements EventSubscriberInterface
                 'id' => $service->getId(),
                 'name' => $service->getCar()->getDriver()->getName(),
                 'car_type' => $service->getCar()->getType(),
-                'plaque' => (string) $service->getCar()->getPlaque(),
+                'plaque' => (string)$service->getCar()->getPlaque(),
                 'mobile' => $service->getCar()->getDriver()->getMobile(),
                 'pickup_latitude' => $service->getStartPoint()->getLatitude(),
-                'pickup_longitude'=> $service->getStartPoint()->getLongitude(),
+                'pickup_longitude' => $service->getStartPoint()->getLongitude(),
                 'dropoff_latitude' => $service->getEndPoint() ? $service->getEndPoint()->getLatitude() : '',
                 'dropoff_longitude' => $service->getEndPoint() ? $service->getEndPoint()->getLongitude() : '',
                 'send_in' => strtotime('now'),
@@ -338,5 +329,15 @@ class ServiceNotificationListener implements EventSubscriberInterface
             ->setTimeToLive($this->parameterBag->get('gcm.ttl.service_finish'));
 
         $this->gcm->queue($service->getPassenger()->getDevices()->toArray(), $message);
+    }
+
+    /**
+     * @param $entity
+     *
+     * @return integer
+     */
+    protected function getEntitiesIds($entity)
+    {
+        return $entity->getId();
     }
 }

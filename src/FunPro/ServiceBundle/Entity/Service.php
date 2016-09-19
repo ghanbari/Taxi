@@ -28,12 +28,12 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 class Service
 {
     const TYPE_DISTANCE = 1;
-    const TYPE_TIMING   = 2;
+    const TYPE_TIMING = 2;
 
     const DESIRE_QUALITY = 1;
-    const DESIRE_PRICE   = 2;
-    const DESIRE_FAST    = 3;
-    const DESIRE_CLASS   = 4;
+    const DESIRE_PRICE = 2;
+    const DESIRE_FAST = 3;
+    const DESIRE_CLASS = 4;
     const DESIRE_SUGGEST = 5;
 
     const PROPAGATION_TYPE_ALL = 1;
@@ -393,6 +393,49 @@ class Service
     }
 
     /**
+     * get available types
+     *
+     * @JS\SerializedName("types")
+     * @JS\Since("1.0.0")
+     */
+    public static function getTypes()
+    {
+        return array(
+            'distance' => self::TYPE_DISTANCE,
+            'timing' => self::TYPE_TIMING,
+        );
+    }
+
+    /**
+     * get available options for desire field
+     *
+     * @JS\SerializedName("desires")
+     * @JS\Since("1.0.0")
+     */
+    public static function getDesireOptions()
+    {
+        return array(
+            'quality' => self::DESIRE_QUALITY,
+            'price' => self::DESIRE_PRICE,
+            'fast' => self::DESIRE_FAST,
+            'class' => self::DESIRE_CLASS,
+            'suggest' => self::DESIRE_SUGGEST,
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public static function getPropaginationTypes()
+    {
+        return array(
+            'all' => self::PROPAGATION_TYPE_ALL,
+            'list' => self::PROPAGATION_TYPE_LIST,
+            'single' => self::PROPAGATION_TYPE_SINGLE,
+        );
+    }
+
+    /**
      * @JS\VirtualProperty()
      * @JS\SerializedName("period")
      * @JS\Type(name="integer")
@@ -404,7 +447,7 @@ class Service
     public function getPeriod()
     {
         $fisrtLog = $this->logs->first();
-        $lastLog  = $this->logs->last();
+        $lastLog = $this->logs->last();
 
         if ($fisrtLog and $lastLog) {
             $period = $lastLog->getAtTime()->getTimestamp() - $fisrtLog->getAtTime()->getTimestamp();
@@ -451,49 +494,6 @@ class Service
     }
 
     /**
-     * get available types
-     *
-     * @JS\SerializedName("types")
-     * @JS\Since("1.0.0")
-     */
-    public static function getTypes()
-    {
-        return array(
-            'distance' => self::TYPE_DISTANCE,
-            'timing' => self::TYPE_TIMING,
-        );
-    }
-
-    /**
-     * get available options for desire field
-     *
-     * @JS\SerializedName("desires")
-     * @JS\Since("1.0.0")
-     */
-    public static function getDesireOptions()
-    {
-        return array(
-            'quality' => self::DESIRE_QUALITY,
-            'price'   => self::DESIRE_PRICE,
-            'fast'    => self::DESIRE_FAST,
-            'class'   => self::DESIRE_CLASS,
-            'suggest' => self::DESIRE_SUGGEST,
-        );
-    }
-
-    /**
-     * @return array
-     */
-    public static function getPropaginationTypes()
-    {
-        return array(
-            'all' => self::PROPAGATION_TYPE_ALL,
-            'list' => self::PROPAGATION_TYPE_LIST,
-            'single' => self::PROPAGATION_TYPE_SINGLE,
-        );
-    }
-
-    /**
      * Get id
      *
      * @return integer
@@ -501,6 +501,16 @@ class Service
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Get startPoint
+     *
+     * @return Point
+     */
+    public function getStartPoint()
+    {
+        return $this->startPoint;
     }
 
     /**
@@ -518,13 +528,13 @@ class Service
     }
 
     /**
-     * Get startPoint
+     * Get endPoint
      *
      * @return Point
      */
-    public function getStartPoint()
+    public function getEndPoint()
     {
-        return $this->startPoint;
+        return $this->endPoint;
     }
 
     /**
@@ -539,16 +549,6 @@ class Service
         $this->endPoint = $endPoint;
 
         return $this;
-    }
-
-    /**
-     * Get endPoint
-     *
-     * @return Point
-     */
-    public function getEndPoint()
-    {
-        return $this->endPoint;
     }
 
     /**
@@ -590,6 +590,16 @@ class Service
     }
 
     /**
+     * Get type
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
      * Set type
      *
      * @param integer $type
@@ -613,13 +623,15 @@ class Service
     }
 
     /**
-     * Get type
+     * Get desire
+     *
+     * @Assert\NotNull(groups={"Create"})
      *
      * @return string
      */
-    public function getType()
+    public function getDesire()
     {
-        return $this->type;
+        return $this->desire;
     }
 
     /**
@@ -645,15 +657,13 @@ class Service
     }
 
     /**
-     * Get desire
-     *
-     * @Assert\NotNull(groups={"Create"})
+     * Get description
      *
      * @return string
      */
-    public function getDesire()
+    public function getDescription()
     {
-        return $this->desire;
+        return $this->description;
     }
 
     /**
@@ -671,13 +681,13 @@ class Service
     }
 
     /**
-     * Get description
+     * Get driverRate
      *
      * @return string
      */
-    public function getDescription()
+    public function getDriverRate()
     {
-        return $this->description;
+        return $this->driverRate;
     }
 
     /**
@@ -695,13 +705,13 @@ class Service
     }
 
     /**
-     * Get driverRate
+     * Get passengerRate
      *
      * @return string
      */
-    public function getDriverRate()
+    public function getPassengerRate()
     {
-        return $this->driverRate;
+        return $this->passengerRate;
     }
 
     /**
@@ -719,37 +729,13 @@ class Service
     }
 
     /**
-     * Get passengerRate
+     * Get distance
      *
-     * @return string
+     * @return integer
      */
-    public function getPassengerRate()
+    public function getDistance()
     {
-        return $this->passengerRate;
-    }
-
-    /**
-     * Set route
-     *
-     * @param LineString $route
-     *
-     * @return Service
-     */
-    public function setRoute(LineString $route)
-    {
-        $this->route = $route;
-
-        return $this;
-    }
-
-    /**
-     * Get route
-     *
-     * @return LineString
-     */
-    public function getRoute()
-    {
-        return $this->route;
+        return $this->distance;
     }
 
     /**
@@ -767,13 +753,13 @@ class Service
     }
 
     /**
-     * Get distance
+     * Get price
      *
      * @return integer
      */
-    public function getDistance()
+    public function getPrice()
     {
-        return $this->distance;
+        return $this->price;
     }
 
     /**
@@ -791,61 +777,13 @@ class Service
     }
 
     /**
-     * Get price
+     * Get car
      *
-     * @return integer
+     * @return Car
      */
-    public function getPrice()
+    public function getCar()
     {
-        return $this->price;
-    }
-
-    /**
-     * Set passenger
-     *
-     * @param Passenger $passenger
-     *
-     * @return Service
-     */
-    public function setPassenger(Passenger $passenger = null)
-    {
-        $this->passenger = $passenger;
-
-        return $this;
-    }
-
-    /**
-     * Get passenger
-     *
-     * @return Passenger
-     */
-    public function getPassenger()
-    {
-        return $this->passenger;
-    }
-
-    /**
-     * Set agent
-     *
-     * @param Agent $agent
-     *
-     * @return Service
-     */
-    public function setAgent(Agent $agent = null)
-    {
-        $this->agent = $agent;
-
-        return $this;
-    }
-
-    /**
-     * Get agent
-     *
-     * @return Agent
-     */
-    public function getAgent()
-    {
-        return $this->agent;
+        return $this->car;
     }
 
     /**
@@ -863,16 +801,6 @@ class Service
     }
 
     /**
-     * Get car
-     *
-     * @return Car
-     */
-    public function getCar()
-    {
-        return $this->car;
-    }
-
-    /**
      * @Assert\Callback(groups={"Create"})
      */
     public function validate(ExecutionContextInterface $context)
@@ -886,6 +814,54 @@ class Service
                 ->atPath('passenger')
                 ->addViolation();
         }
+    }
+
+    /**
+     * Get passenger
+     *
+     * @return Passenger
+     */
+    public function getPassenger()
+    {
+        return $this->passenger;
+    }
+
+    /**
+     * Set passenger
+     *
+     * @param Passenger $passenger
+     *
+     * @return Service
+     */
+    public function setPassenger(Passenger $passenger = null)
+    {
+        $this->passenger = $passenger;
+
+        return $this;
+    }
+
+    /**
+     * Get agent
+     *
+     * @return Agent
+     */
+    public function getAgent()
+    {
+        return $this->agent;
+    }
+
+    /**
+     * Set agent
+     *
+     * @param Agent $agent
+     *
+     * @return Service
+     */
+    public function setAgent(Agent $agent = null)
+    {
+        $this->agent = $agent;
+
+        return $this;
     }
 
     /**
@@ -946,6 +922,16 @@ class Service
     }
 
     /**
+     * Get propagationType
+     *
+     * @return integer
+     */
+    public function getPropagationType()
+    {
+        return $this->propagationType;
+    }
+
+    /**
      * Set propagationType
      *
      * @param integer $propagationType
@@ -957,16 +943,6 @@ class Service
         $this->propagationType = $propagationType;
 
         return $this;
-    }
-
-    /**
-     * Get propagationType
-     *
-     * @return integer
-     */
-    public function getPropagationType()
-    {
-        return $this->propagationType;
     }
 
     /**
@@ -1111,6 +1087,30 @@ class Service
     }
 
     /**
+     * Get route
+     *
+     * @return LineString
+     */
+    public function getRoute()
+    {
+        return $this->route;
+    }
+
+    /**
+     * Set route
+     *
+     * @param LineString $route
+     *
+     * @return Service
+     */
+    public function setRoute(LineString $route)
+    {
+        $this->route = $route;
+
+        return $this;
+    }
+
+    /**
      * @return Currency
      */
     public function getCurrency()
@@ -1179,6 +1179,7 @@ class Service
      * Set status
      *
      * @param integer $status
+     *
      * @return Service
      */
     public function setStatus($status)
@@ -1192,6 +1193,7 @@ class Service
      * Add logs
      *
      * @param ServiceLog $logs
+     *
      * @return Service
      */
     public function addLog(ServiceLog $logs)

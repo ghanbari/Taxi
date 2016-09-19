@@ -40,19 +40,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class ServiceController extends FOSRestController
 {
-    public function getForm(Service $service)
-    {
-        $requestFormat = $this->get('request_stack')->getCurrentRequest()->getRequestFormat('html');
-        $options['csrf_protection'] = $requestFormat === 'html' ?: false;
-        $options['method'] = 'POST';
-        $options['action'] = $this->generateUrl('fun_pro_service_api_post_service');
-        $options['validation_groups'] = array('Create', 'Point');
-        $options['allow_extra_fields'] = true;
-
-        $form = $this->createForm(new ServiceType(), $service, $options);
-        return $form;
-    }
-
     /**
      * Create a service
      *
@@ -193,6 +180,19 @@ class ServiceController extends FOSRestController
         return $this->view($form, Response::HTTP_BAD_REQUEST);
     }
 
+    public function getForm(Service $service)
+    {
+        $requestFormat = $this->get('request_stack')->getCurrentRequest()->getRequestFormat('html');
+        $options['csrf_protection'] = $requestFormat === 'html' ?: false;
+        $options['method'] = 'POST';
+        $options['action'] = $this->generateUrl('fun_pro_service_api_post_service');
+        $options['validation_groups'] = array('Create', 'Point');
+        $options['allow_extra_fields'] = true;
+
+        $form = $this->createForm(new ServiceType(), $service, $options);
+        return $form;
+    }
+
     /**
      * Cancel service
      *
@@ -306,6 +306,7 @@ class ServiceController extends FOSRestController
      * @Rest\RequestParam(name="longitude", allowBlank=false, nullable=false, requirements="\d+\.\d+", strict=true)
      *
      * @param $id
+     *
      * @return \FOS\RestBundle\View\View
      */
     public function acceptAction($id)
@@ -436,7 +437,7 @@ class ServiceController extends FOSRestController
             $point->getLongitude()
         );
 
-        if (($distance*1000) > $this->getParameter('service.driver.allowed_radius_for_ready')) {
+        if (($distance * 1000) > $this->getParameter('service.driver.allowed_radius_for_ready')) {
             $logger->addInfo('driver is not in allowed radius till he can send ready alarm', array(
                 'real' => $distance * 1000,
                 'allowed' => $this->getParameter('service.driver.allowed_radius_for_ready'),

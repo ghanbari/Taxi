@@ -113,7 +113,7 @@ class PaymentController extends FOSRestController
      * Get currencies available in this region
      *
      * @deprecated Because driver insert price, he must select currency for service
-     * @TODO: if we calculate price by distance, then user must select currency before system calculate
+     * @TODO       : if we calculate price by distance, then user must select currency before system calculate
      *
      * @ApiDoc(
      *      section="Payment",

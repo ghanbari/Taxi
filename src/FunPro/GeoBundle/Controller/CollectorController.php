@@ -22,17 +22,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class CollectorController extends FOSRestController
 {
-    public function getForm(IpLocation $entity)
-    {
-        $form = $this->createForm(new IpLocationType(), $entity, array(
-            'method' => 'POST',
-            'action' => $this->generateUrl('fun_pro_geo_api_post_collector'),
-            'validation_groups' => array('Create'),
-        ));
-
-        return $form;
-    }
-
     /**
      * collect ip & location for analyze.
      *
@@ -85,5 +74,16 @@ class CollectorController extends FOSRestController
         }
 
         return $this->view($form, Response::HTTP_BAD_REQUEST);
+    }
+
+    public function getForm(IpLocation $entity)
+    {
+        $form = $this->createForm(new IpLocationType(), $entity, array(
+            'method' => 'POST',
+            'action' => $this->generateUrl('fun_pro_geo_api_post_collector'),
+            'validation_groups' => array('Create'),
+        ));
+
+        return $form;
     }
 }

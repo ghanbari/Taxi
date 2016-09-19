@@ -136,19 +136,6 @@ class Driver extends User implements SMSInterface
     }
 
     /**
-     * Set mobile
-     *
-     * @param string $mobile
-     * @return Driver
-     */
-    public function setMobile($mobile)
-    {
-        $this->mobile = $mobile;
-
-        return $this;
-    }
-
-    /**
      * Get mobile
      *
      * @return string
@@ -159,14 +146,15 @@ class Driver extends User implements SMSInterface
     }
 
     /**
-     * Set contractNumber
+     * Set mobile
      *
-     * @param string $contractNumber
+     * @param string $mobile
+     *
      * @return Driver
      */
-    public function setContractNumber($contractNumber)
+    public function setMobile($mobile)
     {
-        $this->contractNumber = $contractNumber;
+        $this->mobile = $mobile;
 
         return $this;
     }
@@ -182,14 +170,15 @@ class Driver extends User implements SMSInterface
     }
 
     /**
-     * Set contact
+     * Set contractNumber
      *
-     * @param array $contact
+     * @param string $contractNumber
+     *
      * @return Driver
      */
-    public function setContact($contact)
+    public function setContractNumber($contractNumber)
     {
-        $this->contact = $contact;
+        $this->contractNumber = $contractNumber;
 
         return $this;
     }
@@ -205,18 +194,15 @@ class Driver extends User implements SMSInterface
     }
 
     /**
-     * Set nationalCode
+     * Set contact
      *
-     * @param string $nationalCode
+     * @param array $contact
+     *
      * @return Driver
      */
-    public function setNationalCode($nationalCode)
+    public function setContact($contact)
     {
-        if (is_null($this->username)) {
-            $this->setUsername($nationalCode);
-        }
-
-        $this->nationalCode = $nationalCode;
+        $this->contact = $contact;
 
         return $this;
     }
@@ -232,14 +218,19 @@ class Driver extends User implements SMSInterface
     }
 
     /**
-     * Set rate
+     * Set nationalCode
      *
-     * @param string $rate
+     * @param string $nationalCode
+     *
      * @return Driver
      */
-    public function setRate($rate)
+    public function setNationalCode($nationalCode)
     {
-        $this->rate = $rate;
+        if (is_null($this->username)) {
+            $this->setUsername($nationalCode);
+        }
+
+        $this->nationalCode = $nationalCode;
 
         return $this;
     }
@@ -255,9 +246,24 @@ class Driver extends User implements SMSInterface
     }
 
     /**
+     * Set rate
+     *
+     * @param string $rate
+     *
+     * @return Driver
+     */
+    public function setRate($rate)
+    {
+        $this->rate = $rate;
+
+        return $this;
+    }
+
+    /**
      * Add cars
      *
      * @param Car $cars
+     *
      * @return Driver
      */
     public function addCar(Car $cars)
@@ -288,19 +294,6 @@ class Driver extends User implements SMSInterface
     }
 
     /**
-     * Set address
-     *
-     * @param Address $address
-     * @return Driver
-     */
-    public function setAddress(Address $address = null)
-    {
-        $this->address = $address;
-
-        return $this;
-    }
-
-    /**
      * Get address
      *
      * @return Address
@@ -311,14 +304,15 @@ class Driver extends User implements SMSInterface
     }
 
     /**
-     * Set agency
+     * Set address
      *
-     * @param Agency $agency
+     * @param Address $address
+     *
      * @return Driver
      */
-    public function setAgency(Agency $agency)
+    public function setAddress(Address $address = null)
     {
-        $this->agency = $agency;
+        $this->address = $address;
 
         return $this;
     }
@@ -331,5 +325,19 @@ class Driver extends User implements SMSInterface
     public function getAgency()
     {
         return $this->agency;
+    }
+
+    /**
+     * Set agency
+     *
+     * @param Agency $agency
+     *
+     * @return Driver
+     */
+    public function setAgency(Agency $agency)
+    {
+        $this->agency = $agency;
+
+        return $this;
     }
 }

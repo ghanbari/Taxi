@@ -9,7 +9,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Plaque
  *
- * @ORM\Table(name="plaque", uniqueConstraints={@ORM\UniqueConstraint(name="plaque_UNIQUE", columns={"first_number", "second_number", "city_number", "area_code"})})
+ * @ORM\Table(name="plaque", uniqueConstraints={@ORM\UniqueConstraint(name="plaque_UNIQUE", columns={"first_number",
+ *                           "second_number", "city_number", "area_code"})})
  * @ORM\Entity(repositoryClass="FunPro\DriverBundle\Repository\PlaqueRepository")
  */
 class Plaque
@@ -92,7 +93,7 @@ class Plaque
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -100,9 +101,49 @@ class Plaque
     }
 
     /**
+     * Get car
+     *
+     * @return \FunPro\DriverBundle\Entity\Car
+     */
+    public function getCar()
+    {
+        return $this->car;
+    }
+
+    /**
+     * Set car
+     *
+     * @param \FunPro\DriverBundle\Entity\Car $car
+     *
+     * @return Plaque
+     */
+    public function setCar(\FunPro\DriverBundle\Entity\Car $car = null)
+    {
+        $this->car = $car;
+
+        return $this;
+    }
+
+    function __toString()
+    {
+        return $this->getFirstNumber() . '-' . $this->getAreaCode() . '-' . $this->getSecondNumber() . '|' . $this->getCityNumber();
+    }
+
+    /**
+     * Get firstNumber
+     *
+     * @return integer
+     */
+    public function getFirstNumber()
+    {
+        return $this->firstNumber;
+    }
+
+    /**
      * Set firstNumber
      *
      * @param integer $firstNumber
+     *
      * @return Plaque
      */
     public function setFirstNumber($firstNumber)
@@ -113,65 +154,20 @@ class Plaque
     }
 
     /**
-     * Get firstNumber
+     * Get areaCode
      *
-     * @return integer 
+     * @return string
      */
-    public function getFirstNumber()
+    public function getAreaCode()
     {
-        return $this->firstNumber;
-    }
-
-    /**
-     * Set secondNumber
-     *
-     * @param integer $secondNumber
-     * @return Plaque
-     */
-    public function setSecondNumber($secondNumber)
-    {
-        $this->secondNumber = $secondNumber;
-
-        return $this;
-    }
-
-    /**
-     * Get secondNumber
-     *
-     * @return integer 
-     */
-    public function getSecondNumber()
-    {
-        return $this->secondNumber;
-    }
-
-    /**
-     * Set cityNumber
-     *
-     * @param integer $cityNumber
-     * @return Plaque
-     */
-    public function setCityNumber($cityNumber)
-    {
-        $this->cityNumber = $cityNumber;
-
-        return $this;
-    }
-
-    /**
-     * Get cityNumber
-     *
-     * @return integer 
-     */
-    public function getCityNumber()
-    {
-        return $this->cityNumber;
+        return $this->areaCode;
     }
 
     /**
      * Set areaCode
      *
      * @param string $areaCode
+     *
      * @return Plaque
      */
     public function setAreaCode($areaCode)
@@ -182,40 +178,50 @@ class Plaque
     }
 
     /**
-     * Get areaCode
+     * Get secondNumber
      *
-     * @return string 
+     * @return integer
      */
-    public function getAreaCode()
+    public function getSecondNumber()
     {
-        return $this->areaCode;
+        return $this->secondNumber;
     }
 
     /**
-     * Set car
+     * Set secondNumber
      *
-     * @param \FunPro\DriverBundle\Entity\Car $car
+     * @param integer $secondNumber
+     *
      * @return Plaque
      */
-    public function setCar(\FunPro\DriverBundle\Entity\Car $car = null)
+    public function setSecondNumber($secondNumber)
     {
-        $this->car = $car;
+        $this->secondNumber = $secondNumber;
 
         return $this;
     }
 
     /**
-     * Get car
+     * Get cityNumber
      *
-     * @return \FunPro\DriverBundle\Entity\Car 
+     * @return integer
      */
-    public function getCar()
+    public function getCityNumber()
     {
-        return $this->car;
+        return $this->cityNumber;
     }
 
-    function __toString()
+    /**
+     * Set cityNumber
+     *
+     * @param integer $cityNumber
+     *
+     * @return Plaque
+     */
+    public function setCityNumber($cityNumber)
     {
-        return $this->getFirstNumber().'-'.$this->getAreaCode().'-'.$this->getSecondNumber().'|'.$this->getCityNumber();
+        $this->cityNumber = $cityNumber;
+
+        return $this;
     }
 }

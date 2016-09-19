@@ -21,20 +21,6 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class TicketController extends FOSRestController
 {
-    public function getForm(Ticket $ticket)
-    {
-        $format = $this->get('request')->getRequestFormat('html');
-        $options = array(
-            'action' => $this->generateUrl('fun_pro_ticket_api_post_ticket'),
-            'method' => 'POST',
-            'validation_groups' => array('Create'),
-            'csrf_protection' => $format === 'html' ?: false,
-        );
-
-        $form = $this->createForm(new TicketType(), $ticket, $options);
-        return $form;
-    }
-
     /**
      * Create a ticket
      *
@@ -94,5 +80,19 @@ class TicketController extends FOSRestController
         }
 
         return $this->view($form, Response::HTTP_BAD_REQUEST);
+    }
+
+    public function getForm(Ticket $ticket)
+    {
+        $format = $this->get('request')->getRequestFormat('html');
+        $options = array(
+            'action' => $this->generateUrl('fun_pro_ticket_api_post_ticket'),
+            'method' => 'POST',
+            'validation_groups' => array('Create'),
+            'csrf_protection' => $format === 'html' ?: false,
+        );
+
+        $form = $this->createForm(new TicketType(), $ticket, $options);
+        return $form;
     }
 }

@@ -42,7 +42,7 @@ class CallCommand extends ContainerAwareCommand
             $param = array(
                 'userName' => $container->getParameter('avanak.user'),
                 'password' => $container->getParameter('avanak.pass'),
-                'text' => $token->getToken(),
+                'text' => $container->getParameter('register.call_message') . ' ' . $token->getToken(),
                 'number' => $token->getUser()->getMobile(),
                 'vote' => false
             );

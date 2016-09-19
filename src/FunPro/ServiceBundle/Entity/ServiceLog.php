@@ -18,13 +18,13 @@ use JMS\Serializer\Annotation as JS;
 class ServiceLog
 {
     const STATUS_REQUESTED = 1;
-    const STATUS_CANCELED  = -1;
-    const STATUS_ACCEPTED  = 2;
-    const STATUS_REJECTED  = -2;
-    const STATUS_READY     = 3;
-    const STATUS_START     = 4;
-    const STATUS_FINISH    = 5;
-    const STATUS_PAYED     = 6;
+    const STATUS_CANCELED = -1;
+    const STATUS_ACCEPTED = 2;
+    const STATUS_REJECTED = -2;
+    const STATUS_READY = 3;
+    const STATUS_START = 4;
+    const STATUS_FINISH = 5;
+    const STATUS_PAYED = 6;
 
     /**
      * @var int
@@ -92,6 +92,16 @@ class ServiceLog
     }
 
     /**
+     * Get status
+     *
+     * @return integer
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
      * Set status
      *
      * @param integer $status
@@ -106,13 +116,13 @@ class ServiceLog
     }
 
     /**
-     * Get status
+     * Get atTime
      *
-     * @return integer
+     * @return \DateTime
      */
-    public function getStatus()
+    public function getAtTime()
     {
-        return $this->status;
+        return $this->atTime;
     }
 
     /**
@@ -127,13 +137,13 @@ class ServiceLog
     }
 
     /**
-     * Get atTime
+     * Get service
      *
-     * @return \DateTime
+     * @return Service
      */
-    public function getAtTime()
+    public function getService()
     {
-        return $this->atTime;
+        return $this->service;
     }
 
     /**
@@ -148,15 +158,5 @@ class ServiceLog
         $this->service = $service;
 
         return $this;
-    }
-
-    /**
-     * Get service
-     *
-     * @return Service
-     */
-    public function getService()
-    {
-        return $this->service;
     }
 }

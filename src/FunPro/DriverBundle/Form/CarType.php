@@ -16,7 +16,7 @@ class CarType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param array                $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -35,10 +35,9 @@ class CarType extends AbstractType
             ->add('description', Type\TextareaType::class, array('required' => false))
             ->add('imageFile', Type\FileType::class, array(
                 'required' => false,
-            ))
-        ;
+            ));
     }
-    
+
     /**
      * @param OptionsResolver $resolver
      */

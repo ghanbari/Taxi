@@ -19,13 +19,13 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Ticket
 {
-    const PRIORITY_LOW          = 0;
-    const PRIORITY_MEDIUM       = 1;
-    const PRIORITY_HIGH         = 2;
-    const PRIORITY_VERY_HIGH    = 3;
+    const PRIORITY_LOW = 0;
+    const PRIORITY_MEDIUM = 1;
+    const PRIORITY_HIGH = 2;
+    const PRIORITY_VERY_HIGH = 3;
 
     const TYPE_COMPLAINT = 1;
-    const TYPE_PROPOSAL  = 2;
+    const TYPE_PROPOSAL = 2;
 
     /**
      * @var int
@@ -219,9 +219,9 @@ class Ticket
     public static function getValidPriority()
     {
         return array(
-            'high'   => self::PRIORITY_HIGH,
+            'high' => self::PRIORITY_HIGH,
             'medium' => self::PRIORITY_MEDIUM,
-            'low'    => self::PRIORITY_LOW,
+            'low' => self::PRIORITY_LOW,
         );
     }
 
@@ -229,7 +229,7 @@ class Ticket
     {
         return array(
             'complaint' => self::TYPE_COMPLAINT,
-            'proposal'  => self::TYPE_PROPOSAL,
+            'proposal' => self::TYPE_PROPOSAL,
         );
     }
 
@@ -244,19 +244,6 @@ class Ticket
     }
 
     /**
-     * Set title
-     *
-     * @param string $title
-     * @return Ticket
-     */
-    public function setTitle($title)
-    {
-        $this->title = $title;
-
-        return $this;
-    }
-
-    /**
      * Get title
      *
      * @return string
@@ -267,14 +254,15 @@ class Ticket
     }
 
     /**
-     * Set message
+     * Set title
      *
-     * @param string $message
+     * @param string $title
+     *
      * @return Ticket
      */
-    public function setMessage($message)
+    public function setTitle($title)
     {
-        $this->message = $message;
+        $this->title = $title;
 
         return $this;
     }
@@ -290,14 +278,15 @@ class Ticket
     }
 
     /**
-     * Set priority
+     * Set message
      *
-     * @param integer $priority
+     * @param string $message
+     *
      * @return Ticket
      */
-    public function setPriority($priority)
+    public function setMessage($message)
     {
-        $this->priority = $priority;
+        $this->message = $message;
 
         return $this;
     }
@@ -313,14 +302,15 @@ class Ticket
     }
 
     /**
-     * Set type
+     * Set priority
      *
-     * @param integer $type
+     * @param integer $priority
+     *
      * @return Ticket
      */
-    public function setType($type)
+    public function setPriority($priority)
     {
-        $this->type = $type;
+        $this->priority = $priority;
 
         return $this;
     }
@@ -336,14 +326,15 @@ class Ticket
     }
 
     /**
-     * Set status
+     * Set type
      *
-     * @param integer $status
+     * @param integer $type
+     *
      * @return Ticket
      */
-    public function setStatus($status)
+    public function setType($type)
     {
-        $this->status = $status;
+        $this->type = $type;
 
         return $this;
     }
@@ -359,14 +350,15 @@ class Ticket
     }
 
     /**
-     * Set rtl
+     * Set status
      *
-     * @param integer $rtl
+     * @param integer $status
+     *
      * @return Ticket
      */
-    public function setRtl($rtl)
+    public function setStatus($status)
     {
-        $this->rtl = $rtl;
+        $this->status = $status;
 
         return $this;
     }
@@ -382,14 +374,15 @@ class Ticket
     }
 
     /**
-     * Set lft
+     * Set rtl
      *
-     * @param integer $lft
+     * @param integer $rtl
+     *
      * @return Ticket
      */
-    public function setLft($lft)
+    public function setRtl($rtl)
     {
-        $this->lft = $lft;
+        $this->rtl = $rtl;
 
         return $this;
     }
@@ -405,14 +398,15 @@ class Ticket
     }
 
     /**
-     * Set root
+     * Set lft
      *
-     * @param integer $root
+     * @param integer $lft
+     *
      * @return Ticket
      */
-    public function setRoot($root)
+    public function setLft($lft)
     {
-        $this->root = $root;
+        $this->lft = $lft;
 
         return $this;
     }
@@ -428,14 +422,15 @@ class Ticket
     }
 
     /**
-     * Set lvl
+     * Set root
      *
-     * @param integer $lvl
+     * @param integer $root
+     *
      * @return Ticket
      */
-    public function setLvl($lvl)
+    public function setRoot($root)
     {
-        $this->lvl = $lvl;
+        $this->root = $root;
 
         return $this;
     }
@@ -451,14 +446,15 @@ class Ticket
     }
 
     /**
-     * Set createdAt
+     * Set lvl
      *
-     * @param \DateTime $createdAt
+     * @param integer $lvl
+     *
      * @return Ticket
      */
-    public function setCreatedAt($createdAt)
+    public function setLvl($lvl)
     {
-        $this->createdAt = $createdAt;
+        $this->lvl = $lvl;
 
         return $this;
     }
@@ -474,14 +470,15 @@ class Ticket
     }
 
     /**
-     * Set updatedAt
+     * Set createdAt
      *
-     * @param \DateTime $updatedAt
+     * @param \DateTime $createdAt
+     *
      * @return Ticket
      */
-    public function setUpdatedAt($updatedAt)
+    public function setCreatedAt($createdAt)
     {
-        $this->updatedAt = $updatedAt;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
@@ -497,14 +494,15 @@ class Ticket
     }
 
     /**
-     * Set user
+     * Set updatedAt
      *
-     * @param User $user
+     * @param \DateTime $updatedAt
+     *
      * @return Ticket
      */
-    public function setUser(User $user = null)
+    public function setUpdatedAt($updatedAt)
     {
-        $this->user = $user;
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
@@ -520,14 +518,15 @@ class Ticket
     }
 
     /**
-     * Set parent
+     * Set user
      *
-     * @param Ticket $parent
+     * @param User $user
+     *
      * @return Ticket
      */
-    public function setParent(Ticket $parent = null)
+    public function setUser(User $user = null)
     {
-        $this->parent = $parent;
+        $this->user = $user;
 
         return $this;
     }
@@ -543,9 +542,24 @@ class Ticket
     }
 
     /**
+     * Set parent
+     *
+     * @param Ticket $parent
+     *
+     * @return Ticket
+     */
+    public function setParent(Ticket $parent = null)
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+    /**
      * Add children
      *
      * @param Ticket $children
+     *
      * @return Ticket
      */
     public function addChild(Ticket $children)

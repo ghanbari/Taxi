@@ -12,6 +12,29 @@ use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 class Util
 {
     /**
+     * @param LineString $lineString
+     *
+     * @return float|int
+     */
+    public static function lengthOfLineString(LineString $lineString)
+    {
+        $length = 0;
+        $count = count($lineString->toArray());
+        for ($counter = 0; $counter < $count; $counter++) {
+            if (($counter + 1) != $count) {
+                $length += self::distance(
+                    $lineString->getPoint($counter)->getLatitude(),
+                    $lineString->getPoint($counter)->getLongitude(),
+                    $lineString->getPoint($counter + 1)->getLatitude(),
+                    $lineString->getPoint($counter + 1)->getLongitude()
+                );
+            }
+        }
+
+        return $length * 1000;
+    }
+
+    /**
      *  This routine calculates the distance between two points (given the
      *  latitude/longitude of those points). It is being used to calculate
      *  the distance between two locations using GeoDataSource(TM) Products
@@ -46,7 +69,7 @@ class Util
     public static function distance($startPointLat, $startPointLon, $endPointLat, $endPointLon, $unit = 'K')
     {
         $theta = $startPointLon - $endPointLon;
-        $dist = sin(deg2rad($startPointLat)) * sin(deg2rad($endPointLat)) +  cos(deg2rad($startPointLat))
+        $dist = sin(deg2rad($startPointLat)) * sin(deg2rad($endPointLat)) + cos(deg2rad($startPointLat))
             * cos(deg2rad($endPointLat)) * cos(deg2rad($theta));
         $dist = acos($dist);
         $dist = rad2deg($dist);
@@ -60,28 +83,5 @@ class Util
         } else {
             return $miles;
         }
-    }
-
-    /**
-     * @param LineString $lineString
-     *
-     * @return float|int
-     */
-    public static function lengthOfLineString(LineString $lineString)
-    {
-        $length = 0;
-        $count = count($lineString->toArray());
-        for ($counter = 0; $counter < $count; $counter++) {
-            if (($counter+1) != $count) {
-                $length += self::distance(
-                    $lineString->getPoint($counter)->getLatitude(),
-                    $lineString->getPoint($counter)->getLongitude(),
-                    $lineString->getPoint($counter+1)->getLatitude(),
-                    $lineString->getPoint($counter+1)->getLongitude()
-                );
-            }
-        }
-
-        return $length * 1000;
     }
 }

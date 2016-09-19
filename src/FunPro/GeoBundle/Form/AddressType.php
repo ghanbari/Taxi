@@ -19,7 +19,7 @@ class AddressType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param array                $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -38,10 +38,9 @@ class AddressType extends AbstractType
                     return $qb->where($qb->expr()->gte('c.lvl', 2))
                         ->orderBy('c.name', 'ASC');
                 }
-            ))
-        ;
+            ));
     }
-    
+
     /**
      * @param OptionsResolver $resolver
      */

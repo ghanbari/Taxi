@@ -9,11 +9,21 @@ use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 
 class GCMDataCollector extends DataCollector
 {
+    public function __construct()
+    {
+        $this->data = array(
+            'success' => 0,
+            'failure' => 0,
+            'canonical' => 0,
+            'messages' => array(),
+        );
+    }
+
     /**
      * Collects data for the given Request and Response.
      *
-     * @param Request $request A Request instance
-     * @param Response $response A Response instance
+     * @param Request    $request   A Request instance
+     * @param Response   $response  A Response instance
      * @param \Exception $exception An Exception instance
      */
     public function collect(Request $request, Response $response, \Exception $exception = null)
@@ -31,17 +41,7 @@ class GCMDataCollector extends DataCollector
         return 'GCM';
     }
 
-    public function __construct()
-    {
-        $this->data = array(
-            'success' => 0,
-            'failure' => 0,
-            'canonical' => 0,
-            'messages' => array(),
-        );
-    }
-
-    public function add(array $messages, Success $response=null)
+    public function add(array $messages, Success $response = null)
     {
         if ($response) {
             $this->data['success'] += $response->getSuccess();

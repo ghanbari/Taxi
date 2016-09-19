@@ -21,7 +21,8 @@ class TransactionRepository extends EntityRepository
         $type = null,
         $limit = 10,
         $offset = 0
-    ) {
+    )
+    {
         $queryBuilder = $this->createQueryBuilder('t');
 
         $queryBuilder->select(array('t', 'w', 's'))

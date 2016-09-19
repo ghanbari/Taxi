@@ -79,17 +79,6 @@ class Wakeful
     }
 
     /**
-     * Set atTime
-     *
-     * @ORM\PrePersist()
-     * @ORM\PreUpdate()
-     */
-    public function setAtTime()
-    {
-        $this->atTime = new \DateTime();
-    }
-
-    /**
      * Get atTime
      *
      * @return \DateTime
@@ -100,17 +89,14 @@ class Wakeful
     }
 
     /**
-     * Set point
+     * Set atTime
      *
-     * @param Point $point
-     * @return Wakeful
+     * @ORM\PrePersist()
+     * @ORM\PreUpdate()
      */
-    public function setPoint(Point $point)
+    public function setAtTime()
     {
-        $this->point = $point;
-        $this->setAtTime(new \DateTime());
-
-        return $this;
+        $this->atTime = new \DateTime();
     }
 
     /**
@@ -124,14 +110,16 @@ class Wakeful
     }
 
     /**
-     * Set car
+     * Set point
      *
-     * @param Car $car
+     * @param Point $point
+     *
      * @return Wakeful
      */
-    public function setCar(Car $car = null)
+    public function setPoint(Point $point)
     {
-        $this->car = $car;
+        $this->point = $point;
+        $this->setAtTime(new \DateTime());
 
         return $this;
     }
@@ -144,5 +132,19 @@ class Wakeful
     public function getCar()
     {
         return $this->car;
+    }
+
+    /**
+     * Set car
+     *
+     * @param Car $car
+     *
+     * @return Wakeful
+     */
+    public function setCar(Car $car = null)
+    {
+        $this->car = $car;
+
+        return $this;
     }
 }

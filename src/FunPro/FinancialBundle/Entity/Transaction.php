@@ -19,19 +19,19 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Transaction
 {
-    const DIRECTION_INCOME  = 1;
+    const DIRECTION_INCOME = 1;
     const DIRECTION_OUTCOME = -1;
 
-    const TYPE_PAY          = 1;
-    const TYPE_WAGE         = 2;
-    const TYPE_COMMISSION   = 3;
-    const TYPE_CREDIT       = 4;
-    const TYPE_WITHDRAW     = 5;
-    const TYPE_MOVE         = 6;
-    const TYPE_REWARD       = 7;
+    const TYPE_PAY = 1;
+    const TYPE_WAGE = 2;
+    const TYPE_COMMISSION = 3;
+    const TYPE_CREDIT = 4;
+    const TYPE_WITHDRAW = 5;
+    const TYPE_MOVE = 6;
+    const TYPE_REWARD = 7;
 
     const STATUS_SUCCESS = 1;
-    const STATUS_FAILED  = 0;
+    const STATUS_FAILED = 0;
 
     /**
      * @var int
@@ -264,20 +264,6 @@ class Transaction
         );
     }
 
-    /**
-     * @return bool
-     */
-    public function isValidDirection()
-    {
-        if (in_array($this->type, array(self::TYPE_WAGE, self::TYPE_REWARD, self::TYPE_CREDIT))) {
-            $direction = self::DIRECTION_INCOME;
-        } else {
-            $direction = self::DIRECTION_OUTCOME;
-        }
-
-        return $this->getDirection() === $direction;
-    }
-
     public static function getValidType()
     {
         return array(
@@ -292,6 +278,44 @@ class Transaction
     }
 
     /**
+     * @return bool
+     */
+    public function isValidDirection()
+    {
+        if (in_array($this->type, array(self::TYPE_WAGE, self::TYPE_REWARD, self::TYPE_CREDIT))) {
+            $direction = self::DIRECTION_INCOME;
+        } else {
+            $direction = self::DIRECTION_OUTCOME;
+        }
+
+        return $this->getDirection() === $direction;
+    }
+
+    /**
+     * Get direction
+     *
+     * @return integer
+     */
+    public function getDirection()
+    {
+        return $this->direction;
+    }
+
+    /**
+     * Set direction
+     *
+     * @param integer $direction
+     *
+     * @return Transaction
+     */
+    public function setDirection($direction)
+    {
+        $this->direction = $direction;
+
+        return $this;
+    }
+
+    /**
      * Get id
      *
      * @return integer
@@ -299,19 +323,6 @@ class Transaction
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set amount
-     *
-     * @param integer $amount
-     * @return Transaction
-     */
-    public function setAmount($amount)
-    {
-        $this->amount = $amount;
-
-        return $this;
     }
 
     /**
@@ -325,14 +336,15 @@ class Transaction
     }
 
     /**
-     * Set virtual
+     * Set amount
      *
-     * @param boolean $virtual
+     * @param integer $amount
+     *
      * @return Transaction
      */
-    public function setVirtual($virtual)
+    public function setAmount($amount)
     {
-        $this->virtual = $virtual;
+        $this->amount = $amount;
 
         return $this;
     }
@@ -358,37 +370,15 @@ class Transaction
     }
 
     /**
-     * Set direction
+     * Set virtual
      *
-     * @param integer $direction
+     * @param boolean $virtual
+     *
      * @return Transaction
      */
-    public function setDirection($direction)
+    public function setVirtual($virtual)
     {
-        $this->direction = $direction;
-
-        return $this;
-    }
-
-    /**
-     * Get direction
-     *
-     * @return integer
-     */
-    public function getDirection()
-    {
-        return $this->direction;
-    }
-
-    /**
-     * Set type
-     *
-     * @param integer $type
-     * @return Transaction
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
+        $this->virtual = $virtual;
 
         return $this;
     }
@@ -404,14 +394,15 @@ class Transaction
     }
 
     /**
-     * Set status
+     * Set type
      *
-     * @param integer $status
+     * @param integer $type
+     *
      * @return Transaction
      */
-    public function setStatus($status)
+    public function setType($type)
     {
-        $this->status = $status;
+        $this->type = $type;
 
         return $this;
     }
@@ -427,14 +418,15 @@ class Transaction
     }
 
     /**
-     * Set user
+     * Set status
      *
-     * @param User $user
+     * @param integer $status
+     *
      * @return Transaction
      */
-    public function setUser(User $user = null)
+    public function setStatus($status)
     {
-        $this->user = $user;
+        $this->status = $status;
 
         return $this;
     }
@@ -450,14 +442,15 @@ class Transaction
     }
 
     /**
-     * Set service
+     * Set user
      *
-     * @param Service $service
+     * @param User $user
+     *
      * @return Transaction
      */
-    public function setService(Service $service = null)
+    public function setUser(User $user = null)
     {
-        $this->service = $service;
+        $this->user = $user;
 
         return $this;
     }
@@ -470,6 +463,20 @@ class Transaction
     public function getService()
     {
         return $this->service;
+    }
+
+    /**
+     * Set service
+     *
+     * @param Service $service
+     *
+     * @return Transaction
+     */
+    public function setService(Service $service = null)
+    {
+        $this->service = $service;
+
+        return $this;
     }
 
     /**
@@ -492,19 +499,6 @@ class Transaction
     }
 
     /**
-     * Set currencyLog
-     *
-     * @param CurrencyExchangeLog $currencyLog
-     * @return Transaction
-     */
-    public function setCurrencyLog(CurrencyExchangeLog $currencyLog = null)
-    {
-        $this->currencyLog = $currencyLog;
-
-        return $this;
-    }
-
-    /**
      * Get currencyLog
      *
      * @return CurrencyExchangeLog
@@ -515,14 +509,15 @@ class Transaction
     }
 
     /**
-     * Set wallet
+     * Set currencyLog
      *
-     * @param Wallet $wallet
+     * @param CurrencyExchangeLog $currencyLog
+     *
      * @return Transaction
      */
-    public function setWallet(Wallet $wallet = null)
+    public function setCurrencyLog(CurrencyExchangeLog $currencyLog = null)
     {
-        $this->wallet = $wallet;
+        $this->currencyLog = $currencyLog;
 
         return $this;
     }
@@ -538,14 +533,15 @@ class Transaction
     }
 
     /**
-     * Set gateWay
+     * Set wallet
      *
-     * @param Gateway $gateWay
+     * @param Wallet $wallet
+     *
      * @return Transaction
      */
-    public function setGateWay(Gateway $gateWay = null)
+    public function setWallet(Wallet $wallet = null)
     {
-        $this->gateWay = $gateWay;
+        $this->wallet = $wallet;
 
         return $this;
     }
@@ -561,14 +557,15 @@ class Transaction
     }
 
     /**
-     * Set moveToWallet
+     * Set gateWay
      *
-     * @param Wallet $moveToWallet
+     * @param Gateway $gateWay
+     *
      * @return Transaction
      */
-    public function setMoveToWallet(Wallet $moveToWallet = null)
+    public function setGateWay(Gateway $gateWay = null)
     {
-        $this->moveToWallet = $moveToWallet;
+        $this->gateWay = $gateWay;
 
         return $this;
     }
@@ -581,6 +578,20 @@ class Transaction
     public function getMoveToWallet()
     {
         return $this->moveToWallet;
+    }
+
+    /**
+     * Set moveToWallet
+     *
+     * @param Wallet $moveToWallet
+     *
+     * @return Transaction
+     */
+    public function setMoveToWallet(Wallet $moveToWallet = null)
+    {
+        $this->moveToWallet = $moveToWallet;
+
+        return $this;
     }
 
     /**

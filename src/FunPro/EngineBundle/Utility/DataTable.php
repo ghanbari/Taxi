@@ -32,12 +32,12 @@ class DataTable
                 if ($column['searchable'] !== 'false' and !empty($column['name'])) {
                     if (!empty($search['value'])) {
                         $queryBuilder->orWhere($queryBuilder->expr()->like($column['name'], ":value$i"))
-                            ->setParameter("value$i", '%'.$search['value'].'%');
+                            ->setParameter("value$i", '%' . $search['value'] . '%');
                     }
 
                     if (!empty($column['search']['value'])) {
                         $queryBuilder->orWhere($queryBuilder->expr()->like($column['name'], "value-$i"))
-                            ->setParameter("value-$i", '%'.$column['search']['value'].'%');
+                            ->setParameter("value-$i", '%' . $column['search']['value'] . '%');
                     }
                 }
                 $i++;

@@ -98,19 +98,6 @@ class Gateway
     }
 
     /**
-     * Set name
-     *
-     * @param string $name
-     * @return Gateway
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
      * Get name
      *
      * @return string
@@ -121,14 +108,15 @@ class Gateway
     }
 
     /**
-     * Set config
+     * Set name
      *
-     * @param array $config
+     * @param string $name
+     *
      * @return Gateway
      */
-    public function setConfig($config)
+    public function setName($name)
     {
-        $this->config = $config;
+        $this->name = $name;
 
         return $this;
     }
@@ -144,14 +132,15 @@ class Gateway
     }
 
     /**
-     * Set enable
+     * Set config
      *
-     * @param boolean $enable
+     * @param array $config
+     *
      * @return Gateway
      */
-    public function setEnable($enable)
+    public function setConfig($config)
     {
-        $this->enable = $enable;
+        $this->config = $config;
 
         return $this;
     }
@@ -177,14 +166,15 @@ class Gateway
     }
 
     /**
-     * Set default
+     * Set enable
      *
-     * @param boolean $default
+     * @param boolean $enable
+     *
      * @return Gateway
      */
-    public function setDefault($default)
+    public function setEnable($enable)
     {
-        $this->default = $default;
+        $this->enable = $enable;
 
         return $this;
     }
@@ -210,14 +200,15 @@ class Gateway
     }
 
     /**
-     * Set currency
+     * Set default
      *
-     * @param Currency $currency
+     * @param boolean $default
+     *
      * @return Gateway
      */
-    public function setCurrency(Currency $currency = null)
+    public function setDefault($default)
     {
-        $this->currency = $currency;
+        $this->default = $default;
 
         return $this;
     }
@@ -230,5 +221,19 @@ class Gateway
     public function getCurrency()
     {
         return $this->currency;
+    }
+
+    /**
+     * Set currency
+     *
+     * @param Currency $currency
+     *
+     * @return Gateway
+     */
+    public function setCurrency(Currency $currency = null)
+    {
+        $this->currency = $currency;
+
+        return $this;
     }
 }

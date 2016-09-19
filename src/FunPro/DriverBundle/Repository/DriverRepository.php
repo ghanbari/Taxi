@@ -16,8 +16,10 @@ class DriverRepository extends EntityRepository
 {
     /**
      * @TODO: Use Spatial Mysql Distance function for Mysql > 5.6.1
-     * @param Point $point
+     *
+     * @param Point   $point
      * @param integer $distance radius in meter
+     *
      * @return array
      */
     public function getAllFreeDriverAroundPoint(Point $point, $distance)
@@ -34,7 +36,7 @@ class DriverRepository extends EntityRepository
             ->setParameter('current', true)
             ->setParameter('carStatus', array(Car::STATUS_WAKEFUL, Car::STATUS_SERVICE_IN, Car::STATUS_SERVICE_END))
             ->setParameter('location', "point($point)")
-            ->setParameter('distance', $distance/100000);
+            ->setParameter('distance', $distance / 100000);
 
         return $queryBuilder->getQuery()
             ->getResult();

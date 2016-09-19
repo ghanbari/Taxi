@@ -5,7 +5,6 @@ namespace FunPro\EngineBundle\Listener;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Controller\ControllerResolver;
-use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -33,6 +32,17 @@ class FilterControllerByApiVersion implements EventSubscriberInterface
     private $controllerResolver;
 
     /**
+     * @param Router $router
+     */
+    public function __construct(Router $router, $currentVersion, array $availableVersions)
+    {
+        $this->router = $router;
+        $this->currentVersion = $currentVersion;
+        $this->availableVersions = $availableVersions;
+        $this->controllerResolver = new ControllerResolver();
+    }
+
+    /**
      * Returns an array of event names this subscriber wants to listen to.
      *
      * The array keys are event names and the value can be:
@@ -57,17 +67,6 @@ class FilterControllerByApiVersion implements EventSubscriberInterface
         );
     }
 
-    /**
-     * @param Router $router
-     */
-    public function __construct(Router $router, $currentVersion, array $availableVersions)
-    {
-        $this->router = $router;
-        $this->currentVersion = $currentVersion;
-        $this->availableVersions = $availableVersions;
-        $this->controllerResolver = new ControllerResolver();
-    }
-
     public function onKernelRequest(GetResponseEvent $event)
     {
         $request = $event->getRequest();
@@ -85,7 +84,7 @@ class FilterControllerByApiVersion implements EventSubscriberInterface
             do {
                 $controller = $request->attributes->get('_controller');
                 $version = 'V' . str_replace('.', '_', $version);
-                $controller = str_replace('\Controller\\', '\Controller\\'. $version .'\\', $controller);
+                $controller = str_replace('\Controller\\', '\Controller\\' . $version . '\\', $controller);
 
                 try {
                     $validVersion = true;
@@ -97,7 +96,7 @@ class FilterControllerByApiVersion implements EventSubscriberInterface
                     $validVersion = false;
                     $version = array_pop($this->availableVersions);
                 }
-            } while(!$validVersion);
-        ;}
+            } while (!$validVersion);;
+        }
     }
 } 

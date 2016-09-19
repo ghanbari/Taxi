@@ -138,6 +138,51 @@ class ServiceRepository extends EntityRepository
     }
 
     /**
+     * @param Passenger $passenger
+     * @param Driver    $driver
+     * @param Point     $origin
+     * @param Point     $destination
+     * @param \DateTime $from
+     * @param \DateTime $till
+     * @param int       $limit
+     * @param int       $offset
+     *
+     * @return array
+     */
+    public function getPassengerServiceFilterBy(
+        Passenger $passenger,
+        Driver $driver = null,
+        Point $origin = null,
+        Point $destination = null,
+        \DateTime $from = null,
+        \DateTime $till = null,
+        $limit = 10,
+        $offset = 0
+    )
+    {
+        $queryBuilder = $this->getFilterByQueryBuilder($origin, $destination, $from, $till, $limit, $offset);
+
+        $queryBuilder->select(array('s', 'p', 'c', 'd', 'l'));
+        $queryBuilder
+            ->innerJoin('s.passenger', 'p')
+            ->innerJoin('s.car', 'c')
+            ->innerJoin('c.driver', 'd')
+            ->innerJoin('s.logs', 'l');
+
+        $queryBuilder->andWhere($queryBuilder->expr()->eq('s.passenger', ':passenger'))
+            ->setParameter('passenger', $passenger);
+
+        if ($driver) {
+            $queryBuilder->andWhere($queryBuilder->expr()->eq('c.driver', ':driver'))
+                ->setParameter('driver', $driver);
+        }
+
+        return $queryBuilder
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * @param Point     $origin
      * @param Point     $destination
      * @param \DateTime $from
@@ -154,7 +199,8 @@ class ServiceRepository extends EntityRepository
         \DateTime $till = null,
         $limit = 10,
         $offset = 0
-    ) {
+    )
+    {
         $queryBuilder = $this->createQueryBuilder('s');
 
         if ($origin) {
@@ -182,50 +228,6 @@ class ServiceRepository extends EntityRepository
             ->setFirstResult($offset);
     }
 
-    /**
-     * @param Passenger $passenger
-     * @param Driver    $driver
-     * @param Point     $origin
-     * @param Point     $destination
-     * @param \DateTime $from
-     * @param \DateTime $till
-     * @param int       $limit
-     * @param int       $offset
-     *
-     * @return array
-     */
-    public function getPassengerServiceFilterBy(
-        Passenger $passenger,
-        Driver $driver = null,
-        Point $origin = null,
-        Point $destination = null,
-        \DateTime $from = null,
-        \DateTime $till = null,
-        $limit = 10,
-        $offset = 0
-    ) {
-        $queryBuilder = $this->getFilterByQueryBuilder($origin, $destination, $from, $till, $limit, $offset);
-
-        $queryBuilder->select(array('s', 'p', 'c', 'd', 'l'));
-        $queryBuilder
-            ->innerJoin('s.passenger', 'p')
-            ->innerJoin('s.car', 'c')
-            ->innerJoin('c.driver', 'd')
-            ->innerJoin('s.logs', 'l');
-
-        $queryBuilder->andWhere($queryBuilder->expr()->eq('s.passenger', ':passenger'))
-            ->setParameter('passenger', $passenger);
-
-        if ($driver) {
-            $queryBuilder->andWhere($queryBuilder->expr()->eq('c.driver', ':driver'))
-                ->setParameter('driver', $driver);
-        }
-
-        return $queryBuilder
-            ->getQuery()
-            ->getResult();
-    }
-
     public function getDriverServiceFilterBy(
         Driver $driver,
         Point $origin = null,
@@ -234,7 +236,8 @@ class ServiceRepository extends EntityRepository
         \DateTime $till = null,
         $limit = 10,
         $offset = 0
-    ) {
+    )
+    {
         $queryBuilder = $this->getFilterByQueryBuilder($origin, $destination, $from, $till, $limit, $offset);
 
         $queryBuilder->select(array('s', 'p', 'l'));

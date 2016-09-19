@@ -100,7 +100,7 @@ class PassengerController extends FOSRestController
 
         $logger->addInfo('token persisted', array('token' => $token));
         $this->get('sms.sender')->send($passenger->getMobile(), $token->getToken());
-        $job = new Job('passenger:call', array('tokenId' => $token->getId()));
+        $job = new Job('passenger:call', array($token->getId()));
         $job->setExecuteAfter(new \DateTime('+30 seconds'));
         $manager->persist($job);
         $manager->flush();

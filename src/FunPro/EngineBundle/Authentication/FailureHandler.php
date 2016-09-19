@@ -16,8 +16,9 @@ class FailureHandler extends DefaultAuthenticationFailureHandler
     /**
      * {@inheritDoc}
      */
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception) {
-        if($request->isXmlHttpRequest()) {
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+    {
+        if ($request->isXmlHttpRequest()) {
             $response = new JsonResponse(
                 array('code' => Response::HTTP_BAD_REQUEST, 'message' => $exception->getMessage()),
                 Response::HTTP_BAD_REQUEST

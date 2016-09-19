@@ -43,9 +43,9 @@ class UserTokenAuthenticator extends AbstractGuardAuthenticator
     private $logger;
 
     /**
-     * @param EntityManager         $manager
-     * @param TokenStorage $storage
-     * @param Logger                $logger
+     * @param EntityManager $manager
+     * @param TokenStorage  $storage
+     * @param Logger        $logger
      */
     public function __construct(EntityManager $manager, TokenStorage $storage, Logger $logger)
     {

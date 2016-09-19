@@ -88,12 +88,12 @@ class CarLogRepository extends EntityRepository
             ->getResult();
 
         $sumOfWakefulTime = 0;
-        $sumOfSleepTime   = 0;
+        $sumOfSleepTime = 0;
 
         /** @var CarLog $firstLog */
-        $firstLog  = array_shift($result);
+        $firstLog = array_shift($result);
         /** @var CarLog $lastLog */
-        $lastLog  = array_pop($result);
+        $lastLog = array_pop($result);
 
         if ($firstLog and $firstLog->getStatus() === Car::STATUS_SLEEP) {
             $sumOfSleepTime += $firstLog->getAtTime()->getTimestamp();
@@ -106,7 +106,7 @@ class CarLogRepository extends EntityRepository
 
         if ($lastLog and $lastLog->getStatus() === Car::STATUS_WAKEFUL) {
             $sumOfWakefulTime += $lastLog->getAtTime()->getTimestamp();
-            $sumOfSleepTime   += (new \DateTime())->getTimestamp();
+            $sumOfSleepTime += (new \DateTime())->getTimestamp();
         } elseif ($lastLog) {
             $sumOfSleepTime += $lastLog->getAtTime()->getTimestamp();
         } else {

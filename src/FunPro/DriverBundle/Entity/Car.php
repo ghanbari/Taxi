@@ -24,16 +24,16 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  */
 class Car
 {
-    const STATUS_SLEEP                      = 0;
-    const STATUS_WAKEFUL                    = 1;
-    const STATUS_SERVICE_ACCEPT             = 2;
-    const STATUS_SERVICE_PREPARE            = 3;
-    const STATUS_SERVICE_READY              = 4;
-    const STATUS_SERVICE_START              = 5;
-    const STATUS_SERVICE_IN                 = 6;
-    const STATUS_SERVICE_END                = 7;
-    const STATUS_SERVICE_IN_AND_ACCEPT      = 8;
-    const STATUS_SERVICE_IN_AND_PREPARE     = 9;
+    const STATUS_SLEEP = 0;
+    const STATUS_WAKEFUL = 1;
+    const STATUS_SERVICE_ACCEPT = 2;
+    const STATUS_SERVICE_PREPARE = 3;
+    const STATUS_SERVICE_READY = 4;
+    const STATUS_SERVICE_START = 5;
+    const STATUS_SERVICE_IN = 6;
+    const STATUS_SERVICE_END = 7;
+    const STATUS_SERVICE_IN_AND_ACCEPT = 8;
+    const STATUS_SERVICE_IN_AND_PREPARE = 9;
 
     /**
      * @var int
@@ -271,19 +271,6 @@ class Car
     }
 
     /**
-     * Set type
-     *
-     * @param string $type
-     * @return Car
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    /**
      * Get type
      *
      * @return string
@@ -294,14 +281,15 @@ class Car
     }
 
     /**
-     * Set plaque
+     * Set type
      *
-     * @param Plaque $plaque
+     * @param string $type
+     *
      * @return Car
      */
-    public function setPlaque($plaque)
+    public function setType($type)
     {
-        $this->plaque = $plaque;
+        $this->type = $type;
 
         return $this;
     }
@@ -317,14 +305,15 @@ class Car
     }
 
     /**
-     * Set color
+     * Set plaque
      *
-     * @param string $color
+     * @param Plaque $plaque
+     *
      * @return Car
      */
-    public function setColor($color)
+    public function setPlaque($plaque)
     {
-        $this->color = $color;
+        $this->plaque = $plaque;
 
         return $this;
     }
@@ -340,14 +329,15 @@ class Car
     }
 
     /**
-     * Set born
+     * Set color
      *
-     * @param \DateTime $born
+     * @param string $color
+     *
      * @return Car
      */
-    public function setBorn($born)
+    public function setColor($color)
     {
-        $this->born = $born;
+        $this->color = $color;
 
         return $this;
     }
@@ -363,14 +353,15 @@ class Car
     }
 
     /**
-     * Set rate
+     * Set born
      *
-     * @param string $rate
+     * @param \DateTime $born
+     *
      * @return Car
      */
-    public function setRate($rate)
+    public function setBorn($born)
     {
-        $this->rate = $rate;
+        $this->born = $born;
 
         return $this;
     }
@@ -386,14 +377,15 @@ class Car
     }
 
     /**
-     * Set description
+     * Set rate
      *
-     * @param string $description
+     * @param string $rate
+     *
      * @return Car
      */
-    public function setDescription($description)
+    public function setRate($rate)
     {
-        $this->description = $description;
+        $this->rate = $rate;
 
         return $this;
     }
@@ -409,14 +401,15 @@ class Car
     }
 
     /**
-     * Set deletedAt
+     * Set description
      *
-     * @param \DateTime $deletedAt
+     * @param string $description
+     *
      * @return Car
      */
-    public function setDeletedAt($deletedAt)
+    public function setDescription($description)
     {
-        $this->deletedAt = $deletedAt;
+        $this->description = $description;
 
         return $this;
     }
@@ -432,14 +425,15 @@ class Car
     }
 
     /**
-     * Set driver
+     * Set deletedAt
      *
-     * @param Driver $driver
+     * @param \DateTime $deletedAt
+     *
      * @return Car
      */
-    public function setDriver(Driver $driver)
+    public function setDeletedAt($deletedAt)
     {
-        $this->driver = $driver;
+        $this->deletedAt = $deletedAt;
 
         return $this;
     }
@@ -455,14 +449,15 @@ class Car
     }
 
     /**
-     * Set deletedBy
+     * Set driver
      *
-     * @param User $deletedBy
+     * @param Driver $driver
+     *
      * @return Car
      */
-    public function setDeletedBy(User $deletedBy = null)
+    public function setDriver(Driver $driver)
     {
-        $this->deletedBy = $deletedBy;
+        $this->driver = $driver;
 
         return $this;
     }
@@ -478,14 +473,15 @@ class Car
     }
 
     /**
-     * Set createdAt
+     * Set deletedBy
      *
-     * @param \DateTime $createdAt
+     * @param User $deletedBy
+     *
      * @return Car
      */
-    public function setCreatedAt($createdAt)
+    public function setDeletedBy(User $deletedBy = null)
     {
-        $this->createdAt = $createdAt;
+        $this->deletedBy = $deletedBy;
 
         return $this;
     }
@@ -501,14 +497,15 @@ class Car
     }
 
     /**
-     * Set current
+     * Set createdAt
      *
-     * @param boolean $current
+     * @param \DateTime $createdAt
+     *
      * @return Car
      */
-    public function setCurrent($current)
+    public function setCreatedAt($createdAt)
     {
-        $this->current = $current;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
@@ -534,14 +531,15 @@ class Car
     }
 
     /**
-     * Set createdBy
+     * Set current
      *
-     * @param User $createdBy
+     * @param boolean $current
+     *
      * @return Car
      */
-    public function setCreatedBy(User $createdBy = null)
+    public function setCurrent($current)
     {
-        $this->createdBy = $createdBy;
+        $this->current = $current;
 
         return $this;
     }
@@ -557,26 +555,17 @@ class Car
     }
 
     /**
-     * Set status
+     * Set createdBy
      *
-     * @param integer $status
+     * @param User $createdBy
+     *
      * @return Car
      */
-    public function setStatus($status)
+    public function setCreatedBy(User $createdBy = null)
     {
-        $this->status = $status;
+        $this->createdBy = $createdBy;
 
         return $this;
-    }
-
-    /**
-     * Get integer
-     *
-     * @return string
-     */
-    public function getStatus()
-    {
-        return $this->status;
     }
 
     /**
@@ -599,19 +588,6 @@ class Car
     }
 
     /**
-     * Set brand
-     *
-     * @param string $brand
-     * @return Car
-     */
-    public function setBrand($brand)
-    {
-        $this->brand = $brand;
-
-        return $this;
-    }
-
-    /**
      * Get brand
      *
      * @return string
@@ -619,6 +595,20 @@ class Car
     public function getBrand()
     {
         return $this->brand;
+    }
+
+    /**
+     * Set brand
+     *
+     * @param string $brand
+     *
+     * @return Car
+     */
+    public function setBrand($brand)
+    {
+        $this->brand = $brand;
+
+        return $this;
     }
 
     /**
@@ -661,6 +651,30 @@ class Car
             default:
                 return 'unknown';
         }
+    }
+
+    /**
+     * Get integer
+     *
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * Set status
+     *
+     * @param integer $status
+     *
+     * @return Car
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+
+        return $this;
     }
 
     /**

@@ -58,7 +58,8 @@ class PaymentSubsciber implements EventSubscriberInterface
         ParameterBagInterface $parameterBag,
         ValidatorInterface $validator,
         Serializer $serializer
-    ) {
+    )
+    {
         $this->logger = $logger;
         $this->parameterBag = $parameterBag;
         $this->doctrine = $doctrine;

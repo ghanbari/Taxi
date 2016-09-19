@@ -11,7 +11,7 @@ class DeviceType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param array                $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -26,10 +26,9 @@ class DeviceType extends AbstractType
             ->add('appName', Type\TextType::class)
             ->add('playServiceVersion', Type\TextType::class)
             ->add('deviceDateTime', Type\TextType::class)
-            ->add('deviceTimezone', Type\TextType::class)
-        ;
+            ->add('deviceTimezone', Type\TextType::class);
     }
-    
+
     /**
      * @param OptionsResolver $resolver
      */

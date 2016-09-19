@@ -2,8 +2,8 @@
 
 namespace FunPro\AdminBundle\Controller;
 
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Controller\FOSRestController;
 
 /**
  * Class DashboardController

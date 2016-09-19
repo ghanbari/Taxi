@@ -20,7 +20,7 @@ use Symfony\Bridge\Monolog\Logger;
  *
  * @package FunPro\EngineBundle\GCM
  *
- * @TODO: GCM send request in http_kernel.terminated
+ * @TODO    : GCM send request in http_kernel.terminated
  */
 class GCM
 {
@@ -79,7 +79,8 @@ class GCM
         GCMDataCollector $collector,
         $apiKey,
         $env
-    ) {
+    )
+    {
         $this->doctrine = $doctrine;
         $this->serializer = $serializer;
         $this->apiKey = $apiKey;
@@ -236,8 +237,15 @@ class GCM
         }
     }
 
+    private function serialize(Message $message)
+    {
+        $context = SerializationContext::create()
+            ->setGroups('GCM');
+        return $this->serializer->serialize($message, 'json', $context);
+    }
+
     /**
-     * @param Success $response
+     * @param Success   $response
      * @param Message[] $messages
      */
     private function onSuccess(Success $response, array $messages)
@@ -278,12 +286,5 @@ class GCM
     private function getDeviceToken(Message $message)
     {
         return $message->getDevice()->getDeviceToken();
-    }
-
-    private function serialize(Message $message)
-    {
-        $context = SerializationContext::create()
-            ->setGroups('GCM');
-        return $this->serializer->serialize($message, 'json', $context);
     }
 }

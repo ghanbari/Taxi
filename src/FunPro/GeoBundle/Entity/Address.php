@@ -105,19 +105,6 @@ class Address
     }
 
     /**
-     * Set title
-     *
-     * @param string $title
-     * @return Address
-     */
-    public function setTitle($title)
-    {
-        $this->title = $title;
-
-        return $this;
-    }
-
-    /**
      * Get title
      *
      * @return string
@@ -128,14 +115,15 @@ class Address
     }
 
     /**
-     * Set point
+     * Set title
      *
-     * @param Point $point
+     * @param string $title
+     *
      * @return Address
      */
-    public function setPoint(Point $point)
+    public function setTitle($title)
     {
-        $this->point = $point;
+        $this->title = $title;
 
         return $this;
     }
@@ -151,14 +139,15 @@ class Address
     }
 
     /**
-     * Set postalCode
+     * Set point
      *
-     * @param string $postalCode
+     * @param Point $point
+     *
      * @return Address
      */
-    public function setPostalCode($postalCode)
+    public function setPoint(Point $point)
     {
-        $this->postalCode = $postalCode;
+        $this->point = $point;
 
         return $this;
     }
@@ -174,14 +163,15 @@ class Address
     }
 
     /**
-     * Set address
+     * Set postalCode
      *
-     * @param string $address
+     * @param string $postalCode
+     *
      * @return Address
      */
-    public function setAddress($address)
+    public function setPostalCode($postalCode)
     {
-        $this->address = $address;
+        $this->postalCode = $postalCode;
 
         return $this;
     }
@@ -197,14 +187,15 @@ class Address
     }
 
     /**
-     * Set city
+     * Set address
      *
-     * @param City $city
+     * @param string $address
+     *
      * @return Address
      */
-    public function setCity(City $city = null)
+    public function setAddress($address)
     {
-        $this->city = $city;
+        $this->address = $address;
 
         return $this;
     }
@@ -217,5 +208,19 @@ class Address
     public function getCity()
     {
         return $this->city;
+    }
+
+    /**
+     * Set city
+     *
+     * @param City $city
+     *
+     * @return Address
+     */
+    public function setCity(City $city = null)
+    {
+        $this->city = $city;
+
+        return $this;
     }
 }

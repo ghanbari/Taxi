@@ -17,16 +17,15 @@ class IpLocationType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param array                $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add('location', PointType::class)
-            ->add('ip', Type\TextType::class)
-        ;
+            ->add('ip', Type\TextType::class);
     }
-    
+
     /**
      * @param OptionsResolver $resolver
      */

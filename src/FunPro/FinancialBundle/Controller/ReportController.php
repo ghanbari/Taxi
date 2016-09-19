@@ -84,7 +84,8 @@ class ReportController extends FOSRestController
      * @Rest\QueryParam(name="min", nullable=true, requirements="\d+", strict=true)
      * @Rest\QueryParam(name="max", nullable=true, requirements="\d+", strict=true)
      * @Rest\QueryParam(name="direction", nullable=true, requirements="income|outcome", strict=true)
-     * @Rest\QueryParam(name="type", nullable=true, requirements="pay|wage|reward|commission|credit|withdraw|move", strict=true)
+     * @Rest\QueryParam(name="type", nullable=true, requirements="pay|wage|reward|commission|credit|withdraw|move",
+     *                               strict=true)
      * @Rest\QueryParam(name="limit", nullable=true, default="10", requirements="\d+", strict=true)
      * @Rest\QueryParam(name="offset", nullable=true, default="0", requirements="\d+", strict=true)
      */
@@ -92,7 +93,7 @@ class ReportController extends FOSRestController
     {
         $fetcher = $this->get('fos_rest.request.param_fetcher');
 
-        $limit  = min(20, $fetcher->get('limit'));
+        $limit = min(20, $fetcher->get('limit'));
         $offset = max(0, $fetcher->get('offset'));
 
         $from = $fetcher->get('from') ? new \DateTime($fetcher->get('from')) : null;

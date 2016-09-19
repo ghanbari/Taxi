@@ -77,7 +77,7 @@ class ReportController extends FOSRestController
         $originLong = $fetcher->get('origin_long');
         $origin = (!is_null($originLat) and !is_null($originLong)) ? new Point($originLong, $originLat) : null;
 
-        $destLat  = $fetcher->get('destination_lat');
+        $destLat = $fetcher->get('destination_lat');
         $destLong = $fetcher->get('destination_long');
         $destination = (!is_null($destLat) and !is_null($destLong)) ? new Point($destLong, $destLat) : null;
 

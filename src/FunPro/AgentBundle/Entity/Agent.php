@@ -112,7 +112,7 @@ class Agent
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -139,9 +139,20 @@ class Agent
     }
 
     /**
+     * Get contacts
+     *
+     * @return array
+     */
+    public function getContacts()
+    {
+        return $this->contacts;
+    }
+
+    /**
      * Set contacts
      *
      * @param array $contacts
+     *
      * @return Agent
      */
     public function setContacts(array $contacts)
@@ -152,19 +163,20 @@ class Agent
     }
 
     /**
-     * Get contacts
+     * Get description
      *
-     * @return array 
+     * @return string
      */
-    public function getContacts()
+    public function getDescription()
     {
-        return $this->contacts;
+        return $this->description;
     }
 
     /**
      * Set description
      *
      * @param string $description
+     *
      * @return Agent
      */
     public function setDescription($description)
@@ -175,19 +187,20 @@ class Agent
     }
 
     /**
-     * Get description
+     * Get admin
      *
-     * @return string 
+     * @return \FunPro\UserBundle\Entity\User
      */
-    public function getDescription()
+    public function getAdmin()
     {
-        return $this->description;
+        return $this->admin;
     }
 
     /**
      * Set admin
      *
      * @param \FunPro\UserBundle\Entity\User $admin
+     *
      * @return Agent
      */
     public function setAdmin(\FunPro\UserBundle\Entity\User $admin)
@@ -198,19 +211,20 @@ class Agent
     }
 
     /**
-     * Get admin
+     * Get address
      *
-     * @return \FunPro\UserBundle\Entity\User 
+     * @return \FunPro\GeoBundle\Entity\Address
      */
-    public function getAdmin()
+    public function getAddress()
     {
-        return $this->admin;
+        return $this->address;
     }
 
     /**
      * Set address
      *
      * @param \FunPro\GeoBundle\Entity\Address $address
+     *
      * @return Agent
      */
     public function setAddress(\FunPro\GeoBundle\Entity\Address $address = null)
@@ -218,16 +232,6 @@ class Agent
         $this->address = $address;
 
         return $this;
-    }
-
-    /**
-     * Get address
-     *
-     * @return \FunPro\GeoBundle\Entity\Address 
-     */
-    public function getAddress()
-    {
-        return $this->address;
     }
 
     /**
