@@ -30,9 +30,9 @@ class TokenRepository extends EntityRepository
             ->setParameter('expireDate', new \DateTime("-$expireAfter second"))
             ->setParameter('false', false)
             ->getQuery()
-            ->getSingleResult();
+            ->getResult();
 
-        if (!$token) {
+        if (empty($token)) {
             do {
                 try {
                     $verifyNumber = random_int(11111, 99999);
@@ -45,6 +45,8 @@ class TokenRepository extends EntityRepository
                     $tokenIsValid = false;
                 }
             } while (!$tokenIsValid);
+        } else {
+            $token = $token[0];
         }
 
         return $token;
