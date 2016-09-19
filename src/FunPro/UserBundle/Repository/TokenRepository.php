@@ -24,10 +24,10 @@ class TokenRepository extends EntityRepository
 
         $token = $queryBuilder->select('t')
             ->where($queryBuilder->expr()->eq('t.user', ':user'))
-            ->andWhere($queryBuilder->expr()->lte('t.createdAt', ':expireDate'))
+            ->andWhere($queryBuilder->expr()->gte('t.createdAt', ':expireDate'))
             ->andWhere($queryBuilder->expr()->eq('t.expired', ':false'))
             ->setParameter('user', $user)
-            ->setParameter('expireDate', new \DateTime("+$expireAfter second"))
+            ->setParameter('expireDate', new \DateTime("-$expireAfter second"))
             ->setParameter('false', false)
             ->getQuery()
             ->getSingleResult();
