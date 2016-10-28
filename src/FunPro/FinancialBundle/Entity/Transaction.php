@@ -626,7 +626,7 @@ class Transaction
      *
      * @return $this
      */
-    public function setDeletedAt(mixed $deletedAt)
+    public function setDeletedAt($deletedAt)
     {
         $this->deletedAt = $deletedAt;
         return $this;
