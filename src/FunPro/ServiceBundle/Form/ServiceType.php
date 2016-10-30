@@ -41,7 +41,6 @@ class ServiceType extends AbstractType
                 'required' => false,
             ))
             ->add('propagationList', Type\CollectionType::class, array(
-                'description' => 'array of driver ids',
                 'entry_type' => 'text',
                 'allow_add' => true,
                 'allow_delete' => true,
