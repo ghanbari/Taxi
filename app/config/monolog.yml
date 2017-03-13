@@ -11,7 +11,9 @@ services:
         class: Monolog\Processor\UidProcessor
         tags:
             - { name: monolog.processor }
-    monolog.processor.git:
-        class: Monolog\Processor\GitProcessor
-        tags:
-            - { name: monolog.processor, channel: app }
+
+#    not working in cpanel
+#    monolog.processor.git:
+#        class: Monolog\Processor\GitProcessor
+#        tags:
+#            - { name: monolog.processor, channel: app }

@@ -8,14 +8,14 @@ use Symfony\Component\Debug\Debug;
 // for more information
 //umask(0000);
 
-$secrets = array('MGH09Ra34Qiq05pr1Wf2j3TCw3a19CV43eB', 'SADnC820pfCo9LK622zOjXF615c27OlrT85', 'ANONu7K67Ut18Mq4ldvLKg98INjZeL420z8I');
+$secrets = array('MGH09Ra34Qiq34fg05prd1Wfsdf2j3TCw3a19CV43eB');
 
 // This check prevents access to debug front controllers that are deployed by accident to production servers.
 // Feel free to remove this, extend it, or make something more sophisticated.
-if (isset($_SERVER['HTTP_CLIENT_IP'])
+if ((isset($_SERVER['HTTP_CLIENT_IP'])
     || isset($_SERVER['HTTP_X_FORWARDED_FOR'])
-    || !(in_array(@$_SERVER['REMOTE_ADDR'], array('127.0.0.1', 'fe80::1', '::1')) || php_sapi_name() === 'cli-server')
-    xor ((isset($_COOKIE['secret']) and in_array($_COOKIE['secret'], $secrets))
+    || !(in_array(@$_SERVER['REMOTE_ADDR'], array('127.0.0.1', 'fe80::1', '::1')) || php_sapi_name() === 'cli-server'))
+    and !((isset($_COOKIE['secret']) and in_array($_COOKIE['secret'], $secrets))
         || (isset($_GET['secret']) and in_array($_GET['secret'], $secrets)))
 ) {
     header('HTTP/1.0 403 Forbidden');
