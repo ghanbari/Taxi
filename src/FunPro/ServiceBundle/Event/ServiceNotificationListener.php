@@ -126,6 +126,8 @@ class ServiceNotificationListener implements EventSubscriberInterface
             'requested_at' => $this->serializer->serialize($service->getCreatedAt(), 'json'),
             'description' => !empty($service->getDescription()) ? substr($service->getDescription(), 0, 2000) : '',
             'send_in' => strtotime('now'),
+            'distance' => $service->getDistance(),
+            'price' => $service->getPrice(),
         );
 
         if ($service->getPassenger()) {

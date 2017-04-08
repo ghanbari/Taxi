@@ -1,0 +1,120 @@
+{% extends '::base_admin.html.twig' %}
+
+{% block stylesheetsPagePlugins %}
+    <link href="{{ asset("assets/global/plugins/datatables/datatables.min.css") }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset("assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap-rtl.css") }}" rel="stylesheet" type="text/css" />
+{% endblock stylesheetsPagePlugins %}
+
+{% block javascriptsPagePlugins %}
+    <script src="{{ asset("assets/global/scripts/datatable.js") }}" type="text/javascript"></script>
+    <script src="{{ asset("assets/global/plugins/datatables/datatables.min.js") }}" type="text/javascript"></script>
+    <script src="{{ asset("assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js") }}" type="text/javascript"></script>
+{% endblock javascriptsPagePlugins %}
+
+{% block javascriptsPageScripts %}
+    <script src="{{ asset("bundles/funproadmin/js/base-price-index.js") }}" type="text/javascript"></script>
+{% endblock javascriptsPageScripts %}
+
+{% block content %}
+    <div class="page-content">
+        <div class="container">
+            <!-- BEGIN PAGE BREADCRUMBS -->
+            {% block breadcrumbs %}
+                <ul class="page-breadcrumb breadcrumb">
+                    <li>
+                        <a href="/">خانه</a>
+                        <i class="fa fa-circle"></i>
+                    </li>
+                    <li>
+                        <a href="{{ path('fun_pro_admin_dashboard') }}">داشبورد</a>
+                        <i class="fa fa-circle"></i>
+                    </li>
+                    <li>
+                        <span>تنظیمات</span>
+                    </li>
+                </ul>
+            {% endblock breadcrumbs %}
+            <!-- END PAGE BREADCRUMBS -->
+            <!-- BEGIN PAGE CONTENT INNER -->
+            <div class="page-content-inner">
+            <div class="row">
+                <div class="col-md-12">
+                    <!-- BEGIN SAMPLE FORM PORTLET-->
+                    <div class="portlet light ">
+                    <div class="portlet-title">
+                        <div class="caption font-green-haze">
+                            <i class="icon-settings font-green-haze"></i>
+                            <span class="caption-subject bold uppercase"> ثبت قیمت</span>
+                        </div>
+                    </div>
+                    <div class="portlet-body form">
+                        <form role="form" id="new-price" name="base_cost">
+                            {{ form_widget(form._token) }}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group form-md-line-input has-success">
+                                        <input name="base_cost[entranceFee]" type="text" class="form-control" placeholder="هزینه ورودی">
+                                        <div class="form-control-focus"> </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group form-md-line-input has-warning">
+                                        <input name="base_cost[costPerMeter]" type="text" class="form-control" placeholder="هزینه برای هر متر">
+                                        <div class="form-control-focus"> </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group form-md-line-input has-info">
+                                        <input name="base_cost[discountPercent]" type="text" class="form-control" placeholder="درصد تخفیف">
+                                        <div class="form-control-focus"> </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-md-offset-1">
+                                    <div class="form-group form-md-line-input has-error">
+                                        <input type="submit" class="btn btn-success" style="width: 100%" placeholder=".col-md-3">
+                                        <div class="form-control-focus"> </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                    <!-- END SAMPLE FORM PORTLET-->
+                </div>
+            </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <!-- BEGIN EXAMPLE TABLE PORTLET-->
+                        <div class="portlet light ">
+                            <div class="portlet-title">
+                                <div class="caption font-green">
+                                    <i class="icon-settings font-green"></i>
+                                    <span class="caption-subject bold uppercase">تنظیمات قیمت پایه</span>
+                                </div>
+                                <div class="tools"> </div>
+                            </div>
+                            <div class="portlet-body">
+                                <table class="table table-striped table-bordered table-hover dt-responsive" width="100%" id="sample_2">
+                                    <thead>
+                                    <tr>
+                                        <th class="all">id</th>
+                                        <th class="all">هزینه ورودی</th>
+                                        <th class="all">هزینه هر متر</th>
+                                        <th class="all">درصد تخفیف</th>
+                                        <th class="min-tablet">تاریخ ثبت</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- END EXAMPLE TABLE PORTLET-->
+                    </div>
+                </div>
+            </div>
+            <!-- END PAGE CONTENT INNER -->
+        </div>
+    </div>
+{% endblock content %}

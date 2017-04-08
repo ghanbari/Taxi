@@ -2,6 +2,7 @@
 
 namespace FunPro\ServiceBundle\Form;
 
+use FunPro\GeoBundle\Form\Type\PointType;
 use FunPro\ServiceBundle\Entity\Service;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type;
@@ -17,16 +18,10 @@ class ServiceType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('startPoint', \FunPro\GeoBundle\Form\Type\PointType::class)
-            ->add('endPoint', \FunPro\GeoBundle\Form\Type\PointType::class, array(
-                'required' => false,
-            ))
-            ->add('startAddress', Type\TextareaType::class, array(
-                'required' => true,
-            ))
-            ->add('endAddress', Type\TextareaType::class, array(
-                'required' => true,
-            ))
+            ->add('startPoint', PointType::class)
+            ->add('endPoint', PointType::class)
+            ->add('startAddress', Type\TextareaType::class)
+            ->add('endAddress', Type\TextareaType::class)
             ->add('type', Type\ChoiceType::class, array(
                 'choices' => Service::getTypes(),
                 'choices_as_values' => true,

@@ -11,9 +11,16 @@ use FunPro\FinancialBundle\Entity\RegionBasePrice;
 use FunPro\FinancialBundle\Entity\Transaction;
 use FunPro\FinancialBundle\Event\PaymentEvent;
 use FunPro\FinancialBundle\FinancialEvents;
+use FunPro\ServiceBundle\Entity\Service;
 use FunPro\ServiceBundle\Entity\ServiceLog;
 use FunPro\ServiceBundle\Exception\ServiceStatusException;
 use FunPro\ServiceBundle\ServiceEvents;
+use Ivory\GoogleMap\Base\Coordinate;
+use Ivory\GoogleMap\Service\Base\Location\CoordinateLocation;
+use Ivory\GoogleMap\Service\Base\TravelMode;
+use Ivory\GoogleMap\Service\Base\UnitSystem;
+use Ivory\GoogleMap\Service\Direction\DirectionService;
+use Ivory\GoogleMap\Service\Direction\Request\DirectionRequest;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use Symfony\Bridge\Monolog\Logger;
@@ -43,15 +50,22 @@ class ServiceSubscriber implements EventSubscriberInterface
     private $serializer;
 
     /**
-     * @param Registry   $doctrine
-     * @param Logger     $logger
-     * @param Serializer $serializer
+     * @var DirectionService
      */
-    public function __construct(Registry $doctrine, Logger $logger, Serializer $serializer)
+    private $directionService;
+
+    /**
+     * @param Registry         $doctrine
+     * @param Logger           $logger
+     * @param Serializer       $serializer
+     * @param DirectionService $directionService
+     */
+    public function __construct(Registry $doctrine, Logger $logger, Serializer $serializer, DirectionService $directionService)
     {
         $this->doctrine = $doctrine;
         $this->logger = $logger;
         $this->serializer = $serializer;
+        $this->directionService = $directionService;
     }
 
     /**
@@ -118,6 +132,14 @@ class ServiceSubscriber implements EventSubscriberInterface
      */
     public function onServiceRequest(ServiceEvent $event)
     {
+        $service = $event->getService();
+        $service->setDistance($this->calculateDistance($service));
+        try {
+            $service->calculatePrice();
+        } catch (\RuntimeException $e) {
+            $this->logger->addError('distance can not be zero', array('distance' => $service->getDistance()));
+        }
+
         $log = new ServiceLog($event->getService(), ServiceLog::STATUS_REQUESTED);
         $this->doctrine->getManager()->persist($log);
 
@@ -344,6 +366,24 @@ class ServiceSubscriber implements EventSubscriberInterface
 //        }
     }
 
+    private function calculateDistance(Service $service)
+    {
+        $request = new DirectionRequest(
+            new CoordinateLocation(new Coordinate($service->getStartPoint()->getLatitude(), $service->getStartPoint()->getLongitude())),
+            new CoordinateLocation(new Coordinate($service->getEndPoint()->getLatitude(), $service->getEndPoint()->getLongitude()))
+        );
+
+        $request->setUnitSystem(UnitSystem::METRIC);
+        $request->setTravelMode(TravelMode::DRIVING);
+        $request->setProvideRouteAlternatives(true);
+
+        $response = $this->directionService->route($request);
+        $routes = $response->getRoutes();
+        $legs = $routes[0]->getLegs();
+
+        return $legs[0]->getDistance()->getValue();
+    }
+
     /**
      * @param ServiceEvent $event
      */
@@ -351,7 +391,27 @@ class ServiceSubscriber implements EventSubscriberInterface
     {
         $service = $event->getService();
 
-        $service->updateDistance();
+        $service->calculateRealDistance();
+        #TODO: calculate price for specified path in requesting time.
+//        $distance = $this->calculateDistance($service);
+//        if ($distance) {
+//            $service->setDistance($distance);
+//        } else {
+//            $service->setDistance($service->getRealDistance());
+//        }
+
+        try {
+//            $service->calculatePrice();
+            $service->calculateRealPrice();
+        } catch (\RuntimeException $e) {
+            $this->logger->addError(
+                'distance can not be zero',
+                array(
+                    'distance' => $service->getDistance(),
+                    'real_distance' => $service->getRealDistance()
+                )
+            );
+        }
 
         $log = new ServiceLog($event->getService(), ServiceLog::STATUS_FINISH);
         $this->doctrine->getManager()->persist($log);

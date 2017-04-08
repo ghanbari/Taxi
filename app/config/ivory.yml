@@ -1,0 +1,14 @@
+ivory_google_map:
+    direction:
+        client: httplug.client.default
+        message_factory: httplug.message_factory.default
+        format: json
+        api_key: "%google_map.api_key%"
+
+httplug:
+    classes:
+        client: Http\Adapter\Guzzle6\Client
+        message_factory: Http\Message\MessageFactory\GuzzleMessageFactory
+    clients:
+        acme:
+            factory: httplug.factory.guzzle6

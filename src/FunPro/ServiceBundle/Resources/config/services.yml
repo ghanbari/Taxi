@@ -1,7 +1,7 @@
 services:
     fun_pro_service.service_log_subscriber:
         class: FunPro\ServiceBundle\Event\ServiceSubscriber
-        arguments: ["@doctrine", "@logger", "@jms_serializer"]
+        arguments: ["@doctrine", "@logger", "@jms_serializer", "@ivory.google_map.direction"]
         tags:
             - { name: kernel.event_subscriber }
 

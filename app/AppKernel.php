@@ -37,6 +37,10 @@ class AppKernel extends Kernel
             new Dunglas\AngularCsrfBundle\DunglasAngularCsrfBundle(),
             new JMS\TranslationBundle\JMSTranslationBundle(),
             new JMS\JobQueueBundle\JMSJobQueueBundle(),
+            new Ivory\GoogleMapBundle\IvoryGoogleMapBundle(),
+
+            new Ivory\SerializerBundle\IvorySerializerBundle(),
+            new Http\HttplugBundle\HttplugBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'), true)) {

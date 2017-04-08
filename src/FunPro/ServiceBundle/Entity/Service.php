@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\AgentBundle\Entity\Agent;
 use FunPro\DriverBundle\Entity\Car;
+use FunPro\FinancialBundle\Entity\BaseCost;
 use FunPro\FinancialBundle\Entity\Currency;
 use FunPro\GeoBundle\Utility\Util;
 use FunPro\PassengerBundle\Entity\Passenger;
@@ -113,10 +114,11 @@ class Service
     /**
      * @var Point
      *
-     * @ORM\Column(name="end_point", type="point", nullable=true)
+     * @ORM\Column(name="end_point", type="point")
      *
      * @Assert\Type(type="CrEOF\Spatial\PHP\Types\Geometry\Point", groups={"Create"})
      * @Assert\Valid()
+     * @Assert\NotNull(groups={"Create", "Update"})
      *
      * @JS\Groups({"Passenger", "Driver", "Admin", "Point"})
      * @JS\Type(name="CrEOF\Spatial\PHP\Types\Geometry\Point")
@@ -251,9 +253,9 @@ class Service
     private $route;
 
     /**
-     * @var integer $distance distance based on meter
+     * @var integer $distance distance based on meter calculated by google
      *
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="integer")
      *
      * @JS\Groups({"Passenger", "Driver", "Agent", "Admin"})
      * @JS\Since("1.0.0")
@@ -261,7 +263,17 @@ class Service
     private $distance;
 
     /**
-     * @var int
+     * @var integer $distance distance based on meter calculated by gps
+     *
+     * @ORM\Column(name="real_distance", type="integer", nullable=true)
+     *
+     * @JS\Groups({"Passenger", "Driver", "Agent", "Admin"})
+     * @JS\Since("1.0.0")
+     */
+    private $realDistance;
+
+    /**
+     * @var int $price total price of service. calculated based on $distance
      *
      * @ORM\Column(type="integer", nullable=true)
      *
@@ -271,7 +283,7 @@ class Service
     private $price;
 
     /**
-     * @var integer
+     * @var integer $realPrice total price of service. calculated based on $realDistance
      *
      * @ORM\Column(name="real_price", type="integer", nullable=true, options={"default"="0"})
      *
@@ -289,6 +301,19 @@ class Service
      * @JS\Since("1.0.0")
      */
     private $floatingCosts;
+
+    /**
+     * @var BaseCost
+     *
+     * @ORM\ManyToOne(targetEntity="FunPro\FinancialBundle\Entity\BaseCost")
+     *
+     * @Assert\NotNull(groups={"Create", "Update"})
+     * @Assert\Type(type="FunPro\FinancialBundle\Entity\BaseCost")
+     *
+     * @JS\Groups({"Admin"})
+     * @JS\Since("1.0.0")
+     */
+    private $baseCost;
 
     /**
      * @var ArrayCollection
@@ -765,13 +790,18 @@ class Service
     /**
      * Set price
      *
-     * @param integer $price
-     *
+     * @throws \RuntimeException
      * @return Service
      */
-    public function setPrice($price)
+    public function calculatePrice()
     {
-        $this->price = $price;
+        if ($this->getDistance() == 0) {
+            throw new \RuntimeException('distance is null');
+        }
+
+        $baseCosts = $this->getBaseCost();
+        $this->price = $baseCosts->getEntranceFee() + ($baseCosts->getCostPerMeter() * $this->getDistance());
+        $this->price -= ($this->price * $baseCosts->getDiscountPercent()) / 100;
 
         return $this;
     }
@@ -1079,10 +1109,10 @@ class Service
         return $this;
     }
 
-    public function updateDistance()
+    public function calculateRealDistance()
     {
         if (count($this->getRoute()->toArray()) > 1) {
-            $this->setDistance(Util::lengthOfLineString($this->getRoute()));
+            $this->setRealDistance(Util::lengthOfLineString($this->getRoute()));
         }
     }
 
@@ -1157,13 +1187,19 @@ class Service
     }
 
     /**
-     * @param integer $realPrice
-     *
+     * @throws \RuntimeException
      * @return $this
      */
-    public function setRealPrice($realPrice)
+    public function calculateRealPrice()
     {
-        $this->realPrice = $realPrice;
+        if ($this->getRealDistance() === 0) {
+            throw new \RuntimeException('distance is null');
+        }
+
+        $baseCosts = $this->getBaseCost();
+        $this->realPrice = $baseCosts->getEntranceFee() + ($baseCosts->getCostPerMeter() * $this->getRealDistance());
+        $this->realPrice -= ($this->realPrice * $baseCosts->getDiscountPercent()) / 100;
+
         return $this;
     }
 
@@ -1211,5 +1247,43 @@ class Service
     public function removeLog(ServiceLog $logs)
     {
         $this->logs->removeElement($logs);
+    }
+
+    /**
+     * @return BaseCost
+     */
+    public function getBaseCost()
+    {
+        return $this->baseCost;
+    }
+
+    /**
+     * @param BaseCost $baseCost
+     *
+     * @return $this
+     */
+    public function setBaseCost(BaseCost $baseCost)
+    {
+        $this->baseCost = $baseCost;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRealDistance()
+    {
+        return $this->realDistance;
+    }
+
+    /**
+     * @param int $realDistance
+     *
+     * @return $this
+     */
+    public function setRealDistance($realDistance)
+    {
+        $this->realDistance = $realDistance;
+        return $this;
     }
 }

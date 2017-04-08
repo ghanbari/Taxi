@@ -96,7 +96,7 @@ class FilterControllerByApiVersion implements EventSubscriberInterface
                     $validVersion = false;
                     $version = array_pop($this->availableVersions);
                 }
-            } while (!$validVersion);;
+            } while (!$validVersion);
         }
     }
-} 
+}

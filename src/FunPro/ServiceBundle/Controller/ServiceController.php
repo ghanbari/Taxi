@@ -21,6 +21,12 @@ use FunPro\ServiceBundle\Event\ServiceEvent;
 use FunPro\ServiceBundle\Exception\ServiceStatusException;
 use FunPro\ServiceBundle\Form\ServiceType;
 use FunPro\ServiceBundle\ServiceEvents;
+use Ivory\GoogleMap\Base\Coordinate;
+use Ivory\GoogleMap\Service\Base\Location\AddressLocation;
+use Ivory\GoogleMap\Service\Base\Location\CoordinateLocation;
+use Ivory\GoogleMap\Service\Base\TravelMode;
+use Ivory\GoogleMap\Service\Base\UnitSystem;
+use Ivory\GoogleMap\Service\Direction\Request\DirectionRequest;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -28,6 +34,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Class ServiceController
@@ -85,8 +92,11 @@ class ServiceController extends FOSRestController
         $logger = $this->get('logger');
         $translator = $this->get('translator');
         $manager = $this->getDoctrine()->getManager();
+        $baseCost = $this->getDoctrine()->getRepository('FunProFinancialBundle:BaseCost')
+            ->getLast();
 
         $service = new Service();
+        $service->setBaseCost($baseCost);
 
         $context = new Context();
         $context->addGroups(['Public', 'Point', 'PropagationList']);
@@ -155,7 +165,7 @@ class ServiceController extends FOSRestController
             }
 
             $manager->persist($service);
-            $manager->flush();
+//            $manager->flush();
 
             $logger->addInfo('Dispatch service requested event');
             $event = new ServiceEvent($service);
@@ -529,7 +539,6 @@ class ServiceController extends FOSRestController
      *      statusCodes={
      *          204="When success",
      *          400={
-     *              "Price must be positive and larger than zero(code: 1)",
      *              "Invalid format for floating cost or more that ten item is send(code: 2)",
      *              "When car status is not in_service or in_and_accept or in_and_prepare(code: 3)",
      *              "When service is not started(code: 4)",
@@ -543,7 +552,6 @@ class ServiceController extends FOSRestController
      * @ParamConverter("service", class="FunProServiceBundle:Service")
      * @Security("has_role('ROLE_DRIVER') and service.getCar().getDriver() == user")
      *
-     * @Rest\RequestParam(name="price", allowBlank=false, nullable=false, requirements="\d+", strict=true)
      * @Rest\RequestParam(name="floatingCost", nullable=true, strict=true)
      */
     public function patchFinishAction(Request $request, $id)
@@ -555,16 +563,6 @@ class ServiceController extends FOSRestController
         $fetcher = $this->get('fos_rest.request.param_fetcher');
         $manager = $this->getDoctrine()->getManager();
 
-        if ($fetcher->get('price') <= 0) {
-            $logger->addWarning('you must enter a positive number and larger than zero number');
-            $error = array(
-                'code' => 1,
-                'message' => $translator->trans('price.must.be.positive.and.larger.than.zero'),
-            );
-            return $this->view($error, Response::HTTP_BAD_REQUEST);
-        }
-
-        $service->setPrice($fetcher->get('price'));
         $floatingCosts = json_decode($fetcher->get('floatingCost'), true);
         if ($floatingCosts) {
             $validator = $this->get('validator');
@@ -715,5 +713,56 @@ class ServiceController extends FOSRestController
         $context->setMaxDepth(3);
         return $this->view($service, Response::HTTP_OK)
             ->setSerializationContext($context);
+    }
+
+    /**
+     * Calculate service price
+     *
+     * @ApiDoc(
+     *      section="Service",
+     *      resource=true,
+     *      statusCodes={
+     *          200="When success",
+     *      }
+     * )
+     *
+     * @Rest\QueryParam(name="origin_lat", requirements="\d+\.\d+", strict=true, allowBlank=false, nullable=false)
+     * @Rest\QueryParam(name="origin_lng", requirements="\d+\.\d+", strict=true, allowBlank=false, nullable=false)     *
+     * @Rest\QueryParam(name="des_lat", requirements="\d+\.\d+", strict=true, allowBlank=false, nullable=false)
+     * @Rest\QueryParam(name="des_lng", requirements="\d+\.\d+", strict=true, allowBlank=false, nullable=false)
+     */
+    public function getCalculatePriceAction()
+    {
+        $fetcher = $this->get('fos_rest.request.param_fetcher');
+
+        $request = new DirectionRequest(
+            new CoordinateLocation(new Coordinate($fetcher->get('origin_lat'), $fetcher->get('origin_lng'))),
+            new CoordinateLocation(new Coordinate($fetcher->get('des_lat'), $fetcher->get('des_lng')))
+        );
+
+        $request->setUnitSystem(UnitSystem::METRIC);
+        $request->setTravelMode(TravelMode::DRIVING);
+        $request->setProvideRouteAlternatives(true);
+
+        $response = $this->container->get('ivory.google_map.direction')->route($request);
+
+        $result = array();
+        if (count($response->getRoutes()) > 0) {
+            $baseCost = $this->getDoctrine()->getRepository('FunProFinancialBundle:BaseCost')->getLast();
+
+            $routes = $response->getRoutes();
+            $legs = $routes[0]->getLegs();
+            $distance = $legs[0]->getDistance()->getValue();
+            $price = $baseCost->getEntranceFee() + ($baseCost->getCostPerMeter() * $distance);
+            $price -= ($price * $baseCost->getDiscountPercent()) / 100;
+
+            $result['distance'] = $distance;
+            $result['duration'] = $legs[0]->getDuration()->getValue();
+            $result['price'] = $price;
+
+            return $this->view($result, Response::HTTP_OK);
+        } else {
+            return $this->view(null, Response::HTTP_NO_CONTENT);
+        }
     }
 }
