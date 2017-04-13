@@ -142,12 +142,13 @@ class Transaction
 
     /**
      * @var Currency
+     * @deprecated
      *
      * @ORM\ManyToOne(targetEntity="FunPro\FinancialBundle\Entity\Currency")
-     * @ORM\JoinColumn(name="currency_id", referencedColumnName="id", nullable=false)
+     * @ORM\JoinColumn(name="currency_id", referencedColumnName="id", nullable=true)
      *
-     * @Assert\NotNull(groups={"Create", "Update"})
-     * @Assert\Type(type="FunPro\FinancialBundle\Entity\Currency", groups={"Create", "Update"})
+     * @ Assert\NotNull(groups={"Create", "Update"})
+     * @ Assert\Type(type="FunPro\FinancialBundle\Entity\Currency", groups={"Create", "Update"})
      *
      * @JS\Groups({"Currency"})
      * @JS\Since("1.0.0")
@@ -157,13 +158,14 @@ class Transaction
     /**
      * Only when user will move credit from one wallet to another wallet
      *
+     * @deprecated
      * @var CurrencyExchangeLog
      *
      * @ORM\ManyToOne(targetEntity="FunPro\FinancialBundle\Entity\CurrencyExchangeLog")
      * @ORM\JoinColumn(name="log_id", referencedColumnName="id", onDelete="SET NULL")
      *
-     * @Assert\NotNull(groups={"Move"})
-     * @Assert\Type("FunPro\FinancialBundle\Entity\CurrencyExchangeLog", groups={"Create", "Update"})
+     * @ Assert\NotNull(groups={"Move"})
+     * @ Assert\Type("FunPro\FinancialBundle\Entity\CurrencyExchangeLog", groups={"Create", "Update"})
      *
      * @JS\Groups({"CurrencyLog"})
      * @JS\Since("1.0.0")
@@ -173,12 +175,13 @@ class Transaction
     /**
      * Required if transaction is virtual
      *
+     * @deprecated
      * @var Wallet
      *
      * @ORM\ManyToOne(targetEntity="FunPro\FinancialBundle\Entity\Wallet")
      * @ORM\JoinColumn(name="wallet_id", referencedColumnName="id")
      *
-     * @Assert\Expression(expression="!this.isVirtual() or value !== null", groups={"Create", "Update"})
+     * @ Assert\Expression(expression="!this.isVirtual() or value !== null", groups={"Create", "Update"})
      *
      * @JS\Groups({"Wallet"})
      * @JS\Since("1.0.0")
@@ -200,13 +203,14 @@ class Transaction
     private $gateWay;
 
     /**
+     * @deprecated
      * @var Wallet
      *
      * @ORM\ManyToOne(targetEntity="FunPro\FinancialBundle\Entity\Wallet")
      * @ORM\JoinColumn(name="moved_wallet_id", referencedColumnName="id")
      *
-     * @Assert\NotNull(groups={"Move"})
-     * @Assert\Type(type="FunPro\FinancialBundle\Entity\Wallet", groups={"Create", "Update"})
+     * @ Assert\NotNull(groups={"Move"})
+     * @ Assert\Type(type="FunPro\FinancialBundle\Entity\Wallet", groups={"Create", "Update"})
      *
      * @JS\Groups({"Wallet"})
      * @JS\Since("1.0.0")
@@ -230,21 +234,17 @@ class Transaction
     private $deletedAt;
 
     /**
-     * @param User     $user
-     * @param Currency $currency
-     * @param integer  $amount
-     * @param integer  $type
-     * @param bool     $virtual
-     * @param Wallet   $wallet
+     * @param User    $user
+     * @param integer $amount
+     * @param integer $type
+     * @param bool    $virtual
      */
-    public function __construct(User $user, Currency $currency, $amount, $type, $virtual, Wallet $wallet = null)
+    public function __construct(User $user, $amount, $type, $virtual)
     {
         $this->user = $user;
         $this->amount = $amount;
         $this->virtual = $virtual;
         $this->type = $type;
-        $this->wallet = $wallet;
-        $this->currency = $currency;
 
         if (in_array($type, array(self::TYPE_WAGE, self::TYPE_REWARD, self::TYPE_CREDIT))) {
             $this->direction = self::DIRECTION_INCOME;
@@ -264,6 +264,9 @@ class Transaction
         );
     }
 
+    /**
+     * @return array
+     */
     public static function getValidType()
     {
         return array(
@@ -394,20 +397,6 @@ class Transaction
     }
 
     /**
-     * Set type
-     *
-     * @param integer $type
-     *
-     * @return Transaction
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    /**
      * Get status
      *
      * @return integer
@@ -480,6 +469,7 @@ class Transaction
     }
 
     /**
+     * @deprecated
      * @return Currency
      */
     public function getCurrency()
@@ -488,6 +478,7 @@ class Transaction
     }
 
     /**
+     * @deprecated
      * @param Currency $currency
      *
      * @return $this
@@ -501,6 +492,7 @@ class Transaction
     /**
      * Get currencyLog
      *
+     * @deprecated
      * @return CurrencyExchangeLog
      */
     public function getCurrencyLog()
@@ -511,6 +503,7 @@ class Transaction
     /**
      * Set currencyLog
      *
+     * @deprecated
      * @param CurrencyExchangeLog $currencyLog
      *
      * @return Transaction
@@ -525,6 +518,7 @@ class Transaction
     /**
      * Get wallet
      *
+     * @deprecated
      * @return Wallet
      */
     public function getWallet()
@@ -535,6 +529,7 @@ class Transaction
     /**
      * Set wallet
      *
+     * @deprecated
      * @param Wallet $wallet
      *
      * @return Transaction
@@ -571,6 +566,7 @@ class Transaction
     }
 
     /**
+     * @deprecated
      * Get moveToWallet
      *
      * @return Wallet
@@ -583,6 +579,7 @@ class Transaction
     /**
      * Set moveToWallet
      *
+     * @deprecated
      * @param Wallet $moveToWallet
      *
      * @return Transaction

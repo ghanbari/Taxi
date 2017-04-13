@@ -9,6 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Region
  *
+ * @deprecated
+ *
  * @ORM\Table(name="region")
  * @ORM\Entity(repositoryClass="FunPro\FinancialBundle\Repository\RegionRepository")
  */

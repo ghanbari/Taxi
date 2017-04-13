@@ -232,6 +232,8 @@ class CarLogSubscriber implements EventSubscriberInterface
             'car' => $car,
             'finished' => false,
         ));
-        $route->setFinished(true);
+        if ($route) {
+            $route->setFinished(true);
+        }
     }
 }

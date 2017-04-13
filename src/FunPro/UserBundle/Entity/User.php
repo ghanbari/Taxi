@@ -273,6 +273,16 @@ class User extends BaseUser
     private $apiKey;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="credit", type="integer", options={"default"=0})
+     *
+     * @JS\Groups({"Owner", "Admin"})
+     * @JS\Since("1.0.0")
+     */
+    private $credit;
+
+    /**
      * class constructor
      */
     public function __construct()
@@ -282,6 +292,7 @@ class User extends BaseUser
         $this->tokens = new ArrayCollection();
         $this->setWrongPasswordCount(0);
         $this->setMultiDeviceAllowed(true);
+        $this->credit = 0;
     }
 
     /**
@@ -663,6 +674,25 @@ class User extends BaseUser
     public function setApiKey($apiKey)
     {
         $this->apiKey = $apiKey;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCredit()
+    {
+        return $this->credit;
+    }
+
+    /**
+     * @param int $credit
+     *
+     * @return $this
+     */
+    public function setCredit($credit)
+    {
+        $this->credit = $credit;
         return $this;
     }
 }

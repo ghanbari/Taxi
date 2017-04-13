@@ -46,6 +46,7 @@ class Bank
     private $enable;
 
     /**
+     * @deprecated
      * @var Currency
      *
      * @ORM\ManyToOne(targetEntity="FunPro\FinancialBundle\Entity\Currency")
@@ -117,6 +118,7 @@ class Bank
     /**
      * Get currency
      *
+     * @deprecated
      * @return Currency
      */
     public function getCurrency()
@@ -127,6 +129,7 @@ class Bank
     /**
      * Set currency
      *
+     * @deprecated
      * @param Currency $currency
      *
      * @return Bank

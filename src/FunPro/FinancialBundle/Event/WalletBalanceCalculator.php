@@ -7,6 +7,7 @@ use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Common\Persistence\Event\PreUpdateEventArgs;
 use FunPro\FinancialBundle\Entity\Transaction;
 use FunPro\FinancialBundle\Exception\LowBalanceException;
+use FunPro\PassengerBundle\Entity\Passenger;
 use Symfony\Bridge\Monolog\Logger;
 
 /**
@@ -41,29 +42,32 @@ class WalletBalanceCalculator implements EventSubscriber
 
     public function prePersist(LifecycleEventArgs $event)
     {
-        $entity = $event->getObject();
+        $transaction = $event->getObject();
 
-        if (!$entity instanceof Transaction) {
+        if (!$transaction instanceof Transaction) {
             return;
         }
 
-        if (!$entity->isVirtual()) {
+        $user = $transaction->getUser();
+        if (!$transaction->isVirtual()) {
             return;
         }
 
-        $wallet = $entity->getWallet();
-        if ($entity->getType() === Transaction::DIRECTION_OUTCOME and $entity->getAmount() > $wallet->getBalance()) {
+        if ($user instanceof Passenger
+            and $transaction->getType() === Transaction::DIRECTION_OUTCOME
+            and $transaction->getAmount() > $user->getCredit()
+        ) {
             $this->logger->addError(
                 'Your wallet balance is not enough',
                 array(
-                    'cost' => $entity->getAmount(),
-                    'balance' => $wallet->getBalance(),
+                    'cost' => $transaction->getAmount(),
+                    'balance' => $user->getCredit(),
                 )
             );
             throw new LowBalanceException('Your wallet balance is not enough');
         }
 
-        $wallet->setBalance($wallet->getBalance() + ($entity->getAmount() * $entity->getDirection()));
+        $user->setCredit($user->getCredit() + ($transaction->getAmount() * $transaction->getDirection()));
     }
 
     #TODO: implement this method

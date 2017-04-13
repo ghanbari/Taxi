@@ -8,6 +8,7 @@ use JMS\Serializer\Annotation as JS;
 
 /**
  * CurrencyExchangeLog
+ * @deprecated
  *
  * @ORM\Table(name="currency_exchange_log")
  * @ORM\Entity(repositoryClass="FunPro\FinancialBundle\Repository\CurrencyExchangeLogRepository")

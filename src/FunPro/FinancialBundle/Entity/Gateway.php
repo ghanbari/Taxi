@@ -57,6 +57,7 @@ class Gateway
     /**
      * @var Currency
      *
+     * @deprecated
      * @ORM\ManyToOne(targetEntity="FunPro\FinancialBundle\Entity\Currency")
      *
      * @JS\Groups({"Currency"})
@@ -216,6 +217,7 @@ class Gateway
     /**
      * Get currency
      *
+     * @deprecated
      * @return Currency
      */
     public function getCurrency()
@@ -226,6 +228,7 @@ class Gateway
     /**
      * Set currency
      *
+     * @deprecated
      * @param Currency $currency
      *
      * @return Gateway

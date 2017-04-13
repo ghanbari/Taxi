@@ -8,6 +8,7 @@ use JMS\Serializer\Annotation as JS;
 
 /**
  * Wallet
+ * @deprecated
  *
  * @ORM\Table(
  *      name="wallet",

@@ -59,8 +59,7 @@ class RewardSubscriber implements EventSubscriberInterface
         ParameterBagInterface $parameterBag,
         ValidatorInterface $validator,
         Serializer $serializer
-    )
-    {
+    ) {
         $this->logger = $logger;
         $this->parameterBag = $parameterBag;
         $this->doctrine = $doctrine;
@@ -68,6 +67,9 @@ class RewardSubscriber implements EventSubscriberInterface
         $this->serializer = $serializer;
     }
 
+    /**
+     * @return array
+     */
     public static function getSubscribedEvents()
     {
         return array(
@@ -80,6 +82,9 @@ class RewardSubscriber implements EventSubscriberInterface
         );
     }
 
+    /**
+     * @param PaymentEvent $event
+     */
     public function paymentReward(PaymentEvent $event)
     {
         $main = $event->getTransaction();
@@ -87,17 +92,17 @@ class RewardSubscriber implements EventSubscriberInterface
         $rewardPercent = $main->isVirtual() ?
             $parameters->get('financial.reward.payment.credit') : $parameters->get('financial.reward.payment.cash');
 
+        if ($rewardPercent == 0) {
+            return;
+        }
+
         $transaction = new Transaction(
             $main->getUser(),
-            $main->getCurrency(),
             $main->getAmount() * $rewardPercent / 100,
             Transaction::TYPE_REWARD,
             true
         );
 
-        $wallet = $this->doctrine->getRepository('FunProFinancialBundle:Wallet')
-            ->getUserWallet($main->getUser(), $main->getCurrency());
-        $transaction->setWallet($wallet);
         $transaction->setService($main->getService());
         $transaction->setStatus(Transaction::STATUS_SUCCESS);
 
@@ -119,6 +124,9 @@ class RewardSubscriber implements EventSubscriberInterface
         $this->logger->addInfo('Reward transaction is persisted');
     }
 
+    /**
+     * @param RegisterEvent $event
+     */
     public function refererReward(RegisterEvent $event)
     {
         $user = $event->getUser();
@@ -126,21 +134,14 @@ class RewardSubscriber implements EventSubscriberInterface
 
         $parameters = $this->parameterBag;
         $reward = $parameters->get('financial.reward.referer');
-        $currency = $this->doctrine->getRepository('FunProFinancialBundle:Currency')
-            ->findOneByCode($parameters->get('financial.reward.referer.default_currency'));
-
-        $wallet = $this->doctrine->getRepository('FunProFinancialBundle:Wallet')
-            ->getUserWallet($userReferer, $currency);
 
         $transaction = new Transaction(
             $userReferer,
-            $currency,
             $reward,
             Transaction::TYPE_REWARD,
             true
         );
 
-        $transaction->setWallet($wallet);
         $transaction->setStatus(Transaction::STATUS_SUCCESS);
 
         $errors = $this->validator->validate($transaction, null, array('Create', 'Reward'));
@@ -159,10 +160,5 @@ class RewardSubscriber implements EventSubscriberInterface
 
         $this->doctrine->getManager()->persist($transaction);
         $this->logger->addInfo('Reward transaction is persisted');
-    }
-
-    public function increaseCreditReward()
-    {
-
     }
 }

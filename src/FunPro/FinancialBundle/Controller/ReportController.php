@@ -26,6 +26,7 @@ class ReportController extends FOSRestController
      *
      * @ApiDoc(
      *      section="Report",
+     *      deprecated=true,
      *      resource=true,
      *      output={
      *          "class"="FunPro\FinancialBundle\Entity\Wallet",

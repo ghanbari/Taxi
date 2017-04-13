@@ -115,13 +115,13 @@ class ServiceSubscriber implements EventSubscriberInterface
             ServiceEvents::SERVICE_FINISH => array(
                 array('checkServiceStatusPreFinish', 150),
                 array('onServiceFinish', 10),
-                array('autoPay', 5),
+//                array('autoPay', 5),
             ),
             CarEvents::CAR_MOVE => array(
                 array('onService', 10),
             ),
             FinancialEvents::PAYMENT_EVENT => array(
-                array('calculateRealPrice', 80),
+//                array('calculateRealPrice', 80),
                 array('onServicePayed', 10),
             ),
         );

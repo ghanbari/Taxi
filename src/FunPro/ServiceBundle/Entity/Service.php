@@ -382,6 +382,7 @@ class Service
     private $canceledReason;
 
     /**
+     * @deprecated
      * @var Currency
      *
      * @ORM\ManyToOne(targetEntity="FunPro\FinancialBundle\Entity\Currency")
@@ -802,6 +803,7 @@ class Service
         $baseCosts = $this->getBaseCost();
         $this->price = $baseCosts->getEntranceFee() + ($baseCosts->getCostPerMeter() * $this->getDistance());
         $this->price -= ($this->price * $baseCosts->getDiscountPercent()) / 100;
+        $this->price = floor($this->price / 100) * 100;
 
         return $this;
     }
@@ -1141,6 +1143,7 @@ class Service
     }
 
     /**
+     * @deprecated
      * @return Currency
      */
     public function getCurrency()
@@ -1149,6 +1152,7 @@ class Service
     }
 
     /**
+     * @deprecated
      * @param Currency $currency
      *
      * @return $this

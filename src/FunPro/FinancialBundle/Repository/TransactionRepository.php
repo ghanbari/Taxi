@@ -12,6 +12,18 @@ use Doctrine\ORM\EntityRepository;
  */
 class TransactionRepository extends EntityRepository
 {
+    /**
+     * @param \DateTime $from
+     * @param \Datetime $till
+     * @param null      $min
+     * @param null      $max
+     * @param null      $direction
+     * @param null      $type
+     * @param int       $limit
+     * @param int       $offset
+     *
+     * @return array
+     */
     public function getAllFilterBy(
         \DateTime $from = null,
         \Datetime $till = null,
@@ -21,12 +33,10 @@ class TransactionRepository extends EntityRepository
         $type = null,
         $limit = 10,
         $offset = 0
-    )
-    {
+    ) {
         $queryBuilder = $this->createQueryBuilder('t');
 
-        $queryBuilder->select(array('t', 'w', 's'))
-            ->leftJoin('t.wallet', 'w')
+        $queryBuilder->select(array('t', 's'))
             ->leftJoin('t.service', 's');
 
         if ($from) {

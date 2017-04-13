@@ -102,17 +102,11 @@ class PaymentSubsciber implements EventSubscriberInterface
 
         $transaction = new Transaction(
             $driver,
-            $main->getCurrency(),
             $main->getAmount(),
             Transaction::TYPE_WAGE,
             $main->isVirtual()
         );
 
-        if ($main->isVirtual()) {
-            $wallet = $this->doctrine->getRepository('FunProFinancialBundle:Wallet')
-                ->getUserWallet($driver, $main->getCurrency());
-            $transaction->setWallet($wallet);
-        }
         $transaction->setService($main->getService());
         $transaction->setStatus(Transaction::STATUS_SUCCESS);
 
@@ -144,15 +138,11 @@ class PaymentSubsciber implements EventSubscriberInterface
 
         $transaction = new Transaction(
             $driver,
-            $main->getCurrency(),
             $main->getAmount() * $commissionRate / 100,
             Transaction::TYPE_COMMISSION,
             true
         );
 
-        $wallet = $this->doctrine->getRepository('FunProFinancialBundle:Wallet')
-            ->getUserWallet($driver, $main->getCurrency());
-        $transaction->setWallet($wallet);
         $transaction->setService($main->getService());
         $transaction->setStatus(Transaction::STATUS_SUCCESS);
 

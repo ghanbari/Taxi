@@ -20,6 +20,7 @@ class ServiceLogRepository extends EntityRepository
     /**
      * Get current|last status of service
      *
+     * @deprecated instead of this method, use $service->getStatus()
      * @param Service $service
      *
      * @throws NoResultException
@@ -39,6 +40,13 @@ class ServiceLogRepository extends EntityRepository
             ->getSingleResult();
     }
 
+    /**
+     * @param Driver    $driver
+     * @param \DateTime $from
+     * @param \Datetime $till
+     *
+     * @return int
+     */
     public function getServiceTime(Driver $driver, \DateTime $from, \Datetime $till)
     {
         $till = $till->setTime(23, 59, 59);

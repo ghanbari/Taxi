@@ -7,6 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * RegionBasePrice
  *
+ * @deprecated
+ *
  * @ORM\Table(
  *      name="region_base_price",
  *      uniqueConstraints={@ORM\UniqueConstraint(name="currency_in_region_UNIQUE", columns={"currency_id",
