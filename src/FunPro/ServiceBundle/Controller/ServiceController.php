@@ -165,7 +165,7 @@ class ServiceController extends FOSRestController
             }
 
             $manager->persist($service);
-//            $manager->flush();
+            $manager->flush();
 
             $logger->addInfo('Dispatch service requested event');
             $event = new ServiceEvent($service);
