@@ -40,7 +40,7 @@ class CreateAgencyAdministratorForTest extends AbstractFixture implements
      */
     public function load(ObjectManager $manager)
     {
-        if (!$this->container->getParameter('test.passenger')) {
+        if (!$this->container->getParameter('test.agency')) {
             return;
         }
 
