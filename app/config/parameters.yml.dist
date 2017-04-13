@@ -35,6 +35,7 @@ parameters:
     avanak.user: ''
     avanak.pass: ''
 
+    google_map.api_key: AIzaSyA42ujZrpiGBWOgfmimpK8SY0xOL7j2Q2I
     gcm.api_key: ''
     gcm.ttl.service_request: 300
     gcm.ttl.service_cancel: 600
@@ -69,8 +70,8 @@ parameters:
 
     financial.reward.referer: 1000
     financial.reward.referer.default_currency: IRR
-    financial.reward.payment.cash: 5 #in percent
-    financial.reward.payment.credit: 5 #in percent
+    financial.reward.payment.cash: 0 #in percent
+    financial.reward.payment.credit: 0 #in percent
     financial.commission.payment.cash: 15
     financial.commission.payment.credit: 15
 
