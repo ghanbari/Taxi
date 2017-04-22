@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  *
  * @author Kévin Gomez <contact@kevingomez.fr>
  */
-class NikSmsProviderFactory implements ProviderFactoryInterface
+class NiazPardazProviderFactory implements ProviderFactoryInterface
 {
     /**
      * {@inheritDoc}
@@ -31,7 +31,7 @@ class NikSmsProviderFactory implements ProviderFactoryInterface
      */
     public function getKey()
     {
-        return 'nik_sms';
+        return 'niaz_pardaz';
     }
 
     /**

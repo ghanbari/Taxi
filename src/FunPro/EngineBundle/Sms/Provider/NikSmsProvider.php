@@ -2,6 +2,7 @@
 
 namespace FunPro\EngineBundle\Sms\Provider;
 
+use Monolog\Logger;
 use SmsSender\Exception as Exception;
 use SmsSender\HttpAdapter\HttpAdapterInterface;
 use SmsSender\Provider\AbstractProvider;
@@ -38,9 +39,14 @@ class NikSmsProvider extends AbstractProvider
     protected $originator;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * {@inheritDoc}
      */
-    public function __construct(HttpAdapterInterface $adapter, $username, $password, $from, $international_prefix = '+98')
+    public function __construct(HttpAdapterInterface $adapter, Logger $logger, $username, $password, $from, $international_prefix = '+98')
     {
         parent::__construct($adapter);
 
@@ -48,6 +54,7 @@ class NikSmsProvider extends AbstractProvider
         $this->password = $password;
         $this->originator = $from;
         $this->international_prefix = $international_prefix;
+        $this->logger = $logger;
     }
 
     /**
@@ -88,7 +95,11 @@ class NikSmsProvider extends AbstractProvider
     }
 
     /**
-     * @param  string $query
+     * @param       $url
+     * @param array $data
+     * @param array $extra_result_data
+     *
+     * @internal param string $query
      * @return array
      */
     protected function executeQuery($url, array $data = array(), array $extra_result_data = array())
@@ -124,6 +135,7 @@ class NikSmsProvider extends AbstractProvider
      */
     protected function parseResults($result, array $extra_result_data = array())
     {
+        $this->logger->addInfo("Sms Result: $result");
         $sms_data = array();
 
         // get the status
@@ -136,5 +148,3 @@ class NikSmsProvider extends AbstractProvider
         return array_merge($sms_data, $this->getDefaults(), $extra_result_data);
     }
 }
-
-// vim: set softtabstop=4 tabstop=4 shiftwidth=4 autoindent:

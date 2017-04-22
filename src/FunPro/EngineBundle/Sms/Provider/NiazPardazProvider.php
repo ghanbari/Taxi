@@ -11,12 +11,12 @@ use SmsSender\Result\ResultInterface;
 /**
  * @author Kévin Gomez <contact@kevingomez.fr>
  */
-class SmsIrProvider extends AbstractProvider
+class NiazPardazProvider extends AbstractProvider
 {
     /**
      * @var string
      */
-    const SEND_SMS_URL = 'http://ip.sms.ir/SendMessage.ashx';
+    const SEND_SMS_URL = 'http://login.niazpardaz.ir/SMSInOutBox/Send';
 
     /**
      * @var string
@@ -41,7 +41,7 @@ class SmsIrProvider extends AbstractProvider
     /**
      * @var Logger
      */
-    private $logger;
+    protected $logger;
 
     /**
      * {@inheritDoc}
@@ -50,11 +50,11 @@ class SmsIrProvider extends AbstractProvider
     {
         parent::__construct($adapter);
 
+        $this->logger = $logger;
         $this->username = $username;
         $this->password = $password;
         $this->originator = $from;
         $this->international_prefix = $international_prefix;
-        $this->logger = $logger;
     }
 
     /**
@@ -77,16 +77,12 @@ class SmsIrProvider extends AbstractProvider
         $originator = $this->cleanOriginator($originator);
 
         $params = $this->getParameters(array(
-            'to'    => $this->localNumberToInternational($recipient, $this->international_prefix),
-            'text'  => $body,
-            'lineNo'  => $originator,
+            'to'        => $this->localNumberToInternational($recipient, $this->international_prefix),
+            'message'   => $body,
+            'from'      => $originator,
         ));
 
-        return $this->executeQuery(self::SEND_SMS_URL, $params, array(
-            'recipient'  => $recipient,
-            'body'       => $body,
-            'originator' => $originator,
-        ));
+        return $this->executeQuery(self::SEND_SMS_URL, $params);
     }
 
     /**
@@ -94,7 +90,7 @@ class SmsIrProvider extends AbstractProvider
      */
     public function getName()
     {
-        return 'sms_ir';
+        return 'niaz_pardaz';
     }
 
     /**
@@ -121,8 +117,8 @@ class SmsIrProvider extends AbstractProvider
     public function getParameters(array $additionnal_parameters = array())
     {
         return array_merge(array(
-            'user'  => $this->username,
-            'pass'  => $this->password,
+            'UserName'  => $this->username,
+            'Password'  => $this->password,
         ), $additionnal_parameters);
     }
 
@@ -138,7 +134,7 @@ class SmsIrProvider extends AbstractProvider
         $sms_data = array();
 
         // get the status
-        $sms_data['status'] = $result == 'Ok'
+        $sms_data['status'] = $result == 'Successful'
             ? ResultInterface::STATUS_SENT
             : ResultInterface::STATUS_FAILED;
 
@@ -147,5 +143,3 @@ class SmsIrProvider extends AbstractProvider
         return array_merge($sms_data, $this->getDefaults(), $extra_result_data);
     }
 }
-
-// vim: set softtabstop=4 tabstop=4 shiftwidth=4 autoindent:

@@ -32,6 +32,9 @@ parameters:
     nik_sms.user: ''
     nik_sms.pass: ''
     nik_sms.from: ''
+    niaz_pardaz.user: ''
+    niaz_pardaz.pass: ''
+    niaz_pardaz.from: ''
     avanak.user: ''
     avanak.pass: ''
 

@@ -9,6 +9,7 @@
         </service>
         <service id="sms.provider.sms_ir" class="FunPro\EngineBundle\Sms\Provider\SmsIrProvider">
             <argument type="service" id="sms.http_adapter" />
+            <argument type="service" id="monolog.logger" />
             <!-- user -->
             <argument></argument>
             <!-- pass -->
@@ -23,6 +24,23 @@
         </service>
         <service id="sms.provider.nik_sms" class="FunPro\EngineBundle\Sms\Provider\NikSmsProvider">
             <argument type="service" id="sms.http_adapter" />
+            <argument type="service" id="monolog.logger" />
+            <!-- user -->
+            <argument></argument>
+            <!-- pass -->
+            <argument></argument>
+            <!-- from -->
+            <argument></argument>
+            <!-- international prefix -->
+            <argument></argument>
+        </service>
+
+        <service id="sms.provider.factory.niaz_pardaz" class="FunPro\EngineBundle\Sms\Provider\Factory\NiazPardazProviderFactory">
+            <tag name="sms.provider.factory" />
+        </service>
+        <service id="sms.provider.niaz_pardaz" class="FunPro\EngineBundle\Sms\Provider\NiazPardazProvider">
+            <argument type="service" id="sms.http_adapter" />
+            <argument type="service" id="monolog.logger" />
             <!-- user -->
             <argument></argument>
             <!-- pass -->

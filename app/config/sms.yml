@@ -15,3 +15,9 @@ k_phoen_sms_sender:
         pass: "%nik_sms.pass%"
         from: "%nik_sms.from%"
         international_prefix: '+98'
+
+    niaz_pardaz:
+        user: "%niaz_pardaz.user%"
+        pass: "%niaz_pardaz.pass%"
+        from: "%niaz_pardaz.from%"
+        international_prefix: '+98'

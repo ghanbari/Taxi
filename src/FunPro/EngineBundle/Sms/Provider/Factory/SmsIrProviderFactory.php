@@ -18,19 +18,11 @@ class SmsIrProviderFactory implements ProviderFactoryInterface
      */
     public function create(ContainerBuilder $container, $id, array $config)
     {
-//        $definition = new Definition('FunPro\EngineBundle\Sms\Provider\SmsIrProvider');
-//        $definition->addArgument($container->findDefinition("sms.http_adapter"));
-//        $definition->addArgument($config['user']);
-//        $definition->addArgument($config['pass']);
-//        $definition->addArgument($config['from']);
-//        $definition->addArgument($config['international_prefix']);
-//        $container->addDefinitions(array('sms.provider.sms_ir' => $definition));
-
         $container->getDefinition($id)
-            ->replaceArgument(1, $config['user'])
-            ->replaceArgument(2, $config['pass'])
-            ->replaceArgument(3, $config['from'])
-            ->replaceArgument(4, $config['international_prefix'])
+            ->replaceArgument(2, $config['user'])
+            ->replaceArgument(3, $config['pass'])
+            ->replaceArgument(4, $config['from'])
+            ->replaceArgument(5, $config['international_prefix'])
         ;
     }
 
