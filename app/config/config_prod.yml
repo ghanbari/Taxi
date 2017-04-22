@@ -43,12 +43,12 @@ monolog:
             members: [slack, rollbar]
         slack:
             type: slack
-            token: "xoxb-63535591344-yofIljobgRyy0FLMCGKvqwzZ"
+            token: "%slack_token%"
             channel: 'server-logs'
             bot_name: FunPro_Logger
             include_extra: true
             level: INFO
         rollbar:
             type: rollbar
-            token: 20ba5c4703374c789ea256850c073d52
+            token: "%rollbar_token%"
             level: INFO

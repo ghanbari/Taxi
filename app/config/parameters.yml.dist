@@ -80,3 +80,6 @@ parameters:
 
     ui.data_table.per_page: 10
     ui.data_table.max_per_page: 100
+
+    rollbar_token: ''
+    slack_token: ''
