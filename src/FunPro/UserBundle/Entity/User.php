@@ -20,6 +20,8 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * @ORM\DiscriminatorColumn(name="disc", type="smallint")
  * @ORM\DiscriminatorMap({
  *      0 = "FunPro\UserBundle\Entity\User",
+ *      User::TYPE_ADMIN = "FunPro\UserBundle\Entity\User",
+ *      User::TYPE_OPERATOR = "FunPro\UserBundle\Entity\Operator",
  *      User::TYPE_DRIVER = "FunPro\DriverBundle\Entity\Driver",
  *      User::TYPE_PASSENGER = "FunPro\PassengerBundle\Entity\Passenger",
  * })

@@ -8,6 +8,11 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class ProfileType
+ *
+ * @package FunPro\PassengerBundle\Form\Type
+ */
 class ProfileType extends AbstractType
 {
     /**

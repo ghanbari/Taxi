@@ -4,6 +4,6 @@ FOS\UserBundle\Model\User:
         id:
             groups: ["Public"]
         email:
-            groups: ["Owner"]
+            groups: ["Owner", "Admin"]
         lastLogin:
             groups: ["Owner"]
