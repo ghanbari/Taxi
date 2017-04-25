@@ -727,7 +727,7 @@ class ServiceController extends FOSRestController
      * )
      *
      * @Rest\QueryParam(name="origin_lat", requirements="\d+\.\d+", strict=true, allowBlank=false, nullable=false)
-     * @Rest\QueryParam(name="origin_lng", requirements="\d+\.\d+", strict=true, allowBlank=false, nullable=false)     *
+     * @Rest\QueryParam(name="origin_lng", requirements="\d+\.\d+", strict=true, allowBlank=false, nullable=false)
      * @Rest\QueryParam(name="des_lat", requirements="\d+\.\d+", strict=true, allowBlank=false, nullable=false)
      * @Rest\QueryParam(name="des_lng", requirements="\d+\.\d+", strict=true, allowBlank=false, nullable=false)
      */
