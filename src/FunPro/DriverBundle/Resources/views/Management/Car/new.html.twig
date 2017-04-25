@@ -12,6 +12,62 @@
 
 {% use 'bootstrap_3_layout.html.twig' %}
 
+{% block stylesheetsPagePlugins %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('bower_components/pick-a-color/build/1.2.3/css/pick-a-color-1.2.3.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('bower_components/persian-datepicker/dist/css/persian-datepicker-0.4.5.css') }}">
+{% endblock stylesheetsPagePlugins %}
+
+{% block javascriptsPageScripts %}
+    <script src="{{ asset('bower_components/pick-a-color/build/1.1.6/js/tinycolor-0.9.14.min.js') }}"></script>
+    <script src="{{ asset('bower_components/pick-a-color/build/1.2.3/js/pick-a-color-1.2.3.min.js') }}"></script>
+    <script src="{{ asset('bower_components/persian-date/dist/0.1.8/persian-date-0.1.8.min.js') }}"></script>
+    <script src="{{ asset('bower_components/persian-datepicker/dist/js/persian-datepicker-0.4.5.js') }}"></script>
+
+    <script>
+        $(function() {
+            $('.pick-a-color').pickAColor();
+            $('.color-menu.dropdown-menu').css({transform: 'translateX(100%)'});
+
+            var convertUnixToDate = function (unix) {
+                var date = new Date(unix);
+                var year = date.getFullYear();
+                var month = (parseInt(date.getMonth())+1) < 10 ? '0' + String(parseInt(date.getMonth())+1) : String(parseInt(date.getMonth())+1);
+                var day = (date.getDate()) < 10 ? '0' + date.getDate() : date.getDate();
+                return year + '/' + month + '/' + day;
+            };
+
+            $('#thirdPartyInsurance').pDatepicker({
+                altField: '#car_thirdPartyInsurance',
+                altFieldFormatter: convertUnixToDate,
+                format: 'YYYY/MM/DD'
+            });
+            $('#thirdPartyInsurance').val(persianDate.unix({{ form.thirdPartyInsurance.vars.data.format('U') }}).format('YYYY/MM/DD'));
+
+            $('#pullInsurance').pDatepicker({
+                altField: '#car_pullInsurance',
+                altFieldFormatter: convertUnixToDate,
+                format: 'YYYY/MM/DD'
+            });
+            $('#pullInsurance').val(persianDate.unix({{ form.pullInsurance.vars.data.format('U') }}).format('YYYY/MM/DD'));
+
+            $('#technicalDiagnosis').pDatepicker({
+                altField: '#car_technicalDiagnosis',
+                altFieldFormatter: convertUnixToDate,
+                format: 'YYYY/MM/DD'
+            });
+            $('#technicalDiagnosis').val(persianDate.unix({{ form.technicalDiagnosis.vars.data.format('U') }}).format('YYYY/MM/DD'));
+
+            $('#trafficPlan').pDatepicker({
+                altField: '#car_trafficPlan',
+                altFieldFormatter: convertUnixToDate,
+                format: 'YYYY/MM/DD'
+            });
+            $('#trafficPlan').val(persianDate.unix({{ form.trafficPlan.vars.data.format('U') }}).format('YYYY/MM/DD'));
+        });
+    </script>
+{% endblock javascriptsPageScripts %}
+
 {% block content %}
     <div class="page-content">
         <div class="container">
@@ -56,27 +112,17 @@
                             </div>
                             <div class="portlet-body form">
                                 <div class="form-body">
-                                    <div class="form-group form-md-line-input" {% if form.brand.vars.errors|length %}has-error{% elseif (form.brand.vars.submitted) %}has-success{% endif %}">
-                                        <label class="col-md-2 control-label" for="form_control_1">سازنده ماشین</label>
-                                        <div class="col-md-10">
-                                            {{ form_widget(form.brand, {'attr':{'placeholder':'سازنده ماشین را وارد نمایید'}}) }}
-                                            <div class="form-control-focus"></div>
-                                            <span class="help-block">مثلا: پژو <br />
-                                                {% if form.brand.vars.errors|length %}{{ form_errors(form.brand) }}{% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
                                     <div class="form-group form-md-line-input" {% if form.type.vars.errors|length %}has-error{% elseif (form.type.vars.submitted) %}has-success{% endif %}">
                                         <label class="col-md-2 control-label" for="form_control_1">نوع ماشین</label>
                                         <div class="col-md-10">
                                             {{ form_widget(form.type, {'attr':{'placeholder':'نوع ماشین را وارد نمایید'}}) }}
                                             <div class="form-control-focus"></div>
-                                            <span class="help-block">مثلا: ۴۰۵ <br />
+                                            <span class="help-block">
                                                 {% if form.type.vars.errors|length %}{{ form_errors(form.type) }}{% endif %}
                                             </span>
                                         </div>
                                     </div>
-                                    <div class="form-group form-md-line-input" {% if form.plaque.vars.errors|length %}has-error{% elseif (form.plaque.vars.submitted) %}has-success{% endif %}">
+                                    <div class="form-group form-md-line-input {% if form.plaque.vars.errors|length %}has-error{% elseif (form.plaque.vars.submitted) %}has-success{% endif %}">
                                         <label class="col-md-2 control-label" for="form_control_1">شماره پلاک</label>
                                         <div class="col-md-2">
                                             {{ form_widget(form.plaque.cityNumber, {'attr': {'placeholder': 'کد شهر'}}) }}
@@ -117,29 +163,81 @@
                                     <div class="form-group form-md-line-input {% if form.color.vars.errors|length %}has-error{% elseif (form.color.vars.submitted) %}has-success{% endif %}">
                                         <label class="col-md-2 control-label" for="form_control_1">رنگ</label>
                                         <div class="col-md-10">
-                                            {{ form_widget(form.color, {'attr':{'placeholder':'رنگ ماشین را انتخاب نمایید'}}) }}
+                                            {{ form_widget(form.color, {'attr':{'placeholder':'رنگ ماشین را انتخاب نمایید', 'class': 'pick-a-color form-control'}}) }}
                                             <div class="form-control-focus"> </div>
-                                            <span class="help-block">رنگ ماشین به فارسی <br />
+                                            <span class="help-block">کد رنگ ماشین<br />
                                                 {% if form.color.vars.errors|length %}{{ form_errors(form.color) }}{% endif %}
                                             </span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-md-line-input {% if form.thirdPartyInsurance.vars.errors|length %}has-error{% elseif (form.thirdPartyInsurance.vars.submitted) %}has-success{% endif %}">
+                                        <label class="col-md-2 control-label" for="form_control_1">بیمه شخص ثالث</label>
+                                        <div class="col-md-10">
+                                            {{ form_widget(form.thirdPartyInsurance, {'attr':{'placeholder':'2007-02-25', 'style': 'display: none;'}}) }}
+                                            <input type="text" class="form-control" id="thirdPartyInsurance">
+                                            <div class="form-control-focus"> </div>
+                                            <span class="help-block">{% if form.thirdPartyInsurance.vars.errors|length %}{{ form_errors(form.thirdPartyInsurance) }}{% endif %}</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-md-line-input {% if form.pullInsurance.vars.errors|length %}has-error{% elseif (form.pullInsurance.vars.submitted) %}has-success{% endif %}">
+                                        <label class="col-md-2 control-label" for="form_control_1">بیمه بدنه</label>
+                                        <div class="col-md-10">
+                                            {{ form_widget(form.pullInsurance, {'attr':{'placeholder':'2007-02-25', 'style': 'display: none;'}}) }}
+                                            <input type="text" class="form-control" id="pullInsurance">
+                                            <div class="form-control-focus"> </div>
+                                            <span class="help-block">{% if form.pullInsurance.vars.errors|length %}{{ form_errors(form.pullInsurance) }}{% endif %}</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-md-line-input {% if form.technicalDiagnosis.vars.errors|length %}has-error{% elseif (form.technicalDiagnosis.vars.submitted) %}has-success{% endif %}">
+                                        <label class="col-md-2 control-label" for="form_control_1">معاینه فنی</label>
+                                        <div class="col-md-10">
+                                            {{ form_widget(form.technicalDiagnosis, {'attr':{'placeholder':'2007-02-25', 'style': 'display: none;'}}) }}
+                                            <input type="text" class="form-control" id="technicalDiagnosis">
+                                            <div class="form-control-focus"> </div>
+                                            <span class="help-block">{% if form.technicalDiagnosis.vars.errors|length %}{{ form_errors(form.technicalDiagnosis) }}{% endif %}</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-md-line-input {% if form.trafficPlan.vars.errors|length %}has-error{% elseif (form.trafficPlan.vars.submitted) %}has-success{% endif %}">
+                                        <label class="col-md-2 control-label" for="form_control_1">طرح ترافیک</label>
+                                        <div class="col-md-10">
+                                            {{ form_widget(form.trafficPlan, {'attr':{'placeholder':'2007-02-25', 'style': 'display: none;'}}) }}
+                                            <input type="text" class="form-control" id="trafficPlan">
+                                            <div class="form-control-focus"> </div>
+                                            <span class="help-block">{% if form.trafficPlan.vars.errors|length %}{{ form_errors(form.trafficPlan) }}{% endif %}</span>
                                         </div>
                                     </div>
                                     <div class="form-group form-md-line-input {% if form.born.vars.errors|length %}has-error{% elseif (form.born.vars.submitted) %}has-success{% endif %}">
                                         <label class="col-md-2 control-label" for="form_control_1">تاریخ ساخت</label>
                                         <div class="col-md-10">
-                                            {{ form_widget(form.born, {'attr':{'placeholder':'2007-02-25'}}) }}
+                                            {{ form_widget(form.born, {'attr':{'placeholder':'1385'}}) }}
                                             <div class="form-control-focus"> </div>
                                             <span class="help-block">{% if form.born.vars.errors|length %}{{ form_errors(form.born) }}{% endif %}</span>
                                         </div>
                                     </div>
-                                    <div class="form-group form-md-line-input {% if form.rate.vars.errors|length %}has-error{% elseif (form.rate.vars.submitted) %}has-success{% endif %}">
-                                        <label class="col-md-2 control-label" for="form_control_1">امتیاز</label>
-                                        <div class="col-md-10">
-                                            {{ form_widget(form.rate, {'attr': {'placeholder':'امتیاز گرفته شده ماشین توسط کارشناس'}}) }}
-                                            <div class="form-control-focus"> </div>
-                                            <span class="help-block">{% if form.rate.vars.errors|length %}{{ form_errors(form.rate) }}{% endif %}</span>
-                                        </div>
-                                    </div>
+                            <div class="form-group form-md-line-input {% if form.bodyQuality.vars.errors|length %}has-error{% elseif (form.bodyQuality.vars.submitted) %}has-success{% endif %}">
+                                <label class="col-md-2 control-label" for="form_control_1">توضیحات</label>
+                                <div class="col-md-10">
+                                    {{ form_widget(form.bodyQuality) }}
+                                    <div class="form-control-focus"> </div>
+                                    <span class="help-block">{% if form.bodyQuality.vars.errors|length %}{{ form_errors(form.bodyQuality) }}{% endif %}</span>
+                                </div>
+                            </div>
+                            <div class="form-group form-md-line-input {% if form.insideQuality.vars.errors|length %}has-error{% elseif (form.insideQuality.vars.submitted) %}has-success{% endif %}">
+                                <label class="col-md-2 control-label" for="form_control_1">توضیحات</label>
+                                <div class="col-md-10">
+                                    {{ form_widget(form.insideQuality) }}
+                                    <div class="form-control-focus"> </div>
+                                    <span class="help-block">{% if form.insideQuality.vars.errors|length %}{{ form_errors(form.insideQuality) }}{% endif %}</span>
+                                </div>
+                            </div>
+                            <div class="form-group form-md-line-input {% if form.ownership.vars.errors|length %}has-error{% elseif (form.ownership.vars.submitted) %}has-success{% endif %}">
+                                <label class="col-md-2 control-label" for="form_control_1">توضیحات</label>
+                                <div class="col-md-10">
+                                    {{ form_widget(form.ownership) }}
+                                    <div class="form-control-focus"> </div>
+                                    <span class="help-block">{% if form.ownership.vars.errors|length %}{{ form_errors(form.ownership) }}{% endif %}</span>
+                                </div>
+                            </div>
                                     <div class="form-group form-md-line-input {% if form.description.vars.errors|length %}has-error{% elseif (form.description.vars.submitted) %}has-success{% endif %}">
                                         <label class="col-md-2 control-label" for="form_control_1">توضیحات</label>
                                         <div class="col-md-10">

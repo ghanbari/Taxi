@@ -23,7 +23,12 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class CarController extends FOSRestController
 {
-
+    /**
+     * @param Car $car
+     * @param     $method
+     *
+     * @return \Symfony\Component\Form\Form
+     */
     private function getForm(Car $car, $method)
     {
         $options['method'] = strtoupper($method);

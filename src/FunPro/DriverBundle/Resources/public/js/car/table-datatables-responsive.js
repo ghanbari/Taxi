@@ -5,6 +5,23 @@ var addPlaque = function (td, cellData, rowData, row, col) {
     $(td).html(html);
 };
 
+var showType = function (td, cellData, rowData, row, col) {
+    var types = {
+        '1': 'پراید',
+        '2': '405',
+        '3': '206',
+        '4': '207',
+        '5': 'سمند',
+        '6': 'پرشیا',
+        '7': 'زانتیا',
+        '8': 'مگان',
+        '9': 'جک'
+    };
+    if (types.hasOwnProperty(cellData)) {
+        $(td).text(types[cellData]);
+    }
+};
+
 var TableDatatablesResponsive = function () {
 
     var initTable = function () {
@@ -52,19 +69,17 @@ var TableDatatablesResponsive = function () {
             columns: [
                 {"defaultContent": "", name: "c.id", data: "id", orderable: true, searchable: false, className: "carId"},
                 {name: "c.plaque", data: "plaque", orderable: false, searchable: false, className: "plaque", "createdCell": addPlaque},
-                {name: "c.brand", data: "brand", orderable: true, searchable: true},
-                {name: "c.type", data: "type", orderable: true, searchable: true},
-                {name: "c.color", data: "color", orderable: false, searchable: false},
-                {name: "c.born", data: "born", orderable: true, searchable: false},
-                {name: "c.rate", data: "rate", orderable: true, searchable: false},
-                {name: "c.description", data: "description", "defaultContent": "", orderable: false, searchable: false},
+                {name: "c.type", data: "type", orderable: true, searchable: true, "createdCell": showType},
+                {name: "c.thirdPartyInsurance", data: "thirdPartyInsurance", orderable: true, searchable: true, className: "timestamp"},
+                {name: "c.pullInsurance", data: "pullInsurance", orderable: true, searchable: true, className: "timestamp"},
+                {name: "c.technicalDiagnosis", data: "technicalDiagnosis", orderable: true, searchable: true, className: "timestamp"},
                 {name: "c.current", data: "current", orderable: true, searchable: false, className: "isCurrent"},
-                {name: "c.status", data: "status", orderable: false, searchable: false},
+                {name: "c.status", data: "status", orderable: true, searchable: false},
                 {name: "edit", "defaultContent": "<i class='btn btn-warning'>ویرایش</i>", orderable: false, searchable: false, className: "edit text-center"},
                 {name: "delete", "defaultContent": "<i class='btn btn-danger'>حذف</i>", orderable: false, searchable: false, className: "delete text-center"},
             ],
 
-            order: [ 1, 'asc' ],
+            order: [ 0, 'desc' ],
 
             // pagination control
             "lengthMenu": [
@@ -114,6 +129,16 @@ jQuery(document).ready(function() {
             } else if ($(item).text() == 'false') {
                 $(item).html('<button class="btn btn-info glyphicon glyphicon-remove changeStatus"></button>')
             }
+        });
+
+        $('.timestamp').each(function(index, item) {
+            if (isNaN(parseInt($(item).text()))) {
+                return;
+            }
+
+            var timestamp = $(item).text();
+            var date = persianDate.unix(timestamp);
+            $(item).text(date.pDate.year + '/' + date.pDate.month + '/' + date.pDate.day);
         });
     } );
 });

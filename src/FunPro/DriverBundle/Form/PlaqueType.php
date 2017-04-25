@@ -16,10 +16,13 @@ class PlaqueType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('firstNumber', Type\NumberType::class)
-            ->add('secondNumber', Type\NumberType::class)
-            ->add('cityNumber', Type\NumberType::class)
-            ->add('areaCode', Type\TextType::class, array('attr' => array('maxlength' => 1)));
+            ->add('firstNumber', Type\NumberType::class, array('error_bubbling' => true))
+            ->add('secondNumber', Type\NumberType::class, array('error_bubbling' => true))
+            ->add('cityNumber', Type\NumberType::class, array('error_bubbling' => true))
+            ->add('areaCode', Type\TextType::class, array(
+                'attr' => array('maxlength' => 1),
+                'error_bubbling' => true,
+            ));
     }
 
     /**
@@ -28,7 +31,8 @@ class PlaqueType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'FunPro\DriverBundle\Entity\Plaque'
+            'data_class' => 'FunPro\DriverBundle\Entity\Plaque',
+            'error_bubbling' => false
         ));
     }
 }

@@ -35,6 +35,16 @@ class Car
     const STATUS_SERVICE_IN_AND_ACCEPT = 8;
     const STATUS_SERVICE_IN_AND_PREPARE = 9;
 
+    const TYPE_PERIDE = 1;
+    const TYPE_P405 = 2;
+    const TYPE_P206 = 3;
+    const TYPE_P207 = 4;
+    const TYPE_SAMAND = 5;
+    const TYPE_PERSIA = 6;
+    const TYPE_ZANTIYA = 7;
+    const TYPE_MEGAN = 8;
+    const TYPE_JACK = 9;
+
     /**
      * @var int
      *
@@ -67,28 +77,119 @@ class Car
     /**
      * @var string
      *
-     * @ORM\Column()
+     * @ORM\Column(type="smallint")
      *
      * @Assert\NotBlank(groups={"Create", "Update"})
-     * @Assert\Length(min="2",max="50", groups={"Create", "Update"})
-     *
-     * @JS\Groups({"Public", "Driver", "Admin"})
-     * @JS\Since("1.0.0")
-     */
-    private $brand;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(length=50)
-     *
-     * @Assert\NotBlank(groups={"Create", "Update"})
-     * @Assert\Length(min="2", max="50", groups={"Create", "Update"})
+     * @Assert\Choice(callback="getTypes", groups={"Create", "Update"})
      *
      * @JS\Groups({"Public", "Driver", "Admin"})
      * @JS\Since("1.0.0")
      */
     private $type;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(length=6)
+     *
+     * @Assert\NotBlank(groups={"Create", "Update"})
+     * @Assert\Regex(pattern="/[0-9a-fA-F]{6}/", groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Public", "Driver", "Admin"})
+     * @JS\Since("1.0.0")
+     */
+    private $color;
+
+    /**
+     * @var \DateTime Expire date of third party insurance
+     *
+     * @ORM\Column(name="third_party_insurance", type="date", options={"default": "2000-01-01"})
+     *
+     * @Assert\Date(groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Public", "Driver", "Admin"})
+     * @JS\Type("DateTime<'U'>")
+     * @JS\Since("1.0.0")
+     */
+    private $thirdPartyInsurance;
+
+    /**
+     * @var \DateTime Expire date of pull insurance
+     *
+     * @ORM\Column(name="pull_insurance", type="date", options={"default": "2000-01-01"})
+     *
+     * @Assert\Date(groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Public", "Driver", "Admin"})
+     * @JS\Type("DateTime<'U'>")
+     * @JS\Since("1.0.0")
+     */
+    private $pullInsurance;
+
+    /**
+     * @var \DateTime Expire date of technical diagnosis
+     *
+     * @ORM\Column(name="technical_diagnosis", type="date", options={"default": "2000-01-01"})
+     *
+     * @Assert\Date(groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Public", "Driver", "Admin"})
+     * @JS\Type("DateTime<'U'>")
+     * @JS\Since("1.0.0")
+     */
+    private $technicalDiagnosis;
+
+    /**
+     * @var \DateTime Expire date of traffic plan
+     *
+     * @ORM\Column(name="traffic_plan", type="date", options={"default": "2000-01-01"})
+     *
+     * @Assert\Date(groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Public", "Driver", "Admin"})
+     * @JS\Type("DateTime<'U'>")
+     * @JS\Since("1.0.0")
+     */
+    private $trafficPlan;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="body_quality", length=10, options={"default": "good"})
+     *
+     * @Assert\NotBlank(groups={"Create", "Update"})
+     * @Assert\Choice(callback="getAvailableQuality", groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Public", "Driver", "Admin"})
+     * @JS\Since("1.0.0")
+     */
+    private $bodyQuality;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="inside_quality", length=10, options={"default": "good"})
+     *
+     * @Assert\NotBlank(groups={"Create", "Update"})
+     * @Assert\Choice(callback="getAvailableQuality", groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Public", "Driver", "Admin"})
+     * @JS\Since("1.0.0")
+     */
+    private $insideQuality;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="ownership", length=10, options={"default": "own"})
+     *
+     * @Assert\NotBlank(groups={"Create", "Update"})
+     * @Assert\Choice(callback="getAvailableOwnerships", groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Public", "Driver", "Admin"})
+     * @JS\Since("1.0.0")
+     */
+    private $ownership;
 
     /**
      * @var Plaque
@@ -107,40 +208,15 @@ class Car
     /**
      * @var string
      *
-     * @ORM\Column(length=15)
-     *
-     * @Assert\NotBlank(groups={"Create", "Update"})
-     * @Assert\Length(max="15", groups={"Create", "Update"})
-     *
-     * @JS\Groups({"Public", "Driver", "Admin"})
-     * @JS\Since("1.0.0")
-     */
-    private $color;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(type="date")
+     * @ORM\Column(type="string")
      *
      * @Assert\NotNull(groups={"Create", "Update"})
-     * @Assert\Date(groups={"Create", "Update"})
+     * @Assert\Length(max="4", min="4", groups={"Create", "Update"})
      *
      * @JS\Groups({"Public", "Driver", "Admin"})
      * @JS\Since("1.0.0")
      */
     private $born;
-
-    /**
-     * @var float
-     *
-     * @ORM\Column(type="decimal", precision=2, scale=1, options={"default"=0})
-     *
-     * @Assert\Range(min="0", max="9", groups={"Create", "Update"})
-     *
-     * @JS\Groups({"Public", "Driver", "Admin"})
-     * @JS\Since("1.0.0")
-     */
-    private $rate;
 
     /**
      * @var string
@@ -256,7 +332,6 @@ class Car
     public function __construct()
     {
         $this->setCurrent(true);
-        $this->setRate(0);
         $this->setStatus(self::STATUS_SLEEP);
     }
 
@@ -268,6 +343,24 @@ class Car
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getTypes()
+    {
+        return array(
+            'peride' => self::TYPE_PERIDE,
+            '405' => self::TYPE_P405,
+            '206' => self::TYPE_P206,
+            '207' => self::TYPE_P207,
+            'samand' => self::TYPE_SAMAND,
+            'persia' => self::TYPE_PERSIA,
+            'zantiya' => self::TYPE_ZANTIYA,
+            'megan' => self::TYPE_MEGAN,
+            'jack' => self::TYPE_JACK,
+        );
     }
 
     /**
@@ -291,6 +384,139 @@ class Car
     {
         $this->type = $type;
 
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBodyQuality()
+    {
+        return $this->bodyQuality;
+    }
+
+    /**
+     * @param string $bodyQuality
+     *
+     * @return $this
+     */
+    public function setBodyQuality($bodyQuality)
+    {
+        $this->bodyQuality = $bodyQuality;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getInsideQuality()
+    {
+        return $this->insideQuality;
+    }
+
+    /**
+     * @param string $insideQuality
+     *
+     * @return $this
+     */
+    public function setInsideQuality($insideQuality)
+    {
+        $this->insideQuality = $insideQuality;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOwnership()
+    {
+        return $this->ownership;
+    }
+
+    /**
+     * @param string $ownership
+     *
+     * @return $this
+     */
+    public function setOwnership($ownership)
+    {
+        $this->ownership = $ownership;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getPullInsurance()
+    {
+        return $this->pullInsurance;
+    }
+
+    /**
+     * @param \DateTime $pullInsurance
+     *
+     * @return $this
+     */
+    public function setPullInsurance(\DateTime $pullInsurance)
+    {
+        $this->pullInsurance = $pullInsurance;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getTechnicalDiagnosis()
+    {
+        return $this->technicalDiagnosis;
+    }
+
+    /**
+     * @param \DateTime $technicalDiagnosis
+     *
+     * @return $this
+     */
+    public function setTechnicalDiagnosis(\DateTime $technicalDiagnosis)
+    {
+        $this->technicalDiagnosis = $technicalDiagnosis;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getThirdPartyInsurance()
+    {
+        return $this->thirdPartyInsurance;
+    }
+
+    /**
+     * @param \DateTime $thirdPartyInsurance
+     *
+     * @return $this
+     */
+    public function setThirdPartyInsurance(\DateTime $thirdPartyInsurance)
+    {
+        $this->thirdPartyInsurance = $thirdPartyInsurance;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getTrafficPlan()
+    {
+        return $this->trafficPlan;
+    }
+
+    /**
+     * @param \DateTime $trafficPlan
+     *
+     * @return $this
+     */
+    public function setTrafficPlan(\DateTime $trafficPlan)
+    {
+        $this->trafficPlan = $trafficPlan;
         return $this;
     }
 
@@ -362,30 +588,6 @@ class Car
     public function setBorn($born)
     {
         $this->born = $born;
-
-        return $this;
-    }
-
-    /**
-     * Get rate
-     *
-     * @return string
-     */
-    public function getRate()
-    {
-        return $this->rate;
-    }
-
-    /**
-     * Set rate
-     *
-     * @param string $rate
-     *
-     * @return Car
-     */
-    public function setRate($rate)
-    {
-        $this->rate = $rate;
 
         return $this;
     }
@@ -588,30 +790,6 @@ class Car
     }
 
     /**
-     * Get brand
-     *
-     * @return string
-     */
-    public function getBrand()
-    {
-        return $this->brand;
-    }
-
-    /**
-     * Set brand
-     *
-     * @param string $brand
-     *
-     * @return Car
-     */
-    public function setBrand($brand)
-    {
-        $this->brand = $brand;
-
-        return $this;
-    }
-
-    /**
      * @JS\Groups({"CarStatus", "Admin"})
      * @JS\Since("1.0.0")
      * @JS\SerializedName("statusName")
@@ -625,6 +803,11 @@ class Car
         return self::getStatusName($this->getStatus());
     }
 
+    /**
+     * @param $status
+     *
+     * @return string
+     */
     public static function getStatusName($status)
     {
         switch ($status) {
@@ -739,5 +922,24 @@ class Car
     {
         $this->updatedAt = $updatedAt;
         return $this;
+    }
+
+    public static function getAvailableQuality()
+    {
+        return array(
+            'normal' => 'normal',
+            'good' => 'good',
+            'perfect' => 'perfect',
+        );
+    }
+
+    public static function getAvailableOwnerships()
+    {
+        return array(
+            'own' => 'own',
+            'leasing' => 'leasing',
+            'corporative' => 'corporative',
+            'other' => 'other'
+        );
     }
 }
