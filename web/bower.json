@@ -1,0 +1,22 @@
+{
+  "name": "taxi",
+  "authors": [
+    "Ghanbari <ghanbari.daniel@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "persian-date": "^0.1.8",
+    "pick-a-color": "^1.2.3",
+    "persian-datepicker": "^0.4.5"
+  }
+}
