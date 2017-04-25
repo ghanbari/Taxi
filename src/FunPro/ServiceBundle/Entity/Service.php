@@ -255,7 +255,7 @@ class Service
     /**
      * @var integer $distance distance based on meter calculated by google
      *
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      *
      * @JS\Groups({"Passenger", "Driver", "Agent", "Admin"})
      * @JS\Since("1.0.0")
