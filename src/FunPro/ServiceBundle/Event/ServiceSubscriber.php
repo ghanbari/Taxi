@@ -288,7 +288,7 @@ class ServiceSubscriber implements EventSubscriberInterface
     {
         $service = $event->getService();
 
-        if ($service->getStatus() !== ServiceLog::STATUS_READY) {
+        if ($service->getStatus() !== ServiceLog::STATUS_READY and $service->getStatus() !== ServiceLog::STATUS_START) {
             $logContext = SerializationContext::create()
                 ->setGroups(array('Public', 'ServiceLogs'));
             $this->logger->addError(
@@ -306,8 +306,10 @@ class ServiceSubscriber implements EventSubscriberInterface
     {
         $service = $event->getService();
 
-        $log = new ServiceLog($event->getService(), ServiceLog::STATUS_START);
-        $this->doctrine->getManager()->persist($log);
+        if ($service->getStatus() === ServiceLog::STATUS_READY) {
+            $log = new ServiceLog($event->getService(), ServiceLog::STATUS_START);
+            $this->doctrine->getManager()->persist($log);
+        }
 
         $this->logger->addInfo('Service is started', array('service' => $service->getId()));
     }

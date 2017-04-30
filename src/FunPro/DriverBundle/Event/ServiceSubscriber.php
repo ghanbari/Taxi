@@ -216,7 +216,7 @@ class ServiceSubscriber implements EventSubscriberInterface
             throw new \LogicException('Service haven\'t car');
         }
 
-        if ($car->getStatus() !== Car::STATUS_SERVICE_READY) {
+        if ($car->getStatus() !== Car::STATUS_SERVICE_READY and $car->getStatus() !== Car::STATUS_SERVICE_START) {
             $logger->addError(
                 'Car\'s status must be ready till it can start service',
                 array(
@@ -237,10 +237,12 @@ class ServiceSubscriber implements EventSubscriberInterface
         $service = $event->getService();
         $car = $service->getCar();
 
-        $car->setStatus(Car::STATUS_SERVICE_START);
-        $carLog = new CarLog($car, Car::STATUS_SERVICE_START);
-        $logger->addInfo('Car\'s status changed to start', array('carId' => $car->getId()));
-        $this->doctrine->getManager()->persist($carLog);
+        if ($car->getStatus() === Car::STATUS_SERVICE_READY) {
+            $car->setStatus(Car::STATUS_SERVICE_START);
+            $carLog = new CarLog($car, Car::STATUS_SERVICE_START);
+            $logger->addInfo('Car\'s status changed to start', array('carId' => $car->getId()));
+            $this->doctrine->getManager()->persist($carLog);
+        }
     }
 
     /**
