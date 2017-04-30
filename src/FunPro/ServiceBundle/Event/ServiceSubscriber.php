@@ -273,7 +273,7 @@ class ServiceSubscriber implements EventSubscriberInterface
         $service = $event->getService();
 
         # Unique db key on status & service
-        if ($service->getStatus() !== ServiceLog::STATUS_READY) {
+        if ($service->getStatus() === ServiceLog::STATUS_ACCEPTED) {
             $log = new ServiceLog($event->getService(), ServiceLog::STATUS_READY);
             $this->doctrine->getManager()->persist($log);
         }
