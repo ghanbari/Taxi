@@ -452,25 +452,25 @@ class ServiceController extends FOSRestController
         $service = $request->attributes->get('service');
 
         $point = new Point($fetcher->get('longitude'), $fetcher->get('latitude'));
-        $startPoint = $service->getStartPoint();
-        $distance = Util::distance(
-            $startPoint->getLatitude(),
-            $startPoint->getLongitude(),
-            $point->getLatitude(),
-            $point->getLongitude()
-        );
+//        $startPoint = $service->getStartPoint();
+//        $distance = Util::distance(
+//            $startPoint->getLatitude(),
+//            $startPoint->getLongitude(),
+//            $point->getLatitude(),
+//            $point->getLongitude()
+//        );
 
-        if (($distance * 1000) > $this->getParameter('service.driver.allowed_radius_for_ready')) {
-            $logger->addInfo('driver is not in allowed radius till he can send ready alarm', array(
-                'real' => $distance * 1000,
-                'allowed' => $this->getParameter('service.driver.allowed_radius_for_ready'),
-            ));
-            $error = array(
-                'code' => 1,
-                'message' => $translator->trans('driver.is.away.from.start.point'),
-            );
-            return $this->view($error, Response::HTTP_BAD_REQUEST);
-        }
+//        if (($distance * 1000) > $this->getParameter('service.driver.allowed_radius_for_ready')) {
+//            $logger->addInfo('driver is not in allowed radius till he can send ready alarm', array(
+//                'real' => $distance * 1000,
+//                'allowed' => $this->getParameter('service.driver.allowed_radius_for_ready'),
+//            ));
+//            $error = array(
+//                'code' => 1,
+//                'message' => $translator->trans('driver.is.away.from.start.point'),
+//            );
+//            return $this->view($error, Response::HTTP_BAD_REQUEST);
+//        }
 
         $event = new GetCarPointServiceEvent($service, $point);
         try {
