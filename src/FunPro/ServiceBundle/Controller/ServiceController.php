@@ -294,6 +294,7 @@ class ServiceController extends FOSRestController
      *      resource=true,
      *      views={"driver"},
      *      statusCodes={
+     *          200="When success, you taken this service in the past",
      *          204="When success",
      *          400={
      *              "You have not active car(code: 1)",
@@ -327,7 +328,6 @@ class ServiceController extends FOSRestController
         $fetcher = $this->get('fos_rest.request.param_fetcher');
         $manager = $this->getDoctrine()->getManager();
         $driver = $this->getUser();
-        $point = new Point($fetcher->get('longitude'), $fetcher->get('latitude'));
 
         $car = $manager->getRepository('FunProDriverBundle:Car')->findOneBy(array(
             'driver' => $driver,
@@ -346,9 +346,11 @@ class ServiceController extends FOSRestController
 
         $manager->getConnection()->beginTransaction();
         try {
+            /** @var Service $service */
             $service = $manager->find('FunProServiceBundle:Service', $id, \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE);
 
             if (!$service) {
+                $manager->getConnection()->rollback();
                 $logger->addError('service is not exists', array('service' => $id));
                 $error = array(
                     'code' => 1,
@@ -358,7 +360,17 @@ class ServiceController extends FOSRestController
             }
 
             if ($service->getCar()) {
+                $manager->getConnection()->rollback();
                 $context = SerializationContext::create()->setGroups(array('Car'));
+
+                if ($service->getCar() === $car) {
+                    $logger->addInfo(
+                        'you was taken this service',
+                        array($serializer->serialize($service, 'json', $context))
+                    );
+                    return $this->view(Response::HTTP_OK);
+                }
+
                 $logger->addNotice('service was taken', array($serializer->serialize($service, 'json', $context)));
                 $error = array(
                     'code' => 1,
@@ -368,6 +380,7 @@ class ServiceController extends FOSRestController
             }
 
             $service->setCar($car);
+            $point = new Point($fetcher->get('longitude'), $fetcher->get('latitude'));
             $event = new GetCarPointServiceEvent($service, $point);
             try {
                 $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_ACCEPTED, $event);
