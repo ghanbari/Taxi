@@ -6,6 +6,7 @@ use Doctrine\Bundle\DoctrineBundle\Registry;
 use FunPro\DriverBundle\Entity\Driver;
 use FunPro\DriverBundle\Exception\DriverNotFoundException;
 use FunPro\EngineBundle\GCM\GCM;
+use FunPro\FinancialBundle\Entity\BaseCost;
 use FunPro\ServiceBundle\Entity\PropagationList;
 use FunPro\ServiceBundle\Entity\Service;
 use FunPro\ServiceBundle\ServiceEvents;
@@ -61,8 +62,7 @@ class ServiceNotificationListener implements EventSubscriberInterface
         Logger $logger,
         Serializer $serializer,
         ParameterBagInterface $parameterBag
-    )
-    {
+    ) {
         $this->gcm = $gcm;
         $this->doctrine = $doctrine;
         $this->logger = $logger;
@@ -113,6 +113,17 @@ class ServiceNotificationListener implements EventSubscriberInterface
         $service = $event->getService();
         $logger = $this->logger;
 
+        /** @var BaseCost $baseCost */
+        $baseCost = $this->doctrine->getRepository('FunProFinancialBundle:BaseCost')->getLast();
+
+        $price = $realPrice = $baseCost->getEntranceFee() + ($baseCost->getCostPerMeter() * $service->getDistance());
+        $price -= ($realPrice * $baseCost->getDiscountPercent()) / 100;
+        $paymentPrice = $price - (($price * $baseCost->getPaymentCreditReward()) / 100);
+        $cashPrice = $price - (($price * $baseCost->getPaymentCashReward()) / 100);
+
+        $paymentPrice = $paymentPrice % 500 > 250 ? floor($paymentPrice / 500) * 500 + 500 : floor($paymentPrice / 500) * 500;
+        $cashPrice = $cashPrice % 500 > 250 ? floor($cashPrice / 500) * 500 + 500 : floor($cashPrice / 500) * 500;
+
         $data = array(
             'type' => 'service',
             'id' => $service->getId(),
@@ -126,8 +137,11 @@ class ServiceNotificationListener implements EventSubscriberInterface
             'requested_at' => $this->serializer->serialize($service->getCreatedAt(), 'json'),
             'description' => !empty($service->getDescription()) ? substr($service->getDescription(), 0, 2000) : '',
             'send_in' => strtotime('now'),
-            'distance' => $service->getDistance(),
-            'price' => $service->getPrice(),
+            'distance' => $service->getDistance() / 1000,
+            'paymentPrice' => $paymentPrice,
+            'cashPrice' => $cashPrice,
+            'price' => $realPrice,
+            'off' => $baseCost->getDiscountPercent(),
         );
 
         if ($service->getPassenger()) {
