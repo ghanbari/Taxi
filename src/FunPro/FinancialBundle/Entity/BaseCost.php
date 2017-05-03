@@ -68,6 +68,32 @@ class BaseCost
     private $discountPercent;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="payment_cash_reward", type="smallint")
+     *
+     * @Assert\NotBlank(groups={"Create", "Update"})
+     * @Assert\Type(type="numeric", groups={"Create"})
+     *
+     * @JS\Groups({"Admin"})
+     * @JS\Since("1.0.0")
+     */
+    private $paymentCashReward;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="payment_credit_reward", type="smallint")
+     *
+     * @Assert\NotBlank(groups={"Create", "Update"})
+     * @Assert\Type(type="numeric", groups={"Create"})
+     *
+     * @JS\Groups({"Admin"})
+     * @JS\Since("1.0.0")
+     */
+    private $paymentCreditReward;
+
+    /**
      * @var \Datetime
      *
      * @ORM\Column(name="created_at", type="datetime")
@@ -191,6 +217,44 @@ class BaseCost
     public function setDeletedAt(\DateTime $deletedAt)
     {
         $this->deletedAt = $deletedAt;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPaymentCashReward()
+    {
+        return $this->paymentCashReward;
+    }
+
+    /**
+     * @param int $paymentCashReward
+     *
+     * @return $this
+     */
+    public function setPaymentCashReward($paymentCashReward)
+    {
+        $this->paymentCashReward = $paymentCashReward;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPaymentCreditReward()
+    {
+        return $this->paymentCreditReward;
+    }
+
+    /**
+     * @param int $paymentCreditReward
+     *
+     * @return $this
+     */
+    public function setPaymentCreditReward($paymentCreditReward)
+    {
+        $this->paymentCreditReward = $paymentCreditReward;
         return $this;
     }
 }

@@ -48,10 +48,12 @@ var TableDatatablesResponsive = function () {
                 {name: "b.entranceFee", data: "entranceFee", "defaultContent": "", orderable: true, searchable: true},
                 {name: "b.costPerMeter", data: "costPerMeter", orderable: true, searchable: true},
                 {name: "b.discountPercent", data: "discountPercent", "defaultContent": "", orderable: true, searchable: true},
+                {name: "b.paymentCashReward", data: "paymentCashReward", "defaultContent": "", orderable: true, searchable: true},
+                {name: "b.paymentCreditReward", data: "paymentCreditReward", "defaultContent": "", orderable: true, searchable: true},
                 {name: "b.createdAt", data: "createdAt", "defaultContent": "", orderable: true, searchable: true},
             ],
 
-            order: [4, 'desc'],
+            order: [0, 'desc'],
 
             // pagination control
             "lengthMenu": [

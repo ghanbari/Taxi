@@ -24,7 +24,9 @@ class LoadBaseCostData implements FixtureInterface
         $cost
             ->setCostPerMeter(1)
             ->setDiscountPercent(5)
-            ->setEntranceFee(500);
+            ->setEntranceFee(500)
+            ->setPaymentCashReward(5)
+            ->setPaymentCreditReward(5);
 
         $manager->persist($cost);
         $manager->flush();

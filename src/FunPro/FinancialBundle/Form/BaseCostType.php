@@ -25,6 +25,8 @@ class BaseCostType extends AbstractType
             ->add('entranceFee', Form\NumberType::class)
             ->add('costPerMeter', Form\NumberType::class)
             ->add('discountPercent', Form\NumberType::class)
+            ->add('paymentCashReward', Form\NumberType::class)
+            ->add('paymentCreditReward', Form\NumberType::class)
         ;
     }
     
