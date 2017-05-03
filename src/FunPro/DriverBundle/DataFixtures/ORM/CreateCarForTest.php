@@ -49,12 +49,18 @@ class CreateCarForTest extends AbstractFixture implements OrderedFixtureInterfac
         $countOfDriver = count($credentials);
         for ($counter = 1; $counter <= $countOfDriver; $counter++) {
             $car = new Car();
-            $car->setBorn(new \DateTime());
+            $car->setBorn('1395');
             $car->setColor('red');
             $car->setType('405');
-            $car->setBrand('Iran Khodro');
             $car->setDriver($this->getReference('driver-' . $counter));
             $car->setCurrent(true);
+            $car->setThirdPartyInsurance(new \DateTime());
+            $car->setPullInsurance(new \DateTime());
+            $car->setTrafficPlan(new \DateTime());
+            $car->setTechnicalDiagnosis(new \DateTime());
+            $car->setInsideQuality('good');
+            $car->setBodyQuality('good');
+            $car->setOwnership('own');
 
             $plaque = (new Plaque())
                 ->setFirstNumber(22)
