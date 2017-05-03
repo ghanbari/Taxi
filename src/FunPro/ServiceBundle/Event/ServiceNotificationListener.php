@@ -110,14 +110,11 @@ class ServiceNotificationListener implements EventSubscriberInterface
      */
     public function onServiceRequest(ServiceEvent $event)
     {
-        $service = $event->getService();
         $logger = $this->logger;
-
-        /** @var BaseCost $baseCost */
-        $baseCost = $this->doctrine->getRepository('FunProFinancialBundle:BaseCost')->getLast();
-
-        $price = $realPrice = $baseCost->getEntranceFee() + ($baseCost->getCostPerMeter() * $service->getDistance());
-        $price -= ($realPrice * $baseCost->getDiscountPercent()) / 100;
+        $service = $event->getService();
+        $baseCost = $service->getBaseCost();
+        $price = $service->getPrice();
+        $realPrice = $baseCost->getEntranceFee() + ($baseCost->getCostPerMeter() * $this->getDistance());
         $paymentPrice = $price - (($price * $baseCost->getPaymentCreditReward()) / 100);
         $cashPrice = $price - (($price * $baseCost->getPaymentCashReward()) / 100);
 
@@ -325,16 +322,27 @@ class ServiceNotificationListener implements EventSubscriberInterface
     public function onServiceFinish(ServiceEvent $event)
     {
         $service = $event->getService();
+        $baseCost = $service->getBaseCost();
+        $price = $service->getPrice();
+        $realPrice = $baseCost->getEntranceFee() + ($baseCost->getCostPerMeter() * $this->getDistance());
+        $paymentPrice = $price - (($price * $baseCost->getPaymentCreditReward()) / 100);
+        $cashPrice = $price - (($price * $baseCost->getPaymentCashReward()) / 100);
+
+        $paymentPrice = $paymentPrice % 500 > 250 ? floor($paymentPrice / 500) * 500 + 500 : floor($paymentPrice / 500) * 500;
+        $cashPrice = $cashPrice % 500 > 250 ? floor($cashPrice / 500) * 500 + 500 : floor($cashPrice / 500) * 500;
 
         $context = SerializationContext::create()
             ->setGroups(array('Cost'));
         $data = array(
             'type' => 'service.finish',
             'id' => $service->getId(),
-            'price' => $service->getPrice(),
+            'price' => $realPrice,
             'cost' => $this->serializer->serialize($service->getFloatingCosts()->toArray(), 'json', $context),
             'distance' => $service->getDistance(),
             'send_in' => strtotime('now'),
+            'paymentPrice' => $paymentPrice,
+            'cashPrice' => $cashPrice,
+            'off' => $baseCost->getDiscountPercent(),
         );
 
         $message = (new Message())

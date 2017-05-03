@@ -279,6 +279,7 @@ class Service
      *
      * @JS\Groups({"Passenger", "Driver", "Agent", "Admin"})
      * @JS\Since("1.0.0")
+     * FIXME: user should not can see this value. change serialize groups.
      */
     private $price;
 
@@ -803,7 +804,6 @@ class Service
         $baseCosts = $this->getBaseCost();
         $this->price = $baseCosts->getEntranceFee() + ($baseCosts->getCostPerMeter() * $this->getDistance());
         $this->price -= ($this->price * $baseCosts->getDiscountPercent()) / 100;
-        $this->price = floor($this->price / 100) * 100;
 
         return $this;
     }
