@@ -11,6 +11,7 @@ use FunPro\DriverBundle\Entity\Car;
 use FunPro\DriverBundle\Entity\Driver;
 use FunPro\DriverBundle\Exception\CarStatusException;
 use FunPro\DriverBundle\Exception\DriverNotFoundException;
+use FunPro\FinancialBundle\Entity\BaseCost;
 use FunPro\GeoBundle\Utility\Util;
 use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\ServiceBundle\Entity\FloatingCost;
@@ -34,7 +35,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Class ServiceController
@@ -761,17 +761,28 @@ class ServiceController extends FOSRestController
 
         $result = array();
         if (count($response->getRoutes()) > 0) {
+            /** @var BaseCost $baseCost */
             $baseCost = $this->getDoctrine()->getRepository('FunProFinancialBundle:BaseCost')->getLast();
 
             $routes = $response->getRoutes();
             $legs = $routes[0]->getLegs();
             $distance = $legs[0]->getDistance()->getValue();
-            $price = $baseCost->getEntranceFee() + ($baseCost->getCostPerMeter() * $distance);
-            $price -= ($price * $baseCost->getDiscountPercent()) / 100;
+            $price = $realPrice = $baseCost->getEntranceFee() + ($baseCost->getCostPerMeter() * $distance);
+            $price -= ($realPrice * $baseCost->getDiscountPercent()) / 100;
 
-            $result['distance'] = $distance;
-            $result['duration'] = $legs[0]->getDuration()->getValue();
-            $result['price'] = $price;
+            $result['distance'] = round($distance / 1000, 1);
+            $result['duration'] = round($legs[0]->getDuration()->getValue() / 60);
+
+            $paymentPrice = $price - (($price * $baseCost->getPaymentCreditReward()) / 100);
+            $cashPrice = $price - (($price * $baseCost->getPaymentCashReward()) / 100);
+
+            $paymentPrice = $paymentPrice % 500 > 250 ? floor($paymentPrice / 500) * 500 + 500 : floor($paymentPrice / 500) * 500;
+            $cashPrice = $cashPrice % 500 > 250 ? floor($cashPrice / 500) * 500 + 500 : floor($cashPrice / 500) * 500;
+
+            $result['paymentPrice'] = $paymentPrice;
+            $result['cashPrice'] = $cashPrice;
+            $result['price'] = $realPrice;
+            $result['off'] = $baseCost->getDiscountPercent();
 
             return $this->view($result, Response::HTTP_OK);
         } else {
