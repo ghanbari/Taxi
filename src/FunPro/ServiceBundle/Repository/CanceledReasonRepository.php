@@ -3,6 +3,7 @@
 namespace FunPro\ServiceBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use FunPro\ServiceBundle\Entity\CanceledReason;
 
 /**
  * CanceledReasonRepository
@@ -12,4 +13,17 @@ use Doctrine\ORM\EntityRepository;
  */
 class CanceledReasonRepository extends EntityRepository
 {
+    public function findAllFilterByGroup($group)
+    {
+        $qb = $this->createQueryBuilder('c');
+
+        return $qb->select('c')
+            ->where($qb->expr()->orX(
+                $qb->expr()->eq('c.groups', CanceledReason::GROUP_PUBLIC),
+                $qb->expr()->eq('c.groups', ':group')
+            ))
+            ->setParameter('group', $group)
+            ->getQuery()
+            ->getResult();
+    }
 }

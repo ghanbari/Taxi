@@ -8,7 +8,7 @@ use Doctrine\DBAL\Schema\Schema;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-class Version20170503103659 extends AbstractMigration
+class Version20170503180431 extends AbstractMigration
 {
     /**
      * @param Schema $schema
@@ -17,7 +17,8 @@ class Version20170503103659 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
-        $this->addSql('ALTER TABLE base_cost ADD payment_cash_reward SMALLINT NOT NULL, ADD payment_credit_reward SMALLINT NOT NULL');
+
+        $this->addSql('ALTER TABLE canceled_reason ADD `groups` SMALLINT NOT NULL');
     }
 
     /**
@@ -28,6 +29,6 @@ class Version20170503103659 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE base_cost DROP payment_cash_reward, DROP payment_credit_reward');
+        $this->addSql('ALTER TABLE canceled_reason DROP `groups`');
     }
 }

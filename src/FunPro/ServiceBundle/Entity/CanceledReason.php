@@ -14,6 +14,12 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class CanceledReason
 {
+    const GROUP_PUBLIC = 0;
+
+    const GROUP_PASSENGER = 1;
+
+    const GROUP_DRIVER = 2;
+
     /**
      * @var int
      *
@@ -53,13 +59,22 @@ class CanceledReason
     private $description;
 
     /**
-     * @param $title
-     * @param $description
+     * @var integer
+     *
+     * @ORM\Column(type="smallint")
      */
-    public function __construct($title, $description)
+    private $groups;
+
+    /**
+     * @param     $title
+     * @param     $description
+     * @param int $groups
+     */
+    public function __construct($title, $description, $groups = self::GROUP_PUBLIC)
     {
         $this->title = $title;
         $this->description = $description;
+        $this->setGroups($groups);
     }
 
     /**
@@ -107,6 +122,25 @@ class CanceledReason
     public function setTitle($title)
     {
         $this->title = $title;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getGroups()
+    {
+        return $this->groups;
+    }
+
+    /**
+     * @param int $groups
+     *
+     * @return $this
+     */
+    public function setGroups($groups)
+    {
+        $this->groups = $groups;
         return $this;
     }
 }

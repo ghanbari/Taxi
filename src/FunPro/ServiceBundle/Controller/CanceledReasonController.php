@@ -4,6 +4,7 @@ namespace FunPro\ServiceBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
+use FunPro\ServiceBundle\Entity\CanceledReason;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -23,7 +24,6 @@ class CanceledReasonController extends FOSRestController
      * @ApiDoc(
      *      section="Service",
      *      resource=true,
-     *      views={"passenger"},
      *      output={
      *          "class"="FunPro\ServiceBundle\Entity\CanceledReason",
      *          "groups"={"Public"},
@@ -34,11 +34,15 @@ class CanceledReasonController extends FOSRestController
      *      }
      * )
      *
+     * @Rest\QueryParam(name="group", default="passenger", requirements="driver|passenger", strict=true)
+     *
      * @return \FOS\RestBundle\View\View
      */
     public function cgetAction()
     {
-        $canceledReason = $this->getDoctrine()->getRepository('FunProServiceBundle:CanceledReason')->findAll();
+        $fetcher = $this->get('fos_rest.request.param_fetcher');
+        $group = strtolower($fetcher->get('group')) == 'passenger' ? CanceledReason::GROUP_PASSENGER : CanceledReason::GROUP_DRIVER;
+        $canceledReason = $this->getDoctrine()->getRepository('FunProServiceBundle:CanceledReason')->findAllFilterByGroup($group);
 
         return $this->view($canceledReason, Response::HTTP_OK);
     }

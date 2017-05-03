@@ -40,6 +40,13 @@ class LoadDefaultCanceledReason implements
     {
         $translator = $this->container->get('translator');
         $delay = new CanceledReason($translator->trans('delay'), $translator->trans('delay.in.service'));
+        $carCrash = new CanceledReason(
+            $translator->trans('my.car.is.crashing'),
+            $translator->trans('my.car.is.crashing'),
+            CanceledReason::GROUP_DRIVER
+        );
+
+        $manager->persist($carCrash);
         $manager->persist($delay);
         $manager->flush();
     }
