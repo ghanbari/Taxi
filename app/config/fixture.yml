@@ -13,5 +13,3 @@ parameters:
     test.agency: true
     test.agency.admin.credentials:
         agency1: 1
-        agency2: 1
-        agency3: 1
