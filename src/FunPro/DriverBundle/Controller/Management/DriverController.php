@@ -53,6 +53,7 @@ class DriverController extends FOSRestController
         $options['csrf_protection'] = $requestFormat == 'html' ?: false;
 
         $form = $this->createForm(DriverType::class, $driver, $options);
+        $form->remove('plainPassword');
 
         if ($method == 'PUT') {
             $form->remove('plainPassword');
@@ -96,14 +97,21 @@ class DriverController extends FOSRestController
                 ->findOneByApiKey($apiKey);
         } while ($isDuplicate);
 
+        $password = bin2hex(random_bytes(4));
         $driver = new Driver();
         $driver->setApiKey($apiKey);
+        $driver->setPlainPassword($password);
 
         $form = $this->getForm($driver, 'POST');
         $form->handleRequest($request);
 
         if ($form->isValid()) {
             $this->get('fos_user.user_manager')->updateUser($driver);
+            $message = $this->get('translator')->trans(
+                'your.registeration.is.completed.your.password.is.%password%',
+                array('%password%' => $password)
+            );
+            $this->get('sms.sender')->send($driver->getMobile(), $message);
 
             $this->addFlash('success', $this->get('translator')->trans('driver.created'));
             return $this->routeRedirectView('fun_pro_admin_cget_driver');

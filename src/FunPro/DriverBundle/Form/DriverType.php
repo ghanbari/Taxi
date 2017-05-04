@@ -3,6 +3,7 @@
 namespace FunPro\DriverBundle\Form;
 
 use FOS\UserBundle\Form\Type\RegistrationFormType;
+use FunPro\DriverBundle\Entity\Driver;
 use FunPro\GeoBundle\Form\AddressType;
 use FunPro\UserBundle\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -12,6 +13,11 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
+/**
+ * Class DriverType
+ *
+ * @package FunPro\DriverBundle\Form
+ */
 class DriverType extends AbstractType
 {
     /**
@@ -22,6 +28,50 @@ class DriverType extends AbstractType
     {
         $builder
             ->add('name', Type\TextType::class)
+            ->add('parentName', Type\TextType::class)
+            ->add('born', Type\DateType::class, array(
+                'widget' => 'single_text',
+            ))
+            ->add('education', Type\ChoiceType::class, array(
+                'choices' => array(
+                    'zire.diplome' => Driver::EDUCATION_UNDER_DIPLOMA,
+                    'diplome' => Driver::EDUCATION_ASSOCIATE_DEGREE,
+                    'lisans' => Driver::EDUCATION_BACHELOR,
+                    'foghe.lisans' => Driver::EDUCATION_MASTER_DEGREE,
+                ),
+                'choices_as_values' => true,
+            ))
+            ->add('codStatus', Type\ChoiceType::class, array(
+                'choices' => array(
+                    'mohaf' => Driver::COD_END,
+                    'payan.khedmat' => Driver::COD_EXEMPTION,
+                    'mohafiyate.tahsili' => Driver::COD_EDUCATION_EXEMPTION,
+                ),
+                'choices_as_values' => true,
+            ))
+            ->add('marriage', Type\ChoiceType::class, array(
+                'multiple' => false,
+                'expanded' => true,
+                'choices' => array(
+                    0 => 'no',
+                    1 => 'yes',
+                )
+            ))
+            ->add('shebaNumber', Type\TextType::class)
+            ->add('startActivity', Type\DateType::class, array(
+                'widget' => 'single_text',
+            ))
+            ->add('endActivity', Type\DateType::class, array(
+                'widget' => 'single_text',
+            ))
+            ->add('learningCourse', Type\ChoiceType::class, array(
+                'multiple' => false,
+                'expanded' => true,
+                'choices' => array(
+                    0 => 'no',
+                    1 => 'yes',
+                )
+            ))
             ->add('age', Type\NumberType::class)
             ->add('sex', Type\ChoiceType::class, array(
                 'choices' => array(

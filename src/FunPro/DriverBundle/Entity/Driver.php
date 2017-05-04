@@ -24,6 +24,15 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Driver extends User implements SMSInterface
 {
+    const EDUCATION_UNDER_DIPLOMA = 0;
+    const EDUCATION_ASSOCIATE_DEGREE = 1;
+    const EDUCATION_BACHELOR = 2;
+    const EDUCATION_MASTER_DEGREE = 3;
+
+    const COD_END = 0;
+    const COD_EXEMPTION = 1;
+    const COD_EDUCATION_EXEMPTION = 2;
+
     /**
      * @var string
      *
@@ -36,6 +45,121 @@ class Driver extends User implements SMSInterface
      * @JS\Since("1.0.0")
      */
     protected $mobile;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="parent_name", length=50)
+     *
+     * @Assert\NotBlank(groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Owner", "Admin", "Register"})
+     * @JS\Since("1.0.0")
+     */
+    protected $parentName;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="born", type="date")
+     *
+     * @Assert\NotNull(groups={"Create", "Update"})
+     * @Assert\Type(type="date", groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Owner", "Admin", "Register"})
+     * @JS\Since("1.0.0")
+     */
+    protected $born;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(type="smallint")
+     *
+     * @Assert\Choice(callback="getAvailableEducations", groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Owner", "Admin", "Register"})
+     * @JS\Since("1.0.0")
+     */
+    protected $education;
+
+    /**
+     * @var integer call of duty status
+     *
+     * @ORM\Column(name="cod_status", type="smallint")
+     *
+     * @Assert\NotNull(groups={"Create", "Update"})
+     * @Assert\Choice(callback="getAvailableCodStatus", groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Owner", "Admin", "Register"})
+     * @JS\Since("1.0.0")
+     */
+    protected $codStatus;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean", name="is_marriage")
+     *
+     * @Assert\NotNull(groups={"Create", "Update"})
+     * @Assert\Type(type="boolean", groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Owner", "Admin", "Register"})
+     * @JS\Since("1.0.0")
+     */
+    protected $marriage;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="sheba_number", length=20)
+     *
+     * @Assert\NotNull(groups={"Create", "Update"})
+     * @Assert\Length(max="20", groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Owner", "Admin", "Register"})
+     * @JS\Since("1.0.0")
+     */
+    protected $shebaNumber;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="start_activity", type="date")
+     *
+     * @Assert\NotNull(groups={"Create", "Update"})
+     * @Assert\Type(type="date", groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Owner", "Admin", "Register"})
+     * @JS\Since("1.0.0")
+     */
+    protected $startActivity;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="end_activity", type="date")
+     *
+     * @Assert\NotNull(groups={"Create", "Update"})
+     * @Assert\Type(type="date", groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Owner", "Admin", "Register"})
+     * @JS\Since("1.0.0")
+     */
+    protected $endActivity;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="learning_course", type="boolean")
+     *
+     * @Assert\NotNull(groups={"Create", "Update"})
+     * @Assert\Type(type="boolean", groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Owner", "Admin", "Register"})
+     * @JS\Since("1.0.0")
+     */
+    protected $learningCourse;
 
     /**
      * @var Car
@@ -133,6 +257,33 @@ class Driver extends User implements SMSInterface
         $this->addRole(self::ROLE_DRIVER);
         $this->rate = 0;
         $this->setMultiDeviceAllowed(false);
+        $this->setLearningCourse(false);
+        #TODO: set end activity time as expire date
+    }
+
+    /**
+     * @return array
+     */
+    public static function getAvailableEducations()
+    {
+        return array(
+            self::EDUCATION_UNDER_DIPLOMA,
+            self::EDUCATION_ASSOCIATE_DEGREE,
+            self::EDUCATION_BACHELOR,
+            self::EDUCATION_MASTER_DEGREE,
+        );
+    }
+
+    /**
+     * return array
+     */
+    public static function getAvailableCodStatus()
+    {
+        return array(
+            self::COD_END,
+            self::COD_EXEMPTION,
+            self::COD_EDUCATION_EXEMPTION,
+        );
     }
 
     /**
@@ -338,6 +489,177 @@ class Driver extends User implements SMSInterface
     {
         $this->agency = $agency;
 
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getBorn()
+    {
+        return $this->born;
+    }
+
+    /**
+     * @param \DateTime $born
+     *
+     * @return $this
+     */
+    public function setBorn(\DateTime $born)
+    {
+        $this->born = $born;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCodStatus()
+    {
+        return $this->codStatus;
+    }
+
+    /**
+     * @param int $codStatus
+     *
+     * @return $this
+     */
+    public function setCodStatus($codStatus)
+    {
+        $this->codStatus = $codStatus;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getEducation()
+    {
+        return $this->education;
+    }
+
+    /**
+     * @param int $education
+     *
+     * @return $this
+     */
+    public function setEducation($education)
+    {
+        $this->education = $education;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getEndActivity()
+    {
+        return $this->endActivity;
+    }
+
+    /**
+     * @param \DateTime $endActivity
+     *
+     * @return $this
+     */
+    public function setEndActivity(\DateTime $endActivity)
+    {
+        $this->endActivity = $endActivity;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isLearningCourse()
+    {
+        return $this->learningCourse;
+    }
+
+    /**
+     * @param boolean $learningCourse
+     *
+     * @return $this
+     */
+    public function setLearningCourse($learningCourse)
+    {
+        $this->learningCourse = $learningCourse;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isMarriage()
+    {
+        return $this->marriage;
+    }
+
+    /**
+     * @param boolean $marriage
+     *
+     * @return $this
+     */
+    public function setMarriage($marriage)
+    {
+        $this->marriage = $marriage;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getParentName()
+    {
+        return $this->parentName;
+    }
+
+    /**
+     * @param string $parentName
+     *
+     * @return $this
+     */
+    public function setParentName($parentName)
+    {
+        $this->parentName = $parentName;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getShebaNumber()
+    {
+        return $this->shebaNumber;
+    }
+
+    /**
+     * @param string $shebaNumber
+     *
+     * @return $this
+     */
+    public function setShebaNumber($shebaNumber)
+    {
+        $this->shebaNumber = $shebaNumber;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getStartActivity()
+    {
+        return $this->startActivity;
+    }
+
+    /**
+     * @param \DateTime $startActivity
+     *
+     * @return $this
+     */
+    public function setStartActivity(\DateTime $startActivity)
+    {
+        $this->startActivity = $startActivity;
         return $this;
     }
 }

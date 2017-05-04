@@ -59,36 +59,161 @@
                                     </span>
                                 </div>
 
-                                <div class="form-group form-md-line-input {% if form.email.vars.errors|length %}has-error{% elseif (form.email.vars.submitted) %}has-success{% endif %}">
-                                    {{ form_widget(form.email, {'attr': {'placeholder':'ایمیل راننده را وارد نمایید'}}) }}
-                                    <label for="form_control_1">ایمیل راننده</label>
-                                    <span class="help-block">
-                                        {% if form.email.vars.errors|length %}{{ form_errors(form.email) }}{% endif %}
+                                <div class="form-group form-md-line-input {% if form.parentName.vars.errors|length %}has-error{% elseif (form.parentName.vars.submitted) %}has-success{% endif %}">
+                                    {{ form_widget(form.parentName, {'attr': {'placeholder':'نام پدر را وارد نمایید'}}) }}
+                                    <label for="form_control_1">نام پدر</label>
+                                    <span class="help-block"><br />
+                                        {% if form.parentName.vars.errors|length %}{{ form_errors(form.parentName) }}{% endif %}
                                     </span>
                                 </div>
 
-                                {% if form.vars.method == 'POST' %}
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-group form-md-line-input {% if form.plainPassword.first.vars.errors|length %}has-error{% elseif (form.plainPassword.first.vars.submitted) %}has-success{% endif %}">
-                                                {{ form_widget(form.plainPassword.first) }}
-                                                <label for="form_control_1">رمز عبور</label>
-                                                <span class="help-block">
-                                                    {% if form.plainPassword.first.vars.errors|length %}{{ form_errors(form.plainPassword.first) }}{% endif %}
-                                                </span>
-                                            </div>
+                                <div class="form-group form-md-line-input {% if form.born.vars.errors|length %}has-error{% elseif (form.born.vars.submitted) %}has-success{% endif %}">
+                                    {{ form_widget(form.born, {'attr': {'placeholder':'تاریخ تولد را انتخاب نمایید'}}) }}
+                                    <label for="form_control_1">تاریخ تولد</label>
+                                    <span class="help-block"><br />
+                                        {% if form.born.vars.errors|length %}{{ form_errors(form.born) }}{% endif %}
+                                    </span>
+                                </div>
+
+                                <div class="form-group form-md-line-input {% if form.education.vars.errors|length %}has-error{% elseif (form.education.vars.submitted) %}has-success{% endif %}">
+                                    {{ form_widget(form.education) }}
+                                    <label for="form_control_1">میزان تحصیلات</label>
+                                    <span class="help-block"><br />
+                                        {% if form.education.vars.errors|length %}{{ form_errors(form.education) }}{% endif %}
+                                    </span>
+                                </div>
+
+                                <div class="form-group form-md-line-input {% if form.codStatus.vars.errors|length %}has-error{% elseif (form.codStatus.vars.submitted) %}has-success{% endif %}">
+                                    {{ form_widget(form.codStatus) }}
+                                    <label for="form_control_1">وضعیت نظام وظیفه</label>
+                                    <span class="help-block"><br />
+                                        {% if form.codStatus.vars.errors|length %}{{ form_errors(form.codStatus) }}{% endif %}
+                                    </span>
+                                </div>
+
+                                <div class="form-group form-md-radios">
+                                    <label>متاهل؟</label>
+                                    <div class="md-radio-list">
+                                        <div class="md-radio">
+                                            <input type="radio" id="radio1" name="driver[marriage]" class="md-radiobtn" value="0" checked>
+                                            <label for="radio1">
+                                                <span></span>
+                                                <span class="check"></span>
+                                                <span class="box"></span>مجرد</label>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group form-md-line-input {% if form.plainPassword.second.vars.errors|length %}has-error{% elseif (form.plainPassword.second.vars.submitted) %}has-success{% endif %}">
-                                                {{ form_widget(form.plainPassword.second) }}
-                                                <label for="form_control_1">تکرار رمزعبور</label>
-                                                <span class="help-block">
-                                                    {% if form.plainPassword.second.vars.errors|length %}{{ form_errors(form.plainPassword.second) }}{% endif %}
-                                                </span>
-                                            </div>
+                                        <div class="md-radio">
+                                            <input type="radio" id="radio2" value="1" name="driver[marriage]" class="md-radiobtn">
+                                            <label for="radio2">
+                                                <span></span>
+                                                <span class="check"></span>
+                                                <span class="box"></span>متاهل</label>
                                         </div>
-                                    </div><br>
-                                {% endif %}
+                                    </div>
+                                    <span class="help-block">
+                                        {% if form.marriage.vars.errors|length %}{{ form_errors(form.marriage) }}{% endif %}
+                                    </span>
+                                </div>
+
+                                <div class="form-group form-md-radios">
+                                    <label>جنسیت</label>
+                                    <div class="md-radio-list">
+                                        <div class="md-radio">
+                                            <input type="radio" id="radio1" name="driver[sex]" class="md-radiobtn" value="{{ constant('FunPro\\UserBundle\\Entity\\User::SEX_MALE') }}" checked>
+                                            <label for="radio1">
+                                                <span></span>
+                                                <span class="check"></span>
+                                                <span class="box"></span>مرد</label>
+                                        </div>
+                                        <div class="md-radio">
+                                            <input type="radio" id="radio2" value="{{ constant('FunPro\\UserBundle\\Entity\\User::SEX_FEMALE') }}" name="driver[sex]" class="md-radiobtn">
+                                            <label for="radio2">
+                                                <span></span>
+                                                <span class="check"></span>
+                                                <span class="box"></span>زن</label>
+                                        </div>
+                                    </div>
+                                    <span class="help-block">
+                                        {% if form.sex.vars.errors|length %}{{ form_errors(form.sex) }}{% endif %}
+                                    </span>
+                                </div>
+
+                                <div class="form-group form-md-line-input {% if form.shebaNumber.vars.errors|length %}has-error{% elseif (form.shebaNumber.vars.submitted) %}has-success{% endif %}">
+                                    {{ form_widget(form.shebaNumber, {'attr': {'placeholder':'شماره شبا را وارد نمایید'}}) }}
+                                    <label for="form_control_1">شماره شبا</label>
+                                    <span class="help-block"><br />
+                                        {% if form.shebaNumber.vars.errors|length %}{{ form_errors(form.shebaNumber) }}{% endif %}
+                                    </span>
+                                </div>
+
+                                <div class="form-group form-md-line-input {% if form.startActivity.vars.errors|length %}has-error{% elseif (form.startActivity.vars.submitted) %}has-success{% endif %}">
+                                    {{ form_widget(form.startActivity, {'attr': {'placeholder':'تاریخ شروع فعالیت را وارد نمایید'}}) }}
+                                    <label for="form_control_1">تاریخ شروع فعالیت</label>
+                                    <span class="help-block"><br />
+                                        {% if form.startActivity.vars.errors|length %}{{ form_errors(form.startActivity) }}{% endif %}
+                                    </span>
+                                </div>
+
+                                <div class="form-group form-md-line-input {% if form.endActivity.vars.errors|length %}has-error{% elseif (form.endActivity.vars.submitted) %}has-success{% endif %}">
+                                    {{ form_widget(form.endActivity, {'attr': {'placeholder':'تاریخ پایان فعالیت را وارد نمایید'}}) }}
+                                    <label for="form_control_1">تاریخ پایان فعالیت</label>
+                                    <span class="help-block"><br />
+                                        {% if form.endActivity.vars.errors|length %}{{ form_errors(form.endActivity) }}{% endif %}
+                                    </span>
+                                </div>
+
+                                <div class="form-group form-md-radios">
+                                    <label>دوره آموزشی</label>
+                                    <div class="md-radio-list">
+                                        <div class="md-radio">
+                                            <input type="radio" id="radio1" name="driver[learningCourse]" class="md-radiobtn" value="0" checked>
+                                            <label for="radio1">
+                                                <span></span>
+                                                <span class="check"></span>
+                                                <span class="box"></span>بله</label>
+                                        </div>
+                                        <div class="md-radio">
+                                            <input type="radio" id="radio2" value="1" name="driver[learningCourse]" class="md-radiobtn">
+                                            <label for="radio2">
+                                                <span></span>
+                                                <span class="check"></span>
+                                                <span class="box"></span>خیر</label>
+                                        </div>
+                                    </div>
+                                    <span class="help-block">
+                                        {% if form.learningCourse.vars.errors|length %}{{ form_errors(form.learningCourse) }}{% endif %}
+                                    </span>
+                                </div>
+
+                                {#<div class="form-group form-md-line-input {% if form.email.vars.errors|length %}has-error{% elseif (form.email.vars.submitted) %}has-success{% endif %}">#}
+                                    {#{{ form_widget(form.email, {'attr': {'placeholder':'ایمیل راننده را وارد نمایید'}}) }}#}
+                                    {#<label for="form_control_1">ایمیل راننده</label>#}
+                                    {#<span class="help-block">#}
+                                        {#{% if form.email.vars.errors|length %}{{ form_errors(form.email) }}{% endif %}#}
+                                    {#</span>#}
+                                {#</div>#}
+
+                                {#{% if form.vars.method == 'POST' %}#}
+                                    {#<div class="row">#}
+                                        {#<div class="col-md-6">#}
+                                            {#<div class="form-group form-md-line-input {% if form.plainPassword.first.vars.errors|length %}has-error{% elseif (form.plainPassword.first.vars.submitted) %}has-success{% endif %}">#}
+                                                {#{{ form_widget(form.plainPassword.first) }}#}
+                                                {#<label for="form_control_1">رمز عبور</label>#}
+                                                {#<span class="help-block">#}
+                                                    {#{% if form.plainPassword.first.vars.errors|length %}{{ form_errors(form.plainPassword.first) }}{% endif %}#}
+                                                {#</span>#}
+                                            {#</div>#}
+                                        {#</div>#}
+                                        {#<div class="col-md-6">#}
+                                            {#<div class="form-group form-md-line-input {% if form.plainPassword.second.vars.errors|length %}has-error{% elseif (form.plainPassword.second.vars.submitted) %}has-success{% endif %}">#}
+                                                {#{{ form_widget(form.plainPassword.second) }}#}
+                                                {#<label for="form_control_1">تکرار رمزعبور</label>#}
+                                                {#<span class="help-block">#}
+                                                    {#{% if form.plainPassword.second.vars.errors|length %}{{ form_errors(form.plainPassword.second) }}{% endif %}#}
+                                                {#</span>#}
+                                            {#</div>#}
+                                        {#</div>#}
+                                    {#</div><br>#}
+                                {#{% endif %}#}
 
                                 <div class="form-group form-md-line-input {% if form.age.vars.errors|length %}has-error{% elseif (form.age.vars.submitted) %}has-success{% endif %}">
                                     {{ form_widget(form.age, {'attr': {'placeholder':'سن راننده را وارد نمایید'}}) }}
@@ -146,28 +271,6 @@
                                     <label for="form_control_1">آزانس مورد نظر را انتخاب نمایید</label>
                                     <span class="help-block">
                                         {% if form.agency.vars.errors|length %}{{ form_errors(form.agency) }}{% endif %}
-                                    </span>
-                                </div>
-                                <div class="form-group form-md-radios">
-                                    <label>جنسیت</label>
-                                    <div class="md-radio-list">
-                                        <div class="md-radio">
-                                            <input type="radio" id="radio1" name="driver[sex]" class="md-radiobtn" value="{{ constant('FunPro\\UserBundle\\Entity\\User::SEX_MALE') }}" checked>
-                                            <label for="radio1">
-                                                <span></span>
-                                                <span class="check"></span>
-                                                <span class="box"></span>مرد</label>
-                                        </div>
-                                        <div class="md-radio">
-                                            <input type="radio" id="radio2" value="{{ constant('FunPro\\UserBundle\\Entity\\User::SEX_FEMALE') }}" name="driver[sex]" class="md-radiobtn">
-                                            <label for="radio2">
-                                                <span></span>
-                                                <span class="check"></span>
-                                                <span class="box"></span>زن</label>
-                                        </div>
-                                    </div>
-                                    <span class="help-block">
-                                        {% if form.sex.vars.errors|length %}{{ form_errors(form.sex) }}{% endif %}
                                     </span>
                                 </div>
                             </div>
