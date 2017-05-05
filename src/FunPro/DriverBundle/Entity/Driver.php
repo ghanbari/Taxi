@@ -61,7 +61,7 @@ class Driver extends User implements SMSInterface
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="born", type="date")
+     * @ORM\Column(name="born", type="date", options={"default"="2017/01/01"})
      *
      * @Assert\NotNull(groups={"Create", "Update"})
      * @Assert\Type(type="date", groups={"Create", "Update"})
@@ -258,6 +258,7 @@ class Driver extends User implements SMSInterface
         $this->rate = 0;
         $this->setMultiDeviceAllowed(false);
         $this->setLearningCourse(false);
+        $this->setMarriage(true);
         #TODO: set end activity time as expire date
     }
 
