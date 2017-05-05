@@ -62,8 +62,8 @@ parameters:
     register.reset_token_counter_after_second: 86400
     register.call_message: 'با سلام، ثبت نام شما در سامانه تکسی انجام شده است، کد تایید شما برابر است با '
 
-    device.gps.retry: 15000
-    device.notification.retry: 8000
+    device.gps.retry: 15
+    device.notification.retry: 8
 
     # visible radius for driver is differ from passenger
     service.visible_radius: 7000 #meter
