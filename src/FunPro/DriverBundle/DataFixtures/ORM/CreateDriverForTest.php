@@ -61,6 +61,13 @@ class CreateDriverForTest extends AbstractFixture implements OrderedFixtureInter
             $driver = new Driver();
             $driver->setEmail($nationalCode.'@'.$host);
             $driver->setUsername($nationalCode);
+            $driver->setParentName('mohammad');
+            $driver->setBorn(new \DateTime('2017/01/01'));
+            $driver->setEducation(Driver::EDUCATION_BACHELOR);
+            $driver->setCodStatus(Driver::COD_END);
+            $driver->setShebaNumber(111111);
+            $driver->setStartActivity(new \DateTime('2017/01/01'));
+            $driver->setEndActivity(new \DateTime('2019/01/01'));
             $driver->setPlainPassword($pass);
             $driver->setNationalCode($nationalCode);
             $driver->setName('driver-'.$counter);
