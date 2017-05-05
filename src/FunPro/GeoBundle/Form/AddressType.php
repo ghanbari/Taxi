@@ -38,7 +38,8 @@ class AddressType extends AbstractType
                     return $qb->where($qb->expr()->gte('c.lvl', 2))
                         ->orderBy('c.name', 'ASC');
                 }
-            ));
+            ))
+            ->add('area', Type\IntegerType::class);
     }
 
     /**

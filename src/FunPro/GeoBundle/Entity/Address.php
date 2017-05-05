@@ -95,6 +95,18 @@ class Address
     private $address;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="area", type="smallint", nullable=true)
+     *
+     * @Assert\Type("numeric", groups={"AddressCreate", "AddressUpdate"})
+     *
+     * @JS\Groups({"Public"})
+     * @JS\Since("1.0.0")
+     */
+    private $area;
+
+    /**
      * Get id
      *
      * @return integer
@@ -221,6 +233,25 @@ class Address
     {
         $this->city = $city;
 
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getArea()
+    {
+        return $this->area;
+    }
+
+    /**
+     * @param string $area
+     *
+     * @return $this
+     */
+    public function setArea($area)
+    {
+        $this->area = $area;
         return $this;
     }
 }
