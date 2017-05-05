@@ -114,7 +114,7 @@ class ServiceNotificationListener implements EventSubscriberInterface
         $service = $event->getService();
         $baseCost = $service->getBaseCost();
         $price = $service->getPrice();
-        $realPrice = $baseCost->getEntranceFee() + ($baseCost->getCostPerMeter() * $this->getDistance());
+        $realPrice = $baseCost->getEntranceFee() + ($baseCost->getCostPerMeter() * $service->getDistance());
         $paymentPrice = $price - (($price * $baseCost->getPaymentCreditReward()) / 100);
         $cashPrice = $price - (($price * $baseCost->getPaymentCashReward()) / 100);
 
@@ -324,7 +324,7 @@ class ServiceNotificationListener implements EventSubscriberInterface
         $service = $event->getService();
         $baseCost = $service->getBaseCost();
         $price = $service->getPrice();
-        $realPrice = $baseCost->getEntranceFee() + ($baseCost->getCostPerMeter() * $this->getDistance());
+        $realPrice = $baseCost->getEntranceFee() + ($baseCost->getCostPerMeter() * $service->getDistance());
         $paymentPrice = $price - (($price * $baseCost->getPaymentCreditReward()) / 100);
         $cashPrice = $price - (($price * $baseCost->getPaymentCashReward()) / 100);
 
