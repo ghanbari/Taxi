@@ -62,31 +62,34 @@ class ProfileController extends FOSRestController
 
         try {
             $data['distance'] = $this->getDoctrine()->getRepository('FunProDriverBundle:CarLog')
-                ->getDistance($this->getUser(), $from, $till);
+                ->getDistance($driver, $from, $till);
         } catch (NoResultException $e) {
             $data['distance'] = 0;
         }
 
         $data['service_time'] = $this->getDoctrine()->getRepository('FunProServiceBundle:ServiceLog')
-            ->getServiceTime($this->getUser(), $from, $till);
+            ->getServiceTime($driver, $from, $till);
         $data['service_time'] = gmdate('H:i', $data['service_time']);
 
         $data['online_time'] = $this->getDoctrine()->getRepository('FunProDriverBundle:CarLog')
-            ->getOnlineTime($this->getUser(), $from, $till);
+            ->getOnlineTime($driver, $from, $till);
         $data['online_time'] = gmdate('H:i', $data['online_time']);
+
+        $data['service_count'] = $this->getDoctrine()->getRepository('FunProServiceBundle:Service')
+            ->getServiceCountOfDriver($driver, $from, $till);
 
         $car = $this->getDoctrine()->getRepository('FunProDriverBundle:Car')
             ->findOneBy(array('driver' => $driver, 'current' => true));
 
-        $currency = $this->getDoctrine()->getRepository('FunProFinancialBundle:Currency')->findOneByCode('IRR');
-        $wallet = $this->getDoctrine()->getRepository('FunProFinancialBundle:Wallet')
-            ->getUserWallet($driver, $currency);
+//        $currency = $this->getDoctrine()->getRepository('FunProFinancialBundle:Currency')->findOneByCode('IRR');
+//        $wallet = $this->getDoctrine()->getRepository('FunProFinancialBundle:Wallet')
+//            ->getUserWallet($driver, $currency);
 
         $data['avatar'] = $driver->getAvatarPath();
         $data['name'] = $driver->getName();
         $data['car_model'] = $car->getType();
-        $data['car_brand'] = $car->getBrand();
-        $data['wallet'] = $wallet->getBalance();
+        $data['car_brand'] = $car->getType();
+        $data['wallet'] = $driver->getCredit();
 
         return $this->view($data, Response::HTTP_OK);
     }
