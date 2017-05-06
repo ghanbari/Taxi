@@ -1113,7 +1113,7 @@ class Service
 
     public function calculateRealDistance()
     {
-        if (count($this->getRoute()->toArray()) > 1) {
+        if (!is_object($this->getRoute()) and count($this->getRoute()->toArray()) > 1) {
             $this->setRealDistance(Util::lengthOfLineString($this->getRoute()));
         }
     }
