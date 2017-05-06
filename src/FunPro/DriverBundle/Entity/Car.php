@@ -75,6 +75,18 @@ class Car
     private $driver;
 
     /**
+     * @deprecated
+     * @var string
+     *
+     * @Assert\NotBlank(groups={"Create", "Update"})
+     * @Assert\Length(min="2",max="50", groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Public", "Driver", "Admin"})
+     * @JS\Since("1.0.0")
+     */
+    private $brand;
+
+    /**
      * @var string
      *
      * @ORM\Column(type="smallint")
@@ -86,6 +98,20 @@ class Car
      * @JS\Since("1.0.0")
      */
     private $type;
+
+    /**
+     * @var Plaque
+     *
+     * @ORM\OneToOne(targetEntity="FunPro\DriverBundle\Entity\Plaque", inversedBy="car", cascade={"persist"})
+     * @ORM\JoinColumn(name="plaque_id", referencedColumnName="id", nullable=false)
+     *
+     * @Assert\NotNull(groups={"Create", "Update"})
+     * @Assert\Valid()
+     *
+     * @JS\Groups({"Plaque"})
+     * @JS\Since("1.0.0")
+     */
+    private $plaque;
 
     /**
      * @var string
@@ -192,20 +218,6 @@ class Car
     private $ownership;
 
     /**
-     * @var Plaque
-     *
-     * @ORM\OneToOne(targetEntity="FunPro\DriverBundle\Entity\Plaque", inversedBy="car", cascade={"persist"})
-     * @ORM\JoinColumn(name="plaque_id", referencedColumnName="id", nullable=false)
-     *
-     * @Assert\NotNull(groups={"Create", "Update"})
-     * @Assert\Valid()
-     *
-     * @JS\Groups({"Plaque"})
-     * @JS\Since("1.0.0")
-     */
-    private $plaque;
-
-    /**
      * @var string
      *
      * @ORM\Column(type="string")
@@ -217,6 +229,17 @@ class Car
      * @JS\Since("1.0.0")
      */
     private $born;
+
+    /**
+     * @deprecated
+     * @var float
+     *
+     * @Assert\Range(min="0", max="9", groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Public", "Driver", "Admin"})
+     * @JS\Since("1.0.0")
+     */
+    private $rate;
 
     /**
      * @var string
@@ -941,5 +964,47 @@ class Car
             'corporative' => 'corporative',
             'other' => 'other'
         );
+    }
+
+    /**
+     * @deprecated
+     * @return string
+     */
+    public function getBrand()
+    {
+        return $this->brand;
+    }
+
+    /**
+     * @param string $brand
+     * @deprecated
+     *
+     * @return $this
+     */
+    public function setBrand($brand)
+    {
+        $this->brand = $brand;
+        return $this;
+    }
+
+    /**
+     * @deprecated
+     * @return float
+     */
+    public function getRate()
+    {
+        return $this->rate;
+    }
+
+    /**
+     * @deprecated
+     * @param float $rate
+     *
+     * @return $this
+     */
+    public function setRate($rate)
+    {
+        $this->rate = $rate;
+        return $this;
     }
 }
