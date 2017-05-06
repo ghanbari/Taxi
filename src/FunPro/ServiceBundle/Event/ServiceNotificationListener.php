@@ -135,8 +135,8 @@ class ServiceNotificationListener implements EventSubscriberInterface
             'description' => !empty($service->getDescription()) ? substr($service->getDescription(), 0, 2000) : '',
             'send_in' => strtotime('now'),
             'distance' => $service->getDistance() / 1000,
-            'paymentPrice' => $paymentPrice,
-            'cashPrice' => $cashPrice,
+            'payment_price' => $paymentPrice,
+            'cash_price' => $cashPrice,
             'price' => $realPrice,
             'off' => $baseCost->getDiscountPercent(),
         );
@@ -340,8 +340,8 @@ class ServiceNotificationListener implements EventSubscriberInterface
             'cost' => $this->serializer->serialize($service->getFloatingCosts()->toArray(), 'json', $context),
             'distance' => $service->getDistance(),
             'send_in' => strtotime('now'),
-            'paymentPrice' => $paymentPrice,
-            'cashPrice' => $cashPrice,
+            'payment_price' => $paymentPrice,
+            'cash_price' => $cashPrice,
             'off' => $baseCost->getDiscountPercent(),
         );
 
