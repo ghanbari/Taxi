@@ -261,11 +261,12 @@ class ServiceSubscriber implements EventSubscriberInterface
         }
 
         if ($currentStatus !== Car::STATUS_SERVICE_IN
+            and $currentStatus !== Car::STATUS_SERVICE_START
             and $currentStatus !== Car::STATUS_SERVICE_IN_AND_ACCEPT
             and $currentStatus !== Car::STATUS_SERVICE_IN_AND_PREPARE
         ) {
             $logger->addError(
-                'Car\'s status must be in service or in_and_accept or in_and_prepare till it can stop service',
+                'Car\'s status must be start or in service or in_and_accept or in_and_prepare till it can stop service',
                 array(
                     'carId' => $car->getId(),
                     'status' => Car::getStatusName($car->getStatus()),
