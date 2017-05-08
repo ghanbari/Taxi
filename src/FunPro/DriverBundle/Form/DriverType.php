@@ -30,7 +30,9 @@ class DriverType extends AbstractType
             ->add('name', Type\TextType::class)
             ->add('parentName', Type\TextType::class)
             ->add('born', Type\DateType::class, array(
+                'format' => 'yyyy-MM-dd',
                 'widget' => 'single_text',
+                'html5' => false
             ))
             ->add('education', Type\ChoiceType::class, array(
                 'choices' => array(
@@ -59,10 +61,14 @@ class DriverType extends AbstractType
             ))
             ->add('shebaNumber', Type\TextType::class)
             ->add('startActivity', Type\DateType::class, array(
+                'format' => 'yyyy-MM-dd',
                 'widget' => 'single_text',
+                'html5' => false
             ))
             ->add('endActivity', Type\DateType::class, array(
+                'format' => 'yyyy-MM-dd',
                 'widget' => 'single_text',
+                'html5' => false
             ))
             ->add('learningCourse', Type\ChoiceType::class, array(
                 'multiple' => false,

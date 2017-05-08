@@ -12,6 +12,55 @@
 
 {% use 'bootstrap_3_layout.html.twig' %}
 
+{% block stylesheetsPagePlugins %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('bower_components/persian-datepicker/dist/css/persian-datepicker-0.4.5.css') }}">
+{% endblock stylesheetsPagePlugins %}
+
+{% block javascriptsPageScripts %}
+    <script src="{{ asset('bower_components/persian-date/dist/0.1.8/persian-date-0.1.8.min.js') }}"></script>
+    <script src="{{ asset('bower_components/persian-datepicker/dist/js/persian-datepicker-0.4.5.js') }}"></script>
+
+    <script>
+        $(function() {
+            var convertUnixToDate = function (unix) {
+                var date = new Date(unix);
+                var year = date.getFullYear();
+                var month = (parseInt(date.getMonth())+1) < 10 ? '0' + String(parseInt(date.getMonth())+1) : String(parseInt(date.getMonth())+1);
+                var day = (date.getDate()) < 10 ? '0' + date.getDate() : date.getDate();
+                return year + '/' + month + '/' + day;
+            };
+
+            $('#driver_bornPicker').pDatepicker({
+                altField: '#driver_born',
+                altFieldFormatter: convertUnixToDate,
+                format: 'YYYY/MM/DD'
+            });
+            {% if form.born.vars.data %}
+                $('#driver_bornPicker').val(persianDate.unix({{ form.born.vars.data.format('U') }}).format('YYYY/MM/DD'));
+            {% endif %}
+
+            $('#driver_startActivityPicker').pDatepicker({
+                altField: '#driver_startActivity',
+                altFieldFormatter: convertUnixToDate,
+                format: 'YYYY/MM/DD'
+            });
+            {% if form.startActivity.vars.data %}
+                $('#driver_startActivityPicker').val(persianDate.unix({{ form.startActivity.vars.data.format('U') }}).format('YYYY/MM/DD'));
+            {% endif %}
+
+            $('#driver_endActivityPicker').pDatepicker({
+                altField: '#driver_endActivity',
+                altFieldFormatter: convertUnixToDate,
+                format: 'YYYY/MM/DD'
+            });
+            {% if form.endActivity.vars.data %}
+                $('#driver_endActivityPicker').val(persianDate.unix({{ form.endActivity.vars.data.format('U') }}).format('YYYY/MM/DD'));
+            {% endif %}
+        });
+    </script>
+{% endblock javascriptsPageScripts %}
+
 {% block content %}
     <div class="page-content">
     <div class="container">
@@ -68,7 +117,8 @@
                                 </div>
 
                                 <div class="form-group form-md-line-input {% if form.born.vars.errors|length %}has-error{% elseif (form.born.vars.submitted) %}has-success{% endif %}">
-                                    {{ form_widget(form.born, {'attr': {'placeholder':'تاریخ تولد را انتخاب نمایید'}}) }}
+                                    {{ form_widget(form.born, {'attr': {'placeholder':'تاریخ تولد را انتخاب نمایید', 'style': 'display:none;'}}) }}
+                                    <input type="text" class="form-control" id="driver_bornPicker">
                                     <label for="form_control_1">تاریخ تولد</label>
                                     <span class="help-block"><br />
                                         {% if form.born.vars.errors|length %}{{ form_errors(form.born) }}{% endif %}
@@ -221,7 +271,8 @@
                                 </div>
 
                                 <div class="form-group form-md-line-input {% if form.startActivity.vars.errors|length %}has-error{% elseif (form.startActivity.vars.submitted) %}has-success{% endif %}">
-                                    {{ form_widget(form.startActivity, {'attr': {'placeholder':'تاریخ شروع فعالیت را وارد نمایید'}}) }}
+                                    {{ form_widget(form.startActivity, {'attr': {'placeholder':'تاریخ شروع فعالیت را وارد نمایید', 'style': 'display:none;'}}) }}
+                                    <input type="text" class="form-control" id="driver_startActivityPicker">
                                     <label for="form_control_1">تاریخ شروع فعالیت</label>
                                     <span class="help-block"><br />
                                         {% if form.startActivity.vars.errors|length %}{{ form_errors(form.startActivity) }}{% endif %}
@@ -229,7 +280,8 @@
                                 </div>
 
                                 <div class="form-group form-md-line-input {% if form.endActivity.vars.errors|length %}has-error{% elseif (form.endActivity.vars.submitted) %}has-success{% endif %}">
-                                    {{ form_widget(form.endActivity, {'attr': {'placeholder':'تاریخ پایان فعالیت را وارد نمایید'}}) }}
+                                    {{ form_widget(form.endActivity, {'attr': {'placeholder':'تاریخ پایان فعالیت را وارد نمایید', 'style': 'display:none;'}}) }}
+                                    <input type="text" class="form-control" id="driver_endActivityPicker">
                                     <label for="form_control_1">تاریخ پایان فعالیت</label>
                                     <span class="help-block"><br />
                                         {% if form.endActivity.vars.errors|length %}{{ form_errors(form.endActivity) }}{% endif %}

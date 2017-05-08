@@ -42,28 +42,36 @@
                 altFieldFormatter: convertUnixToDate,
                 format: 'YYYY/MM/DD'
             });
-            $('#thirdPartyInsurance').val(persianDate.unix({{ form.thirdPartyInsurance.vars.data.format('U') }}).format('YYYY/MM/DD'));
+            {% if form.thirdPartyInsurance.vars.data %}
+                $('#thirdPartyInsurance').val(persianDate.unix({{ form.thirdPartyInsurance.vars.data.format('U') }}).format('YYYY/MM/DD'));
+            {% endif %}
 
             $('#pullInsurance').pDatepicker({
                 altField: '#car_pullInsurance',
                 altFieldFormatter: convertUnixToDate,
                 format: 'YYYY/MM/DD'
             });
-            $('#pullInsurance').val(persianDate.unix({{ form.pullInsurance.vars.data.format('U') }}).format('YYYY/MM/DD'));
+            {% if form.pullInsurance.vars.data %}
+                $('#pullInsurance').val(persianDate.unix({{ form.pullInsurance.vars.data.format('U') }}).format('YYYY/MM/DD'));
+            {% endif %}
 
             $('#technicalDiagnosis').pDatepicker({
                 altField: '#car_technicalDiagnosis',
                 altFieldFormatter: convertUnixToDate,
                 format: 'YYYY/MM/DD'
             });
-            $('#technicalDiagnosis').val(persianDate.unix({{ form.technicalDiagnosis.vars.data.format('U') }}).format('YYYY/MM/DD'));
+            {% if form.technicalDiagnosis.vars.data %}
+                $('#technicalDiagnosis').val(persianDate.unix({{ form.technicalDiagnosis.vars.data.format('U') }}).format('YYYY/MM/DD'));
+            {% endif %}
 
             $('#trafficPlan').pDatepicker({
                 altField: '#car_trafficPlan',
                 altFieldFormatter: convertUnixToDate,
                 format: 'YYYY/MM/DD'
             });
-            $('#trafficPlan').val(persianDate.unix({{ form.trafficPlan.vars.data.format('U') }}).format('YYYY/MM/DD'));
+            {% if form.trafficPlan.vars.data %}
+                $('#trafficPlan').val(persianDate.unix({{ form.trafficPlan.vars.data.format('U') }}).format('YYYY/MM/DD'));
+            {% endif %}
         });
     </script>
 {% endblock javascriptsPageScripts %}
