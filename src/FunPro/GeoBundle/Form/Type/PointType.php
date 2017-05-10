@@ -2,6 +2,7 @@
 
 namespace FunPro\GeoBundle\Form\Type;
 
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -28,7 +29,7 @@ class PointType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'FunPro\GeoBundle\Entity\Point',
+            'data_class' => 'CrEOF\Spatial\PHP\Types\Geometry\Point'
         ));
     }
 }

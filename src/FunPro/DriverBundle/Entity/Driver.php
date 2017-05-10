@@ -51,7 +51,7 @@ class Driver extends User implements SMSInterface
      *
      * @ORM\Column(name="parent_name", length=50)
      *
-     * @Assert\NotBlank(groups={"Create", "Update"})
+     * @Assert\NotBlank(groups={"Register", "Update"})
      *
      * @JS\Groups({"Owner", "Admin", "Register"})
      * @JS\Since("1.0.0")
@@ -63,8 +63,8 @@ class Driver extends User implements SMSInterface
      *
      * @ORM\Column(name="born", type="date", options={"default"="2017/01/01"})
      *
-     * @Assert\NotNull(groups={"Create", "Update"})
-     * @Assert\Type(type="date", groups={"Create", "Update"})
+     * @Assert\NotNull(groups={"Register", "Update"})
+     * @Assert\Date(groups={"Register", "Update"})
      *
      * @JS\Groups({"Owner", "Admin", "Register"})
      * @JS\Since("1.0.0")
@@ -76,7 +76,7 @@ class Driver extends User implements SMSInterface
      *
      * @ORM\Column(type="smallint")
      *
-     * @Assert\Choice(callback="getAvailableEducations", groups={"Create", "Update"})
+     * @Assert\Choice(callback="getAvailableEducations", groups={"Register", "Update"})
      *
      * @JS\Groups({"Owner", "Admin", "Register"})
      * @JS\Since("1.0.0")
@@ -88,8 +88,8 @@ class Driver extends User implements SMSInterface
      *
      * @ORM\Column(name="cod_status", type="smallint")
      *
-     * @Assert\NotNull(groups={"Create", "Update"})
-     * @Assert\Choice(callback="getAvailableCodStatus", groups={"Create", "Update"})
+     * @Assert\NotNull(groups={"Register", "Update"})
+     * @Assert\Choice(callback="getAvailableCodStatus", groups={"Register", "Update"})
      *
      * @JS\Groups({"Owner", "Admin", "Register"})
      * @JS\Since("1.0.0")
@@ -101,8 +101,8 @@ class Driver extends User implements SMSInterface
      *
      * @ORM\Column(type="boolean", name="is_marriage")
      *
-     * @Assert\NotNull(groups={"Create", "Update"})
-     * @Assert\Type(type="boolean", groups={"Create", "Update"})
+     * @Assert\NotNull(groups={"Register", "Update"})
+     * @Assert\Type(type="numeric", groups={"Register", "Update"})
      *
      * @JS\Groups({"Owner", "Admin", "Register"})
      * @JS\Since("1.0.0")
@@ -114,8 +114,8 @@ class Driver extends User implements SMSInterface
      *
      * @ORM\Column(name="sheba_number", length=20)
      *
-     * @Assert\NotNull(groups={"Create", "Update"})
-     * @Assert\Length(max="20", groups={"Create", "Update"})
+     * @Assert\NotNull(groups={"Register", "Update"})
+     * @Assert\Length(max="20", groups={"Register", "Update"})
      *
      * @JS\Groups({"Owner", "Admin", "Register"})
      * @JS\Since("1.0.0")
@@ -127,8 +127,8 @@ class Driver extends User implements SMSInterface
      *
      * @ORM\Column(name="start_activity", type="date")
      *
-     * @Assert\NotNull(groups={"Create", "Update"})
-     * @Assert\Type(type="date", groups={"Create", "Update"})
+     * @Assert\NotNull(groups={"Register", "Update"})
+     * @Assert\Date(groups={"Register", "Update"})
      *
      * @JS\Groups({"Owner", "Admin", "Register"})
      * @JS\Since("1.0.0")
@@ -140,8 +140,8 @@ class Driver extends User implements SMSInterface
      *
      * @ORM\Column(name="end_activity", type="date")
      *
-     * @Assert\NotNull(groups={"Create", "Update"})
-     * @Assert\Type(type="date", groups={"Create", "Update"})
+     * @Assert\NotNull(groups={"Register", "Update"})
+     * @Assert\Date(groups={"Register", "Update"})
      *
      * @JS\Groups({"Owner", "Admin", "Register"})
      * @JS\Since("1.0.0")
@@ -153,8 +153,8 @@ class Driver extends User implements SMSInterface
      *
      * @ORM\Column(name="learning_course", type="boolean")
      *
-     * @Assert\NotNull(groups={"Create", "Update"})
-     * @Assert\Type(type="boolean", groups={"Create", "Update"})
+     * @Assert\NotNull(groups={"Register", "Update"})
+     * @Assert\Type(type="numeric", groups={"Register", "Update"})
      *
      * @JS\Groups({"Owner", "Admin", "Register"})
      * @JS\Since("1.0.0")

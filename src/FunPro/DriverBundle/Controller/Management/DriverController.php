@@ -8,6 +8,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FunPro\DriverBundle\Entity\Driver;
 use FunPro\DriverBundle\Form\DriverType;
 use FunPro\EngineBundle\Utility\DataTable;
+use FunPro\GeoBundle\Entity\Point;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
@@ -53,6 +54,9 @@ class DriverController extends FOSRestController
         $options['csrf_protection'] = $requestFormat == 'html' ?: false;
 
         $form = $this->createForm(DriverType::class, $driver, $options);
+        if ($method == 'POST') {
+            $form['address']['point']->setData(new Point(0, 0));
+        }
         $form->remove('plainPassword');
 
         if ($method == 'PUT') {
