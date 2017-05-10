@@ -101,7 +101,8 @@ class DriverController extends FOSRestController
                 ->findOneByApiKey($apiKey);
         } while ($isDuplicate);
 
-        $password = bin2hex(random_bytes(4));
+        mt_srand(time() * rand());
+        $password = mt_rand(10000, 99999);
         $driver = new Driver();
         $driver->setApiKey($apiKey);
         $driver->setPlainPassword($password);
