@@ -225,7 +225,7 @@ class ServiceController extends FOSRestController
      * )
      *
      * @ParamConverter(name="service", class="FunProServiceBundle:Service")
-     * @Security("has_role('ROLE_PASSENGER') and service.getPassenger() == user")
+     * @Security("(has_role('ROLE_PASSENGER') and service.getPassenger() == user) or (has_role('ROLE_DRIVER') and service.getCar().getDriver() == user)")
      *
      * @Rest\QueryParam(name="reason", requirements="\d+", nullable=false, strict=true)
      *
@@ -245,15 +245,15 @@ class ServiceController extends FOSRestController
         $fetcher = $this->get('fos_rest.request.param_fetcher');
         $reasonId = $fetcher->get('reason', true);
 
-        $authorizedTill = new \DateTime('-' . $this->getParameter('service.passenger.can_cancel_till'));
-        if ($authorizedTill >= $service->getCreatedAt()) {
-            $logger->addNotice('passenger can not cancel service, limited time');
-            $error = array(
-                'code' => 1,
-                'message' => $translator->trans('you.can.cancel.service.only.in.one.minute'),
-            );
-            return $this->view($error, Response::HTTP_BAD_REQUEST);
-        }
+//        $authorizedTill = new \DateTime('-' . $this->getParameter('service.passenger.can_cancel_till'));
+//        if ($authorizedTill >= $service->getCreatedAt()) {
+//            $logger->addNotice('passenger can not cancel service, limited time');
+//            $error = array(
+//                'code' => 1,
+//                'message' => $translator->trans('you.can.cancel.service.only.in.one.minute'),
+//            );
+//            return $this->view($error, Response::HTTP_BAD_REQUEST);
+//        }
 
         $canceledReason = $manager->getRepository('FunProServiceBundle:CanceledReason')->find($reasonId);
 
@@ -773,16 +773,16 @@ class ServiceController extends FOSRestController
             $result['distance'] = round($distance / 1000, 1);
             $result['duration'] = round($legs[0]->getDuration()->getValue() / 60);
 
-            $paymentPrice = $price - (($price * $baseCost->getPaymentCreditReward()) / 100);
-            $cashPrice = $price - (($price * $baseCost->getPaymentCashReward()) / 100);
+//            $paymentPrice = $price - (($price * $baseCost->getPaymentCreditReward()) / 100);
+//            $cashPrice = $price - (($price * $baseCost->getPaymentCashReward()) / 100);
+//
+//            $paymentPrice = $paymentPrice % 500 > 250 ? floor($paymentPrice / 500) * 500 + 500 : floor($paymentPrice / 500) * 500;
+//            $cashPrice = $cashPrice % 500 > 250 ? floor($cashPrice / 500) * 500 + 500 : floor($cashPrice / 500) * 500;
 
-            $paymentPrice = $paymentPrice % 500 > 250 ? floor($paymentPrice / 500) * 500 + 500 : floor($paymentPrice / 500) * 500;
-            $cashPrice = $cashPrice % 500 > 250 ? floor($cashPrice / 500) * 500 + 500 : floor($cashPrice / 500) * 500;
-
-            $result['paymentPrice'] = $paymentPrice;
-            $result['cashPrice'] = $cashPrice;
-            $result['price'] = $realPrice;
-            $result['off'] = $baseCost->getDiscountPercent();
+//            $result['paymentPrice'] = $paymentPrice;
+//            $result['cashPrice'] = $cashPrice;
+            $result['price'] = $realPrice % 500 > 250 ? ceil($realPrice / 500) * 500 : floor($realPrice / 500) * 500;
+            $result['off'] = $price % 500 > 250 ? ceil($price / 500) * 500 : floor($price / 500) * 500;
 
             return $this->view($result, Response::HTTP_OK);
         } else {
