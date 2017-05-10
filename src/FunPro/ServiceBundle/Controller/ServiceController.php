@@ -767,22 +767,14 @@ class ServiceController extends FOSRestController
             $routes = $response->getRoutes();
             $legs = $routes[0]->getLegs();
             $distance = $legs[0]->getDistance()->getValue();
-            $price = $realPrice = $baseCost->getEntranceFee() + ($baseCost->getCostPerMeter() * $distance);
-            $price -= ($realPrice * $baseCost->getDiscountPercent()) / 100;
+            $realPrice = $baseCost->getEntranceFee() + ($baseCost->getCostPerMeter() * $distance);
+            $discountedPrice = $realPrice - ($realPrice * $baseCost->getDiscountPercent() / 100);
 
             $result['distance'] = round($distance / 1000, 1);
             $result['duration'] = round($legs[0]->getDuration()->getValue() / 60);
 
-//            $paymentPrice = $price - (($price * $baseCost->getPaymentCreditReward()) / 100);
-//            $cashPrice = $price - (($price * $baseCost->getPaymentCashReward()) / 100);
-//
-//            $paymentPrice = $paymentPrice % 500 > 250 ? floor($paymentPrice / 500) * 500 + 500 : floor($paymentPrice / 500) * 500;
-//            $cashPrice = $cashPrice % 500 > 250 ? floor($cashPrice / 500) * 500 + 500 : floor($cashPrice / 500) * 500;
-
-//            $result['paymentPrice'] = $paymentPrice;
-//            $result['cashPrice'] = $cashPrice;
-            $result['price'] = $realPrice % 500 > 250 ? ceil($realPrice / 500) * 500 : floor($realPrice / 500) * 500;
-            $result['off'] = $price % 500 > 250 ? ceil($price / 500) * 500 : floor($price / 500) * 500;
+            $result['price'] = Service::roundPrice($realPrice);
+            $result['off'] = Service::roundPrice($discountedPrice);
 
             return $this->view($result, Response::HTTP_OK);
         } else {

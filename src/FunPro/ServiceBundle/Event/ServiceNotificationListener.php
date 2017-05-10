@@ -112,14 +112,8 @@ class ServiceNotificationListener implements EventSubscriberInterface
     {
         $logger = $this->logger;
         $service = $event->getService();
-        $baseCost = $service->getBaseCost();
         $price = $service->getPrice();
-        $realPrice = $baseCost->getEntranceFee() + ($baseCost->getCostPerMeter() * $service->getDistance());
-//        $paymentPrice = $price - (($price * $baseCost->getPaymentCreditReward()) / 100);
-//        $cashPrice = $price - (($price * $baseCost->getPaymentCashReward()) / 100);
-//
-//        $paymentPrice = $paymentPrice % 500 > 250 ? floor($paymentPrice / 500) * 500 + 500 : floor($paymentPrice / 500) * 500;
-//        $cashPrice = $cashPrice % 500 > 250 ? floor($cashPrice / 500) * 500 + 500 : floor($cashPrice / 500) * 500;
+        $discountedPrice = $service->getDiscountedPrice();
 
         $data = array(
             'type' => 'service',
@@ -135,10 +129,8 @@ class ServiceNotificationListener implements EventSubscriberInterface
             'description' => !empty($service->getDescription()) ? substr($service->getDescription(), 0, 2000) : '',
             'send_in' => strtotime('now'),
             'distance' => $service->getDistance() / 1000,
-//            'payment_price' => $paymentPrice,
-//            'cash_price' => $cashPrice,
-            'price' => $realPrice % 500 > 250 ? ceil($realPrice / 500) * 500 : floor($realPrice / 500) * 500,
-            'off' => $price % 500 > 250 ? ceil($price / 500) * 500 : floor($price / 500) * 500,
+            'price' => Service::roundPrice($price),
+            'off' => Service::roundPrice($discountedPrice),
         );
 
         if ($service->getPassenger()) {
@@ -322,14 +314,8 @@ class ServiceNotificationListener implements EventSubscriberInterface
     public function onServiceFinish(ServiceEvent $event)
     {
         $service = $event->getService();
-        $baseCost = $service->getBaseCost();
         $price = $service->getPrice();
-        $realPrice = $baseCost->getEntranceFee() + ($baseCost->getCostPerMeter() * $service->getDistance());
-//        $paymentPrice = $price - (($price * $baseCost->getPaymentCreditReward()) / 100);
-//        $cashPrice = $price - (($price * $baseCost->getPaymentCashReward()) / 100);
-
-//        $paymentPrice = $paymentPrice % 500 > 250 ? floor($paymentPrice / 500) * 500 + 500 : floor($paymentPrice / 500) * 500;
-//        $cashPrice = $cashPrice % 500 > 250 ? floor($cashPrice / 500) * 500 + 500 : floor($cashPrice / 500) * 500;
+        $discountedPrice = $service->getDiscountedPrice();
 
         $context = SerializationContext::create()
             ->setGroups(array('Cost'));
@@ -339,10 +325,8 @@ class ServiceNotificationListener implements EventSubscriberInterface
             'cost' => $this->serializer->serialize($service->getFloatingCosts()->toArray(), 'json', $context),
             'distance' => $service->getDistance(),
             'send_in' => strtotime('now'),
-//            'payment_price' => $paymentPrice,
-//            'cash_price' => $cashPrice,
-            'price' => $realPrice % 500 > 250 ? ceil($realPrice / 500) * 500 : floor($realPrice / 500) * 500,
-            'off' => $price % 500 > 250 ? ceil($price / 500) * 500 : floor($price / 500) * 500,
+            'price' => Service::roundPrice($price),
+            'off' => Service::roundPrice($discountedPrice),
         );
 
         $message = (new Message())

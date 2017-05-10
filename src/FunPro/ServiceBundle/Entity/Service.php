@@ -273,13 +273,14 @@ class Service
     private $realDistance;
 
     /**
-     * @var int $price total price of service. calculated based on $distance
+     * @var int $price total price of service. calculated based on $distance.
+     *
+     * this value is original price of service.(Excluding discounts)
      *
      * @ORM\Column(type="integer", nullable=true)
      *
      * @JS\Groups({"Passenger", "Driver", "Agent", "Admin"})
      * @JS\Since("1.0.0")
-     * FIXME: user should not can see this value. change serialize groups.
      */
     private $price;
 
@@ -290,6 +291,7 @@ class Service
      *
      * @JS\Groups({"Passenger", "Driver", "Agent", "Admin"})
      * @JS\Since("2.0.0")
+     * FIXME: user should not can see this value. change serialize groups.
      */
     private $realPrice;
 
@@ -803,9 +805,31 @@ class Service
 
         $baseCosts = $this->getBaseCost();
         $this->price = $baseCosts->getEntranceFee() + ($baseCosts->getCostPerMeter() * $this->getDistance());
-        $this->price -= ($this->price * $baseCosts->getDiscountPercent()) / 100;
+//        $this->price -= ($this->price * $baseCosts->getDiscountPercent()) / 100;
 
         return $this;
+    }
+
+    /**
+     * Calculate final price. price & discount.
+     *
+     * @return int
+     */
+    public function getDiscountedPrice()
+    {
+        return $this->price - ($this->price * $this->baseCost->getDiscountPercent() / 100);
+    }
+
+    /**
+     * Round price
+     *
+     * @param $price
+     *
+     * @return float
+     */
+    public static function roundPrice($price)
+    {
+        return ($price % 500 > 250) ? ceil($price / 500) * 500 : floor($price / 500) * 500;
     }
 
     /**
