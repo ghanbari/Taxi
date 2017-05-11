@@ -115,7 +115,7 @@ class ServiceSubscriber implements EventSubscriberInterface
             ServiceEvents::SERVICE_FINISH => array(
                 array('checkServiceStatusPreFinish', 150),
                 array('onServiceFinish', 10),
-//                array('autoPay', 5),
+                array('autoPay', 5),
             ),
             CarEvents::CAR_MOVE => array(
                 array('onService', 10),
@@ -436,16 +436,18 @@ class ServiceSubscriber implements EventSubscriberInterface
         $serviceRepo = $manager->getRepository('FunProServiceBundle:Service');
         $service = $event->getService();
 
-        $cost = $serviceRepo->getTotalCost($service);
+        #TODO: we need float costs?
+//        $cost = $serviceRepo->getTotalCost($service);
+        $cost = Service::roundPrice($service->getDiscountedPrice());
 
-        $currency = $manager->getRepository('FunProFinancialBundle:Currency')->findOneByCode('IRR');
-        $service->setCurrency($currency);
+//        $currency = $manager->getRepository('FunProFinancialBundle:Currency')->findOneByCode('IRR');
+//        $service->setCurrency($currency);
 
         $logger->addInfo('Payment method is cash');
 
         $transaction = new Transaction(
             $service->getPassenger(),
-            $service->getCurrency(),
+//            $service->getCurrency(),
             $cost,
             Transaction::TYPE_PAY,
             false

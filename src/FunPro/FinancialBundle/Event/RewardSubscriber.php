@@ -87,6 +87,9 @@ class RewardSubscriber implements EventSubscriberInterface
      */
     public function paymentReward(PaymentEvent $event)
     {
+        #FIXME: Temporally disable this feature.
+        return;
+
         $main = $event->getTransaction();
         $parameters = $this->parameterBag;
         $rewardPercent = $main->isVirtual() ?
