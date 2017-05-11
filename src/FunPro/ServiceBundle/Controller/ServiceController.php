@@ -526,6 +526,14 @@ class ServiceController extends FOSRestController
         try {
             $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_START, $event);
             $manager->flush();
+
+            $this->get('sms.sender')->send(
+                $service->getPassenger()->getMobile(),
+                $this->get('translator')->trans(
+                    'invite.your.friend.and.get.%discount%.discount',
+                    array('%discount%' => 100)
+                )
+            );
         } catch (CarStatusException $e) {
             $error = array(
                 'code' => 1,
@@ -573,7 +581,7 @@ class ServiceController extends FOSRestController
         /** @var Service $service */
         $service = $request->attributes->get('service');
 //        $logger = $this->get('logger');
-//        $translator = $this->get('translator');
+        $translator = $this->get('translator');
 //        $fetcher = $this->get('fos_rest.request.param_fetcher');
         $manager = $this->getDoctrine()->getManager();
 
@@ -614,6 +622,13 @@ class ServiceController extends FOSRestController
         try {
             $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_FINISH, $event);
             $manager->flush();
+            $this->get('sms.sender')->send(
+                $service->getPassenger()->getMobile(),
+                $translator->trans(
+                    'service.is.finished.please.pay.%price%.by.cash',
+                    array('%price%' => Service::roundPrice($service->getDiscountedPrice()))
+                )
+            );
         } catch (CarStatusException $e) {
             $error = array(
                 'code' => 3,
