@@ -17,6 +17,7 @@ use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\ServiceBundle\Entity\FloatingCost;
 use FunPro\ServiceBundle\Entity\PropagationList;
 use FunPro\ServiceBundle\Entity\Service;
+use FunPro\ServiceBundle\Entity\ServiceLog;
 use FunPro\ServiceBundle\Event\GetCarPointServiceEvent;
 use FunPro\ServiceBundle\Event\ServiceEvent;
 use FunPro\ServiceBundle\Exception\ServiceStatusException;
@@ -565,45 +566,49 @@ class ServiceController extends FOSRestController
      * @ParamConverter("service", class="FunProServiceBundle:Service")
      * @Security("has_role('ROLE_DRIVER') and service.getCar().getDriver() == user")
      *
-     * @Rest\RequestParam(name="floatingCost", nullable=true, strict=true)
+//     * @Rest\RequestParam(name="floatingCost", nullable=true, strict=true)
      */
     public function patchFinishAction(Request $request, $id)
     {
         /** @var Service $service */
         $service = $request->attributes->get('service');
-        $logger = $this->get('logger');
-        $translator = $this->get('translator');
-        $fetcher = $this->get('fos_rest.request.param_fetcher');
+//        $logger = $this->get('logger');
+//        $translator = $this->get('translator');
+//        $fetcher = $this->get('fos_rest.request.param_fetcher');
         $manager = $this->getDoctrine()->getManager();
 
-        $floatingCosts = json_decode($fetcher->get('floatingCost'), true);
-        if ($floatingCosts) {
-            $validator = $this->get('validator');
-            $errors = $validator->validate(
-                $floatingCosts,
-                array(
-                    new Assert\All(
-                        new Assert\Collection(array('fields' => array(
-                            'amount' => new Assert\Required(array(new Assert\NotBlank(), new Assert\Type('numeric'))),
-                            'description' => new Assert\Required(array(new Assert\NotBlank(), new Assert\Length(array('max' => 50)))))
-                        ))),
-                    new Assert\Count(array('max' => 10))
-                )
-            );
-
-            if (count($errors)) {
-                $logger->addError('invalid format for floating costs');
-                $error = array(
-                    'code' => 2,
-                    'message' => $translator->trans('invalid.format.for.floatin.cost'),
-                );
-                return $this->view($error, Response::HTTP_BAD_REQUEST);
-            }
-
-            foreach ($floatingCosts as $floatCost) {
-                $manager->persist(new FloatingCost($service, intval($floatCost['amount']), $floatCost['description']));
-            }
+        if ($service->getStatus() === ServiceLog::STATUS_FINISH) {
+            return $this->view(null, Response::HTTP_NO_CONTENT);
         }
+
+//        $floatingCosts = json_decode($fetcher->get('floatingCost'), true);
+//        if ($floatingCosts) {
+//            $validator = $this->get('validator');
+//            $errors = $validator->validate(
+//                $floatingCosts,
+//                array(
+//                    new Assert\All(
+//                        new Assert\Collection(array('fields' => array(
+//                            'amount' => new Assert\Required(array(new Assert\NotBlank(), new Assert\Type('numeric'))),
+//                            'description' => new Assert\Required(array(new Assert\NotBlank(), new Assert\Length(array('max' => 50)))))
+//                        ))),
+//                    new Assert\Count(array('max' => 10))
+//                )
+//            );
+//
+//            if (count($errors)) {
+//                $logger->addError('invalid format for floating costs');
+//                $error = array(
+//                    'code' => 2,
+//                    'message' => $translator->trans('invalid.format.for.floatin.cost'),
+//                );
+//                return $this->view($error, Response::HTTP_BAD_REQUEST);
+//            }
+//
+//            foreach ($floatingCosts as $floatCost) {
+//                $manager->persist(new FloatingCost($service, intval($floatCost['amount']), $floatCost['description']));
+//            }
+//        }
 
         $event = new ServiceEvent($service);
         try {
