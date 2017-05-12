@@ -26,6 +26,7 @@ use FunPro\ServiceBundle\ServiceEvents;
 use Ivory\GoogleMap\Base\Coordinate;
 use Ivory\GoogleMap\Service\Base\Location\AddressLocation;
 use Ivory\GoogleMap\Service\Base\Location\CoordinateLocation;
+use Ivory\GoogleMap\Service\Base\TransitRoutingPreference;
 use Ivory\GoogleMap\Service\Base\TravelMode;
 use Ivory\GoogleMap\Service\Base\UnitSystem;
 use Ivory\GoogleMap\Service\Direction\Request\DirectionRequest;
@@ -767,6 +768,7 @@ class ServiceController extends FOSRestController
 
         $request->setUnitSystem(UnitSystem::METRIC);
         $request->setTravelMode(TravelMode::DRIVING);
+        $request->setTransitRoutingPreference(TransitRoutingPreference::LESS_WALKING);
         $request->setProvideRouteAlternatives(true);
 
         $response = $this->container->get('ivory.google_map.direction')->route($request);
