@@ -526,14 +526,6 @@ class ServiceController extends FOSRestController
         try {
             $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_START, $event);
             $manager->flush();
-
-            $this->get('sms.sender')->send(
-                $service->getPassenger()->getMobile(),
-                $this->get('translator')->trans(
-                    'invite.your.friend.and.get.%discount%.discount',
-                    array('%discount%' => 100)
-                )
-            );
         } catch (CarStatusException $e) {
             $error = array(
                 'code' => 1,
