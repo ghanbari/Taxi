@@ -378,15 +378,31 @@ class ServiceSubscriber implements EventSubscriberInterface
 
         $request->setUnitSystem(UnitSystem::METRIC);
         $request->setTravelMode(TravelMode::DRIVING);
-        $request->setTransitRoutingPreference(TransitRoutingPreference::LESS_WALKING);
         $request->setProvideRouteAlternatives(true);
 
         #FIXME: if connection to google have problem then crashed and not send notification to drivers
         $response = $this->directionService->route($request);
-        $routes = $response->getRoutes();
-        $legs = $routes[0]->getLegs();
 
-        return $legs[0]->getDistance()->getValue();
+        $bestRoute = null;
+        $routes = $response->getRoutes();
+
+        foreach ($routes as $route) {
+            if ($bestRoute === null) {
+                $bestRoute = $route;
+            } else {
+                if (count($route->getLegs()) > 0
+                    and count($bestRoute->getLegs()) > 0
+                    and $route->getLegs()[0]->getDistance()->getValue() < $bestRoute->getLegs()[0]->getDistance()->getValue()
+                ) {
+                    $bestRoute = $route;
+                }
+            }
+        }
+
+        $legs = $bestRoute->getLegs();
+        $distance = $legs[0]->getDistance()->getValue();
+
+        return $distance;
     }
 
     /**
