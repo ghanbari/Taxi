@@ -208,7 +208,7 @@
       </trans-unit>
       <trans-unit id="f46de6d040eecea073399766b902c4c86dc9e8e0" resname="thanks.for.registering.your.code.is.%code%">
         <source>thanks.for.registering.your.code.is.%code%</source>
-        <target>ثبت نام انجام شد نام كاربري شما كدملي و رمزعبور "%code%" است تیم کارزین</target>
+        <target state="new">ممنون از ثبت نام شما، کد تاییدیه عضویت شما "%code%" می باشد</target>
         <jms:reference-file line="105">/../src/FunPro/PassengerBundle/Controller/PassengerController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="ef018a200be24cc3116ccf30d97206a5d57bcd37" resname="this.car.is.in.queue">
@@ -290,7 +290,7 @@
       </trans-unit>
       <trans-unit id="ce1a33d01916d182caa663298145ab2f65205d84" resname="your.registeration.is.completed.your.password.is.%password%">
         <source>your.registeration.is.completed.your.password.is.%password%</source>
-        <target>تبریک، ثبت نام شما با موفقیت انجام شد، نام کاربری شما کدملی شما و رمزعبور شما %password% می باشد</target>
+        <target>ثبت نام انجام شد نام كاربري شما كدملي و رمزعبور "%password%" است. تیم کارزین</target>
         <jms:reference-file line="115">/../src/FunPro/DriverBundle/Controller/Management/DriverController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="3510234bbc8f76ff81aa5f60b407a84bc7352777" resname="your.token.expired">
