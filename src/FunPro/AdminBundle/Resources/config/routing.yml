@@ -36,7 +36,7 @@ fun_pro_admin_login:
     defaults: { _controller: FunProAdminBundle:Security:login }
 
 fun_pro_admin_login_check:
-    path: /login_check$
+    path: /login_check
 
 fun_pro_admin_logout:
     path: /logout

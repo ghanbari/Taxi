@@ -2,11 +2,11 @@
 
 namespace FunPro\AgentBundle\DataFixtures\ORM;
 
-use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use FunPro\AgentBundle\Entity\Agency;
+use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\GeoBundle\Entity\Address;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;

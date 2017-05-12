@@ -3,7 +3,7 @@
 namespace FunPro\ServiceBundle\Entity;
 
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
-use CrEOF\Spatial\PHP\Types\Geometry\Point;
+use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\AgentBundle\Entity\Agent;
@@ -89,7 +89,7 @@ class Service
      * @ORM\Column(name="start_point", type="point")
      *
      * @Assert\NotNull(groups={"Create"})
-     * @Assert\Type(type="CrEOF\Spatial\PHP\Types\Geometry\Point", groups={"Create"})
+     * @Assert\Type(type="FunPro\GeoBundle\Doctrine\ValueObject\Point", groups={"Create"})
      * @Assert\Valid()
      *
      * @JS\Groups({"Passenger", "Driver", "Agent", "Admin", "Point"})
@@ -116,12 +116,12 @@ class Service
      *
      * @ORM\Column(name="end_point", type="point")
      *
-     * @Assert\Type(type="CrEOF\Spatial\PHP\Types\Geometry\Point", groups={"Create"})
+     * @Assert\Type(type="FunPro\GeoBundle\Doctrine\ValueObject\Point", groups={"Create"})
      * @Assert\Valid()
      * @Assert\NotNull(groups={"Create", "Update"})
      *
      * @JS\Groups({"Passenger", "Driver", "Admin", "Point"})
-     * @JS\Type(name="CrEOF\Spatial\PHP\Types\Geometry\Point")
+     * @JS\Type(name="FunPro\GeoBundle\Doctrine\ValueObject\Point")
      * @JS\MaxDepth(1)
      * @JS\Since("1.0.0")
      */

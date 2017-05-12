@@ -78,8 +78,8 @@ class Car
      * @deprecated
      * @var string
      *
-     * @Assert\NotBlank(groups={"Create", "Update"})
-     * @Assert\Length(min="2",max="50", groups={"Create", "Update"})
+     * @#Assert\NotBlank(groups={"Create", "Update"})
+     * @#Assert\Length(min="2",max="50", groups={"Create", "Update"})
      *
      * @JS\Groups({"Public", "Driver", "Admin"})
      * @JS\Since("1.0.0")

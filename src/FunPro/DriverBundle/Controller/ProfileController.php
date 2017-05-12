@@ -5,6 +5,7 @@ namespace FunPro\DriverBundle\Controller;
 use Doctrine\ORM\NoResultException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
+use FunPro\DriverBundle\Entity\Car;
 use FunPro\DriverBundle\Entity\Driver;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -46,6 +47,7 @@ class ProfileController extends FOSRestController
         /** @var Driver $driver */
         $driver = $this->getUser();
         $fetcher = $this->get('fos_rest.request.param_fetcher');
+        $translator = $this->get('translator');
 
         $from = new \DateTime($fetcher->get('from'));
         $till = new \DateTime($fetcher->get('till'));
@@ -87,7 +89,7 @@ class ProfileController extends FOSRestController
 
         $data['avatar'] = $driver->getAvatarPath();
         $data['name'] = $driver->getName();
-        $data['car_model'] = $car->getType();
+        $data['car_model'] = $translator->trans(array_search($car->getType(), Car::getTypes()));
         $data['car_brand'] = $car->getType();
         $data['wallet'] = $driver->getCredit();
 

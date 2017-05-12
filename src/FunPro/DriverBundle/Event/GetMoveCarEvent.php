@@ -2,8 +2,8 @@
 
 namespace FunPro\DriverBundle\Event;
 
-use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use FunPro\DriverBundle\Entity\Car;
+use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 
 /**
  * Class GetMoveCarEvent

@@ -2,7 +2,7 @@
 
 namespace FunPro\ServiceBundle\Entity;
 
-use CrEOF\Spatial\PHP\Types\Geometry\Point;
+use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\DriverBundle\Entity\Car;
 use JMS\Serializer\Annotation as JS;

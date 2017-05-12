@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @package FunPro\GeoBundle\Doctrine\ValueObject
  */
-class Point
+class Point extends \CrEOF\Spatial\PHP\Types\Geometry\Point
 {
     /**
      * @var float
@@ -42,6 +42,8 @@ class Point
     {
         $this->latitude = $latitude;
         $this->longitude = $longitude;
+        $this->x = $latitude;
+        $this->y = $longitude;
     }
 
     /**

@@ -2,10 +2,10 @@
 
 namespace FunPro\FinancialBundle\Repository;
 
-use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\ORM\EntityRepository;
 use FunPro\FinancialBundle\Entity\Currency;
 use FunPro\FinancialBundle\Entity\Wallet;
+use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\UserBundle\Entity\User;
 
 /**

@@ -2,11 +2,11 @@
 
 namespace FunPro\EngineBundle\DataFixtures\ORM;
 
-use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use FunPro\DriverBundle\Entity\Driver;
+use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\GeoBundle\Entity\Address;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -60,7 +60,7 @@ class CreateDriverForTest extends AbstractFixture implements OrderedFixtureInter
 
             $driver = new Driver();
             $driver->setEmail($nationalCode.'@'.$host);
-            $driver->setUsername($nationalCode);
+//            $driver->setUsername($nationalCode);
             $driver->setParentName('mohammad');
             $driver->setBorn(new \DateTime('2017/01/01'));
             $driver->setEducation(Driver::EDUCATION_BACHELOR);

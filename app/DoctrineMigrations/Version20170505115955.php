@@ -30,12 +30,5 @@ class Version20170505115955 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE address DROP area');
-        $this->addSql('CREATE SPATIAL INDEX point ON address (point)');
-        $this->addSql('CREATE SPATIAL INDEX route ON car_route (route)');
-        $this->addSql('ALTER TABLE driver CHANGE born born DATE DEFAULT \'2017-01-01\' NOT NULL');
-        $this->addSql('CREATE SPATIAL INDEX location ON ip_location (location)');
-        $this->addSql('CREATE SPATIAL INDEX region ON region (region)');
-        $this->addSql('CREATE SPATIAL INDEX start_point ON service (start_point)');
-        $this->addSql('CREATE SPATIAL INDEX point ON wakeful (point)');
     }
 }

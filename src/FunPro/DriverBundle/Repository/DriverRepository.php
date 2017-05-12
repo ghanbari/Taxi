@@ -2,9 +2,9 @@
 
 namespace FunPro\DriverBundle\Repository;
 
-use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\ORM\EntityRepository;
 use FunPro\DriverBundle\Entity\Car;
+use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 
 /**
  * driverRepository
@@ -35,7 +35,7 @@ class DriverRepository extends EntityRepository
             ->andWhere($queryBuilder->expr()->lte('glength(linestring(w.point, st_geomfromtext(:location)))', ':distance'))
             ->setParameter('current', true)
             ->setParameter('carStatus', array(Car::STATUS_WAKEFUL, Car::STATUS_SERVICE_IN, Car::STATUS_SERVICE_END))
-            ->setParameter('location', "point($point)")
+            ->setParameter('location', $point)
             ->setParameter('distance', $distance / 100000);
 
         return $queryBuilder->getQuery()

@@ -3,12 +3,12 @@
 namespace FunPro\FinancialBundle\DataFixtures\ORM;
 
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
-use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use FunPro\FinancialBundle\Entity\Region;
+use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 
 class LoadDefaultRegionData extends AbstractFixture implements OrderedFixtureInterface
 {

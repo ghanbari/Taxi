@@ -2,7 +2,7 @@
 
 namespace FunPro\GeoBundle\Entity;
 
-use CrEOF\Spatial\PHP\Types\Geometry\Point as SPoint;
+use FunPro\GeoBundle\Doctrine\ValueObject\Point as SPoint;
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\UserBundle\Entity\User;
 use JMS\Serializer\Annotation as JS;
@@ -34,7 +34,7 @@ class IpLocation
      * @ORM\Column(name="location", type="point")
      *
      * @Assert\NotBlank(groups={"Create"})
-     * @Assert\Type(type="CrEOF\Spatial\PHP\Types\Geometry\Point", groups={"Create"})
+     * @Assert\Type(type="FunPro\GeoBundle\Doctrine\ValueObject\Point", groups={"Create"})
      *
      * @JS\Groups({"Public"})
      * @JS\Since("1.0.0")

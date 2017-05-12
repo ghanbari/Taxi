@@ -379,6 +379,7 @@ class ServiceSubscriber implements EventSubscriberInterface
         $request->setTravelMode(TravelMode::DRIVING);
         $request->setProvideRouteAlternatives(true);
 
+        #FIXME: if connection to google have problem then crashed and not send notification to drivers
         $response = $this->directionService->route($request);
         $routes = $response->getRoutes();
         $legs = $routes[0]->getLegs();

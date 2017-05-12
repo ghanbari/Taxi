@@ -2,8 +2,8 @@
 
 namespace FunPro\FinancialBundle\Repository;
 
-use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\ORM\EntityRepository;
+use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 
 /**
  * CurrencyRepository

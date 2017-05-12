@@ -2,7 +2,7 @@
 
 namespace FunPro\ServiceBundle\Repository;
 
-use CrEOF\Spatial\PHP\Types\Geometry\Point;
+use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use Doctrine\ORM\EntityRepository;
 use FunPro\DriverBundle\Entity\Car;
 use FunPro\DriverBundle\Entity\Driver;
@@ -158,8 +158,7 @@ class ServiceRepository extends EntityRepository
         \DateTime $till = null,
         $limit = 10,
         $offset = 0
-    )
-    {
+    ) {
         $queryBuilder = $this->getFilterByQueryBuilder($origin, $destination, $from, $till, $limit, $offset);
 
         $queryBuilder->select(array('s', 'p', 'c', 'd', 'l'));
@@ -199,8 +198,7 @@ class ServiceRepository extends EntityRepository
         \DateTime $till = null,
         $limit = 10,
         $offset = 0
-    )
-    {
+    ) {
         $queryBuilder = $this->createQueryBuilder('s');
 
         if ($origin) {
@@ -236,8 +234,7 @@ class ServiceRepository extends EntityRepository
         \DateTime $till = null,
         $limit = 10,
         $offset = 0
-    )
-    {
+    ) {
         $queryBuilder = $this->getFilterByQueryBuilder($origin, $destination, $from, $till, $limit, $offset);
 
         $queryBuilder->select(array('s', 'p', 'l'));
@@ -253,5 +250,28 @@ class ServiceRepository extends EntityRepository
         return $queryBuilder
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @param Driver    $driver
+     * @param \DateTime $from
+     * @param \DateTime $till
+     *
+     * @return array
+     */
+    public function getServiceCountOfDriver(Driver $driver, \DateTime $from, \DateTime $till)
+    {
+        $qb = $this->createQueryBuilder('s');
+
+        return $qb->select('count(s)')
+            ->innerJoin('s.car', 'c')
+            ->where($qb->expr()->eq('c.driver', ':driver'))
+            ->andWhere($qb->expr()->gte('s.createdAt', ':from'))
+            ->andWhere($qb->expr()->lte('s.createdAt', ':till'))
+            ->setParameter('driver', $driver->getId())
+            ->setParameter('from', $from)
+            ->setParameter('till', $till)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 }

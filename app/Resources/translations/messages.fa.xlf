@@ -308,6 +308,38 @@
         <target>zire.diplome</target>
         <jms:reference-file line="39">/../src/FunPro/DriverBundle/Form/DriverType.php</jms:reference-file>
       </trans-unit>
+    <trans-unit id="309328d5f99114f41ad48acca398d84c13a99323f2" resname="peride">
+        <source>peride</source>
+        <target>پراید</target>
+    </trans-unit>
+    <trans-unit id="309328d5f99114f41ad48acca398d84c13a99323f2" resname="samand">
+        <source>samand</source>
+        <target>سمند</target>
+    </trans-unit>
+    <trans-unit id="309328d5f99114f41ad48acca398d84c13a9932we" resname="persia">
+        <source>persia</source>
+        <target>پرشیا</target>
+    </trans-unit>
+    <trans-unit id="309328d5f99114f41ad48acca398d84c13a99323fwe2" resname="zantiya">
+        <source>zantiya</source>
+        <target>زانتیا</target>
+    </trans-unit>
+    <trans-unit id="309328d5f99114f41ad48acweca398d84c13a99323f2" resname="megan">
+        <source>megan</source>
+        <target>مگان</target>
+    </trans-unit>
+    <trans-unit id="309328d5f99114f41ad48acca3we98d84c13a99323f2" resname="jack">
+        <source>jack</source>
+        <target>جک</target>
+    </trans-unit>
+    <trans-unit id="309328d5f99114f41ad48acca3we98d84c13a99323f2" resname="405">
+        <source>405</source>
+        <target>پژو ۴۰۵</target>
+    </trans-unit>
+    <trans-unit id="309328d5f99114f41ad48acca39re8d84c13a99323f2" resname="206">
+        <source>206</source>
+        <target>پژو ۲۰۶</target>
+    </trans-unit>
     </body>
   </file>
 </xliff>

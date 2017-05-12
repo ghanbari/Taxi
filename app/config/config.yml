@@ -62,9 +62,9 @@ doctrine:
         password: "%database_password%"
         charset:  UTF8
         types:
-#            point: FunPro\GeoBundle\Doctrine\Type\PointType
+            point: FunPro\GeoBundle\Doctrine\Type\PointType
 #            linestring: FunPro\GeoBundle\Doctrine\Type\LineStringType
-            point:      CrEOF\Spatial\DBAL\Types\Geometry\PointType
+#            point:      CrEOF\Spatial\DBAL\Types\Geometry\PointType
             linestring: CrEOF\Spatial\DBAL\Types\Geometry\LineStringType
             geometry:   CrEOF\Spatial\DBAL\Types\GeometryType
             polygon:    CrEOF\Spatial\DBAL\Types\Geometry\PolygonType

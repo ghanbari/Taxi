@@ -2,7 +2,7 @@
 
 namespace FunPro\ServiceBundle\Event;
 
-use CrEOF\Spatial\PHP\Types\Geometry\Point;
+use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\ServiceBundle\Entity\Service;
 
 /**

@@ -2,7 +2,7 @@
 
 namespace FunPro\GeoBundle\Entity;
 
-use CrEOF\Spatial\PHP\Types\Geometry\Point as SPoint;
+use FunPro\GeoBundle\Doctrine\ValueObject\Point as SPoint;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
