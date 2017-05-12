@@ -768,7 +768,6 @@ class ServiceController extends FOSRestController
 
         $request->setUnitSystem(UnitSystem::METRIC);
         $request->setTravelMode(TravelMode::DRIVING);
-        $request->setTransitRoutingPreference(TransitRoutingPreference::LESS_WALKING);
         $request->setProvideRouteAlternatives(true);
 
         $response = $this->container->get('ivory.google_map.direction')->route($request);
@@ -778,8 +777,23 @@ class ServiceController extends FOSRestController
             /** @var BaseCost $baseCost */
             $baseCost = $this->getDoctrine()->getRepository('FunProFinancialBundle:BaseCost')->getLast();
 
+            $bestRoute = null;
             $routes = $response->getRoutes();
-            $legs = $routes[0]->getLegs();
+
+            foreach ($routes as $route) {
+                if ($bestRoute === null) {
+                    $bestRoute = $route;
+                } else {
+                    if (count($route->getLegs()) > 0
+                        and count($bestRoute->getLegs()) > 0
+                        and $route->getLegs()[0]->getDistance()->getValue() < $bestRoute->getLegs()[0]->getDistance()->getValue()
+                    ) {
+                        $bestRoute = $route;
+                    }
+                }
+            }
+
+            $legs = $bestRoute->getLegs();
             $distance = $legs[0]->getDistance()->getValue();
             $realPrice = $baseCost->getEntranceFee() + ($baseCost->getCostPerMeter() * $distance);
             $discountedPrice = $realPrice - ($realPrice * $baseCost->getDiscountPercent() / 100);
