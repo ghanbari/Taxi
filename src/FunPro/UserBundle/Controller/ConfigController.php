@@ -59,11 +59,11 @@ class ConfigController extends FOSRestController
             'service.driver.allowed_radius_for_ready' => $this->getParameter('service.driver.allowed_radius_for_ready'),
             'sms.operators_numbers' => $this->getSmsOperatorNumbers(),
             'financial.reward.referer' => $this->getParameter('financial.reward.referer'),
-            'financial.reward.referer.default_currency' => $this->getParameter('financial.reward.referer.default_currency'),
-            'financial.reward.payment.cash' => $this->getParameter('financial.reward.payment.cash'),
-            'financial.reward.payment.credit' => $this->getParameter('financial.reward.payment.credit'),
-            'financial.commission.payment.cash' => $this->getParameter('financial.commission.payment.cash'),
-            'financial.commission.payment.credit' => $this->getParameter('financial.commission.payment.credit'),
+//            'financial.reward.referer.default_currency' => $this->getParameter('financial.reward.referer.default_currency'),
+//            'financial.reward.payment.cash' => $this->getParameter('financial.reward.payment.cash'),
+//            'financial.reward.payment.credit' => $this->getParameter('financial.reward.payment.credit'),
+//            'financial.commission.payment.cash' => $this->getParameter('financial.commission.payment.cash'),
+//            'financial.commission.payment.credit' => $this->getParameter('financial.commission.payment.credit'),
         );
 
         return $this->view($config, Response::HTTP_OK);
