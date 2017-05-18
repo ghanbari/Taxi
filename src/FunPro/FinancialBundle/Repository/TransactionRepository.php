@@ -3,6 +3,12 @@
 namespace FunPro\FinancialBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
+use FunPro\DriverBundle\Entity\Driver;
+use FunPro\FinancialBundle\Entity\Transaction;
+use FunPro\UserBundle\Entity\User;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * TransactionRepository
@@ -15,29 +21,33 @@ class TransactionRepository extends EntityRepository
     /**
      * @param \DateTime $from
      * @param \Datetime $till
-     * @param null      $min
-     * @param null      $max
-     * @param null      $direction
-     * @param null      $type
-     * @param int       $limit
-     * @param int       $offset
-     *
-     * @return array
+     * @param null $min
+     * @param null $max
+     * @param null $direction
+     * @param array $types
+     * @param int $limit
+     * @param int $offset
+     * @param string $resultType `result` | `query` | `query_builder`
+     * @return array|Query|QueryBuilder
      */
     public function getAllFilterBy(
+        User $user,
         \DateTime $from = null,
         \Datetime $till = null,
         $min = null,
         $max = null,
         $direction = null,
-        $type = null,
+        array $types = null,
         $limit = 10,
-        $offset = 0
+        $offset = 0,
+        $resultType = 'result'
     ) {
         $queryBuilder = $this->createQueryBuilder('t');
 
         $queryBuilder->select(array('t', 's'))
-            ->leftJoin('t.service', 's');
+            ->leftJoin('t.service', 's')
+            ->where($queryBuilder->expr()->eq('t.user', ':user'))
+            ->setParameter('user', $user);
 
         if ($from) {
             $queryBuilder->andWhere($queryBuilder->expr()->gte('t.createdAt', ':from'))
@@ -64,15 +74,81 @@ class TransactionRepository extends EntityRepository
                 ->setParameter('dir', $direction);
         }
 
-        if ($type) {
-            $queryBuilder->andWhere($queryBuilder->expr()->eq('t.type', ':type'))
-                ->setParameter('type', $type);
+        if ($types) {
+            $queryBuilder->andWhere($queryBuilder->expr()->in('t.type', ':types'))
+                ->setParameter('types', $types);
         }
 
-        return $queryBuilder
+        $query = $queryBuilder
             ->setMaxResults($limit)
             ->setFirstResult($offset)
-            ->getQuery()
+            ->getQuery();
+
+        switch ($resultType) {
+            case 'result':
+                return $query->getResult();
+                break;
+            case 'query':
+                return $query;
+                break;
+            case 'query_builder':
+                return $queryBuilder;
+                break;
+        }
+    }
+
+    /**
+     * @param \DateTime|null $from
+     * @param \Datetime|null $till
+     * @return array
+     */
+    public function getCreditStatus(Driver $driver, \DateTime $from = null, \Datetime $till = null)
+    {
+        $qb = $this->getAllFilterBy($driver, $from, $till, null, null, null, null, 999999, 0, 'query_builder')
+            ->select(array('sum(t.amount) as amount', 't.type'))
+            ->groupBy('t.type');
+
+        $results = $qb->getQuery()
             ->getResult();
+
+        $status = array();
+        foreach ($results as $result) {
+            $type = $this->convertTransactionTypeToString($result['type']);
+            $status[$type] = $result['amount'];
+        }
+
+        return $status;
+    }
+
+    /**
+     * @param $type
+     *
+     * @return string
+     */
+    private function convertTransactionTypeToString($type)
+    {
+        switch ($type) {
+            case Transaction::TYPE_PAY:
+                return 'pay';
+                break;
+            case Transaction::TYPE_WAGE:
+                return 'wage';
+                break;
+            case Transaction::TYPE_REWARD:
+                return 'reward';
+                break;
+            case Transaction::TYPE_COMMISSION:
+                return 'commission';
+                break;
+            case Transaction::TYPE_CREDIT:
+                return 'credit';
+                break;
+            case Transaction::TYPE_WITHDRAW:
+                return 'withdraw';
+                break;
+            case Transaction::TYPE_MOVE:
+                return 'move';
+                break;
+        }
     }
 }

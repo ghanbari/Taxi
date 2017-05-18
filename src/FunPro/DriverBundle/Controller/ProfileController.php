@@ -80,6 +80,9 @@ class ProfileController extends FOSRestController
         $data['service_count'] = $this->getDoctrine()->getRepository('FunProServiceBundle:Service')
             ->getServiceCountOfDriver($driver, $from, $till);
 
+        $data['transactions'] = $this->getDoctrine()->getRepository('FunProFinancialBundle:Transaction')
+            ->getCreditStatus($driver, $from, $till);
+
         $car = $this->getDoctrine()->getRepository('FunProDriverBundle:Car')
             ->findOneBy(array('driver' => $driver, 'current' => true));
 

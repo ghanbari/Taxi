@@ -23,6 +23,7 @@ class ReportController extends FOSRestController
 {
     /**
      * Get User wallets
+     * @deprecated
      *
      * @ApiDoc(
      *      section="Report",
@@ -63,7 +64,7 @@ class ReportController extends FOSRestController
      * Get list of user transaction paginated
      *
      * @ApiDoc(
-     *      section="Payment",
+     *      section="Report",
      *      resource=true,
      *      output={
      *          "class"="FunPro\FinancialBundle\Entity\Transaction",
@@ -85,8 +86,8 @@ class ReportController extends FOSRestController
      * @Rest\QueryParam(name="min", nullable=true, requirements="\d+", strict=true)
      * @Rest\QueryParam(name="max", nullable=true, requirements="\d+", strict=true)
      * @Rest\QueryParam(name="direction", nullable=true, requirements="income|outcome", strict=true)
-     * @Rest\QueryParam(name="type", nullable=true, requirements="pay|wage|reward|commission|credit|withdraw|move",
-     *                               strict=true)
+     * @Rest\QueryParam(name="types", nullable=true, requirements="pay|wage|reward|commission|credit|withdraw|move",
+     *                               strict=true, map=true, description="array of types")
      * @Rest\QueryParam(name="limit", nullable=true, default="10", requirements="\d+", strict=true)
      * @Rest\QueryParam(name="offset", nullable=true, default="0", requirements="\d+", strict=true)
      */
@@ -114,10 +115,10 @@ class ReportController extends FOSRestController
                 $direction = null;
         }
 
-        $type = $this->convertStringToTransactionType($fetcher->get('type'));
+        $types = $this->convertStringToTransactionType($fetcher->get('types'));
 
         $transactions = $this->getDoctrine()->getRepository('FunProFinancialBundle:Transaction')
-            ->getAllFilterBy($from, $till, $min, $max, $direction, $type, $limit, $offset);
+            ->getAllFilterBy($this->getUser(), $from, $till, $min, $max, $direction, $types, $limit, $offset);
 
         $statusCode = empty($transactions) ? Response::HTTP_NO_CONTENT : Response::HTTP_OK;
         $context = (new Context())->addGroups(array('Wallet', 'Service', 'Owner', 'Public'));
@@ -128,27 +129,40 @@ class ReportController extends FOSRestController
     /**
      * convert a word to correspond transaction type
      *
-     * @param $type
+     * @param array $types
      *
      * @return int
      */
-    private function convertStringToTransactionType($type)
+    private function convertStringToTransactionType(array $types)
     {
-        switch ($type) {
-            case 'pay':
-                return Transaction::TYPE_PAY;
-            case 'wage':
-                return Transaction::TYPE_WAGE;
-            case 'reward':
-                return Transaction::TYPE_REWARD;
-            case 'commission':
-                return Transaction::TYPE_COMMISSION;
-            case 'credit':
-                return Transaction::TYPE_CREDIT;
-            case 'withdraw':
-                return Transaction::TYPE_WITHDRAW;
-            case 'move':
-                return Transaction::TYPE_MOVE;
+        $convertedTypes = array();
+
+        foreach ($types as $type) {
+            switch ($type) {
+                case 'pay':
+                    $convertedTypes[] = Transaction::TYPE_PAY;
+                    break;
+                case 'wage':
+                    $convertedTypes[] = Transaction::TYPE_WAGE;
+                    break;
+                case 'reward':
+                    $convertedTypes[] = Transaction::TYPE_REWARD;
+                    break;
+                case 'commission':
+                    $convertedTypes[] = Transaction::TYPE_COMMISSION;
+                    break;
+                case 'credit':
+                    $convertedTypes[] = Transaction::TYPE_CREDIT;
+                    break;
+                case 'withdraw':
+                    $convertedTypes[] = Transaction::TYPE_WITHDRAW;
+                    break;
+                case 'move':
+                    $convertedTypes[] = Transaction::TYPE_MOVE;
+                    break;
+            }
         }
+
+        return $convertedTypes;
     }
 }
