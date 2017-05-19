@@ -9,6 +9,7 @@ fun_pro_financial:
 fun_pro_admin_res:
     resource: "@FunProAdminBundle/Resources/config/routing.yml"
     prefix:   /admin
+    host:     "%admin.panel.host%"
     options:
         expose: true
     type:     rest

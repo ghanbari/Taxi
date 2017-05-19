@@ -54,6 +54,7 @@ parameters:
     router.request_context.schema: http
     router.request_context.host: itaxico.ir
     router.request_context.base_url: '' # "" or "/google/test"
+    admin.panel.host: itaxico.ir
 
     login.max_failure_count: 10
     login.on_failure_lock_for: 24 #hour
