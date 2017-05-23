@@ -28,7 +28,7 @@ fos_rest:
         validation_errors_argument:  validationErrors
     format_listener:
         rules:
-            - { path: ^/admin, priorities: [html, json], fallback_format: html, prefer_extension: true }
+            - { path: ^/, host: %admin.panel.host%, priorities: [html, json], fallback_format: html, prefer_extension: true }
             - { path: ^/doc, priorities: [html], fallback_format: html, prefer_extension: false }
             - { path: ^/, methods: [DELETE], priorities: [json], fallback_format: false, prefer_extension: false }
             - { path: ^/, host: api.%router.request_context.host%, priorities: [json], fallback_format: json, prefer_extension: false, exception_fallback_format: json }
