@@ -17,13 +17,15 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         panel_login:
-            pattern: ^/admin/login$
+            pattern: ^/login$
+            host: %admin.panel.host%
             form_login:
                 login_path: fun_pro_admin_login
                 check_path: fun_pro_admin_login_check
             anonymous: true
         panel:
-            pattern: ^/admin
+            pattern: ^/
+            host: %admin.panel.host%
             form_login:
                 login_path: fun_pro_admin_login
                 check_path: fun_pro_admin_login_check
@@ -64,8 +66,8 @@ security:
             anonymous:    true
 
     access_control:
-        - { path: ^/admin/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/admin/, role: ROLE_ADMIN }
+        - { path: ^/login$, host: %admin.panel.host%, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/, host: %admin.panel.host%, role: ROLE_ADMIN }
         - { path: ^/passenger$, methods: [POST], host: "api.%router.request_context.host%", role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/passenger/confirm$, methods: [POST], host: "api.%router.request_context.host%", role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/passenger, role: ROLE_PASSENGER }
