@@ -130,7 +130,7 @@ class ServiceNotificationListener implements EventSubscriberInterface
             'send_in' => strtotime('now'),
             'distance' => $service->getDistance() / 1000,
             'price' => Service::roundPrice($price),
-            'off' => Service::roundPrice($discountedPrice),
+            'total_cost' => Service::roundPrice($discountedPrice),
         );
 
         if ($service->getPassenger()) {
@@ -311,6 +311,9 @@ class ServiceNotificationListener implements EventSubscriberInterface
         $this->gcm->queue($service->getPassenger()->getDevices()->toArray(), $message);
     }
 
+    /**
+     * @param ServiceEvent $event
+     */
     public function onServiceFinish(ServiceEvent $event)
     {
         $service = $event->getService();
@@ -326,7 +329,7 @@ class ServiceNotificationListener implements EventSubscriberInterface
             'distance' => $service->getDistance(),
             'send_in' => strtotime('now'),
             'price' => Service::roundPrice($price),
-            'off' => Service::roundPrice($discountedPrice),
+            'total_cost' => Service::roundPrice($discountedPrice),
         );
 
         $message = (new Message())
