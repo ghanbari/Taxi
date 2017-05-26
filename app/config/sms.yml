@@ -21,3 +21,9 @@ k_phoen_sms_sender:
         pass: "%niaz_pardaz.pass%"
         from: "%niaz_pardaz.from%"
         international_prefix: '+98'
+
+    mashhad_sms:
+        user: "%mashhad_sms.user%"
+        pass: "%mashhad_sms.pass%"
+        from: "%mashhad_sms.from%"
+        international_prefix: '+98'

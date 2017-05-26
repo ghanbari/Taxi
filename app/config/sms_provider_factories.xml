@@ -50,6 +50,22 @@
             <!-- international prefix -->
             <argument></argument>
         </service>
+
+        <service id="sms.provider.factory.mashhad_sms" class="FunPro\EngineBundle\Sms\Provider\Factory\MashhadSmsProviderFactory">
+            <tag name="sms.provider.factory" />
+        </service>
+        <service id="sms.provider.mashhad_sms" class="FunPro\EngineBundle\Sms\Provider\MashhadSmsProvider">
+            <argument type="service" id="sms.http_adapter" />
+            <argument type="service" id="monolog.logger" />
+            <!-- user -->
+            <argument></argument>
+            <!-- pass -->
+            <argument></argument>
+            <!-- from -->
+            <argument></argument>
+            <!-- international prefix -->
+            <argument></argument>
+        </service>
     </services>
 
 </container>

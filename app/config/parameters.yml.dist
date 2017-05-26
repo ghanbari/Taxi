@@ -35,6 +35,9 @@ parameters:
     niaz_pardaz.user: ''
     niaz_pardaz.pass: ''
     niaz_pardaz.from: ''
+    mashhad_sms.user: ''
+    mashhad_sms.pass: ''
+    mashhad_sms.from: ''
     avanak.user: ''
     avanak.pass: ''
 
