@@ -280,8 +280,7 @@ class Service
      *
      * @ORM\Column(type="integer", nullable=true)
      *
-     * @JS\Groups({"Passenger", "Driver", "Agent", "Admin"})
-     * @JS\Since("1.0.0")
+     * @JS\Exclude()
      */
     private $price;
 
@@ -463,6 +462,22 @@ class Service
             'list' => self::PROPAGATION_TYPE_LIST,
             'single' => self::PROPAGATION_TYPE_SINGLE,
         );
+    }
+    
+    /**
+     * show rounded price of service
+     *
+     * @JS\VirtualProperty()
+     * @JS\SerializedName("price")
+     * @JS\Type(name="integer")
+     * @JS\Groups({"Passenger", "Driver", "Agent", "Admin"})
+     * @JS\Since("1.0.0")
+     *
+     * @return array
+     */
+    public function getRoundedPrice()
+    {
+        return self::roundPrice($this->price);
     }
 
     /**
