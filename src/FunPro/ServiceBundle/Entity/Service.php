@@ -477,7 +477,7 @@ class Service
      */
     public function getRoundedPrice()
     {
-        return self::roundPrice($this->price);
+        return self::roundPrice($this->getDiscountedPrice());
     }
 
     /**
