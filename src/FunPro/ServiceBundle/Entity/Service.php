@@ -246,7 +246,8 @@ class Service
      *
      * @ORM\Column(type="linestring", nullable=true)
      *
-     * @JS\Groups({"Passenger", "Driver", "Admin"})
+     * TODO: must do mapping for third party library JS\Groups({"Passenger", "Driver", "Admin"})
+     * @JS\Groups({"Admin"})
      * @JS\Since("1.0.0")
      * @JS\Type(name="CrEOF\Spatial\PHP\Types\Geometry\LineString")
      */
@@ -465,6 +466,8 @@ class Service
     }
 
     /**
+     * show time of service
+     *
      * @JS\VirtualProperty()
      * @JS\SerializedName("period")
      * @JS\Type(name="integer")
