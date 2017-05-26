@@ -51,6 +51,8 @@ class AppKernel extends Kernel
             $bundles[] = new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle();
             $bundles[] = new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle();
             $bundles[] = new Nelmio\ApiDocBundle\NelmioApiDocBundle();
+            $bundles[] = new JMS\DiExtraBundle\JMSDiExtraBundle($this);
+            $bundles[] = new JMS\AopBundle\JMSAopBundle();
         }
 
         return $bundles;

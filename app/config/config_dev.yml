@@ -36,3 +36,9 @@ doctrine_migrations:
     namespace: Itaxi\Migrations
     table_name: migration_versions
     name: Application Migrations
+
+services:
+    twig.text_extension:
+        class: Twig_Extensions_Extension_Text
+        tags:
+            - name: twig.extension
