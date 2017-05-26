@@ -34,7 +34,7 @@
                 var year = date.getFullYear();
                 var month = (parseInt(date.getMonth())+1) < 10 ? '0' + String(parseInt(date.getMonth())+1) : String(parseInt(date.getMonth())+1);
                 var day = (date.getDate()) < 10 ? '0' + date.getDate() : date.getDate();
-                return year + '/' + month + '/' + day;
+                return year + '-' + month + '-' + day;
             };
 
             $('#thirdPartyInsurance').pDatepicker({
