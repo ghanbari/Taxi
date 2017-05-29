@@ -84,6 +84,10 @@ class ConfigController extends FOSRestController
             $numbers[] = $this->getParameter('niaz_pardaz.from');
         }
 
+        if ($this->container->hasParameter('mashhad_sms.from') and $this->getParameter('mashhad_sms.from') !== '') {
+            $numbers[] = $this->getParameter('mashhad_sms.from');
+        }
+
         return $numbers;
     }
 }
