@@ -326,7 +326,7 @@ class ServiceNotificationListener implements EventSubscriberInterface
             'type' => 'service.finish',
             'id' => $service->getId(),
             'cost' => $this->serializer->serialize($service->getFloatingCosts()->toArray(), 'json', $context),
-            'distance' => $service->getDistance(),
+            'distance' => $service->getDistance() / 1000,
             'send_in' => strtotime('now'),
             'price' => Service::roundPrice($price),
             'total_cost' => Service::roundPrice($discountedPrice),
