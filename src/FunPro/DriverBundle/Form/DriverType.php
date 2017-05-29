@@ -93,7 +93,9 @@ class DriverType extends AbstractType
             ))
             ->add('mobile', Type\TextType::class)
             ->add('contractNumber', Type\TextType::class)
-            ->add('nationalCode', Type\TextType::class)
+            ->add('nationalCode', Type\TextType::class, array(
+                'by_reference' => false,
+            ))
             ->add('avatarFile', VichImageType::class, array(
                 'required' => false,
             ))
