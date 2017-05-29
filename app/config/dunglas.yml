@@ -13,7 +13,7 @@ dunglas_angular_csrf:
             - { route: "api" }
             - { host: "api.%router.request_context.host%" }
     secure:
-        - { route: "api", methods: [POST, PUT, DELETE, PATCH] }
+#        - { route: "api", methods: [POST, PUT, DELETE, PATCH] }
 
         #if we do uncomment following line, driver can not login(session reset in login)
 ## #       - { host: "api.%router.request_context.host%", methods: [POST, PUT, DELETE, PATCH] }
