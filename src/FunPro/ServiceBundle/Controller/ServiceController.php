@@ -640,6 +640,64 @@ class ServiceController extends FOSRestController
     }
 
     /**
+     * Rate service
+     *
+     * @ApiDoc(
+     *     section="Service",
+     *     resource=true,
+     *     statusCodes={
+     *          204="Success",
+     *          400={
+     *              "You can not rate this service now(code: 1)",
+     *              "You can not rate this service now, you can rate till one day(code: 2)",
+     *          },
+     *          403="You are not login"
+     *     }
+     * )
+     *
+     * @ParamConverter(name="service", class="FunProServiceBundle:Service")
+     * @Security("service.getPassenger() == user or service.getDriver() == user")
+     *
+     * @Rest\RequestParam(name="rate", requirements="[0-5]", strict=true, nullable=false)
+     *
+     * @param $id
+     * @return \FOS\RestBundle\View\View
+     */
+    public function rateAction(Request $request, $id)
+    {
+        /** @var Service $service */
+        $service = $request->attributes->get('service');
+        $rate = $this->get('fos_rest.request.param_fetcher')->get('rate', true);
+        $translator = $this->get('translator');
+
+        if ($service->getStatus() === ServiceLog::STATUS_REQUESTED or $service->getStatus() === ServiceLog::STATUS_REJECTED) {
+            $error = array(
+                'code' => 1,
+                'message' => $translator->trans('you.can.not.rate.this.service.now.please.refer.next.time'),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
+
+        if ((time() - $service->getCreatedAt()->format('U')) > 86400) {
+            $error = array(
+                'code' => 2,
+                'message' => $translator->trans('you.can.rate.service.till.one.day.after.service'),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($this->getUser() instanceof Passenger) {
+            $service->setPassengerRate($rate);
+        } elseif ($this->getUser() instanceof Driver) {
+            $service->setDriverRate($rate);
+        }
+
+        $this->getDoctrine()->getManager()->flush();
+
+        return $this->view(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
      * Get last service of user
      *
      * @ApiDoc(

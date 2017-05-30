@@ -222,7 +222,7 @@ class Service
      * @Assert\NotNull(groups={"Rate"})
      * @Assert\Type(type="numeric", groups={"Rate"})
      *
-     * @JS\Groups({"Passenger", "Admin"})
+     * @JS\Groups({"Public", "Admin"})
      * @JS\Since("1.0.0")
      */
     private $driverRate;
@@ -236,7 +236,7 @@ class Service
      * @Assert\NotNull(groups={"Rate"})
      * @Assert\Type(type="numeric", groups={"Rate"})
      *
-     * @JS\Groups({"Driver", "Admin"})
+     * @JS\Groups({"Public", "Admin"})
      * @JS\Since("1.0.0")
      */
     private $passengerRate;
