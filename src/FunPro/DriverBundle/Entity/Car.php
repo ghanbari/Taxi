@@ -116,10 +116,10 @@ class Car
     /**
      * @var string
      *
-     * @ORM\Column(length=6)
+     * @ORM\Column(length=25)
      *
      * @Assert\NotBlank(groups={"Create", "Update"})
-     * @Assert\Regex(pattern="/[0-9a-fA-F]{6}/", groups={"Create", "Update"})
+     * @Assert\Length(max="25")
      *
      * @JS\Groups({"Public", "Driver", "Admin"})
      * @JS\Since("1.0.0")
