@@ -299,10 +299,12 @@ class BaseCost
 
     /**
      * @param Point $location
+     * @return $this
      */
     public function setLocation($location)
     {
         $this->location = $location;
+        return $this;
     }
 
     /**
@@ -315,9 +317,11 @@ class BaseCost
 
     /**
      * @param int $locationRadius
+     * @return BaseCost;
      */
     public function setLocationRadius($locationRadius)
     {
         $this->locationRadius = $locationRadius;
+        return $this;
     }
 }
