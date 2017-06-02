@@ -24,7 +24,7 @@ class BaseCostRepository extends EntityRepository
         $qb = $this->createQueryBuilder('bc');
 
         return $qb->select('bc')
-            ->where($qb->expr()->lte('glength(linestring(bc.location, st_geomfromtext(:point)))', 'bc.locationRadius'))
+            ->where($qb->expr()->lte('glength(linestring(bc.location, st_geomfromtext(:point))) * 110000', 'bc.locationRadius'))
             ->setParameter('point', "Point($longitude $latitude)")
             ->setMaxResults(1)
             ->orderBy('bc.createdAt', 'DESC')

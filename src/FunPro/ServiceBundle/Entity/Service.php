@@ -310,7 +310,6 @@ class Service
      *
      * @ORM\ManyToOne(targetEntity="FunPro\FinancialBundle\Entity\BaseCost")
      *
-     * @Assert\NotNull(groups={"Create", "Update"})
      * @Assert\Type(type="FunPro\FinancialBundle\Entity\BaseCost")
      *
      * @JS\Groups({"Admin"})

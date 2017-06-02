@@ -2,6 +2,7 @@
 
 namespace FunPro\ServiceBundle\Controller;
 
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\PessimisticLockException;
 use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -98,25 +99,6 @@ class ServiceController extends FOSRestController
 
         $service = new Service();
 
-        $form = $this->getForm($service);
-        $form->handleRequest($request);
-
-        $baseCost = $this->getDoctrine()->getRepository('FunProFinancialBundle:BaseCost')->getLast(
-            $service->getStartPoint()->getLongitude(),
-            $service->getStartPoint()->getLatitude()
-        );
-
-        if (!$baseCost) {
-            $logger->addError("Price is not set for this location", array('service' => $service));
-            $error = array(
-                'code' => 4,
-                'message' => $translator->trans('this.location.is.out.of.service')
-            );
-            return $this->view($error, Response::HTTP_BAD_REQUEST);
-        }
-
-        $service->setBaseCost($baseCost);
-
         $context = new Context();
         $context->addGroups(['Public', 'Point', 'PropagationList']);
 
@@ -132,6 +114,25 @@ class ServiceController extends FOSRestController
             $service->setStartPoint($agent->getAddress()->getPoint());
             $context->addGroup('Agent');
         }
+
+        $form = $this->getForm($service);
+        $form->handleRequest($request);
+
+        try {
+            $baseCost = $this->getDoctrine()->getRepository('FunProFinancialBundle:BaseCost')->getLast(
+                $service->getStartPoint()->getLongitude(),
+                $service->getStartPoint()->getLatitude()
+            );
+        } catch (NoResultException $e) {
+            $logger->addError("Price is not set for this location", array('service' => $service));
+            $error = array(
+                'code' => 4,
+                'message' => $translator->trans('this.location.is.out.of.service')
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
+
+        $service->setBaseCost($baseCost);
 
         if ($form->isValid()) {
             $propagationList = $form['propagationList']->getData();
@@ -847,13 +848,13 @@ class ServiceController extends FOSRestController
 
         $result = array();
         if (count($response->getRoutes()) > 0) {
-            /** @var BaseCost $baseCost */
-            $baseCost = $this->getDoctrine()->getRepository('FunProFinancialBundle:BaseCost')->getLast(
-                $fetcher->get('origin_lng'),
-                $fetcher->get('origin_lat')
-            );
-
-            if (!$baseCost) {
+            try {
+                /** @var BaseCost $baseCost */
+                $baseCost = $this->getDoctrine()->getRepository('FunProFinancialBundle:BaseCost')->getLast(
+                    $fetcher->get('origin_lng'),
+                    $fetcher->get('origin_lat')
+                );
+            } catch (NoResultException $e) {
                 $error = array(
                     'code' => 1,
                     'message' => $translator->trans('this.location.is.out.of.service')
