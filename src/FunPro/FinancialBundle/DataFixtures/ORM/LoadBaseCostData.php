@@ -5,6 +5,7 @@ namespace FunPro\FinancialBundle\DataFixtures\ORM;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use FunPro\FinancialBundle\Entity\BaseCost;
+use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 
 /**
  * Class LoadBaseCostData
@@ -26,7 +27,9 @@ class LoadBaseCostData implements FixtureInterface
             ->setDiscountPercent(5)
             ->setEntranceFee(500)
             ->setPaymentCashReward(5)
-            ->setPaymentCreditReward(5);
+            ->setPaymentCreditReward(5)
+            ->setLocation(new Point(59.605560, 36.298468))
+            ->setLocationRadius(10000);
 
         $manager->persist($cost);
         $manager->flush();
