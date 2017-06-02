@@ -55,8 +55,6 @@ class PassengerController extends FOSRestController
      *      }
      * )
      *
-     * @Security("!is_authenticated()")
-     *
      * @Rest\View()
      * @Rest\RequestParam(name="phone", requirements="09[0-9]{9}", strict=true)
      *
