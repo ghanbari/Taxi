@@ -1,3 +1,9 @@
+var pickLocation = function (td, cellData, rowData, row, col) {
+    console.log(cellData);
+    var html = '<a href="https://www.google.com/maps/place/@'+ cellData.latitude +','+ cellData.longitude +',12z">نمایش مکان</a>';
+    $(td).html(html);
+};
+
 var oTable;
 var TableDatatablesResponsive = function () {
 
@@ -50,6 +56,8 @@ var TableDatatablesResponsive = function () {
                 {name: "b.discountPercent", data: "discountPercent", "defaultContent": "", orderable: true, searchable: true},
                 {name: "b.paymentCashReward", data: "paymentCashReward", "defaultContent": "", orderable: true, searchable: true},
                 {name: "b.paymentCreditReward", data: "paymentCreditReward", "defaultContent": "", orderable: true, searchable: true},
+                {name: "b.location", data: "location", "defaultContent": "", orderable: false, searchable: false, className: "location", "createdCell": pickLocation},
+                {name: "b.locationRadius", data: "locationRadius", "defaultContent": "", orderable: false, searchable: false},
                 {name: "b.createdAt", data: "createdAt", "defaultContent": "", orderable: true, searchable: true},
             ],
 

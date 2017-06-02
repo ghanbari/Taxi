@@ -79,6 +79,7 @@ class ServiceController extends FOSRestController
      *              "When propagation list is larger than allowed number(code: 1)",
      *              "When any driver are not online(code: 2)",
      *              "When specified Driver in propagationList is not found(code: 3)",
+     *              "Specified location is out of Service(code: 4)",
      *          },
      *          403= {
      *              "when csrf token is invalid",
@@ -94,10 +95,26 @@ class ServiceController extends FOSRestController
         $logger = $this->get('logger');
         $translator = $this->get('translator');
         $manager = $this->getDoctrine()->getManager();
-        $baseCost = $this->getDoctrine()->getRepository('FunProFinancialBundle:BaseCost')
-            ->getLast();
 
         $service = new Service();
+
+        $form = $this->getForm($service);
+        $form->handleRequest($request);
+
+        $baseCost = $this->getDoctrine()->getRepository('FunProFinancialBundle:BaseCost')->getLast(
+            $service->getStartPoint()->getLongitude(),
+            $service->getStartPoint()->getLatitude()
+        );
+
+        if (!$baseCost) {
+            $logger->addError("Price is not set for this location", array('service' => $service));
+            $error = array(
+                'code' => 4,
+                'message' => $translator->trans('this.location.is.out.of.service')
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
+
         $service->setBaseCost($baseCost);
 
         $context = new Context();
@@ -115,9 +132,6 @@ class ServiceController extends FOSRestController
             $service->setStartPoint($agent->getAddress()->getPoint());
             $context->addGroup('Agent');
         }
-
-        $form = $this->getForm($service);
-        $form->handleRequest($request);
 
         if ($form->isValid()) {
             $propagationList = $form['propagationList']->getData();
@@ -817,6 +831,7 @@ class ServiceController extends FOSRestController
      */
     public function getCalculatePriceAction()
     {
+        $translator = $this->get('translator');
         $fetcher = $this->get('fos_rest.request.param_fetcher');
 
         $request = new DirectionRequest(
@@ -833,7 +848,18 @@ class ServiceController extends FOSRestController
         $result = array();
         if (count($response->getRoutes()) > 0) {
             /** @var BaseCost $baseCost */
-            $baseCost = $this->getDoctrine()->getRepository('FunProFinancialBundle:BaseCost')->getLast();
+            $baseCost = $this->getDoctrine()->getRepository('FunProFinancialBundle:BaseCost')->getLast(
+                $fetcher->get('origin_lng'),
+                $fetcher->get('origin_lat')
+            );
+
+            if (!$baseCost) {
+                $error = array(
+                    'code' => 1,
+                    'message' => $translator->trans('this.location.is.out.of.service')
+                );
+                return $this->view($error, Response::HTTP_BAD_REQUEST);
+            }
 
             $bestRoute = null;
             $routes = $response->getRoutes();

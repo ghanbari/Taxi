@@ -12,10 +12,20 @@ use Doctrine\ORM\EntityRepository;
  */
 class BaseCostRepository extends EntityRepository
 {
-    public function getLast()
+    /**
+     * @param $longitude
+     * @param $latitude
+     * @return mixed
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getLast($longitude, $latitude)
     {
-        return $this->createQueryBuilder('bc')
-            ->select('bc')
+        $qb = $this->createQueryBuilder('bc');
+
+        return $qb->select('bc')
+            ->where($qb->expr()->lte('glength(linestring(bc.location, st_geomfromtext(:point)))', 'bc.locationRadius'))
+            ->setParameter('point', "Point($longitude $latitude)")
             ->setMaxResults(1)
             ->orderBy('bc.createdAt', 'DESC')
             ->getQuery()

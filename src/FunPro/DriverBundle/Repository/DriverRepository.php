@@ -36,7 +36,7 @@ class DriverRepository extends EntityRepository
             ->setParameter('current', true)
             ->setParameter('carStatus', array(Car::STATUS_WAKEFUL, Car::STATUS_SERVICE_IN, Car::STATUS_SERVICE_END))
             ->setParameter('location', $point)
-            ->setParameter('distance', $distance / 100000);
+            ->setParameter('distance', $distance / 110000);
 
         return $queryBuilder->getQuery()
             ->getResult();

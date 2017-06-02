@@ -67,7 +67,7 @@ class WakefulRepository extends EntityRepository
             ->join('c.driver', 'd')
             ->where($queryBuilder->expr()->lte('glength(linestring(w.point, st_geomfromtext(:point)))', ':distance'))
             ->setParameter('point', "Point($longitude $latitude)")
-            ->setParameter('distance', $distance / 100000);
+            ->setParameter('distance', $distance / 110000);
 
         if (!is_null($disappear)) {
             $queryBuilder->andWhere($queryBuilder->expr()->neq('d.id', ':disappear'))

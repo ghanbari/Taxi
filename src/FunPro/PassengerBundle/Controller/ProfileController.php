@@ -44,7 +44,10 @@ class ProfileController extends FOSRestController
      *      },
      *      statusCodes={
      *          204="When success",
-     *          400="When form validation failed.",
+     *          400={
+     *              "When form validation failed.",
+     *              "email is duplicate (code: 2)"
+     *          },
      *          403= {
      *              "when csrf token is invalid",
      *              "when you are not login",
@@ -60,14 +63,16 @@ class ProfileController extends FOSRestController
      */
     public function putAction(Request $request)
     {
-        $manager = $this->getDoctrine()->getManager();
+        if ($born = $request->request->get('born')) {
+            $request->request->set('born', \DateTime::createFromFormat('U', $born)->format('Y-m-d'));
+        }
 
         $user = $this->getUser();
         $form = $this->createEditForm($user);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $manager->flush();
+            $this->get('fos_user.user_manager')->updateUser($user);
 
             return $this->view(null, Response::HTTP_NO_CONTENT);
         }

@@ -30,10 +30,10 @@ class ProfileType extends AbstractType
                 'label' => 'name',
                 'required' => false
             ))
-            ->add('age', Type\NumberType::class, array(
-                'label' => 'age',
+            ->add('born', Type\DateType::class, array(
+                'widget' => 'single_text',
+                'label' => 'born',
                 'required' => false,
-                'scale' => 0,
             ))
             ->add('sex', Type\ChoiceType::class, array(
                 'label' => 'sex',

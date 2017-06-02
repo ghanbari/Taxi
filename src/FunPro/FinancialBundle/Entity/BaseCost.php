@@ -3,6 +3,7 @@
 namespace FunPro\FinancialBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation as JS;
@@ -92,6 +93,36 @@ class BaseCost
      * @JS\Since("1.0.0")
      */
     private $paymentCreditReward;
+
+    /**
+     * @var Point
+     *
+     * @ORM\Column(name="location", type="point")
+     *
+     * @Assert\NotNull(groups={"Create"})
+     * @Assert\Type(type="FunPro\GeoBundle\Doctrine\ValueObject\Point", groups={"Create"})
+     * @Assert\Valid()
+     *
+     * @JS\Groups({"Admin", "Point"})
+     * @JS\MaxDepth(1)
+     * @JS\Since("1.0.0")
+     */
+    private $location;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="location_radius", type="integer")
+     *
+     * @Assert\NotNull(groups={"Create"})
+     * @Assert\Type("numeric")
+     * @Assert\Valid()
+     *
+     * @JS\Groups({"Admin", "Point"})
+     * @JS\MaxDepth(1)
+     * @JS\Since("1.0.0")
+     */
+    private $locationRadius;
 
     /**
      * @var \Datetime
@@ -256,5 +287,37 @@ class BaseCost
     {
         $this->paymentCreditReward = $paymentCreditReward;
         return $this;
+    }
+
+    /**
+     * @return Point
+     */
+    public function getLocation()
+    {
+        return $this->location;
+    }
+
+    /**
+     * @param Point $location
+     */
+    public function setLocation($location)
+    {
+        $this->location = $location;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLocationRadius()
+    {
+        return $this->locationRadius;
+    }
+
+    /**
+     * @param int $locationRadius
+     */
+    public function setLocationRadius($locationRadius)
+    {
+        $this->locationRadius = $locationRadius;
     }
 }

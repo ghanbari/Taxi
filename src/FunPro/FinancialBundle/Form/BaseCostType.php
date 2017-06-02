@@ -3,6 +3,7 @@
 namespace FunPro\FinancialBundle\Form;
 
 use FunPro\FinancialBundle\Entity\BaseCost;
+use FunPro\GeoBundle\Form\Type\PointType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type as Form;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -27,6 +28,8 @@ class BaseCostType extends AbstractType
             ->add('discountPercent', Form\NumberType::class)
             ->add('paymentCashReward', Form\NumberType::class)
             ->add('paymentCreditReward', Form\NumberType::class)
+            ->add('location', PointType::class)
+            ->add('locationRadius', Form\NumberType::class)
         ;
     }
     

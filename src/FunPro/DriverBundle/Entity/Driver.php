@@ -59,19 +59,6 @@ class Driver extends User implements SMSInterface
     protected $parentName;
 
     /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="born", type="date", options={"default"="2017/01/01"})
-     *
-     * @Assert\NotNull(groups={"Register", "Update"})
-     * @Assert\Date(groups={"Register", "Update"})
-     *
-     * @JS\Groups({"Owner", "Admin", "Register"})
-     * @JS\Since("1.0.0")
-     */
-    protected $born;
-
-    /**
      * @var integer
      *
      * @ORM\Column(type="smallint")
@@ -490,25 +477,6 @@ class Driver extends User implements SMSInterface
     {
         $this->agency = $agency;
 
-        return $this;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getBorn()
-    {
-        return $this->born;
-    }
-
-    /**
-     * @param \DateTime $born
-     *
-     * @return $this
-     */
-    public function setBorn(\DateTime $born)
-    {
-        $this->born = $born;
         return $this;
     }
 

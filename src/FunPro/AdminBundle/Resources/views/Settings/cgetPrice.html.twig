@@ -1,5 +1,9 @@
 {% extends '::base_admin.html.twig' %}
 
+{% form_theme form _self %}
+
+{% use 'bootstrap_3_layout.html.twig' %}
+
 {% block stylesheetsPagePlugins %}
     <link href="{{ asset("assets/global/plugins/datatables/datatables.min.css") }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset("assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap-rtl.css") }}" rel="stylesheet" type="text/css" />
@@ -53,34 +57,59 @@
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group form-md-line-input has-success">
-                                        <input name="base_cost[entranceFee]" type="text" class="form-control" placeholder="هزینه ورودی">
+                                        {{ form_widget(form.entranceFee, {'attr': {'placeholder': 'هزینه ورودی'}}) }}
                                         <div class="form-control-focus"> </div>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group form-md-line-input has-warning">
-                                        <input name="base_cost[costPerMeter]" type="text" class="form-control" placeholder="هزینه برای هر متر">
+                                        {{ form_widget(form.costPerMeter, {'attr': {'placeholder': 'هزینه برای هر متر'}}) }}
                                         <div class="form-control-focus"> </div>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group form-md-line-input has-info">
-                                        <input name="base_cost[discountPercent]" type="number" class="form-control" placeholder="درصد تخفیف">
+                                        {{ form_widget(form.discountPercent, {'attr': {'placeholder': 'درصد تخفیف'}}) }}
                                         <div class="form-control-focus"> </div>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group form-md-line-input has-info">
-                                        <input name="base_cost[paymentCashReward]" type="number" class="form-control" placeholder="درصد تخفیف پرداخت نقدی">
+                                        {{ form_widget(form.paymentCashReward, {'attr': {'placeholder': 'درصد تخفیف پرداخت نقدی'}}) }}
                                         <div class="form-control-focus"></div>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group form-md-line-input has-info">
-                                        <input name="base_cost[paymentCreditReward]" type="number" class="form-control" placeholder="درصد تخفیف پرداخت اعتباری">
+                                        {{ form_widget(form.paymentCreditReward, {'attr': {'placeholder': 'درصد تخفیف پرداخت اعتباری'}}) }}
                                         <div class="form-control-focus"></div>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group form-md-line-input has-info">
+                                        {{ form_widget(form.location.longitude, {'attr': {'placeholder': 'طول جغرافیایی'}}) }}
+                                        <div class="form-control-focus"></div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group form-md-line-input has-info">
+                                        {{ form_widget(form.location.latitude, {'attr': {'placeholder': 'عرض جغرافیایی'}}) }}
+                                        <div class="form-control-focus"></div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group form-md-line-input has-info">
+                                        {{ form_widget(form.locationRadius, {'attr': {'placeholder': 'شعاع'}}) }}
+                                        <div class="form-control-focus"></div>
+                                    </div>
+                                </div>
+
                                 <div class="col-md-2 col-md-offset-1">
                                     <div class="form-group form-md-line-input has-error">
                                         <input type="submit" class="btn btn-success" style="width: 100%" placeholder=".col-md-3">
@@ -114,8 +143,10 @@
                                         <th class="all">هزینه ورودی</th>
                                         <th class="all">هزینه هر متر</th>
                                         <th class="all">درصد تخفیف</th>
-                                        <th class="all">درصد تخفیف پرداخت نقدی</th>
-                                        <th class="all">درصد تخفیف پرداخت اعتباری</th>
+                                        <th class="all">تخفیف نقدی</th>
+                                        <th class="all">تخفیف اعتباری</th>
+                                        <th class="all">منطقه</th>
+                                        <th class="all">شعاع</th>
                                         <th class="min-tablet">تاریخ ثبت</th>
                                     </tr>
                                     </thead>

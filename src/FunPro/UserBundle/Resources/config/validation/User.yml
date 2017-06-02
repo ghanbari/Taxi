@@ -6,7 +6,7 @@ FunPro\UserBundle\Entity\User:
                 max: 255
                 minMessage: fos_user.username.short
                 maxMessage: fos_user.username.long
-                groups: [Register]
+                groups: [Register, Profile]
         plainPassword:
             - NotBlank:
                 groups: [Register]
@@ -21,7 +21,7 @@ FunPro\UserBundle\Entity\User:
                 min: 2
                 max: 255
                 maxMessage: fos_user.email.long
-                groups: [Register]
+                groups: [Register, Profile]
             - Email:
                 message: fos_user.email.invalid
-                groups: [Register]
+                groups: [Register, Profile]

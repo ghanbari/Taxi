@@ -112,6 +112,7 @@ class User extends BaseUser
     protected $name;
 
     /**
+     * @deprecated
      * @var integer
      *
      * @ORM\Column(type="smallint", nullable=true)
@@ -119,10 +120,22 @@ class User extends BaseUser
      * @Assert\Type(type="numeric", groups={"Register", "Profile"})
      * @Assert\Range(min="13", max="99", groups={"Register", "Profile"})
      *
-     * @JS\Groups({"Public", "Profile", "Admin"})
+     * @JS\Groups({"Owner", "Register", "Profile", "Admin"})
      * @JS\Since("1.0.0")
      */
     protected $age;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="born", type="date", nullable=true, options={"default"="2017/01/01"})
+     *
+     * @Assert\Date(groups={"Register", "Update"})
+     *
+     * @JS\Groups({"Owner", "Register", "Profile", "Admin"})
+     * @JS\Since("1.0.0")
+     */
+    protected $born;
 
     /**
      * @var integer
@@ -343,6 +356,22 @@ class User extends BaseUser
         $this->age = $age;
 
         return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getBorn()
+    {
+        return $this->born;
+    }
+
+    /**
+     * @param \DateTime $born
+     */
+    public function setBorn(\DateTime $born)
+    {
+        $this->born = $born;
     }
 
     /**

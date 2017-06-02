@@ -56,8 +56,8 @@ class SettingsController extends FOSRestController
         $pagination = $paginator->paginate($queryBuilder, floor($offset / $length)+1, $length);
 
         $context = (new Context())
-            ->addGroup('Admin')
-            ->setMaxDepth(1);
+            ->addGroups(array('Admin', 'Point'))
+            ->setMaxDepth(true);
         return $this->view(array(
             "recordsTotal" => $pagination->getTotalItemCount(),
             "recordsFiltered" => $pagination->getTotalItemCount(),
