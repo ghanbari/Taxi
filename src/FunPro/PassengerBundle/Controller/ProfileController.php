@@ -64,7 +64,7 @@ class ProfileController extends FOSRestController
     public function putAction(Request $request)
     {
         if ($born = $request->request->get('born')) {
-            $request->request->set('born', \DateTime::createFromFormat('U', $born)->format('Y-m-d'));
+            $request->request->set('born', \DateTime::createFromFormat('U', $born/1000)->format('Y-m-d'));
         }
 
         $user = $this->getUser();
@@ -91,7 +91,7 @@ class ProfileController extends FOSRestController
         $form = $this->createForm(new ProfileType(), $passenger, array(
             'action' => $this->generateUrl('fun_pro_passenger_api_put_passenger_profile'),
             'method' => 'PUT',
-            'validation_groups' => array('Profile'),
+            'validation_groups' => array('Profiles'),
             'csrf_protection' => $requestFormat === 'html' ?: false,
         ));
 

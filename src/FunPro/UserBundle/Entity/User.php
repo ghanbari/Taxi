@@ -369,7 +369,7 @@ class User extends BaseUser
     /**
      * @param \DateTime $born
      */
-    public function setBorn(\DateTime $born)
+    public function setBorn(\DateTime $born = null)
     {
         $this->born = $born;
     }
