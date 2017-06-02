@@ -763,7 +763,7 @@ class ServiceController extends FOSRestController
      *      resource=true,
      *      output={
      *          "class"="FunPro\ServiceBundle\Entity\Service",
-     *          "groups"={"Passenger", "Driver", "Agent", "Admin", "Public", "Point"},
+     *          "groups"={"Passenger", "Driver", "Agent", "Admin", "Public", "Point", "Plaque", "Car"},
      *      },
      *      statusCodes={
      *          200="When success",
