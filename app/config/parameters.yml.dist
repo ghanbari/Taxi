@@ -15,9 +15,13 @@ parameters:
     mailer_user:       ~
     mailer_password:   ~
 
-    api.version.current: "1.0.0"
-    api.version.available: ["1.0.0"]
-    api.version.supported_till:
+    api.passenger.version.current: "1.0.0"
+    api.passenger.version.available: ["1.0.0"]
+    api.passenger.version.supported_till:
+        "1.0.0": "2016-05-05"
+    api.driver.version.current: "1.0.0"
+    api.driver.version.available: ["1.0.0"]
+    api.driver.version.supported_till:
         "1.0.0": "2016-05-05"
 
     app.passenger.package_name: 'ir.vdevelop.passenger'

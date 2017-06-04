@@ -36,9 +36,12 @@ class ConfigController extends FOSRestController
     public function getGlobalAction()
     {
         $config = array(
-            'version.current' => $this->getParameter('api.version.current'),
-            'version.supported' => $this->getParameter('api.version.available'),
-            'version.supported.till' => $this->getParameter('api.version.supported_till'),
+            'app.driver.version.current' => $this->getParameter('api.driver.version.current'),
+            'app.driver.version.supported' => $this->getParameter('api.driver.version.available'),
+            'app.driver.version.supported.till' => $this->getParameter('api.driver.version.supported_till'),
+            'app.passenger.version.current' => $this->getParameter('api.passenger.version.current'),
+            'app.passenger.version.supported' => $this->getParameter('api.passenger.version.available'),
+            'app.passenger.version.supported.till' => $this->getParameter('api.passenger.version.supported_till'),
             'app.android.download.url' => $this->getParameter('app.android.download.url'),
             'gcm.ttl.service_request' => $this->getParameter('gcm.ttl.service_request'),
             'gcm.ttl.service_accept' => $this->getParameter('gcm.ttl.service_accept'),
