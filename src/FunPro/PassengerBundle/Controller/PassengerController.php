@@ -143,8 +143,6 @@ class PassengerController extends FOSRestController
      *      }
      * )
      *
-     * @Security("!is_authenticated()")
-     *
      * @Rest\RequestParam(name="token", requirements="\d+", strict=true, description="token number for verify")
      * @Rest\RequestParam(name="phone", requirements="09[0-9]{9}", strict=true, description="phone number")
      * @Rest\RequestParam(name="referer", requirements="09[0-9]{9}", strict=true, nullable=true, description="referer
