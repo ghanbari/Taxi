@@ -36,7 +36,8 @@ fos_rest:
         enabled: true
     versioning:
         enabled:              true
-        default_version:      "%api.version.current%"
+        #FIXME: How specify version for passenger & driver
+        default_version:      "%api.passenger.version.current%"
         resolvers:
             media_type:
                 enabled:              true

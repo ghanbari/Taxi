@@ -24,7 +24,8 @@ services:
 
     fun_pro_engine.version_listener:
         class: FunPro\EngineBundle\Listener\FilterControllerByApiVersion
-        arguments: ["@router", "%api.version.current%", "%api.version.available%"]
+        #FIXME: How specify version for passenger & driver
+        arguments: ["@router", "%api.passenger.version.current%", "%api.passenger.version.available%"]
         tags:
             - { name: kernel.event_subscriber }
 

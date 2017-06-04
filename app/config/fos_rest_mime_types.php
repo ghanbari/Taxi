@@ -1,6 +1,7 @@
 <?php
 
-$versions = $container->getParameter('api.version.available');
+#FIXME: How specify version for passenger & driver
+$versions = $container->getParameter('api.passenger.version.available');
 
 $mimeTypes = array(
     'json' => array(
