@@ -118,6 +118,9 @@ class ServiceSubscriber implements EventSubscriberInterface
                 array('onServiceFinish', 10),
                 array('autoPay', 5),
             ),
+            ServiceEvents::SERVICE_UPDATE => array(
+                array('onServiceUpdate', 255),
+            ),
             CarEvents::CAR_MOVE => array(
                 array('onService', 10),
             ),
@@ -316,6 +319,38 @@ class ServiceSubscriber implements EventSubscriberInterface
     }
 
     /**
+     * @param ServiceEvent $event
+     */
+    public function onServiceUpdate(ServiceEvent $event)
+    {
+        $service = $event->getService();
+        $service->setDistance($this->calculateDistance($service));
+        try {
+            $service->calculatePrice();
+        } catch (\RuntimeException $e) {
+            $this->logger->addError('distance can not be zero', array('distance' => $service->getDistance()));
+        }
+
+        $this->applyDiscount($service);
+    }
+
+    private function applyDiscount(Service $service)
+    {
+        if ($service->getDiscountCode()) {
+            return;
+        }
+
+        $activeDiscount = $this->doctrine->getRepository('FunProFinancialBundle:FavoriteDiscountCodes')
+            ->findOneBy(array('active' => true, 'passenger' => $service->getPassenger()));
+        if ($activeDiscount) {
+            $discountRepo = $this->doctrine->getRepository('FunProFinancialBundle:DiscountCode');
+            if ($discountRepo->canUseDiscount($service, $activeDiscount->getDiscountCode())) {
+                $service->setDiscountCode($activeDiscount->getDiscountCode());
+            }
+        }
+    }
+
+    /**
      * @param GetMoveCarEvent $event
      */
     public function onService(GetMoveCarEvent $event)
@@ -454,6 +489,8 @@ class ServiceSubscriber implements EventSubscriberInterface
 
         $serviceRepo = $manager->getRepository('FunProServiceBundle:Service');
         $service = $event->getService();
+
+        $this->applyDiscount($service);
 
         #TODO: we need float costs?
 //        $cost = $serviceRepo->getTotalCost($service);

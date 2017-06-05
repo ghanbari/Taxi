@@ -6,3 +6,7 @@ fun_pro_financial_report_api:
     resource: "@FunProFinancialBundle/Controller/ReportController.php"
     type:     rest
     parent:   fun_pro_financial_api
+
+fun_pro_financial_discount_api:
+    resource: "@FunProFinancialBundle/Controller/DiscountController.php"
+    type:     rest

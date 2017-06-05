@@ -27,6 +27,10 @@ fun_pro_settings_management:
     resource: "@FunProAdminBundle/Controller/SettingsController.php"
     type:     rest
 
+fun_pro_discount_code_management:
+    resource: "@FunProFinancialBundle/Controller/Management/DiscountController.php"
+    type:     rest
+
 fun_pro_admin_monitor:
     resource: "@FunProAdminBundle/Controller/MonitorController.php"
     type:     rest

@@ -560,6 +560,69 @@ class ServiceController extends FOSRestController
     }
 
     /**
+     * Update Destination
+     *
+     * @ApiDoc(
+     *      section="Service",
+     *      resource=true,
+     *      views={"driver"},
+     *      statusCodes={
+     *          204="When success",
+     *          400={
+     *              "Invalid format for floating cost or more that ten item is send(code: 2)",
+     *              "When car status is not in_service or in_and_accept or in_and_prepare(code: 3)",
+     *              "When service is not started(code: 4)",
+     *          },
+     *          403= {
+     *              "when you are not a driver or driver of this service",
+     *          },
+     *      }
+     * )
+     *
+     * @ParamConverter("service", class="FunProServiceBundle:Service")
+     * @Security("has_role('ROLE_DRIVER') and service.getCar().getDriver() == user")
+     * 
+     * @Rest\RequestParam(name="longitude", requirements="\d+\.\d+", nullable=false, strict=true)
+     * @Rest\RequestParam(name="latitude", requirements="\d+\.\d+", nullable=false, strict=true)
+     */
+    public function patchDestinationAction(Request $request, $id)
+    {
+        /** @var Service $service */
+        $service = $request->attributes->get('service');
+        $fetcher = $this->get('fos_rest.request.param_fetcher');
+        $translator = $this->get('translator');
+        $logger = $this->get('logger');
+
+        if ($service->getStatus() !== ServiceLog::STATUS_START
+            && $service->getStatus() !== ServiceLog::STATUS_READY
+        ) {
+            $logger->addError(
+                'Driver try change service destination after finish or before ready',
+                array('service' => $service)
+            );
+            $error = array(
+                'code' => 1,
+                'message' => $translator->trans('you.can.not.change.destination.of.service')
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
+
+        $longitude = $fetcher->get('longitude', true);
+        $latitude = $fetcher->get('latitude', true);
+        $destination = new Point($longitude, $latitude);
+        $service->setEndPoint($destination);
+        
+        $event = new ServiceEvent($service);
+        $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_UPDATE, $event);
+        $this->getDoctrine()->getManager()->flush();
+        
+        $context = new Context();
+        $context->addGroups(['Public', 'Point', 'Driver']);
+        return $this->view($service, Response::HTTP_OK)
+            ->setSerializationContext($context);;
+    }
+
+    /**
      * update service status
      *
      * @ApiDoc(

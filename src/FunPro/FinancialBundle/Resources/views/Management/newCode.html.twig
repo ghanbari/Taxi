@@ -1,0 +1,174 @@
+{% extends '::base_admin.html.twig' %}
+
+{% block form_errors -%}
+    {% if errors|length > 0 -%}
+        {%- for error in errors -%}
+            {{ error.message }} <br />
+        {%- endfor -%}
+    {%- endif %}
+{%- endblock form_errors %}
+
+{% form_theme form _self %}
+
+{% use 'bootstrap_3_layout.html.twig' %}
+
+{% block stylesheetsPagePlugins %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('bower_components/pick-a-color/build/1.2.3/css/pick-a-color-1.2.3.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('bower_components/persian-datepicker/dist/css/persian-datepicker-0.4.5.css') }}">
+{% endblock stylesheetsPagePlugins %}
+
+{% block javascriptsPageScripts %}
+    <script src="{{ asset('bower_components/pick-a-color/build/1.1.6/js/tinycolor-0.9.14.min.js') }}"></script>
+    <script src="{{ asset('bower_components/pick-a-color/build/1.2.3/js/pick-a-color-1.2.3.min.js') }}"></script>
+    <script src="{{ asset('bower_components/persian-date/dist/0.1.8/persian-date-0.1.8.min.js') }}"></script>
+    <script src="{{ asset('bower_components/persian-datepicker/dist/js/persian-datepicker-0.4.5.js') }}"></script>
+
+    <script>
+        $(function() {
+//            $('.pick-a-color').pickAColor();
+//            $('.color-menu.dropdown-menu').css({transform: 'translateX(100%)'});
+
+            var convertUnixToDate = function (unix) {
+                var date = new Date(unix);
+                var year = date.getFullYear();
+                var month = (parseInt(date.getMonth())+1) < 10 ? '0' + String(parseInt(date.getMonth())+1) : String(parseInt(date.getMonth())+1);
+                var day = (date.getDate()) < 10 ? '0' + date.getDate() : date.getDate();
+                return year + '-' + month + '-' + day;
+            };
+
+            $('#expiredAt').pDatepicker({
+                altField: '#discount_code_expiredAt',
+                altFieldFormatter: convertUnixToDate,
+                format: 'YYYY/MM/DD'
+            });
+            {% if form.expiredAt.vars.data %}
+            $('#expiredAt').val(persianDate.unix({{ form.expiredAt.vars.data.format('U') }}).format('YYYY/MM/DD'));
+            {% endif %}
+        });
+    </script>
+{% endblock javascriptsPageScripts %}
+
+{% block content %}
+    <div class="page-content">
+        <div class="container">
+            <!-- BEGIN PAGE BREADCRUMBS -->
+            {% block breadcrumb %}
+                <ul class="page-breadcrumb breadcrumb">
+                    <li>
+                        <a href="/">خانه</a>
+                        <i class="fa fa-circle"></i>
+                    </li>
+                    <li>
+                        <a href="{{ path('fun_pro_admin_dashboard') }}">داشبورد</a>
+                        <i class="fa fa-circle"></i>
+                    </li>
+                </ul>
+            {% endblock breadcrumb %}
+            <!-- END PAGE BREADCRUMBS -->
+            <!-- BEGIN PAGE CONTENT INNER -->
+            <div class="page-content-inner">
+                <div class="row">
+                    {{ form_start(form) }}
+
+                    <div class="col-md-12">
+                        <!-- BEGIN SAMPLE FORM PORTLET-->
+                        <div class="portlet light ">
+                            <div class="portlet-title">
+                                <div class="caption font-green-haze">
+                                    <i class="icon-settings font-green-haze"></i>
+                                    <span class="caption-subject bold uppercase">کد تخفیف</span>
+                                </div>
+                            </div>
+                            <div class="portlet-body form">
+                                <div class="form-body">
+                                    <div class="form-group form-md-line-input" {% if form.code.vars.errors|length %}has-error{% elseif (form.code.vars.submitted) %}has-success{% endif %}">
+                                    <label class="col-md-2 control-label" for="form_control_1">کد تخفیف</label>
+                                    <div class="col-md-10">
+                                        {{ form_widget(form.code, {'attr':{'placeholder':'کد تخفیف را وارد نمایید'}}) }}
+                                        <div class="form-control-focus"> </div>
+                                            <span class="help-block">هفت حرف یا عدد<br />
+                                                {% if form.code.vars.errors|length %}{{ form_errors(form.code) }}{% endif %}
+                                            </span>
+                                    </div>
+                                </div>
+
+                                <div class="form-body">
+                                    <div class="form-group form-md-line-input" {% if form.discount.vars.errors|length %}has-error{% elseif (form.discount.vars.submitted) %}has-success{% endif %}">
+                                    <label class="col-md-2 control-label" for="form_control_1">میزان تخفیف</label>
+                                    <div class="col-md-10">
+                                        {{ form_widget(form.discount, {'attr':{'placeholder':'میزان تخفیف را وارد نمایید'}}) }}
+                                        <div class="form-control-focus"> </div>
+                                            <span class="help-block">
+                                                {% if form.discount.vars.errors|length %}{{ form_errors(form.discount) }}{% endif %}
+                                            </span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group form-md-line-input {% if form.maxUsage.vars.errors|length %}has-error{% elseif (form.maxUsage.vars.submitted) %}has-success{% endif %}">
+                                    <label class="col-md-2 control-label" for="form_control_1">تعداد</label>
+                                    <div class="col-md-10">
+                                        {{ form_widget(form.maxUsage, {'attr':{'placeholder':'تعداد قابل استفاده را مشخص نمایید'}}) }}
+                                        <div class="form-control-focus"> </div>
+                                            <span class="help-block">
+                                                {% if form.maxUsage.vars.errors|length %}{{ form_errors(form.maxUsage) }}{% endif %}
+                                            </span>
+                                    </div>
+                                </div>
+                                <div class="form-group form-md-line-input {% if form.maxUsagePerUser.vars.errors|length %}has-error{% elseif (form.maxUsagePerUser.vars.submitted) %}has-success{% endif %}">
+                                    <label class="col-md-2 control-label" for="form_control_1">تعداد برای هر کاربر</label>
+                                    <div class="col-md-10">
+                                        {{ form_widget(form.maxUsagePerUser, {'attr':{'placeholder':'تعداد برای هر کاربر را مشخص نمایید'}}) }}
+                                        <div class="form-control-focus"> </div>
+                                        <span class="help-block">{% if form.maxUsagePerUser.vars.errors|length %}{{ form_errors(form.maxUsagePerUser) }}{% endif %}</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group form-md-line-input {% if form.expiredAt.vars.errors|length %}has-error{% elseif (form.expiredAt.vars.submitted) %}has-success{% endif %}">
+                                    <label class="col-md-2 control-label" for="form_control_1">تاریخ انقضا</label>
+                                    <div class="col-md-10">
+                                        {{ form_widget(form.expiredAt, {'attr':{'placeholder':'2007-02-25', 'style': 'display: none;'}}) }}
+                                        <input type="text" class="form-control" id="expiredAt">
+                                        <div class="form-control-focus"> </div>
+                                        <span class="help-block">{% if form.expiredAt.vars.errors|length %}{{ form_errors(form.expiredAt) }}{% endif %}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group form-md-line-input {% if form.originLocation.vars.errors|length %}has-error{% elseif (form.originLocation.vars.submitted) %}has-success{% endif %}">
+                                    <label class="col-md-2 control-label" for="form_control_1">منطقه</label>
+                                    <div class="col-md-10">
+                                        {{ form_widget(form.originLocation) }}
+                                        <div class="form-control-focus"> </div>
+                                        <span class="help-block">{% if form.originLocation.vars.errors|length %}{{ form_errors(form.originLocation) }}{% endif %}</span>
+                                    </div>
+                                </div>
+                                <div class="form-group form-md-line-input {% if form.locationRadius.vars.errors|length %}has-error{% elseif (form.locationRadius.vars.submitted) %}has-success{% endif %}">
+                                    <label class="col-md-2 control-label" for="form_control_1">شعاع</label>
+                                    <div class="col-md-10">
+                                        {{ form_widget(form.locationRadius, {'attr': {'placeholder': 'شعاع بر حسب متر'}}) }}
+                                        <div class="form-control-focus"></div>
+                                        <span class="help-block">{% if form.locationRadius.vars.errors|length %}{{ form_errors(form.locationRadius) }}{% endif %}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <div class="row">
+                                    <div class="col-md-offset-2 col-md-10">
+                                        <br />
+                                        <input type="submit" class="btn blue" value="ثبت ماشین">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END SAMPLE FORM PORTLET-->
+                </div>
+
+                {{ form_widget(form._token) }}
+                </form>
+            </div>
+        </div>
+        <!-- END PAGE CONTENT INNER -->
+    </div>
+    </div>
+{% endblock content %}

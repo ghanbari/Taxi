@@ -3,6 +3,7 @@
 namespace FunPro\ServiceBundle\Entity;
 
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
+use FunPro\FinancialBundle\Entity\DiscountCode;
 use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -316,6 +317,16 @@ class Service
      * @JS\Since("1.0.0")
      */
     private $baseCost;
+
+    /**
+     * @var DiscountCode
+     *
+     * @ORM\ManyToOne(targetEntity="FunPro\FinancialBundle\Entity\DiscountCode")
+     *
+     * @JS\Groups({"Admin"})
+     * @JS\Since("1.0.0")
+     */
+    private $discountCode;
 
     /**
      * @var ArrayCollection
@@ -834,7 +845,13 @@ class Service
      */
     public function getDiscountedPrice()
     {
-        return $this->price - ($this->price * $this->baseCost->getDiscountPercent() / 100);
+        $price = $this->price - ($this->price * $this->baseCost->getDiscountPercent() / 100);
+
+        if ($discount = $this->getDiscountCode()) {
+            $price -= $discount->getDiscount();
+        }
+
+        return $price > 0 ? $price : 0;
     }
 
     /**
@@ -1329,6 +1346,24 @@ class Service
     public function setRealDistance($realDistance)
     {
         $this->realDistance = $realDistance;
+        return $this;
+    }
+
+    /**
+     * @return DiscountCode
+     */
+    public function getDiscountCode()
+    {
+        return $this->discountCode;
+    }
+
+    /**
+     * @param DiscountCode $discountCode
+     * @return Service;
+     */
+    public function setDiscountCode(DiscountCode $discountCode)
+    {
+        $this->discountCode = $discountCode;
         return $this;
     }
 }

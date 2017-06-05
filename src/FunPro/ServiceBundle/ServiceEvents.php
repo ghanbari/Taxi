@@ -59,4 +59,11 @@ class ServiceEvents extends Event
      * The event listener method receives a FunPro\ServiceBundle\Event\ServiceEvent instance.
      */
     const SERVICE_FINISH = 'service.finish';
+
+    /**
+     * The event occurs when the service information update.
+     *
+     * The event listener method receives a FunPro\ServiceBundle\Event\ServiceEvent instance.
+     */
+    const SERVICE_UPDATE = 'service.update';
 }
