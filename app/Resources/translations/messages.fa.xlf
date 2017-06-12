@@ -1,345 +1,267 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:jms="urn:jms:translation" version="1.2">
-  <file date="2017-05-11T19:47:13Z" source-language="en" target-language="fa" datatype="plaintext" original="not.available">
+  <file date="2017-06-02T21:53:43Z" source-language="en" target-language="fa" datatype="plaintext" original="not.available">
     <header>
       <tool tool-id="JMSTranslationBundle" tool-name="JMSTranslationBundle" tool-version="1.1.0-DEV"/>
       <note>The source node in most cases contains the sample message as written by the developer. If it looks like a dot-delimitted string such as "form.label.firstname", then the developer has not provided a default message.</note>
     </header>
     <body>
+      <trans-unit id="4afa8f9e90756f0f919a124a1dfbba19be004edc" resname="206">
+        <source>206</source>
+        <target>پژو ۲۰۶</target>
+      </trans-unit>
+      <trans-unit id="7ee51d9582ef3d3b56ec2fc25b77fc147d8563e5" resname="405">
+        <source>405</source>
+        <target>پژو ۴۰۵</target>
+      </trans-unit>
       <trans-unit id="5ab9899ba2942054d5ce8a0eb3cfc955a59b9fea" resname="X-AUTH-TOKEN.header.is.not.exists">
         <source>X-AUTH-TOKEN.header.is.not.exists</source>
         <target>X-AUTH-TOKEN.header.is.not.exists</target>
-        <jms:reference-file line="184">/../src/FunPro/UserBundle/Controller/DeviceController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="5dc56b9aab61867257a3c1bd7c786c9410d38cd2" resname="age">
         <source>age</source>
         <target>age</target>
-        <jms:reference-file line="34">/../src/FunPro/PassengerBundle/Form/Type/ProfileType.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="687400c12208acad6c40f05baf3cd214baabfb12" resname="car.created">
         <source>car.created</source>
         <target>car.created</target>
-        <jms:reference-file line="92">/../src/FunPro/DriverBundle/Controller/Management/CarController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="4a0cc7071debf2264612a043dd361313dc8b6a75" resname="car.status.can.be.changed.to.wakeful.only.when.status.is,sleep">
         <source>car.status.can.be.changed.to.wakeful.only.when.status.is,sleep</source>
         <target>car.status.can.be.changed.to.wakeful.only.when.status.is,sleep</target>
-        <jms:reference-file line="102">/../src/FunPro/ServiceBundle/Controller/WakefulController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="3c1a1c4c608bd67572d99540c25be50b42c3cb25" resname="car.status.is.sleep">
         <source>car.status.is.sleep</source>
         <target>car.status.is.sleep</target>
-        <jms:reference-file line="196">/../src/FunPro/ServiceBundle/Controller/WakefulController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="cac849550036755f5cdf8f0fb285a186b7f6bcd9" resname="car.status.must.be.wakeful.or.end">
         <source>car.status.must.be.wakeful.or.end</source>
         <target>car.status.must.be.wakeful.or.end</target>
-        <jms:reference-file line="280">/../src/FunPro/ServiceBundle/Controller/WakefulController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="d1508848ad9cfd3b6be9c046ba4809341a76da89" resname="car.updated">
         <source>car.updated</source>
         <target>car.updated</target>
-        <jms:reference-file line="139">/../src/FunPro/DriverBundle/Controller/Management/CarController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="f164a78f96c235056ccc53607ddeb8ed19968da4" resname="coordinate.is.null">
         <source>coordinate.is.null</source>
         <target>coordinate.is.null</target>
-        <jms:reference-file line="175">/../src/FunPro/ServiceBundle/Controller/WakefulController.php</jms:reference-file>
-        <jms:reference-file line="410">/../src/FunPro/ServiceBundle/Controller/WakefulController.php</jms:reference-file>
-        <jms:reference-file line="81">/../src/FunPro/ServiceBundle/Controller/WakefulController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="ab464f0252045aaf075411f0f1a6aed0797306c1" resname="delay">
         <source>delay</source>
         <target>delay</target>
-        <jms:reference-file line="42">/../src/FunPro/ServiceBundle/DataFixtures/ORM/LoadDefaultCanceledReason.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="af4a667928a48ada84b20b83fdb6871c479fc19c" resname="delay.in.service">
         <source>delay.in.service</source>
         <target>delay.in.service</target>
-        <jms:reference-file line="42">/../src/FunPro/ServiceBundle/DataFixtures/ORM/LoadDefaultCanceledReason.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="cb329146a0dd0d566b0628744d67936558741ffa" resname="description">
         <source>description</source>
         <target>description</target>
-        <jms:reference-file line="50">/../src/FunPro/PassengerBundle/Form/Type/ProfileType.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="aa9ae331512d8bd4113141fcbb913fc6bdfd2451" resname="diplome">
         <source>diplome</source>
         <target>diplome</target>
-        <jms:reference-file line="40">/../src/FunPro/DriverBundle/Form/DriverType.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="0ad144be75ba5ae9f65121cf56d27a4736ce177b" resname="driver.car.is.not.defined">
         <source>driver.car.is.not.defined</source>
         <target>driver.car.is.not.defined</target>
-        <jms:reference-file line="188">/../src/FunPro/ServiceBundle/Controller/WakefulController.php</jms:reference-file>
-        <jms:reference-file line="272">/../src/FunPro/ServiceBundle/Controller/WakefulController.php</jms:reference-file>
-        <jms:reference-file line="351">/../src/FunPro/ServiceBundle/Controller/WakefulController.php</jms:reference-file>
-        <jms:reference-file line="94">/../src/FunPro/ServiceBundle/Controller/WakefulController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="f6cba1b15f9501591b64bdb39d39962236fe6b6c" resname="driver.created">
         <source>driver.created</source>
         <target>driver.created</target>
-        <jms:reference-file line="121">/../src/FunPro/DriverBundle/Controller/Management/DriverController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="a406bdb994ba5a8e74a0c1925edb4ecec9efc725" resname="driver.is.not.exists">
         <source>driver.is.not.exists</source>
         <target>driver.is.not.exists</target>
-        <jms:reference-file line="148">/../src/FunPro/ServiceBundle/Controller/ServiceController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="8bbaff92e662af48cf46d05a29b88c175a07ebcc" resname="driver.updated">
         <source>driver.updated</source>
         <target>driver.updated</target>
-        <jms:reference-file line="170">/../src/FunPro/DriverBundle/Controller/Management/DriverController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="96a1a08dcded48b7e695aed7c577dc04c982a4f7" resname="female">
         <source>female</source>
         <target>female</target>
-        <jms:reference-file line="85">/../src/FunPro/DriverBundle/Form/DriverType.php</jms:reference-file>
-        <jms:reference-file line="43">/../src/FunPro/PassengerBundle/Form/Type/ProfileType.php</jms:reference-file>
-        <jms:reference-file line="31">/../src/FunPro/UserBundle/Form/UserType.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="00ebf12f5a3cb8d0a24dbb0eed4a732e747b6f27" resname="foghe.lisans">
         <source>foghe.lisans</source>
         <target>foghe.lisans</target>
-        <jms:reference-file line="42">/../src/FunPro/DriverBundle/Form/DriverType.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="7e6b12a7deb5f7315f025b8c49121130cd7798ad" resname="form.email">
         <source>form.email</source>
         <target>form.email</target>
-        <jms:reference-file line="26">/../src/FunPro/PassengerBundle/Form/Type/ProfileType.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="1b7d11e1d6b5e002568be46a002ebd8b336508d4" resname="gateway.is.not.available.plz.pay.with.cash">
         <source>gateway.is.not.available.plz.pay.with.cash</source>
         <target>gateway.is.not.available.plz.pay.with.cash</target>
-        <jms:reference-file line="300">/../src/FunPro/FinancialBundle/Controller/PaymentController.php</jms:reference-file>
-        <jms:reference-file line="316">/../src/FunPro/FinancialBundle/Controller/PaymentController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="b4f95e5f54280775348643710500b9935c6a80b1" resname="invite.your.friend.and.get.%discount%.discount">
         <source>invite.your.friend.and.get.%discount%.discount</source>
-        <target state="new">به كارزين خوش آمديد، با معرفي ما به دوستانتان تا %discount% تخفيف سفر بگيريد.</target>
-        <jms:reference-file line="532">/../src/FunPro/ServiceBundle/Controller/ServiceController.php</jms:reference-file>
+        <target>به كارزين خوش آمديد، با معرفي ما به دوستانتان تا %discount% تخفيف سفر بگيريد.</target>
+      </trans-unit>
+      <trans-unit id="596727c8a0ea4db3ba2ceceedccbacd3d7b371b8" resname="jack">
+        <source>jack</source>
+        <target>جک</target>
       </trans-unit>
       <trans-unit id="25f33f48f229aa64efa90d30fe9c7b5c5a3904c9" resname="lisans">
         <source>lisans</source>
         <target>lisans</target>
-        <jms:reference-file line="41">/../src/FunPro/DriverBundle/Form/DriverType.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="030ef4a52619b493d3cc75d8034e3df378dae231" resname="male">
         <source>male</source>
         <target>male</target>
-        <jms:reference-file line="84">/../src/FunPro/DriverBundle/Form/DriverType.php</jms:reference-file>
-        <jms:reference-file line="42">/../src/FunPro/PassengerBundle/Form/Type/ProfileType.php</jms:reference-file>
-        <jms:reference-file line="30">/../src/FunPro/UserBundle/Form/UserType.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="b697cc8225d70561d5e8455e90e99c9383c719b0" resname="max.size.for.propagation.list.is.%maxSize%">
         <source>max.size.for.propagation.list.is.%maxSize%</source>
         <target>max.size.for.propagation.list.is.%maxSize%</target>
-        <jms:reference-file line="128">/../src/FunPro/ServiceBundle/Controller/ServiceController.php</jms:reference-file>
+      </trans-unit>
+      <trans-unit id="777f16b7ee2e1489dd2a9b0bb7926afed64d62d5" resname="megan">
+        <source>megan</source>
+        <target>مگان</target>
       </trans-unit>
       <trans-unit id="0cb41025c771743adb2ecf09ef7c919569d689c3" resname="mohaf">
         <source>mohaf</source>
         <target>mohaf</target>
-        <jms:reference-file line="48">/../src/FunPro/DriverBundle/Form/DriverType.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="a2d57458144fdaeb6adadcda0d792199342cdce2" resname="mohafiyate.tahsili">
         <source>mohafiyate.tahsili</source>
         <target>mohafiyate.tahsili</target>
-        <jms:reference-file line="50">/../src/FunPro/DriverBundle/Form/DriverType.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="02b45517ccf5e0baca9de6bae43fa96d33d92f2b" resname="my.car.is.crashing">
         <source>my.car.is.crashing</source>
         <target>my.car.is.crashing</target>
-        <jms:reference-file line="44">/../src/FunPro/ServiceBundle/DataFixtures/ORM/LoadDefaultCanceledReason.php</jms:reference-file>
-        <jms:reference-file line="45">/../src/FunPro/ServiceBundle/DataFixtures/ORM/LoadDefaultCanceledReason.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="6ae999552a0d2dca14d62e2bc8b764d377b1dd6c" resname="name">
         <source>name</source>
         <target>name</target>
-        <jms:reference-file line="30">/../src/FunPro/PassengerBundle/Form/Type/ProfileType.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="fd1286353570c5703799ba76999323b7c7447b06" resname="no">
         <source>no</source>
         <target>no</target>
-        <jms:reference-file line="58">/../src/FunPro/DriverBundle/Form/DriverType.php</jms:reference-file>
-        <jms:reference-file line="77">/../src/FunPro/DriverBundle/Form/DriverType.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="f67ba4250ed740fa967d2451806fc28aefa6286d" resname="operator.created">
         <source>operator.created</source>
         <target>operator.created</target>
-        <jms:reference-file line="111">/../src/FunPro/UserBundle/Controller/Management/OperatorController.php</jms:reference-file>
-        <jms:reference-file line="67">/../src/FunPro/UserBundle/Controller/Management/OperatorController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="956b96a804cfdbd5790b07cc6c6053cd9207936c" resname="payan.khedmat">
         <source>payan.khedmat</source>
         <target>payan.khedmat</target>
-        <jms:reference-file line="49">/../src/FunPro/DriverBundle/Form/DriverType.php</jms:reference-file>
+      </trans-unit>
+      <trans-unit id="1cc459bac664020395ce14f7a0607a06368171a7" resname="peride">
+        <source>peride</source>
+        <target>پراید</target>
+      </trans-unit>
+      <trans-unit id="f788039a581981f5aa8fe6f5790dca7dea262e55" resname="persia">
+        <source>persia</source>
+        <target>پرشیا</target>
       </trans-unit>
       <trans-unit id="db8b0ed578e5f383699f0ee3ccda8950c2dca3b7" resname="reason.is.not.exists">
         <source>reason.is.not.exists</source>
         <target>reason.is.not.exists</target>
-        <jms:reference-file line="265">/../src/FunPro/ServiceBundle/Controller/ServiceController.php</jms:reference-file>
+      </trans-unit>
+      <trans-unit id="943cfd146fbfd48618582626232c3a1312342a87" resname="samand">
+        <source>samand</source>
+        <target>سمند</target>
       </trans-unit>
       <trans-unit id="9b5a89102e8e9c511f1da5633f65bafed583d047" resname="server.can.not.handle.upload">
         <source>server.can.not.handle.upload</source>
         <target>server.can.not.handle.upload</target>
-        <jms:reference-file line="65">/../src/FunPro/UserBundle/Controller/ProfileController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="12695ed820fa628c86a1cd862043ce1f9a26881e" resname="service.is.finished.please.pay.%price%.by.cash">
         <source>service.is.finished.please.pay.%price%.by.cash</source>
         <target>باآرزوي اوقات خوش مبلغ كرايه شما %price% تومان است لطفا نقدي پرداخت كنيد</target>
-        <jms:reference-file line="627">/../src/FunPro/ServiceBundle/Controller/ServiceController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="f0500d6ffb7202765c4e6810eff699cd4088f2fe" resname="service.is.not.exists">
         <source>service.is.not.exists</source>
         <target>service.is.not.exists</target>
-        <jms:reference-file line="216">/../src/FunPro/FinancialBundle/Controller/PaymentController.php</jms:reference-file>
-        <jms:reference-file line="72">/../src/FunPro/FinancialBundle/Controller/PaymentController.php</jms:reference-file>
-        <jms:reference-file line="358">/../src/FunPro/ServiceBundle/Controller/ServiceController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="6ceadde99a02bec45acf05041420cba3b6cd85f9" resname="service.is.not.finished">
         <source>service.is.not.finished</source>
         <target>service.is.not.finished</target>
-        <jms:reference-file line="249">/../src/FunPro/FinancialBundle/Controller/PaymentController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="68bb04bd54b8f6c530695e0b77de298276a0511d" resname="sex">
         <source>sex</source>
         <target>sex</target>
-        <jms:reference-file line="39">/../src/FunPro/PassengerBundle/Form/Type/ProfileType.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="f46de6d040eecea073399766b902c4c86dc9e8e0" resname="thanks.for.registering.your.code.is.%code%">
         <source>thanks.for.registering.your.code.is.%code%</source>
-        <target state="new">ممنون از ثبت نام شما، کد تاییدیه عضویت شما "%code%" می باشد</target>
-        <jms:reference-file line="105">/../src/FunPro/PassengerBundle/Controller/PassengerController.php</jms:reference-file>
+        <target>ممنون از ثبت نام شما، کد تاییدیه عضویت شما "%code%" می باشد</target>
       </trans-unit>
       <trans-unit id="ef018a200be24cc3116ccf30d97206a5d57bcd37" resname="this.car.is.in.queue">
         <source>this.car.is.in.queue</source>
         <target>this.car.is.in.queue</target>
-        <jms:reference-file line="125">/../src/FunPro/ServiceBundle/Controller/WakefulController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="b25ebb0758cfe11e02dedac60bbab33fa360a662" resname="this.car.is.not.in.queue">
         <source>this.car.is.not.in.queue</source>
         <target>this.car.is.not.in.queue</target>
-        <jms:reference-file line="225">/../src/FunPro/ServiceBundle/Controller/WakefulController.php</jms:reference-file>
-        <jms:reference-file line="300">/../src/FunPro/ServiceBundle/Controller/WakefulController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="7f8cf1b1ab8e0382cbb99b3b44f4ec9648766269" resname="this.service.done">
         <source>this.service.done</source>
         <target>this.service.done</target>
-        <jms:reference-file line="378">/../src/FunPro/ServiceBundle/Controller/ServiceController.php</jms:reference-file>
-        <jms:reference-file line="411">/../src/FunPro/ServiceBundle/Controller/ServiceController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="fc19a476802ef0ccaa155f362fb7d581241115f8" resname="this.service.is.not.requested.by.you">
         <source>this.service.is.not.requested.by.you</source>
         <target>this.service.is.not.requested.by.you</target>
-        <jms:reference-file line="231">/../src/FunPro/FinancialBundle/Controller/PaymentController.php</jms:reference-file>
-        <jms:reference-file line="87">/../src/FunPro/FinancialBundle/Controller/PaymentController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="0b12f1ed2ba52edf20e72e1bfb8effb8fc345f99" resname="token.is.not.exists">
         <source>token.is.not.exists</source>
         <target>token.is.not.exists</target>
-        <jms:reference-file line="206">/../src/FunPro/PassengerBundle/Controller/PassengerController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="80f47a332e5d71529c1502bc6d2663f32e1f1b37" resname="user.is.not.exists">
         <source>user.is.not.exists</source>
         <target>user.is.not.exists</target>
-        <jms:reference-file line="173">/../src/FunPro/PassengerBundle/Controller/PassengerController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="fb360f9c09ac8c5edb2f18be5de4e80ea4c430d0" resname="yes">
         <source>yes</source>
         <target>yes</target>
-        <jms:reference-file line="59">/../src/FunPro/DriverBundle/Form/DriverType.php</jms:reference-file>
-        <jms:reference-file line="78">/../src/FunPro/DriverBundle/Form/DriverType.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="43f8ea4bbdfeeb0223983d7adb062493144a099d" resname="you.can.cancel.service.only.when.status.is.requested.or.accepted">
         <source>you.can.cancel.service.only.when.status.is.requested.or.accepted</source>
         <target>you.can.cancel.service.only.when.status.is.requested.or.accepted</target>
-        <jms:reference-file line="280">/../src/FunPro/ServiceBundle/Controller/ServiceController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="0fcb3a46aabe08b95ccbb3e05fb2b1625109bf4e" resname="you.can.get.report.for.30.day">
         <source>you.can.get.report.for.30.day</source>
         <target>you.can.get.report.for.30.day</target>
-        <jms:reference-file line="58">/../src/FunPro/DriverBundle/Controller/ProfileController.php</jms:reference-file>
-        <jms:reference-file line="138">/../src/FunPro/DriverBundle/Controller/ReportController.php</jms:reference-file>
-        <jms:reference-file line="54">/../src/FunPro/DriverBundle/Controller/ReportController.php</jms:reference-file>
-        <jms:reference-file line="96">/../src/FunPro/DriverBundle/Controller/ReportController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="7964d4a3ee860781c9dd32135244af9e1119600e" resname="you.can.only.check.options.in.end.of.service">
         <source>you.can.only.check.options.in.end.of.service</source>
         <target>you.can.only.check.options.in.end.of.service</target>
-        <jms:reference-file line="97">/../src/FunPro/FinancialBundle/Controller/PaymentController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="8481316505b076627e3645459e381a662d66a98d" resname="you.have.very.request.for.token">
         <source>you.have.very.request.for.token</source>
         <target>you.have.very.request.for.token</target>
-        <jms:reference-file line="96">/../src/FunPro/PassengerBundle/Controller/PassengerController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="41328962e26aadc38f7df7acebcafb0c212ebe3b" resname="you.not.recive.any.request">
         <source>you.not.recive.any.request</source>
         <target>you.not.recive.any.request</target>
-        <jms:reference-file line="734">/../src/FunPro/ServiceBundle/Controller/ServiceController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="ed327a4bdd7375010a444adb2b862b659f051bd7" resname="you.payed.service">
         <source>you.payed.service</source>
         <target>you.payed.service</target>
-        <jms:reference-file line="240">/../src/FunPro/FinancialBundle/Controller/PaymentController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="4e18b9f9f55e370a023734fc8ade0fc639bf26b4" resname="your.credit.is.not.enough">
         <source>your.credit.is.not.enough</source>
         <target>your.credit.is.not.enough</target>
-        <jms:reference-file line="276">/../src/FunPro/FinancialBundle/Controller/PaymentController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="ce1a33d01916d182caa663298145ab2f65205d84" resname="your.registeration.is.completed.your.password.is.%password%">
         <source>your.registeration.is.completed.your.password.is.%password%</source>
-        <target>ثبت نام انجام شد نام كاربري شما كدملي و رمزعبور "%password%" است. تیم کارزین</target>
-        <jms:reference-file line="115">/../src/FunPro/DriverBundle/Controller/Management/DriverController.php</jms:reference-file>
+        <target>ثبت نام شما با موفقیت انجام شد نام كاربري شما كدملي و رمزعبور شما "%password%" است. شما مجاز به فعالیت در کارزین می باشید. تلفن پشتیبانی ۰۵۱۳۸۳۳۵۷۴۸</target>
       </trans-unit>
       <trans-unit id="3510234bbc8f76ff81aa5f60b407a84bc7352777" resname="your.token.expired">
         <source>your.token.expired</source>
         <target>your.token.expired</target>
-        <jms:reference-file line="196">/../src/FunPro/PassengerBundle/Controller/PassengerController.php</jms:reference-file>
       </trans-unit>
       <trans-unit id="545255b82cfaca24c1dd98d9751d84ddf84feb8d" resname="your.wallet.balance.is.not.enough">
         <source>your.wallet.balance.is.not.enough</source>
         <target>your.wallet.balance.is.not.enough</target>
-        <jms:reference-file line="322">/../src/FunPro/FinancialBundle/Controller/PaymentController.php</jms:reference-file>
+      </trans-unit>
+      <trans-unit id="47ebed6667c1fb156988444a25239f6c31e0c79a" resname="zantiya">
+        <source>zantiya</source>
+        <target>زانتیا</target>
       </trans-unit>
       <trans-unit id="309328d5f99114f41ad48acca398d84c13a992f7" resname="zire.diplome">
         <source>zire.diplome</source>
         <target>zire.diplome</target>
-        <jms:reference-file line="39">/../src/FunPro/DriverBundle/Form/DriverType.php</jms:reference-file>
       </trans-unit>
-    <trans-unit id="309328d5f99114f41ad48acca398d84c13a99323f2" resname="peride">
-        <source>peride</source>
-        <target>پراید</target>
-    </trans-unit>
-    <trans-unit id="309328d5f99114f41ad48acca398d84c13a99323f2" resname="samand">
-        <source>samand</source>
-        <target>سمند</target>
-    </trans-unit>
-    <trans-unit id="309328d5f99114f41ad48acca398d84c13a9932we" resname="persia">
-        <source>persia</source>
-        <target>پرشیا</target>
-    </trans-unit>
-    <trans-unit id="309328d5f99114f41ad48acca398d84c13a99323fwe2" resname="zantiya">
-        <source>zantiya</source>
-        <target>زانتیا</target>
-    </trans-unit>
-    <trans-unit id="309328d5f99114f41ad48acweca398d84c13a99323f2" resname="megan">
-        <source>megan</source>
-        <target>مگان</target>
-    </trans-unit>
-    <trans-unit id="309328d5f99114f41ad48acca3we98d84c13a99323f2" resname="jack">
-        <source>jack</source>
-        <target>جک</target>
-    </trans-unit>
-    <trans-unit id="309328d5f99114f41ad48acca3we98d84c13a99323f2" resname="405">
-        <source>405</source>
-        <target>پژو ۴۰۵</target>
-    </trans-unit>
-    <trans-unit id="309328d5f99114f41ad48acca39re8d84c13a99323f2" resname="206">
-        <source>206</source>
-        <target>پژو ۲۰۶</target>
-    </trans-unit>
     </body>
   </file>
 </xliff>
