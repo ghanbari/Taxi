@@ -72,7 +72,7 @@ class ServiceRepository extends EntityRepository
      * @return mixed
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function getLastServiceOfPassenger(Passenger $passenger)
+    public function getLastActiveServiceOfPassenger(Passenger $passenger)
     {
         $queryBuilder = $this->createQueryBuilder('s');
 
@@ -82,10 +82,14 @@ class ServiceRepository extends EntityRepository
             ->leftJoin('s.car', 'car')
             ->leftJoin('s.canceledReason', 'c')
             ->where($queryBuilder->expr()->eq('s.passenger', ':passenger'))
-            ->andWhere($queryBuilder->expr()->neq('s.status', ':status'))
+            ->andWhere($queryBuilder->expr()->in('s.status', ':status'))
             ->orderBy('l.atTime', 'DESC')
             ->setParameter('passenger', $passenger)
-            ->setParameter('status', ServiceLog::STATUS_REQUESTED)
+            ->setParameter('status', array(
+                ServiceLog::STATUS_ACCEPTED,
+                ServiceLog::STATUS_READY,
+                ServiceLog::STATUS_START
+            ))
             ->getQuery()
             ->setMaxResults(1)
             ->getOneOrNullResult();
