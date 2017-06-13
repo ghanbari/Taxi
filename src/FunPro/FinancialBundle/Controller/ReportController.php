@@ -97,6 +97,8 @@ class ReportController extends FOSRestController
 
         $limit = min(20, $fetcher->get('limit'));
         $offset = max(0, $fetcher->get('offset'));
+        #ali use offset as page number
+        $offset = $offset * $limit;
 
         $from = $fetcher->get('from') ? new \DateTime($fetcher->get('from')) : null;
         $till = $fetcher->get('till') ? new \DateTime($fetcher->get('till')) : null;

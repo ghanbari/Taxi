@@ -41,10 +41,9 @@ class DiscountController extends FOSRestController
      * @Security("has_role('ROLE_PASSENGER')")
      *
      * @Rest\RequestParam(name="code", requirements="\w+", strict=true, allowBlank=false, nullable=false)
-     * @param Request $request
      * @return \FOS\RestBundle\View\View
      */
-    public function postAddAction(Request $request)
+    public function postAddAction()
     {
         /** @var Passenger $Passenger */
         $passenger = $this->getUser();
@@ -126,23 +125,27 @@ class DiscountController extends FOSRestController
      *     views={"passenger"},
      *     statusCodes={
      *          204="Success",
+     *          400="You can not check discount code in service (code: 1)",
      *          404="You have not this code in your list"
      *     }
      * )
      *
      * @Rest\RequestParam(name="code", requirements="\w+", strict=true, allowBlank=false, nullable=false)
+     * @Rest\RequestParam(name="status", requirements="active|deactive", strict=true, allowBlank=false, nullable=false)
      *
      * @Security("has_role('ROLE_PASSENGER')")
      */
-    public function patchActiveAction()
+    public function patchStatusAction()
     {
         $translator = $this->get('translator');
         $doctrine = $this->getDoctrine();
         $passenger = $this->getUser();
+        $fetcher = $this->get('fos_rest.request.param_fetcher');
+        $status = $fetcher->get('status', true);
 
         $service = $doctrine->getRepository('FunProServiceBundle:Service')
-            #FIXME: should show all service that status is not finished
-            ->getLastServiceOfPassenger($passenger);
+            #should show all service that status is not finished
+            ->getLastActiveServiceOfPassenger($passenger);
 
         if ($service) {
             $activeCode = $this->getDoctrine()->getRepository('FunProFinancialBundle:FavoriteDiscountCodes')
@@ -157,7 +160,7 @@ class DiscountController extends FOSRestController
             }
         }
         
-        $code = $this->get('fos_rest.request.param_fetcher')->get('code', true);
+        $code = $fetcher->get('code', true);
         $discountCode = $doctrine->getRepository('FunProFinancialBundle:DiscountCode')->findOneByCode($code);
 
         $doctrine->getRepository('FunProFinancialBundle:FavoriteDiscountCodes')->deactiveCodes($passenger);
@@ -170,9 +173,7 @@ class DiscountController extends FOSRestController
                 return $this->view(null, Response::HTTP_NOT_FOUND);
             }
 
-            $favoriteCode->setActive(true);
-
-            $discountCode->addUsedBy($this->getUser());
+            $favoriteCode->setActive($status === 'active' ?: false);
 
             $doctrine->getManager()->flush();
         }

@@ -29,6 +29,16 @@
 //            $('.pick-a-color').pickAColor();
 //            $('.color-menu.dropdown-menu').css({transform: 'translateX(100%)'});
 
+            $('.plaque-details').change(function () {
+                var cityNumber = $('#car_plaque_cityNumber').val() !== '' ? $('#car_plaque_cityNumber').val() : 95;
+                var first = $('#car_plaque_firstNumber').val() !== '' ? $('#car_plaque_firstNumber').val() : 45;
+                var second = $('#car_plaque_secondNumber').val() !== '' ? $('#car_plaque_secondNumber').val() : 253;
+                var areaCode = $('#car_plaque_areaCode').val() !== '' ? $('#car_plaque_areaCode').val() : 'ج';
+
+                $('#plauqe').text(second + areaCode + first);
+                $('#plaque-cityNumber').text(cityNumber);
+            });
+
             var convertUnixToDate = function (unix) {
                 var date = new Date(unix);
                 var year = date.getFullYear();
@@ -133,28 +143,28 @@
                                     <div class="form-group form-md-line-input {% if form.plaque.vars.errors|length %}has-error{% elseif (form.plaque.vars.submitted) %}has-success{% endif %}">
                                         <label class="col-md-2 control-label" for="form_control_1">شماره پلاک</label>
                                         <div class="col-md-2">
-                                            {{ form_widget(form.plaque.cityNumber, {'attr': {'placeholder': 'کد شهر'}}) }}
-                                            <div class="form-control-focus" style="text-align: left">11</div>
+                                            {{ form_widget(form.plaque.cityNumber, {'attr': {'placeholder': 'کد شهر', 'class': 'plaque-details'}}) }}
+                                            <div class="form-control-focus" style="text-align: left">95</div>
                                             <span class="help-block">کد شهری، مثلا کد مشهد: ۱۱ <br />
                                                 {% if form.plaque.cityNumber.vars.errors|length %}{{ form_errors(form.plaque.cityNumber) }}{% endif %}
                                             </span>
                                         </div>
                                         <div class="col-md-3">
-                                            {{ form_widget(form.plaque.secondNumber, {'attr': {'placeholder': 'سه رقم'}}) }}
+                                            {{ form_widget(form.plaque.secondNumber, {'attr': {'placeholder': 'سه رقم', 'class': 'plaque-details'}}) }}
                                             <div class="form-control-focus" style="text-align: left">253</div>
                                             <span class="help-block">سه رقم دوم شماره پلاک <br />
                                                 {% if form.plaque.secondNumber.vars.errors|length %}{{ form_errors(form.plaque.secondNumber) }}{% endif %}
                                             </span>
                                         </div>
                                         <div class="col-md-1">
-                                            {{ form_widget(form.plaque.areaCode, {'attr': {'placeholder':'حرف الفبا'}}) }}
+                                            {{ form_widget(form.plaque.areaCode, {'attr': {'placeholder':'حرف الفبا', 'class': 'plaque-details'}}) }}
                                             <div class="form-control-focus" style="text-align: left">ج</div>
                                             <span class="help-block">کد نشانگر منطقه <br />
                                                 {% if form.plaque.areaCode.vars.errors|length %}{{ form_errors(form.plaque.areaCode) }}{% endif %}
                                             </span>
                                         </div>
                                         <div class="col-md-2">
-                                            {{ form_widget(form.plaque.firstNumber, {'attr':{'placeholder':'دو رقم'}}) }}
+                                            {{ form_widget(form.plaque.firstNumber, {'attr':{'placeholder':'دو رقم', 'class': 'plaque-details'}}) }}
                                             <div class="form-control-focus" style="text-align: left">45</div>
                                             <span class="help-block">دو رقم اول شماره پلاک
                                                 {% if form.plaque.firstNumber.vars.errors|length %}{{ form_errors(form.plaque.firstNumber) }}{% endif %}
@@ -162,18 +172,18 @@
                                         </div>
                                         <div class="col-md-2" style="direction: ltr">
                                             <span class="label label-info">ایران
-                                                <span style="vertical-align: bottom">11</span>
+                                                <span style="vertical-align: bottom" id="plaque-cityNumber">95</span>
                                             </span>
                                             &nbsp;
-                                            <span style="font-size: medium" class="label label-info">۲۵۳ج۴۵</span>
+                                            <span style="font-size: medium" class="label label-info" id="plauqe">۲۵۳ج۴۵</span>
                                         </div>
                                     </div>
                                     <div class="form-group form-md-line-input {% if form.color.vars.errors|length %}has-error{% elseif (form.color.vars.submitted) %}has-success{% endif %}">
                                         <label class="col-md-2 control-label" for="form_control_1">رنگ</label>
                                         <div class="col-md-10">
-                                            {{ form_widget(form.color, {'attr':{'placeholder':'رنگ ماشین را انتخاب نمایید', 'class': 'pick-a-color form-control'}}) }}
+                                            {{ form_widget(form.color, {'attr':{'placeholder':'رنگ ماشین را وارد نمایید', 'class': 'pick-a-color form-control'}}) }}
                                             <div class="form-control-focus"> </div>
-                                            <span class="help-block">کد رنگ ماشین<br />
+                                            <span class="help-block">نام رنگ ماشین<br />
                                                 {% if form.color.vars.errors|length %}{{ form_errors(form.color) }}{% endif %}
                                             </span>
                                         </div>
@@ -223,7 +233,7 @@
                                         </div>
                                     </div>
                             <div class="form-group form-md-line-input {% if form.bodyQuality.vars.errors|length %}has-error{% elseif (form.bodyQuality.vars.submitted) %}has-success{% endif %}">
-                                <label class="col-md-2 control-label" for="form_control_1">توضیحات</label>
+                                <label class="col-md-2 control-label" for="form_control_1">کیفیت بدنه</label>
                                 <div class="col-md-10">
                                     {{ form_widget(form.bodyQuality) }}
                                     <div class="form-control-focus"> </div>
@@ -231,7 +241,7 @@
                                 </div>
                             </div>
                             <div class="form-group form-md-line-input {% if form.insideQuality.vars.errors|length %}has-error{% elseif (form.insideQuality.vars.submitted) %}has-success{% endif %}">
-                                <label class="col-md-2 control-label" for="form_control_1">توضیحات</label>
+                                <label class="col-md-2 control-label" for="form_control_1">کیفیت داخل</label>
                                 <div class="col-md-10">
                                     {{ form_widget(form.insideQuality) }}
                                     <div class="form-control-focus"> </div>
@@ -239,7 +249,7 @@
                                 </div>
                             </div>
                             <div class="form-group form-md-line-input {% if form.ownership.vars.errors|length %}has-error{% elseif (form.ownership.vars.submitted) %}has-success{% endif %}">
-                                <label class="col-md-2 control-label" for="form_control_1">توضیحات</label>
+                                <label class="col-md-2 control-label" for="form_control_1">مالکیت خودرو</label>
                                 <div class="col-md-10">
                                     {{ form_widget(form.ownership) }}
                                     <div class="form-control-focus"> </div>

@@ -808,7 +808,7 @@ class ServiceController extends FOSRestController
             $context->addGroups(array('Driver'));
         } elseif ($user instanceof Passenger) {
             $context->addGroups(array('Passenger', 'PropagationList', 'DriverInfo'));
-            $service = $repository->getLastServiceOfPassenger($user);
+            $service = $repository->getLastActiveServiceOfPassenger($user);
         } else {
             $this->get('logger')->addError('user type is not supported');
             return $this->view(null, Response::HTTP_NOT_FOUND);

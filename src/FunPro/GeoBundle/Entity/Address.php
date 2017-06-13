@@ -41,20 +41,6 @@ class Address
     private $title;
 
     /**
-     * @var Point
-     *
-     * @ORM\Column(type="point")
-     *
-     * @Assert\NotBlank(groups={"AddressCreate", "AddressUpdate"})
-     * @Assert\Valid()
-     *
-     * @JS\Groups({"Point"})
-     * @JS\MaxDepth(1)
-     * @JS\Since("1.0.0")
-     */
-    private $point;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="postal_code", length=10, nullable=true)

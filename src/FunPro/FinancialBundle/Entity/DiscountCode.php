@@ -32,6 +32,18 @@ class DiscountCode
     /**
      * @var string
      *
+     * @ORM\Column(name="title")
+     *
+     * @Assert\NotBlank(groups={"Create", "Update"})
+     *
+     * @JS\Since("1.0.0")
+     * @JS\Groups({"Admin", "Passenger"})
+     */
+    private $title;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="code", length=10, unique=true)
      *
      * @Assert\NotBlank(groups={"Create", "Update"})
@@ -150,7 +162,6 @@ class DiscountCode
     {
         $this->maxUsage = 0;
         $this->maxUsagePerUser = 0;
-        $this->usedBy = new ArrayCollection();
     }
 
     /**
@@ -330,6 +341,24 @@ class DiscountCode
     public function setCreatedBy($createdBy)
     {
         $this->createdBy = $createdBy;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string $title
+     * @return DiscountCode;
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
         return $this;
     }
 }

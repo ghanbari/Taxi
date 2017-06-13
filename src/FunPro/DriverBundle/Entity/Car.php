@@ -44,6 +44,12 @@ class Car
     const TYPE_ZANTIYA = 7;
     const TYPE_MEGAN = 8;
     const TYPE_JACK = 9;
+    const TYPE_PERIDE_HB = 10;
+    const TYPE_TAXI = 11;
+    const TYPE_TIBA_HB = 12;
+    const TYPE_TIBA = 13;
+    const TYPE_P206_SD = 14;
+    const TYPE_L90 = 15;
 
     /**
      * @var int
@@ -207,7 +213,7 @@ class Car
     /**
      * @var string
      *
-     * @ORM\Column(name="ownership", length=10, options={"default": "own"})
+     * @ORM\Column(name="ownership", length=20, options={"default": "own"})
      *
      * @Assert\NotBlank(groups={"Create", "Update"})
      * @Assert\Choice(callback="getAvailableOwnerships", groups={"Create", "Update"})
@@ -383,6 +389,12 @@ class Car
             'zantiya' => self::TYPE_ZANTIYA,
             'megan' => self::TYPE_MEGAN,
             'jack' => self::TYPE_JACK,
+            'peride-hb' => self::TYPE_PERIDE_HB,
+            'tiba' => self::TYPE_TIBA,
+            'tiba-hb' => self::TYPE_TIBA_HB,
+            '206-sd' => self::TYPE_P206_SD,
+            'l90' => self::TYPE_L90,
+            'taxi' => self::TYPE_TAXI,
         );
     }
 

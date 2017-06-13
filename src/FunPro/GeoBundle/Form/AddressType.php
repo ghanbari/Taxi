@@ -25,7 +25,6 @@ class AddressType extends AbstractType
     {
         $builder
             ->add('title', Type\TextType::class)
-            ->add('point', PointType::class)
             ->add('postalCode', Type\TextType::class, array(
                 'required' => false,
             ))
