@@ -433,11 +433,7 @@ class User extends BaseUser
      */
     public function getAvatarPath()
     {
-        if ($this->getAvatar()) {
-            return 'images/cache/mob_avatar_thumb/images/avatars/' . $this->getAvatar();
-        } else {
-            return 'images/cache/mob_avatar_thumb/images/avatars/default_avatar.jpg';
-        }
+        return 'media/cache/resolve/mob_avatar_thumb/' . $this->getAvatar()?: 'default_avatar.jpg';
     }
 
     /**
