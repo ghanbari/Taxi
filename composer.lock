@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "5408b13575dcc63bf813a44214dcf267",
+    "content-hash": "b7df9e5a764ede608d389e52b2f23210",
     "packages": [
         {
             "name": "Carpe-Hora/SmsSender",
@@ -1387,7 +1387,7 @@
         },
         {
             "name": "ghanbari/sms-sender-bundle",
-            "version": "dev-master",
+            "version": "1.4.0",
             "target-dir": "KPhoen/SmsSenderBundle",
             "source": {
                 "type": "git",
@@ -1424,7 +1424,7 @@
                 "abstraction",
                 "sms"
             ],
-            "time": "2017-06-08 13:58:53"
+            "time": "2017-06-08T13:58:53+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -6432,8 +6432,7 @@
     "stability-flags": {
         "friendsofsymfony/user-bundle": 20,
         "friendsofsymfony/rest-bundle": 20,
-        "twig/extensions": 20,
-        "ghanbari/sms-sender-bundle": 20
+        "twig/extensions": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

@@ -44,7 +44,7 @@
         "liip/imagine-bundle": "^1.6",
         "Carpe-Hora/SmsSender": "^1.4",
         "kriswallsmith/buzz": "v0.15",
-        "kphoen/sms-sender-bundle": "^1.3",
+        "ghanbari/sms-sender-bundle": "1.4.0",
         "guzzlehttp/guzzle": "^6.2",
         "jms/translation-bundle": "^1.3",
         "jms/job-queue-bundle": "^1.3",
