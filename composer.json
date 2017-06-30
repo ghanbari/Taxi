@@ -42,7 +42,6 @@
         "dunglas/angular-csrf-bundle": "^1.0",
         "nelmio/api-doc-bundle": "^2.11",
         "liip/imagine-bundle": "^1.6",
-        "Carpe-Hora/SmsSender": "^1.4",
         "kriswallsmith/buzz": "v0.15",
         "ghanbari/sms-sender-bundle": "1.4.0",
         "guzzlehttp/guzzle": "^6.2",

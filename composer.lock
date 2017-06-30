@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "b7df9e5a764ede608d389e52b2f23210",
+    "content-hash": "3ef23194ee97a0bf85c6e59c182dd13a",
     "packages": [
         {
             "name": "Carpe-Hora/SmsSender",
@@ -2335,55 +2335,6 @@
                 "webinterface"
             ],
             "time": "2016-08-13 23:17:44"
-        },
-        {
-            "name": "kphoen/sms-sender-bundle",
-            "version": "1.3.0",
-            "target-dir": "KPhoen/SmsSenderBundle",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/K-Phoen/KPhoenSmsSenderBundle.git",
-                "reference": "9fd180d0a6514d3758a3b415c9d5646e605527f3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/K-Phoen/KPhoenSmsSenderBundle/zipball/9fd180d0a6514d3758a3b415c9d5646e605527f3",
-                "reference": "9fd180d0a6514d3758a3b415c9d5646e605527f3",
-                "shasum": ""
-            },
-            "require": {
-                "carpe-hora/smssender": "~1.4.0",
-                "psr/log": "~1.0",
-                "symfony/framework-bundle": ">=2.1.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~3.7.0",
-                "symfony/symfony": ">=2.1.0"
-            },
-            "type": "symfony-bundle",
-            "autoload": {
-                "psr-0": {
-                    "KPhoen\\SmsSenderBundle": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Kévin Gomez",
-                    "email": "contact@kevingomez.fr",
-                    "homepage": "http://www.kevingomez.fr/"
-                }
-            ],
-            "description": "Integrates the SmsSender library in Symfony2 applications",
-            "keywords": [
-                "abstraction",
-                "sms"
-            ],
-            "abandoned": true,
-            "time": "2014-10-21T07:27:06+00:00"
         },
         {
             "name": "kriswallsmith/buzz",
