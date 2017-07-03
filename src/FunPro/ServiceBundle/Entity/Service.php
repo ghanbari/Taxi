@@ -100,6 +100,21 @@ class Service
     private $startPoint;
 
     /**
+     * @var Point
+     *
+     * @ORM\Column(name="origin_point", type="point", nullable=true)
+     *
+     * @Assert\NotNull(groups={"Create"})
+     * @Assert\Type(type="FunPro\GeoBundle\Doctrine\ValueObject\Point", groups={"Create"})
+     * @Assert\Valid()
+     *
+     * @JS\Groups({"Passenger", "Driver", "Agent", "Admin", "Point"})
+     * @JS\MaxDepth(1)
+     * @JS\Since("1.0.0")
+     */
+    private $originPoint;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="start_address", length=500, options={"default"="???"})
@@ -127,6 +142,22 @@ class Service
      * @JS\Since("1.0.0")
      */
     private $endPoint;
+
+    /**
+     * @var Point
+     *
+     * @ORM\Column(name="destination_point", type="point", nullable=true)
+     *
+     * @Assert\Type(type="FunPro\GeoBundle\Doctrine\ValueObject\Point", groups={"Create"})
+     * @Assert\Valid()
+     * @Assert\NotNull(groups={"Create", "Update"})
+     *
+     * @JS\Groups({"Passenger", "Driver", "Admin", "Point"})
+     * @JS\Type(name="FunPro\GeoBundle\Doctrine\ValueObject\Point")
+     * @JS\MaxDepth(1)
+     * @JS\Since("1.0.0")
+     */
+    private $destinationPoint;
 
     /**
      * @var string
@@ -585,6 +616,24 @@ class Service
     }
 
     /**
+     * @return Point
+     */
+    public function getOriginPoint()
+    {
+        return $this->originPoint;
+    }
+
+    /**
+     * @param Point $originPoint
+     * @return Service;
+     */
+    public function setOriginPoint($originPoint)
+    {
+        $this->originPoint = $originPoint;
+        return $this;
+    }
+
+    /**
      * Get endPoint
      *
      * @return Point
@@ -605,6 +654,25 @@ class Service
     {
         $this->endPoint = $endPoint;
 
+        return $this;
+    }
+
+    /**
+     * @return Point
+     */
+    public function getDestinationPoint()
+    {
+        return $this->destinationPoint;
+    }
+
+    /**
+     * @param Point $destinationPoint
+     * @return Service;
+     */
+    public function setDestinationPoint($destinationPoint)
+    {
+        $this->destinationPoint = $destinationPoint;
+        
         return $this;
     }
 

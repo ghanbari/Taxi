@@ -489,8 +489,14 @@ class ServiceController extends FOSRestController
 //            return $this->view($error, Response::HTTP_BAD_REQUEST);
 //        }
 
-        $event = new GetCarPointServiceEvent($service, $point);
         try {
+            $service
+                ->setOriginPoint($service->getStartPoint())
+                ->setStartPoint($point);
+            $event = new ServiceEvent($service);
+            $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_UPDATE, $event);
+
+            $event = new GetCarPointServiceEvent($service, $point);
             $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_READY, $event);
             $manager->flush();
         } catch (CarStatusException $e) {
@@ -567,11 +573,9 @@ class ServiceController extends FOSRestController
      *      resource=true,
      *      views={"driver"},
      *      statusCodes={
-     *          204="When success",
+     *          200="When success",
      *          400={
-     *              "Invalid format for floating cost or more that ten item is send(code: 2)",
-     *              "When car status is not in_service or in_and_accept or in_and_prepare(code: 3)",
-     *              "When service is not started(code: 4)",
+     *              "You can not change destination of service(code: 1)"
      *          },
      *          403= {
      *              "when you are not a driver or driver of this service",
@@ -610,16 +614,21 @@ class ServiceController extends FOSRestController
         $longitude = $fetcher->get('longitude', true);
         $latitude = $fetcher->get('latitude', true);
         $destination = new Point($longitude, $latitude);
-        $service->setEndPoint($destination);
+        $service
+            ->setDestinationPoint($service->getEndPoint())
+            ->setEndPoint($destination);
         
         $event = new ServiceEvent($service);
         $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_UPDATE, $event);
         $this->getDoctrine()->getManager()->flush();
-        
-        $context = new Context();
-        $context->addGroups(['Public', 'Point', 'Driver']);
-        return $this->view($service, Response::HTTP_OK)
-            ->setSerializationContext($context);;
+
+        $result['distance'] = round($service->getDistance() / 1000, 1);
+        $result['duration'] = round($service->getPeriod() / 60);
+
+        $result['price'] = Service::roundPrice($service->getPrice());
+        $result['off'] = Service::roundPrice($service->getDiscountedPrice());
+
+        return $this->view($result, Response::HTTP_OK);
     }
 
     /**
