@@ -249,7 +249,8 @@ class ServiceRepository extends EntityRepository
             ->innerJoin('s.logs', 'l');
 
         $queryBuilder->andWhere($queryBuilder->expr()->eq('c.driver', ':driver'))
-            ->setParameter('driver', $driver);
+            ->setParameter('driver', $driver)
+            ->groupBy('s.id');
 
         return $queryBuilder
             ->getQuery()
