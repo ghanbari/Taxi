@@ -250,7 +250,7 @@ class Service
      *
      * @ORM\Column(type="decimal", precision=1, nullable=true)
      *
-     * @Assert\Range(min="0", max="5", groups={"Rate"})
+     * @Assert\Range(min="0", max="6", groups={"Rate"})
      * @Assert\NotNull(groups={"Rate"})
      * @Assert\Type(type="numeric", groups={"Rate"})
      *
@@ -264,7 +264,7 @@ class Service
      *
      * @ORM\Column(type="decimal", precision=1, nullable=true)
      *
-     * @Assert\Range(min="0", max="5", groups={"Rate"})
+     * @Assert\Range(min="0", max="6", groups={"Rate"})
      * @Assert\NotNull(groups={"Rate"})
      * @Assert\Type(type="numeric", groups={"Rate"})
      *

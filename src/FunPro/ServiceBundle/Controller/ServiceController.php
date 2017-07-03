@@ -745,7 +745,7 @@ class ServiceController extends FOSRestController
      * @ParamConverter(name="service", class="FunProServiceBundle:Service")
      * @Security("service.getPassenger() == user or service.getDriver() == user")
      *
-     * @Rest\RequestParam(name="rate", requirements="[0-5]", strict=true, nullable=false)
+     * @Rest\RequestParam(name="rate", requirements="[0-6]", strict=true, nullable=false)
      *
      * @param $id
      * @return \FOS\RestBundle\View\View
