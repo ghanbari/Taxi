@@ -104,7 +104,6 @@ class Service
      *
      * @ORM\Column(name="origin_point", type="point", nullable=true)
      *
-     * @Assert\NotNull(groups={"Create"})
      * @Assert\Type(type="FunPro\GeoBundle\Doctrine\ValueObject\Point", groups={"Create"})
      * @Assert\Valid()
      *
@@ -150,7 +149,6 @@ class Service
      *
      * @Assert\Type(type="FunPro\GeoBundle\Doctrine\ValueObject\Point", groups={"Create"})
      * @Assert\Valid()
-     * @Assert\NotNull(groups={"Create", "Update"})
      *
      * @JS\Groups({"Passenger", "Driver", "Admin", "Point"})
      * @JS\Type(name="FunPro\GeoBundle\Doctrine\ValueObject\Point")
