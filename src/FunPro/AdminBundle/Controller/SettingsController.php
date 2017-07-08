@@ -28,7 +28,7 @@ class SettingsController extends FOSRestController
     /**
      * Show Drivers
      *
-     * @Security("has_role('ROLE_OPERATOR')")
+     * @Security("has_role('ROLE_ADMIN')")
      *
      * @Rest\QueryParam(name="start", requirements="\d+", default="0", nullable=true, strict=true)
      * @Rest\QueryParam(name="length", requirements="\d+", default="10", nullable=true, strict=true)
@@ -69,6 +69,8 @@ class SettingsController extends FOSRestController
     }
 
     /**
+     * @Security("has_role('ROLE_ADMIN')")
+     *
      * @return \FOS\RestBundle\View\View
      */
     public function postAction(Request $request)

@@ -3,8 +3,6 @@ security:
         FOS\UserBundle\Model\UserInterface: bcrypt
 
     role_hierarchy:
-        ROLE_SALESMAN:    ROLE_PASSENGER
-        ROLE_OPERATOR:    ROLE_SALESMAN
         ROLE_ADMIN:       ROLE_OPERATOR
         ROLE_SUPER_ADMIN: ROLE_ADMIN
 
@@ -67,7 +65,7 @@ security:
 
     access_control:
         - { path: ^/login$, host: %admin.panel.host%, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/, host: %admin.panel.host%, role: ROLE_ADMIN }
+        - { path: ^/, host: %admin.panel.host%, role: ROLE_OPERATOR }
         - { path: ^/passenger$, methods: [POST], host: "api.%router.request_context.host%", role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/passenger/confirm$, methods: [POST], host: "api.%router.request_context.host%", role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/passenger, role: ROLE_PASSENGER }

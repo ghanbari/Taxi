@@ -22,7 +22,7 @@ class MonitorController extends FOSRestController
     /**
      * Show map
      *
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("has_role('ROLE_OPERATOR')")
      *
      * @Rest\View("FunProAdminBundle:Monitor:map.html.twig")
      */
