@@ -27,9 +27,12 @@ class UserType extends AbstractType
             ->add('age', Type\NumberType::class, ['required' => false])
             ->add('sex', Type\ChoiceType::class, array(
                 'choices' => array(
-                    User::SEX_MALE => 'male',
-                    User::SEX_FEMALE => 'female'
+                    'male' => User::SEX_MALE,
+                    'female' => User::SEX_FEMALE,
                 ),
+                'multiple' => false,
+                'expanded' => true,
+                'choices_as_values' => true,
             ))
             ->add('description', Type\TextareaType::class, ['required' => false])
             ->add('avatarFile', Type\FileType::class, ['required' => false])

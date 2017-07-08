@@ -14,5 +14,10 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Operator extends User
 {
-
+    public function __construct()
+    {
+        parent::__construct();
+        $this->addRole('ROLE_OPERATOR');
+        $this->setEnabled(true);
+    }
 }

@@ -54,6 +54,7 @@ class DriverController extends FOSRestController
 
         $form = $this->createForm(DriverType::class, $driver, $options);
         $form->remove('plainPassword');
+        $form->remove('username');
 
         if ($method == 'PUT') {
             $form->remove('plainPassword');
