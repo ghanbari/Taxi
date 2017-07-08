@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "45a0c729f5b58e8cd73f7f648559122e",
+    "content-hash": "3ef23194ee97a0bf85c6e59c182dd13a",
     "packages": [
         {
             "name": "Carpe-Hora/SmsSender",
@@ -1386,6 +1386,47 @@
             "time": "2015-12-18T20:34:21+00:00"
         },
         {
+            "name": "ghanbari/sms-sender-bundle",
+            "version": "1.4.0",
+            "target-dir": "KPhoen/SmsSenderBundle",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ghanbari/KPhoenSmsSenderBundle.git",
+                "reference": "b946bd645abed8caa928d2cc08f4db02ed8b2184"
+            },
+            "require": {
+                "carpe-hora/smssender": "~1.4.0",
+                "psr/log": "~1.0",
+                "symfony/framework-bundle": ">=2.1.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~3.7.0",
+                "symfony/symfony": ">=2.1.0"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-0": {
+                    "KPhoen\\SmsSenderBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kévin Gomez",
+                    "email": "contact@kevingomez.fr",
+                    "homepage": "http://www.kevingomez.fr/"
+                }
+            ],
+            "description": "Integrates the SmsSender library in Symfony2 applications",
+            "keywords": [
+                "abstraction",
+                "sms"
+            ],
+            "time": "2017-06-08T13:58:53+00:00"
+        },
+        {
             "name": "guzzlehttp/guzzle",
             "version": "dev-master",
             "source": {
@@ -2296,54 +2337,6 @@
             "time": "2016-08-13 23:17:44"
         },
         {
-            "name": "kphoen/sms-sender-bundle",
-            "version": "1.3.0",
-            "target-dir": "KPhoen/SmsSenderBundle",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ghanbari/KPhoenSmsSenderBundle.git",
-                "reference": "9fd180d0a6514d3758a3b415c9d5646e605527f3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/K-Phoen/KPhoenSmsSenderBundle/zipball/9fd180d0a6514d3758a3b415c9d5646e605527f3",
-                "reference": "9fd180d0a6514d3758a3b415c9d5646e605527f3",
-                "shasum": ""
-            },
-            "require": {
-                "carpe-hora/smssender": "~1.4.0",
-                "psr/log": "~1.0",
-                "symfony/framework-bundle": ">=2.1.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~3.7.0",
-                "symfony/symfony": ">=2.1.0"
-            },
-            "type": "symfony-bundle",
-            "autoload": {
-                "psr-0": {
-                    "KPhoen\\SmsSenderBundle": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Kévin Gomez",
-                    "email": "contact@kevingomez.fr",
-                    "homepage": "http://www.kevingomez.fr/"
-                }
-            ],
-            "description": "Integrates the SmsSender library in Symfony2 applications",
-            "keywords": [
-                "abstraction",
-                "sms"
-            ],
-            "time": "2014-10-21T07:27:06+00:00"
-        },
-        {
             "name": "kriswallsmith/buzz",
             "version": "v0.15",
             "source": {
@@ -2989,12 +2982,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "d8e60a5619fff77f9669da8997697443ef1a1d7e"
+                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/d8e60a5619fff77f9669da8997697443ef1a1d7e",
-                "reference": "d8e60a5619fff77f9669da8997697443ef1a1d7e",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
+                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
                 "shasum": ""
             },
             "require": {
@@ -3028,7 +3021,7 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2016-01-06 21:40:42"
+            "time": "2016-10-10 12:19:37"
         },
         {
             "name": "sensio/distribution-bundle",
@@ -6390,8 +6383,7 @@
     "stability-flags": {
         "friendsofsymfony/user-bundle": 20,
         "friendsofsymfony/rest-bundle": 20,
-        "twig/extensions": 20,
-        "jms/di-extra-bundle": 20
+        "twig/extensions": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
