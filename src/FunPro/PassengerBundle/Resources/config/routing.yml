@@ -1,8 +1,8 @@
 fun_pro_passenger_api:
     resource: FunPro\PassengerBundle\Controller\PassengerController
     type: rest
-    options:
-        version: true
+#    options:
+#        version: true
 
 fun_pro_passenger_api_profile:
     resource: "@FunProPassengerBundle/Controller/ProfileController.php"
