@@ -100,8 +100,7 @@ class Car
      * @Assert\NotBlank(groups={"Create", "Update"})
      * @Assert\Choice(callback="getTypes", groups={"Create", "Update"})
      *
-     * @JS\Groups({"Public", "Driver", "Admin"})
-     * @JS\Since("1.0.0")
+     * @JS\Exclude()
      */
     private $type;
 
@@ -976,6 +975,66 @@ class Car
             'corporative' => 'corporative',
             'other' => 'other'
         );
+    }
+
+    /**
+     * @JS\VirtualProperty()
+     * @JS\SerializedName("type")
+     * @JS\Type(name="string")
+     * @JS\Groups({"Public", "Driver", "Admin"})
+     * @JS\Since("1.0.0")
+     */
+    public function getTypeAsString()
+    {
+        switch ($this->type) {
+            case self::TYPE_PERIDE:
+                return 'پراید';
+                break;
+            case self::TYPE_P405:
+                return 'پژو ۴۰۵';
+                break;
+            case self::TYPE_P206:
+                return 'پژو ۲۰۶';
+                break;
+            case self::TYPE_P207:
+                return 'پژو ۲۰۷';
+                break;
+            case self::TYPE_SAMAND:
+                return 'سمند';
+                break;
+            case self::TYPE_PERSIA:
+                return 'پژو پرشیا';
+                break;
+            case self::TYPE_ZANTIYA:
+                return 'زانتیا';
+                break;
+            case self::TYPE_MEGAN:
+                return 'مگان';
+                break;
+            case self::TYPE_JACK:
+                return 'جک';
+                break;
+            case self::TYPE_PERIDE_HB:
+                return 'پراید هاچ بک';
+                break;
+            case self::TYPE_TIBA:
+                return 'تیبا';
+                break;
+            case self::TYPE_TIBA_HB:
+                return 'تیبا اچ بک';
+                break;
+            case self::TYPE_P206_SD:
+                return 'پژو ۲۰۶';
+                break;
+            case self::TYPE_L90:
+                return 'ال ۹۰';
+                break;
+            case self::TYPE_TAXI:
+                return 'تاکسی';
+                break;
+        }
+
+        return 'p206';
     }
 
     /**
