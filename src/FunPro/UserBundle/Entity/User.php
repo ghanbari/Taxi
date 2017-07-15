@@ -433,7 +433,7 @@ class User extends BaseUser
      */
     public function getAvatarPath()
     {
-        return 'media/cache/resolve/mob_avatar_thumb/' . ($this->getAvatar()?: 'default_avatar.jpg');
+        return 'http://assets.carzinn.ir/media/cache/resolve/mob_avatar_thumb/' . ($this->getAvatar()?: 'default_avatar.jpg');
     }
 
     /**
