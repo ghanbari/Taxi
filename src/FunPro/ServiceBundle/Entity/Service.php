@@ -1321,7 +1321,8 @@ class Service
     public function calculateRealPrice()
     {
         if ($this->getRealDistance() === 0) {
-            throw new \RuntimeException('distance is null');
+//            throw new \RuntimeException('distance is null');
+            return;
         }
 
         $baseCosts = $this->getBaseCost();
@@ -1411,6 +1412,10 @@ class Service
      */
     public function setRealDistance($realDistance)
     {
+        if (!is_numeric($realDistance)) {
+            return;
+        }
+
         $this->realDistance = $realDistance;
         return $this;
     }
