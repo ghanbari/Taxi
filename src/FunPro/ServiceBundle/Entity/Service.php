@@ -1412,7 +1412,7 @@ class Service
      */
     public function setRealDistance($realDistance)
     {
-        if (!is_numeric($realDistance)) {
+        if (is_nan($realDistance) or !is_numeric($realDistance)) {
             return;
         }
 
