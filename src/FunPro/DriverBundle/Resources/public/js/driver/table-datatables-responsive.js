@@ -100,6 +100,24 @@ jQuery(document).ready(function() {
         $('.edit').on('click', function() {
             document.location.href = Routing.generate('fun_pro_admin_edit_driver', {id: $(this).parent().find('.driverId').text()})
         });
+        
+        $('.delete').on('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            var that = this;
+            $.ajax({
+                type: 'delete',
+                headers: {'content-type': 'application/json', accept: 'application/json'},
+                url: Routing.generate('fun_pro_admin_delete_driver', {id: $(this).parent().find('.driverId').text()}),
+                success: function (result) {
+                    $(that).parent().slideUp();
+
+                },
+                error: function (xhr) {
+                    alert('راننده وجود ندارد');
+                }
+            });
+        });
 
         $('td.avatar').each(function(index, item) {
             var avatar = $(item).text() ? $(item).text() : 'default_avatar.jpg';

@@ -171,9 +171,23 @@ class DriverController extends FOSRestController
         return $this->view($form, Response::HTTP_BAD_REQUEST);
     }
 
-    public function deleteAction($id)
+    /**
+     * Delete driver
+     *
+     * @Security("has_role('ROLE_ADMIN')")
+     * @ParamConverter(name="driver", class="FunProDriverBundle:Driver")
+     *
+     * @param $id
+     * @return \FOS\RestBundle\View\View
+     */
+    public function deleteAction(Request $request, $id)
     {
+        $driver = $request->attributes->get('driver');
+        $manager = $this->getDoctrine()->getManager();
+        $manager->remove($driver);
+        $manager->flush();
 
+        return $this->view(null, Response::HTTP_NO_CONTENT);
     }
 
     /**

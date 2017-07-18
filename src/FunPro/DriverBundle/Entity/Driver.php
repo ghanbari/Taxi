@@ -11,6 +11,7 @@ use FunPro\UserBundle\Interfaces\SMSInterface;
 use JMS\Serializer\Annotation as JS;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Driver
@@ -21,6 +22,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @UniqueEntity("mobile", groups={"Register", "Update"})
  * @UniqueEntity("contractNumber", groups={"Register", "Update"})
  * @UniqueEntity("nationalCode", groups={"Register", "Update"})
+ *
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
 class Driver extends User implements SMSInterface
 {
