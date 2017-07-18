@@ -53,6 +53,7 @@ var TableDatatablesResponsive = function () {
                 {name: "d.rate", data: "rate", "defaultContent": 0, orderable: true, searchable: false},
                 {name: "d.description", data: "description", "defaultContent": "", orderable: false, searchable: false},
                 {name: "d.avatar", data: "avatar", "defaultContent": "", orderable: false, searchable: false, className: "avatar"},
+                {name: "recover", "defaultContent": "<i class='btn btn-warning'>بازیابی</i>", orderable: false, searchable: false, className: "recover text-center"},
                 {name: "car", data: "id", orderable: false, searchable: false, className: "carList text-center"},
                 {name: "edit", "defaultContent": "<i class='btn btn-warning'>ویرایش</i>", orderable: false, searchable: false, className: "edit text-center"},
                 {name: "delete", "defaultContent": "<i class='btn btn-danger'>حذف</i>", orderable: false, searchable: false, className: "delete text-center"},
@@ -111,6 +112,24 @@ jQuery(document).ready(function() {
                 url: Routing.generate('fun_pro_admin_delete_driver', {id: $(this).parent().find('.driverId').text()}),
                 success: function (result) {
                     $(that).parent().slideUp();
+
+                },
+                error: function (xhr) {
+                    alert('راننده وجود ندارد');
+                }
+            });
+        });
+
+        $('.recover').on('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            var that = this;
+            $.ajax({
+                type: 'patch',
+                headers: {'content-type': 'application/json', accept: 'application/json'},
+                url: Routing.generate('fun_pro_admin_recover_driver', {id: $(this).parent().find('.driverId').text()}),
+                success: function (result) {
+                    alert('message sent');
 
                 },
                 error: function (xhr) {

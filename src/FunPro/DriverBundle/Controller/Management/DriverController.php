@@ -191,6 +191,32 @@ class DriverController extends FOSRestController
     }
 
     /**
+     * Recover driver
+     *
+     * @Security("has_role('ROLE_OPERATOR')")
+     * @ParamConverter(name="driver", class="FunProDriverBundle:Driver")
+     *
+     * @param $id
+     * @return \FOS\RestBundle\View\View
+     */
+    public function recoverAction(Request $request, $id)
+    {
+        mt_srand(time() * rand());
+        $password = mt_rand(10000, 99999);
+        $driver = $request->attributes->get('driver');
+        $driver->setPlainPassword($password);
+
+        $this->get('fos_user.user_manager')->updateUser($driver);
+        $message = $this->get('translator')->trans(
+            'your.registeration.is.completed.your.password.is.%password%',
+            array('%password%' => $password)
+        );
+        $this->get('sms.sender')->send($driver->getMobile(), $message);
+
+        return $this->view(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
      * Show Drivers
      *
      * @Security("has_role('ROLE_OPERATOR')")
