@@ -47,7 +47,7 @@ class DiscountCode
      * @ORM\Column(name="code", length=10, unique=true)
      *
      * @Assert\NotBlank(groups={"Create", "Update"})
-     * @Assert\Length(min="7", max="7", groups={"Create", "Update"})
+     * @Assert\Length(min="0", max="10", groups={"Create", "Update"})
      *
      * @JS\Since("1.0.0")
      * @JS\Groups({"Admin", "Passenger"})

@@ -21,8 +21,11 @@ class DiscountCodeType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('title', Type\TextType::class, array(
+                'required' => true,
+            ))
             ->add('code', Type\TextType::class, array(
-                'pattern' => '[A-Z0-9]{7}',
+                'pattern' => '[A-Z0-9a-z]{0,10}',
             ))
             ->add('discount', Type\NumberType::class)
             ->add('maxUsage', Type\NumberType::class)

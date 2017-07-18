@@ -82,6 +82,18 @@
                             </div>
                             <div class="portlet-body form">
                                 <div class="form-body">
+                                    <div class="form-group form-md-line-input" {% if form.title.vars.errors|length %}has-error{% elseif (form.title.vars.submitted) %}has-success{% endif %}">
+                                    <label class="col-md-2 control-label" for="form_control_1">عنوان کد تخفیف</label>
+                                    <div class="col-md-10">
+                                        {{ form_widget(form.title, {'attr':{'placeholder':'عنوان کد تخفیف را وارد نمایید'}}) }}
+                                        <div class="form-control-focus"> </div>
+                                            <span class="help-block">ده حرف یا عدد<br />
+                                                {% if form.title.vars.errors|length %}{{ form_errors(form.title) }}{% endif %}
+                                            </span>
+                                    </div>
+                                </div>
+
+                                <div class="form-body">
                                     <div class="form-group form-md-line-input" {% if form.code.vars.errors|length %}has-error{% elseif (form.code.vars.submitted) %}has-success{% endif %}">
                                     <label class="col-md-2 control-label" for="form_control_1">کد تخفیف</label>
                                     <div class="col-md-10">
