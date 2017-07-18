@@ -53,6 +53,9 @@ class ProfileController extends FOSRestController
         $till = new \DateTime($fetcher->get('till'));
         $data = array();
 
+        $from->setTime(0, 0, 0);
+        $till->setTime(23, 59, 59);
+
         # user can only get report for 30 day
         if (($till->getTimestamp() - $from->getTimestamp()) > 2592000) {
             $error = array(
