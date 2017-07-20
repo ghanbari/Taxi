@@ -145,6 +145,6 @@ class CarLogRepository extends EntityRepository
             ->getQuery()
             ->getSingleScalarResult();
 
-        return $total * 110000;
+        return floor($total * 110/1000);
     }
 }
