@@ -43,7 +43,7 @@ var TableDatatablesResponsive = function () {
                 }
             },
             columns: [
-                {name: "p.id", "defaultContent": "", orderable: true, searchable: false},
+                {name: "p.id", data: "id", "defaultContent": "", orderable: true, searchable: false},
                 {name: "p.mobile", data: "mobile", "defaultContent": "", orderable: false, searchable: true},
                 {name: "p.name", data: "name", orderable: true, searchable: true},
                 {name: "p.age", data: "age", "defaultContent": "", orderable: true, searchable: false},
