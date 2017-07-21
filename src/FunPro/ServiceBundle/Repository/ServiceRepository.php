@@ -279,4 +279,38 @@ class ServiceRepository extends EntityRepository
             ->getQuery()
             ->getSingleScalarResult();
     }
+
+    public function get(
+        Point $location,
+        $radius,
+        \DateTime $from = null,
+        \Datetime $till = null,
+        $limit = 10,
+        $offset = 0
+    ) {
+        $qb = $this->createQueryBuilder('s');
+
+        $qb->select(array('s', 'p', 'c', 'd'))
+            ->innerJoin('s.passenger', 'p')
+            ->leftJoin('s.car', 'c')
+            ->leftJoin('c.driver', 'd')
+            ->where($qb->expr()->lte('glength(linestring(s.startPoint, st_geomfromtext(:point))) * 110000', ':radius'))
+            ->orWhere($qb->expr()->lte('glength(linestring(s.endPoint, st_geomfromtext(:point))) * 110000', ':radius'))
+            ->setParameter('radius', $radius)
+            ->setParameter('point', $location);
+
+        if ($from) {
+            $qb->andWhere($qb->expr()->gte('t.createdAt', ':from'))
+                ->setParameter('from', $from);
+        }
+
+        if ($till) {
+            $qb->andWhere($qb->expr()->lte('t.createdAt', ':till'))
+                ->setParameter('till', $till);
+        }
+
+        return $qb
+            ->setMaxResults($limit)
+            ->setFirstResult($offset);
+    }
 }

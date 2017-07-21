@@ -1,10 +1,14 @@
 fun_pro_ticket:
     resource: "@FunProTicketBundle/Resources/config/routing.yml"
     type:     rest
+    options:
+        expose: true
 
 fun_pro_financial:
     resource: "@FunProFinancialBundle/Resources/config/routing.yml"
     type:     rest
+    options:
+        expose: true
 
 fun_pro_admin_res:
     resource: "@FunProAdminBundle/Resources/config/routing.yml"
@@ -17,10 +21,15 @@ fun_pro_admin_res:
 fun_pro_service:
     resource: "@FunProServiceBundle/Resources/config/routing.yml"
     type:     rest
+    options:
+        expose: true
 
 fun_pro_geo:
     resource: "@FunProGeoBundle/Resources/config/routing.yml"
     type:     rest
+    options:
+        expose: true
+
 #
 #fun_pro_engine:
 #    resource: "@FunProEngineBundle/Resources/config/routing.yml"
@@ -33,14 +42,20 @@ fun_pro_geo:
 fun_pro_driver:
     resource: "@FunProDriverBundle/Resources/config/routing.yml"
     type:     rest
+    options:
+        expose: true
 
 fun_pro_passenger:
     resource: "@FunProPassengerBundle/Resources/config/routing.yml"
     type:     rest
+    options:
+        expose: true
 
 fun_pro_user:
     resource: "@FunProUserBundle/Resources/config/routing.yml"
     type:     rest
+    options:
+        expose: true
 
 #fos_user:
 #    resource: "@FOSUserBundle/Resources/config/routing/all.xml"

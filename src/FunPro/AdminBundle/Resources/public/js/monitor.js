@@ -1,4 +1,5 @@
 var markers = [];
+var markerCluster;
 var onlineCounter = 0;
 var inServiceCounter = 0;
 
@@ -45,32 +46,71 @@ function createInfoWindow(wakeful) {
     });
 
     $('#driverAvatar').attr('src', driverAvatar);
+    $('#driverProfile').attr('href', Routing.generate('fun_pro_admin_edit_driver', {id: wakeful.car.driver.id}));
     $('#driverName').text(wakeful.car.driver.name);
-    $('#driverStatus').text(wakeful.car.statusName);
     $('#driverContractNumber').text(wakeful.car.driver.contractNumber);
     $('#driverMobileNumber').text(wakeful.car.driver.mobile);
     $('#driverNationalCode').text(wakeful.car.driver.nationalCode);
     $('#driverRate').text(wakeful.car.driver.rate);
 
     $('#carImage').attr('src', carImage);
-    $('#carName').text(wakeful.car.name);
-    $('#carStatus').text(wakeful.car.statusName);
-    $('#carBrand').text(wakeful.car.brand);
-    $('#carModel').text(wakeful.car.model);
+    $('#carName').text(wakeful.car.type);
     $('#carColor').text(wakeful.car.color);
-    $('#carColor').css('color', wakeful.car.color);
     $('#carRate').text(wakeful.car.rate);
+
+    switch (wakeful.car.status) {
+        case 0:
+            $('#carStatus').text('آفلاین');
+            $('#driverStatus').text('آفلاین');
+            break;
+        case 1:
+            $('#carStatus').text('آنلاین');
+            $('#driverStatus').text('آنلاین');
+            break;
+        case 2:
+            $('#carStatus').text('تایید سفر');
+            $('#driverStatus').text('تایید سفر');
+            break;
+        case 3:
+            $('#carStatus').text('سفر به مبدا');
+            $('#driverStatus').text('سفر به مبدا');
+            break;
+        case 4:
+            $('#carStatus').text('انتظار برای مسافر');
+            $('#driverStatus').text('انتظار برای مسافر');
+            break;
+        case 5:
+            $('#carStatus').text('شروع سفر');
+            $('#driverStatus').text('شروع سفر');
+            break;
+        case 6:
+            $('#carStatus').text('در حال سفر');
+            $('#driverStatus').text('در حال سفر');
+            break;
+        case 7:
+            $('#carStatus').text('پایان سفر');
+            $('#driverStatus').text('پایان سفر');
+            break;
+        case 8:
+            $('#carStatus').text('تایید سفر دیگر');
+            $('#driverStatus').text('تایید سفر دیگر');
+            break;
+        case 9:
+            $('#carStatus').text('سفر به مبدا دیگر');
+            $('#driverStatus').text('سفر به مبدا دیگر');
+            break;
+    }
 
     $('#driver').modal('toggle');
 }
 
 function showWakeful() {
-    if (!$('.autoRefresh').hasClass('active')) {
+    if (!$('.autoRefresh label').hasClass('active')) {
         return;
     }
 
     $.ajax({
-        url: Routing.generate('fun_pro_admin_cget_monitor_wakeful', {'latitude': 36.313048, 'longitude': 59.575237}),
+        url: Routing.generate('fun_pro_admin_cget_monitor_wakeful', {'latitude': map.getCenter().lat(), 'longitude': map.getCenter().lng(), limit: 5000}),
         type: 'GET',
         beforeSend: function(xhr){xhr.setRequestHeader('Accept', 'application/json');},
 
@@ -104,6 +144,70 @@ function showWakeful() {
                     })(carMarker, result[i])
                 }
 
+                if (markerCluster !== undefined) {
+                    markerCluster.clearMarkers();
+                }
+
+                markerCluster = new MarkerClusterer(map, markers,
+                    {imagePath: '/bundles/funproadmin/map/markerclusterer/images/m'});
+
+                $('.inServiceCounter').attr('data-value', inServiceCounter);
+                $('.inServiceCounter').counterUp();
+
+                $('.onlineCounter').attr('data-value', onlineCounter);
+                $('.onlineCounter').counterUp();
+            }
+        }
+    });
+}
+
+function showService() {
+    if (!$('.showService label').hasClass('active')) {
+        return;
+    }
+
+    $.ajax({
+        url: Routing.generate('fun_pro_service_api_cget_service', {'latitude': map.getCenter().lat(), 'longitude': map.getCenter().lng(), limit: 5000}),
+        type: 'GET',
+        beforeSend: function(xhr){xhr.setRequestHeader('Accept', 'application/json');},
+
+        success: function(result, status, xhr) {
+            if (xhr.status == 200) {
+                inServiceCounter = 0;
+                onlineCounter = 0;
+                clearMarkers();
+                var icon = '';
+
+                for (var i=0; i < result.length; i++) {
+                    onlineCounter++;
+                    if (result[i].car.status == 1 || result[i].car.status == 7) {
+                        icon = map.getZoom() <= 13 ? blueMarkerSmall : blueMarker;
+                    } else {
+                        inServiceCounter ++;
+                        icon = map.getZoom() <= 13 ? purpleMarkerSmall : purpleMarker;
+                    }
+
+                    var carMarker = new google.maps.Marker({
+                        position: {lat: result[i].point.latitude, lng: result[i].point.longitude},
+                        map: map,
+                        icon: icon
+                    });
+                    markers.push(carMarker);
+
+                    (function(marker, wakeful) {
+                        marker.addListener('click', function() {
+                            createInfoWindow(wakeful);
+                        });
+                    })(carMarker, result[i])
+                }
+
+                if (markerCluster !== undefined) {
+                    markerCluster.clearMarkers();
+                }
+
+                markerCluster = new MarkerClusterer(map, markers,
+                    {imagePath: '/bundles/funproadmin/map/markerclusterer/images/m'});
+
                 $('.inServiceCounter').attr('data-value', inServiceCounter);
                 $('.inServiceCounter').counterUp();
 
@@ -116,4 +220,5 @@ function showWakeful() {
 
 $(document).ready(function(){
     window.setInterval(showWakeful, 8000);
+    window.setInterval(showService, 8000);
 });
