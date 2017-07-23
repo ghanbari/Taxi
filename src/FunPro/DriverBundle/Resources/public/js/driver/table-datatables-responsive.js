@@ -45,7 +45,7 @@ var TableDatatablesResponsive = function () {
             columns: [
                 {"defaultContent": "", name: "d.id", data: "id", orderable: true, searchable: false, className: "driverId"},
                 {name: "d.contractNumber", data: "contractNumber", orderable: true, searchable: true},
-                {name: "d.name", data: "name", orderable: true, searchable: true},
+                {name: "d.name", data: "name", orderable: true, searchable: true, className: 'driverName'},
                 {name: "d.nationalCode", data: "nationalCode", orderable: true, searchable: true},
                 {name: "d.mobile", data: "mobile", "defaultContent": "", orderable: true, searchable: true},
                 {name: "d.age", data: "age", "defaultContent": "", orderable: true, searchable: false},
@@ -103,6 +103,11 @@ jQuery(document).ready(function() {
         });
         
         $('.delete').on('click', function(event) {
+            var driverName = $(this).parent().find('.driverName').text();
+            if (!confirm(' نسبت به حذف راننده' + driverName + ' مطمین هستید؟')) {
+                return;
+            }
+
             event.preventDefault();
             event.stopPropagation();
             var that = this;
