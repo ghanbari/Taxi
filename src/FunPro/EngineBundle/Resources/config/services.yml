@@ -52,7 +52,7 @@ services:
         arguments: ['@doctrine.orm.entity_manager']
 
     fun_pro_engine.device_checker:
-        class: FunPro\EngineBundle\EventListener\DeviceListener
+        class: FunPro\EngineBundle\Listener\DeviceListener
         arguments: ["@doctrine", "@security.token_storage", "@logger"]
         tags:
             - { name: kernel.event_subscriber }

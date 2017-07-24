@@ -1,6 +1,6 @@
 <?php
 
-namespace FunPro\EngineBundle\EventListener;
+namespace FunPro\EngineBundle\Listener;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use FunPro\UserBundle\Exception\MultiDeviceException;
@@ -15,7 +15,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 /**
  * Class DeviceListener
  *
- * @package FunPro\EngineBundle\EventListener
+ * @package FunPro\EngineBundle\Listener
  */
 class DeviceListener implements EventSubscriberInterface
 {

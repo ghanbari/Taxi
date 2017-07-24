@@ -5,6 +5,7 @@ namespace FunPro\FinancialBundle\Controller;
 use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FunPro\FinancialBundle\Entity\DiscountCode;
 use FunPro\FinancialBundle\Entity\DiscountWrongCount;
 use FunPro\FinancialBundle\Entity\FavoriteDiscountCodes;
 use FunPro\PassengerBundle\Entity\Passenger;
@@ -33,7 +34,9 @@ class DiscountController extends FOSRestController
      *          204="Success",
      *          400={
      *              "User enter very wrong code (code: 1)",
-     *              "code is wrong (code: 2)"
+     *              "code is wrong (code: 2)",
+     *              "this code reached to max usage (code: 3)",
+     *              "you can not use this code more than (code: 4)"
      *          }
      *     }
      * )
@@ -51,31 +54,50 @@ class DiscountController extends FOSRestController
         $doctrine = $this->getDoctrine();
         $manager = $doctrine->getManager();
         $code = $this->get('fos_rest.request.param_fetcher')->get('code', true);
-        
-        $discountCode = $doctrine->getRepository('FunProFinancialBundle:DiscountCode')->findOneByCode($code);
-        if (!$discountCode) {
-            $count = $doctrine->getRepository('FunProFinancialBundle:DiscountWrongCount')->getCount($passenger, 86400);
-            if ($count > 10) {
-                $error = array(
-                    'code' => 1,
-                    'message' => $translator->trans('you.enter.very.wrong.code.you.can.not.try.again'),
-                );
-            } else {
-                $wrong = new DiscountWrongCount($passenger, $code);
-                $manager->persist($wrong);
-                $manager->flush();
-                $error = array(
-                    'code' => 2,
-                    'message' => $translator->trans('your.code.is.wrong'),
-                );
-            }
+
+        $count = $doctrine->getRepository('FunProFinancialBundle:DiscountWrongCount')->getCount($passenger, 86400);
+        if ($count > 10) {
+            $error = array(
+                'code' => 1,
+                'message' => $translator->trans('you.enter.very.wrong.code.you.can.not.try.again'),
+            );
 
             return $this->view($error, Response::HTTP_BAD_REQUEST);
         }
 
-        $favorite = $doctrine->getRepository('FunProFinancialBundle:FavoriteDiscountCodes')->findOneBy(array(
+        /** @var DiscountCode $discountCode */
+        $discountCode = $doctrine->getRepository('FunProFinancialBundle:DiscountCode')->findOneByCode($code);
+        if (!$discountCode) {
+            $wrong = new DiscountWrongCount($passenger, $code);
+            $manager->persist($wrong);
+            $manager->flush();
+            $error = array(
+                'code' => 2,
+                'message' => $translator->trans('your.code.is.wrong'),
+            );
+
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
+
+        $favoriteRepo = $doctrine->getRepository('FunProFinancialBundle:FavoriteDiscountCodes');
+        $usageCount = $favoriteRepo->getUsageCount($discountCode);
+        $userUsageCount = $favoriteRepo->getUsageCount($discountCode, $passenger);
+
+        if ($usageCount >= $discountCode->getMaxUsage() or $userUsageCount >= $discountCode->getMaxUsagePerUser()) {
+            $error = array(
+                'code' => ($usageCount >= $discountCode->getMaxUsage()) ? 3 : 4,
+                'message' => $usageCount >= $discountCode->getMaxUsage() ?
+                    $translator->trans('this.code.reached.to.max.usage')
+                    : $translator->trans('you.can.not.use.this.code.more.than'),
+            );
+
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
+
+        $favorite = $favoriteRepo->findOneBy(array(
             'passenger' => $passenger,
-            'discountCode' => $discountCode
+            'discountCode' => $discountCode,
+            'used' => false,
         ));
 
         if (!$favorite) {
@@ -108,7 +130,7 @@ class DiscountController extends FOSRestController
     public function cgetAction()
     {
         $codes = $this->getDoctrine()->getRepository('FunProFinancialBundle:FavoriteDiscountCodes')
-            ->findByPassenger($this->getUser());
+            ->findBy(array('passenger' => $this->getUser(), 'used' => false));
 
         $context = new Context();
         $context->addGroup('Passenger');
@@ -125,7 +147,7 @@ class DiscountController extends FOSRestController
      *     views={"passenger"},
      *     statusCodes={
      *          204="Success",
-     *          400="You can not check discount code in service (code: 1)",
+     *          400="You can not change discount code in service (code: 1)",
      *          404="You have not this code in your list"
      *     }
      * )
@@ -167,7 +189,7 @@ class DiscountController extends FOSRestController
         
         if ($discountCode) {
             $favoriteCode = $doctrine->getRepository('FunProFinancialBundle:FavoriteDiscountCodes')
-                ->findOneBy(array('passenger' => $passenger, 'discountCode' => $discountCode));
+                ->findOneBy(array('passenger' => $passenger, 'discountCode' => $discountCode, 'used' => false));
 
             if (!$favoriteCode) {
                 return $this->view(null, Response::HTTP_NOT_FOUND);

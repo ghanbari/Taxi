@@ -5,14 +5,12 @@ namespace FunPro\FinancialBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use FunPro\PassengerBundle\Entity\Passenger;
 use JMS\Serializer\Annotation as JS;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * FavoriteDiscountCodes
  *
- * @ORM\Table(
- *     name="favorite_discount_codes",
- *     uniqueConstraints={@ORM\UniqueConstraint(name="unique_code_per_user", columns={"passenger_id", "discount_code_id"})}
- * )
+ * @ORM\Table(name="favorite_discount_codes")
  *
  * @ORM\Entity(repositoryClass="FunPro\FinancialBundle\Repository\FavoriteDiscountCodesRepository")
  */
@@ -64,6 +62,25 @@ class FavoriteDiscountCodes
     private $active;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_used", type="boolean", options={"default"=0})
+     *
+     * @JS\Since("1.0.0")
+     * @JS\Groups({"Admin", "Passenger"})
+     */
+    private $used;
+
+    /**
+     * @var \DateTime
+     * 
+     * @ORM\Column(name="created_at", type="datetime")
+     * 
+     * @Gedmo\Timestampable(on="create")
+     */
+    private $createdAt;
+
+    /**
      * FavoriteDiscountCodes constructor.
      * @param Passenger $passenger
      * @param DiscountCode $discountCode
@@ -73,6 +90,7 @@ class FavoriteDiscountCodes
         $this->passenger = $passenger;
         $this->discountCode = $discountCode;
         $this->setActive(false);
+        $this->setUsed(false);
     }
 
     /**
@@ -136,6 +154,42 @@ class FavoriteDiscountCodes
     public function setActive($active)
     {
         $this->active = $active;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isUsed()
+    {
+        return $this->used;
+    }
+
+    /**
+     * @param boolean $used
+     * @return FavoriteDiscountCodes;
+     */
+    public function setUsed($used)
+    {
+        $this->used = $used;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param \DateTime $createdAt
+     * @return FavoriteDiscountCodes;
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
         return $this;
     }
 }

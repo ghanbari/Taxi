@@ -3,6 +3,7 @@
 namespace FunPro\FinancialBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use FunPro\FinancialBundle\Entity\DiscountCode;
 use FunPro\PassengerBundle\Entity\Passenger;
 
 /**
@@ -24,5 +25,22 @@ class FavoriteDiscountCodesRepository extends EntityRepository
             ->setParameter('passenger', $passenger)
             ->getQuery()
             ->execute();
+    }
+
+    public function getUsageCount(DiscountCode $code, Passenger $passenger=null)
+    {
+        $qb = $this->createQueryBuilder('dc');
+
+        $qb->select('count(id)')
+            ->where($qb->expr()->eq('dc.discountCode', ':code'))
+            ->setParameter('code', $code);
+
+        if ($passenger) {
+            $qb->andWhere($qb->expr()->eq('dc.passenger', ':passenger'))
+                ->setParameter('passenger', $passenger);
+        }
+
+        return $qb->getQuery()
+        ->getSingleScalarResult();
     }
 }
