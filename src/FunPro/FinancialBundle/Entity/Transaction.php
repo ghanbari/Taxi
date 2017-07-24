@@ -65,7 +65,7 @@ class Transaction
      * @ORM\Column(type="integer")
      *
      * @Assert\NotNull(groups={"Create", "Update"})
-     * @Assert\Range(min="1", max="99999999", groups={"Create", "Update"})
+     * @Assert\Range(min="0", max="99999999", groups={"Create", "Update"})
      *
      * @JS\Groups({"Owner", "Admin"})
      * @JS\Since("1.0.0")
