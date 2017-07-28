@@ -5,6 +5,7 @@ namespace FunPro\DriverBundle\Controller\Management;
 use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FunPro\DriverBundle\Entity\Car;
 use FunPro\DriverBundle\Entity\Driver;
 use FunPro\DriverBundle\Form\DriverType;
 use FunPro\EngineBundle\Utility\DataTable;
@@ -182,8 +183,18 @@ class DriverController extends FOSRestController
      */
     public function deleteAction(Request $request, $id)
     {
+        /** @var Driver $driver */
         $driver = $request->attributes->get('driver');
         $manager = $this->getDoctrine()->getManager();
+
+        #FIXME: sleep all cars in wakeful table
+        #FIXME: this job must doing by trigger or doctrine events
+        /** @var Car $car */
+        foreach ($driver->getCars() as $car) {
+            $manager->remove($car->getWakeful());
+            $manager->remove($car);
+        }
+
         $manager->remove($driver);
         $manager->flush();
 

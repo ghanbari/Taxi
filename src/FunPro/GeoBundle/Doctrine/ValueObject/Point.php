@@ -42,8 +42,8 @@ class Point extends \CrEOF\Spatial\PHP\Types\Geometry\Point
     {
         $this->latitude = $latitude;
         $this->longitude = $longitude;
-        $this->x = $latitude;
-        $this->y = $longitude;
+        $this->x = $longitude;
+        $this->y = $latitude;
     }
 
     /**
