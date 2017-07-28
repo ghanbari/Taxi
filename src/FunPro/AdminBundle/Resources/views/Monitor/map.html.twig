@@ -16,6 +16,22 @@
         #gmap_basic {
             height: 100%;
         }
+
+        .autoRefresh label {
+            color: white !important;
+            background-color: #e7505a !important;
+            border-color: #e7505a !important;
+        }
+
+        .autoRefresh label.active {
+            color: white !important;
+            background-color: #32c5d2 !important;
+            border-color: #32c5d2 !important;
+        }
+
+        .controls-button .btn {
+            margin-bottom: 5px;
+        }
     </style>
 {% endblock stylesheets %}
 
@@ -25,7 +41,7 @@
 
 {% block javascriptsPageScripts %}
     <script>
-        var map;
+        var map, supportedArea;
         var blueMarker = '{{ asset('bundles/funproadmin/images/blue_circle.png') }}';
         var blueMarkerSmall = '{{ asset('bundles/funproadmin/images/blue_circle_small.png') }}';
         var purpleMarker = '{{ asset('bundles/funproadmin/images/purple_circle.png') }}';
@@ -37,13 +53,14 @@
     <script src="{{ asset('assets/global/plugins/counterup/jquery.waypoints.min.js') }}"></script>
     <script src="{{ asset('bundles/funproadmin/js/map.js') }}"></script>
     <script src="{{ asset('bundles/funproadmin/js/monitor.js') }}"></script>
+    <script src="{{ asset('bundles/funproadmin/map/markerclusterer/src/markerclusterer.js') }}"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBu2kbJWSzkP1i2f8b0tPlAp7Kzt1_Jbbw&callback=initMap&language=fa&region=IR"
             async defer></script>
 {% endblock javascriptsPageScripts %}
 
 {% block content %}
     <div class="page-content">
-        <div class="container">
+        <div class="container-fluid">
             <!-- BEGIN PAGE BREADCRUMBS -->
             {% block breadcrumbs %}
                 <ul class="page-breadcrumb breadcrumb">
@@ -60,20 +77,29 @@
             <!-- BEGIN PAGE CONTENT INNER -->
             <div class="page-content-inner">
                 <div class="row">
-                    <div class="col-md-1" style="margin-right: -100px; margin-left: 100px;">
+                    <div class="col-md-1 col-xs-12 controls-button">
                         <div class="portlet light portlet-fit ">
                             <div class="portlet-body">
-                                <div>
-                                    <div class="btn-group" data-toggle="buttons">
-                                        <label class="btn default btn-icon-only green active autoRefresh">
-                                            <input type="checkbox" class="toggle"><i class="fa fa-refresh"></i></label>
-                                        </a>
-                                    </div>
+                                <div class="btn-group autoRefresh" data-toggle="buttons">
+                                    <label class="btn btn-icon-only active">
+                                        <input type="checkbox" class="toggle"><i class="fa fa-refresh"></i>
+                                    </label>
+                                </div>
+                                <div class="btn-group showService" data-toggle="buttons">
+                                    <label class="btn yellow-crusta">
+                                        <input type="checkbox" class="toggle">S
+                                    </label>
+                                </div>
+                                <div class="btn-group city" data-toggle="buttons">
+                                    <label class="btn blue">
+                                        <input data-lat="32.869146" data-lng="59.222362" type="radio" class="toggle"> B </label>
+                                    <label class="btn blue active">
+                                        <input data-lat="36.313048" data-lng="59.575237" type="radio" class="toggle"> M </label>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-11" style="margin-right: -113px;margin-left: -98px;width: 109%;">
+                    <div class="col-md-11 col-xs-12">
                         <div class="portlet light portlet-fit ">
                             <div class="portlet-body">
                                 <div id="gmap_basic" class="gmaps"> </div>
@@ -113,7 +139,7 @@
                     <div class="col-md-3">
                         <!-- BEGIN WIDGET THUMB -->
                         <div class="widget-thumb widget-bg-color-white text-uppercase margin-bottom-20 ">
-                            <h4 class="widget-thumb-heading">به زودی</h4>
+                            <h4 class="widget-thumb-heading">سفرهای در حال انجام</h4>
                             <div class="widget-thumb-wrap">
                                 <i class="widget-thumb-icon bg-purple icon-screen-desktop"></i>
                                 <div class="widget-thumb-body">
@@ -164,7 +190,7 @@
                                 <!-- SIDEBAR BUTTONS -->
                                 <div class="profile-userbuttons">
                                     <button id="messageToDriver" type="button" class="btn btn-circle green btn-sm">پیام</button>
-                                    <button id="driverProfile" type="button" class="btn btn-circle red btn-sm">مشاهده پروفایل</button>
+                                    <a target="_blank" id="driverProfile" type="button" class="btn btn-circle red btn-sm">ویرایش</a>
                                 </div>
                                 <!-- END SIDEBAR BUTTONS -->
                                 <!-- SIDEBAR MENU -->
@@ -212,14 +238,6 @@
                                 <!-- SIDEBAR MENU -->
                                 <div class="profile-usermenu">
                                     <ul class="nav">
-                                        <li class="profile-desc-text">
-                                            <a><i class="fa fa-industry" style="color: #26a1ab"></i> سازنده:
-                                                <i id="carBrand"></i> </a>
-                                        </li>
-                                        <li class="profile-desc-text">
-                                            <a><i class="fa fa-car" style="color: #26a1ab"></i>مدل:
-                                                <i id="carModel"></i> </a>
-                                        </li>
                                         <li class="profile-desc-text">
                                             <a><i class="fa fa-car" style="color: #d1cb0f"></i>رنگ :
                                                 <i id="carColor"></i> </a>

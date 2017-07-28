@@ -38,7 +38,7 @@ class BaseCost
      * @Assert\NotNull(groups={"Create"})
      * @Assert\Type(type="numeric", groups={"Create"})
      *
-     * @JS\Groups({"Admin"})
+     * @JS\Groups({"Admin", "Public"})
      * @JS\Since("1.0.0")
      */
     private $entranceFee;
@@ -50,7 +50,7 @@ class BaseCost
      *
      * @Assert\NotNull(groups={"Create"})
      *
-     * @JS\Groups({"Admin"})
+     * @JS\Groups({"Admin", "Public"})
      * @JS\Since("1.0.0")
      */
     private $costPerMeter;
@@ -63,7 +63,7 @@ class BaseCost
      * @Assert\NotNull(groups={"Create"})
      * @Assert\Type(type="numeric", groups={"Create"})
      *
-     * @JS\Groups({"Admin"})
+     * @JS\Groups({"Admin", "Public"})
      * @JS\Since("1.0.0")
      */
     private $discountPercent;
@@ -103,7 +103,7 @@ class BaseCost
      * @Assert\Type(type="FunPro\GeoBundle\Doctrine\ValueObject\Point", groups={"Create"})
      * @Assert\Valid()
      *
-     * @JS\Groups({"Admin", "Point"})
+     * @JS\Groups({"Admin", "Point", "Public"})
      * @JS\MaxDepth(1)
      * @JS\Since("1.0.0")
      */
@@ -118,7 +118,7 @@ class BaseCost
      * @Assert\Type("numeric")
      * @Assert\Valid()
      *
-     * @JS\Groups({"Admin", "Point"})
+     * @JS\Groups({"Admin", "Point", "Public"})
      * @JS\MaxDepth(1)
      * @JS\Since("1.0.0")
      */

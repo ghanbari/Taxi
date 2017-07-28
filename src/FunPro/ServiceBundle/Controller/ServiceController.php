@@ -11,6 +11,7 @@ use FunPro\DriverBundle\Entity\Car;
 use FunPro\DriverBundle\Entity\Driver;
 use FunPro\DriverBundle\Exception\CarStatusException;
 use FunPro\DriverBundle\Exception\DriverNotFoundException;
+use FunPro\EngineBundle\Utility\DataTable;
 use FunPro\FinancialBundle\Entity\BaseCost;
 use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\GeoBundle\Utility\Util;
@@ -965,5 +966,57 @@ class ServiceController extends FOSRestController
         } else {
             return $this->view(null, Response::HTTP_NO_CONTENT);
         }
+    }
+
+    /**
+     * Calculate service price
+     *
+     * @ApiDoc(
+     *     section="Service",
+     *     views={"admin"},
+     *     resource=true,
+     *     statusCodes={
+     *         200="When success",
+     *     }
+     * )
+     *
+     * @Security("has_role('ROLE_OPERATOR')")
+     *
+     * @Rest\QueryParam(name="latitude", requirements="\d+\.\d+", strict=true, allowBlank=false, nullable=false)
+     * @Rest\QueryParam(name="longitude", requirements="\d+\.\d+", strict=true, allowBlank=false, nullable=false)
+     * @Rest\QueryParam(name="radius", requirements="\d+", strict=true, nullable=true, default=20000)
+     * @Rest\QueryParam(name="from", requirements=@Assert\Date(), nullable=true, strict=true)
+     * @Rest\QueryParam(name="till", requirements=@Assert\Date(), nullable=true, strict=true)
+     * @Rest\QueryParam(name="limit", nullable=true, default="10", requirements="\d+", strict=true)
+     * @Rest\QueryParam(name="offset", nullable=true, default="0", requirements="\d+", strict=true)
+     */
+    public function cgetAction(Request $request)
+    {
+        $fetcher = $this->get('fos_rest.request.param_fetcher');
+
+        $limit = $fetcher->get('limit');
+        $offset = $fetcher->get('offset');
+
+        $from = $fetcher->get('from') ? new \DateTime($fetcher->get('from')) : null;
+        $till = $fetcher->get('till') ? new \DateTime($fetcher->get('till')) : null;
+
+        $latitude = $fetcher->get('latitude');
+        $longitude = $fetcher->get('longitude');
+        $radius = $fetcher->get('radius');
+
+        $queryBuilder = $this->getDoctrine()->getRepository('FunProServiceBundle:Service')
+            ->get(new Point($longitude, $latitude), $radius, $from, $till, $limit, $offset);
+
+        DataTable::orderBy($queryBuilder, $request);
+        DataTable::filterBy($queryBuilder, $request);
+
+        $paginator = $this->get('knp_paginator');
+        $pagination = $paginator->paginate($queryBuilder, floor($offset / $limit)+1, $limit);
+
+        return $this->view(array(
+            "recordsTotal" => $pagination->getTotalItemCount(),
+            "recordsFiltered" => $pagination->getTotalItemCount(),
+            "data" => $pagination->getItems()
+        ), Response::HTTP_OK);
     }
 }
