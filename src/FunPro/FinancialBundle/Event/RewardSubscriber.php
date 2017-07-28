@@ -132,6 +132,9 @@ class RewardSubscriber implements EventSubscriberInterface
      */
     public function refererReward(RegisterEvent $event)
     {
+        #FIXME: Temporally disable this feature.
+        return;
+        
         $user = $event->getUser();
         $userReferer = $user->getReferrer();
 

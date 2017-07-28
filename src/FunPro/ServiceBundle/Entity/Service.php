@@ -4,6 +4,7 @@ namespace FunPro\ServiceBundle\Entity;
 
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use FunPro\FinancialBundle\Entity\DiscountCode;
+use FunPro\FinancialBundle\Entity\FavoriteDiscountCodes;
 use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -13,6 +14,7 @@ use FunPro\FinancialBundle\Entity\BaseCost;
 use FunPro\FinancialBundle\Entity\Currency;
 use FunPro\GeoBundle\Utility\Util;
 use FunPro\PassengerBundle\Entity\Passenger;
+use FunPro\ServiceBundle\Repository\ServiceRepository;
 use FunPro\UserBundle\Entity\User;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as JS;
@@ -313,6 +315,17 @@ class Service
      * @JS\Exclude()
      */
     private $price;
+    
+    /**
+     * @var int $price total price of service. calculated based on $distance.
+     *
+     * this value is discounted price of service.
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     *
+     * @JS\Exclude()
+     */
+    private $discountedPrice;
 
     /**
      * @var integer $realPrice total price of service. calculated based on $realDistance
@@ -350,7 +363,7 @@ class Service
     /**
      * @var DiscountCode
      *
-     * @ORM\ManyToOne(targetEntity="FunPro\FinancialBundle\Entity\DiscountCode")
+     * @ORM\ManyToOne(targetEntity="FunPro\FinancialBundle\Entity\FavoriteDiscountCodes")
      *
      * @JS\Groups({"Admin"})
      * @JS\Since("1.0.0")
@@ -876,9 +889,7 @@ class Service
     }
 
     /**
-     * Get price
-     *
-     * @return integer
+     * @return int
      */
     public function getPrice()
     {
@@ -886,39 +897,49 @@ class Service
     }
 
     /**
-     * Set price
-     *
-     * @throws \RuntimeException
-     * @return Service
+     * @param int $price
+     * @return Service;
      */
-    public function calculatePrice()
+    public function setPrice($price)
     {
-        if ($this->getDistance() == 0) {
-            throw new \RuntimeException('distance is null');
-        }
-
-        $baseCosts = $this->getBaseCost();
-        $this->price = $baseCosts->getEntranceFee() + ($baseCosts->getCostPerMeter() * $this->getDistance());
-//        $this->price -= ($this->price * $baseCosts->getDiscountPercent()) / 100;
-
+        $this->price = $price;
         return $this;
     }
 
-    /**
-     * Calculate final price. price & discount.
-     *
-     * @return int
-     */
-    public function getDiscountedPrice()
-    {
-        $price = $this->price - ($this->price * $this->baseCost->getDiscountPercent() / 100);
-
-        if ($discount = $this->getDiscountCode()) {
-            $price -= $discount->getDiscount();
-        }
-
-        return $price > 0 ? $price : 0;
-    }
+//    /**
+//     * Set price
+//     *
+//     * @throws \RuntimeException
+//     * @return Service
+//     */
+//    public function calculatePrice()
+//    {
+//        if ($this->getDistance() == 0) {
+//            throw new \RuntimeException('distance is null');
+//        }
+//
+//        $baseCosts = $this->getBaseCost();
+//        $this->price = $baseCosts->getEntranceFee() + ($baseCosts->getCostPerMeter() * $this->getDistance());
+////        $this->price -= ($this->price * $baseCosts->getDiscountPercent()) / 100;
+//
+//        return $this;
+//    }
+//
+//    /**
+//     * Calculate final price. price & discount.
+//     *
+//     * @return int
+//     */
+//    public function getDiscountedPrice()
+//    {
+//        $price = $this->price - ($this->price * $this->baseCost->getDiscountPercent() / 100);
+//
+//        if ($discount = $this->getDiscountCode()) {
+//            $price -= $discount->getDiscount();
+//        }
+//
+//        return $price > 0 ? $price : 0;
+//    }
 
     /**
      * Round price
@@ -1320,14 +1341,7 @@ class Service
      */
     public function calculateRealPrice()
     {
-        if ($this->getRealDistance() === 0) {
-//            throw new \RuntimeException('distance is null');
-            return;
-        }
-
-        $baseCosts = $this->getBaseCost();
-        $this->realPrice = $baseCosts->getEntranceFee() + ($baseCosts->getCostPerMeter() * $this->getRealDistance());
-        $this->realPrice -= ($this->realPrice * $baseCosts->getDiscountPercent()) / 100;
+        $this->realPrice = ServiceRepository::calculatePrice($this->getBaseCost(), $this->getRealDistance());
 
         return $this;
     }
@@ -1421,7 +1435,7 @@ class Service
     }
 
     /**
-     * @return DiscountCode
+     * @return FavoriteDiscountCodes
      */
     public function getDiscountCode()
     {
@@ -1429,12 +1443,30 @@ class Service
     }
 
     /**
-     * @param DiscountCode $discountCode
+     * @param FavoriteDiscountCodes $discountCode
      * @return Service;
      */
-    public function setDiscountCode(DiscountCode $discountCode)
+    public function setDiscountCode(FavoriteDiscountCodes $discountCode)
     {
         $this->discountCode = $discountCode;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDiscountedPrice()
+    {
+        return $this->discountedPrice;
+    }
+
+    /**
+     * @param int $discountedPrice
+     * @return Service;
+     */
+    public function setDiscountedPrice($discountedPrice)
+    {
+        $this->discountedPrice = $discountedPrice;
         return $this;
     }
 }

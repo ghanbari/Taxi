@@ -1,4 +1,4 @@
 services:
-#    fun_pro_geo.example:
-#        class: FunPro\GeoBundle\Example
-#        arguments: ["@service_id", "plain_value", %parameter%]
+  fun_pro_geo.direction:
+      class: FunPro\GeoBundle\Service\Direction
+      arguments: ['@ivory.google_map.direction']
