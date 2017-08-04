@@ -368,8 +368,8 @@ class ServiceSubscriber implements EventSubscriberInterface
         $car = $event->getCar();
         $status = $car->getStatus();
 
-        if ($status === Car::STATUS_SERVICE_IN or $status === Car::STATUS_SERVICE_IN_AND_ACCEPT
-            or $status === Car::STATUS_SERVICE_IN_AND_PREPARE
+        if ($status === Car::STATUS_SERVICE_IN //or $status === Car::STATUS_SERVICE_IN_AND_ACCEPT
+//            or $status === Car::STATUS_SERVICE_IN_AND_PREPARE
         ) {
             $service = $this->doctrine->getRepository('FunProServiceBundle:Service')
                 ->getDoingServiceFilterByCar($car);

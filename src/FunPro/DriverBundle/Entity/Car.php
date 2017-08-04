@@ -32,8 +32,8 @@ class Car
     const STATUS_SERVICE_START = 5;
     const STATUS_SERVICE_IN = 6;
     const STATUS_SERVICE_END = 7;
-    const STATUS_SERVICE_IN_AND_ACCEPT = 8;
-    const STATUS_SERVICE_IN_AND_PREPARE = 9;
+//    const STATUS_SERVICE_IN_AND_ACCEPT = 8;
+//    const STATUS_SERVICE_IN_AND_PREPARE = 9;
 
     const TYPE_PERIDE = 1;
     const TYPE_P405 = 2;
@@ -861,10 +861,10 @@ class Car
                 return 'in service';
             case self::STATUS_SERVICE_END:
                 return 'end';
-            case self::STATUS_SERVICE_IN_AND_ACCEPT:
-                return 'in service and accept new service';
-            case self::STATUS_SERVICE_IN_AND_PREPARE:
-                return 'in service and prepare new service';
+//            case self::STATUS_SERVICE_IN_AND_ACCEPT:
+//                return 'in service and accept new service';
+//            case self::STATUS_SERVICE_IN_AND_PREPARE:
+//                return 'in service and prepare new service';
             default:
                 return 'unknown';
         }

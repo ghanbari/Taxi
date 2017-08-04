@@ -99,13 +99,13 @@ class ServiceSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if ($car->getStatus() === Car::STATUS_SERVICE_IN_AND_ACCEPT
-            or $car->getStatus() === Car::STATUS_SERVICE_IN_AND_PREPARE
-        ) {
-            $status = Car::STATUS_SERVICE_IN;
-        } else {
+//        if ($car->getStatus() === Car::STATUS_SERVICE_IN_AND_ACCEPT
+//            or $car->getStatus() === Car::STATUS_SERVICE_IN_AND_PREPARE
+//        ) {
+//            $status = Car::STATUS_SERVICE_IN;
+//        } else {
             $status = Car::STATUS_WAKEFUL;
-        }
+//        }
 
         $car->setStatus($status);
         $carLog = new CarLog($car, $status);
@@ -150,8 +150,8 @@ class ServiceSubscriber implements EventSubscriberInterface
         $service = $event->getService();
         $car = $service->getCar();
 
-        $status = $car->getStatus() === Car::STATUS_SERVICE_IN ?
-            Car::STATUS_SERVICE_IN_AND_ACCEPT : Car::STATUS_SERVICE_ACCEPT;
+        $status = /*$car->getStatus() === Car::STATUS_SERVICE_IN ?
+            Car::STATUS_SERVICE_IN_AND_ACCEPT :*/ Car::STATUS_SERVICE_ACCEPT;
 
         $car->setStatus($status);
         $carLog = new CarLog($car, $status, $event->getPoint());
@@ -262,8 +262,8 @@ class ServiceSubscriber implements EventSubscriberInterface
 
         if ($currentStatus !== Car::STATUS_SERVICE_IN
             and $currentStatus !== Car::STATUS_SERVICE_START
-            and $currentStatus !== Car::STATUS_SERVICE_IN_AND_ACCEPT
-            and $currentStatus !== Car::STATUS_SERVICE_IN_AND_PREPARE
+//            and $currentStatus !== Car::STATUS_SERVICE_IN_AND_ACCEPT
+//            and $currentStatus !== Car::STATUS_SERVICE_IN_AND_PREPARE
         ) {
             $logger->addError(
                 'Car\'s status must be start or in service or in_and_accept or in_and_prepare till it can stop service',
@@ -284,20 +284,20 @@ class ServiceSubscriber implements EventSubscriberInterface
         $logger = $this->logger;
         $service = $event->getService();
         $car = $service->getCar();
-        $currentStatus = $car->getStatus();
+//        $currentStatus = $car->getStatus();
 
         $car->setStatus(Car::STATUS_SERVICE_END);
         $carLog = new CarLog($car, Car::STATUS_SERVICE_END);
         $logger->addInfo('Car\'s status changed to end', array('carId' => $car->getId()));
         $this->doctrine->getManager()->persist($carLog);
 
-        if ($currentStatus === Car::STATUS_SERVICE_IN_AND_ACCEPT) {
-            $newStatus = Car::STATUS_SERVICE_ACCEPT;
-        } elseif ($currentStatus === Car::STATUS_SERVICE_IN_AND_PREPARE) {
-            $newStatus = Car::STATUS_SERVICE_PREPARE;
-        } else {
+//        if ($currentStatus === Car::STATUS_SERVICE_IN_AND_ACCEPT) {
+//            $newStatus = Car::STATUS_SERVICE_ACCEPT;
+//        } elseif ($currentStatus === Car::STATUS_SERVICE_IN_AND_PREPARE) {
+//            $newStatus = Car::STATUS_SERVICE_PREPARE;
+//        } else {
             $newStatus = Car::STATUS_WAKEFUL;
-        }
+//        }
 
         if (isset($newStatus)) {
             $car->setStatus($newStatus);
