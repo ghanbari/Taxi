@@ -183,6 +183,7 @@ class DriverController extends FOSRestController
     public function deleteAction(Request $request, $id)
     {
         $driver = $request->attributes->get('driver');
+        $driver->setDeletedBy($this->getUser());
         $manager = $this->getDoctrine()->getManager();
         $manager->remove($driver);
         $manager->flush();
