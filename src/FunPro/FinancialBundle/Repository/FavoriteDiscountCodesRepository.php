@@ -31,7 +31,7 @@ class FavoriteDiscountCodesRepository extends EntityRepository
     {
         $qb = $this->createQueryBuilder('dc');
 
-        $qb->select('count(id)')
+        $qb->select($qb->expr()->count('dc.id'))
             ->where($qb->expr()->eq('dc.discountCode', ':code'))
             ->setParameter('code', $code);
 

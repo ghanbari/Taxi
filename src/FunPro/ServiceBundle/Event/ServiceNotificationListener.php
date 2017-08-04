@@ -116,15 +116,15 @@ class ServiceNotificationListener implements EventSubscriberInterface
         $doctrine = $this->doctrine;
 
         $favoriteDiscountCode = $doctrine->getRepository('FunProFinancialBundle:FavoriteDiscountCodes')->findOneBy(array(
-            'passenger' => $this->getUser(),
+            'passenger' => $service->getPassenger(),
             'active' => true,
             'used' => false,
         ));
         
-        if ($favoriteDiscountCode  and $doctrine->getRepository('FunProFinancialBundle:DiscountCode')
-                ->canUseDiscount($service->getPassenger(), $favoriteDiscountCode ->getDiscountCode(), $service->getStartPoint(), $service->getEndPoint())
+        if ($favoriteDiscountCode and $doctrine->getRepository('FunProFinancialBundle:DiscountCode')
+                ->canUseDiscount($service->getPassenger(), $favoriteDiscountCode->getDiscountCode(), $service->getStartPoint(), $service->getEndPoint())
         ) {
-            $discountCode = $favoriteDiscountCode;
+            $discountCode = $favoriteDiscountCode->getDiscountCode();
         } else {
             $discountCode = null;
         }
@@ -146,8 +146,8 @@ class ServiceNotificationListener implements EventSubscriberInterface
             'description' => !empty($service->getDescription()) ? substr($service->getDescription(), 0, 2000) : '',
             'send_in' => strtotime('now'),
             'distance' => round($service->getDistance() / 1000, 1),
-            'price' => Service::roundPrice($price),
-            'total_cost' => Service::roundPrice($discountedPrice),
+            'total_cost' => Service::roundPrice($price),
+            'discount_description' => $discountCode ? $discountCode->getTitle() : '',
         );
 
         if ($service->getPassenger()) {

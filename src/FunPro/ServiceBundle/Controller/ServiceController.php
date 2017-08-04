@@ -618,22 +618,25 @@ class ServiceController extends FOSRestController
             ->setDestinationPoint($service->getEndPoint())
             ->setEndPoint($destination);
 
-        $favoriteDiscountCode = $doctrine->getRepository('FunProFinancialBundle:FavoriteDiscountCodes')->findOneBy(array(
-            'passenger' => $this->getUser(),
-            'active' => true,
-            'used' => false,
-        ));
+        if ($service->getDiscountCode() === null) {
+            $favoriteDiscountCode = $doctrine->getRepository('FunProFinancialBundle:FavoriteDiscountCodes')->findOneBy(array(
+                'passenger' => $service->getPassenger(),
+                'active' => true,
+                'used' => false,
+            ));
 
-        if ($favoriteDiscountCode  and $doctrine->getRepository('FunProFinancialBundle:DiscountCode')
-                ->canUseDiscount($service->getPassenger(), $favoriteDiscountCode ->getDiscountCode(), $service->getStartPoint(), $service->getEndPoint())
-        ) {
-            $service->setDiscountCode($favoriteDiscountCode);
+            if ($favoriteDiscountCode and $doctrine->getRepository('FunProFinancialBundle:DiscountCode')
+                    ->canUseDiscount($service->getPassenger(), $favoriteDiscountCode->getDiscountCode(), $service->getStartPoint(), $service->getEndPoint())
+            ) {
+                $service->setDiscountCode($favoriteDiscountCode->getDiscountCode());
+            }
         }
         
         $event = new ServiceEvent($service);
         $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_UPDATE, $event);
         $this->getDoctrine()->getManager()->flush();
 
+        $result['title'] = $service->getDiscountCode() ? $service->getDiscountCode()->getTitle() : '';
         $result['distance'] = round($service->getDistance() / 1000, 1);
         $result['duration'] = 0;
 
@@ -677,7 +680,9 @@ class ServiceController extends FOSRestController
 //        $fetcher = $this->get('fos_rest.request.param_fetcher');
         $manager = $this->getDoctrine()->getManager();
 
-        if ($service->getStatus() === ServiceLog::STATUS_FINISH) {
+        if ($service->getStatus() === ServiceLog::STATUS_FINISH
+            or $service->getStatus() === ServiceLog::STATUS_PAYED
+        ) {
             return $this->view(null, Response::HTTP_NO_CONTENT);
         }
 
@@ -714,12 +719,19 @@ class ServiceController extends FOSRestController
         try {
             $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_FINISH, $event);
             $manager->flush();
-            $this->get('sms.sender')->send(
-                $service->getPassenger()->getMobile(),
-                $translator->trans(
+            if (Service::roundPrice($service->getDiscountCode()) === 0) {
+                $message = $translator->trans(
+                    'service.is.finished.and.is.free.enjoy'
+                );
+            } else {
+                $message = $translator->trans(
                     'service.is.finished.please.pay.%price%.by.cash',
                     array('%price%' => Service::roundPrice($service->getDiscountedPrice()))
-                )
+                );
+            }
+            $this->get('sms.sender')->send(
+                $service->getPassenger()->getMobile(),
+                $message
             );
         } catch (CarStatusException $e) {
             $error = array(
@@ -948,11 +960,12 @@ class ServiceController extends FOSRestController
         if ($favoriteDiscountCode and $doctrine->getRepository('FunProFinancialBundle:DiscountCode')
                 ->canUseDiscount($this->getUser(), $favoriteDiscountCode->getDiscountCode(), $origin, $destination)
         ) {
-            $discountCode = $favoriteDiscountCode;
+            $discountCode = $favoriteDiscountCode->getDiscountCode();
         } else {
             $discountCode = null;
         }
 
+        $result['title'] = $discountCode ? $discountCode->getTitle() : '';
         $result['distance'] = round($distance / 1000, 1);
         $result['duration'] = round($direction->duration($origin, $destination));
         $result['price'] = Service::roundPrice(ServiceRepository::calculatePrice($baseCost, $distance, false));

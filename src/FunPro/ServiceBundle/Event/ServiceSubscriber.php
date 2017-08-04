@@ -351,7 +351,13 @@ class ServiceSubscriber implements EventSubscriberInterface
 
         $service->setPrice(Service::roundPrice($price));
         $service->setDiscountedPrice(Service::roundPrice($discountedPrice));
-        $service->getDiscountCode()->setUsed(true);
+        if ($discountCode) {
+            $favoriteDiscountCode = $this->doctrine->getRepository('FunProFinancialBundle:FavoriteDiscountCodes')
+                ->findOneBy(array('discountCode' => $discountCode, 'active' => true, 'used' => false));
+            if ($favoriteDiscountCode) {
+                $favoriteDiscountCode->setUsed(true);
+            }
+        }
     }
 
     /**

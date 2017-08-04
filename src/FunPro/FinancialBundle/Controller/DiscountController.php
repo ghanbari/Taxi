@@ -171,7 +171,7 @@ class DiscountController extends FOSRestController
 
         if ($service) {
             $activeCode = $this->getDoctrine()->getRepository('FunProFinancialBundle:FavoriteDiscountCodes')
-                ->findOneBy(array('active' => true, 'passenger' => $passenger));
+                ->findOneBy(array('active' => true, 'passenger' => $passenger, 'used' => false));
 
             if ($activeCode) {
                 $error = array(

@@ -4,7 +4,6 @@ namespace FunPro\ServiceBundle\Entity;
 
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use FunPro\FinancialBundle\Entity\DiscountCode;
-use FunPro\FinancialBundle\Entity\FavoriteDiscountCodes;
 use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -363,7 +362,7 @@ class Service
     /**
      * @var DiscountCode
      *
-     * @ORM\ManyToOne(targetEntity="FunPro\FinancialBundle\Entity\FavoriteDiscountCodes")
+     * @ORM\ManyToOne(targetEntity="FunPro\FinancialBundle\Entity\DiscountCode")
      *
      * @JS\Groups({"Admin"})
      * @JS\Since("1.0.0")
@@ -1341,7 +1340,7 @@ class Service
      */
     public function calculateRealPrice()
     {
-        $this->realPrice = ServiceRepository::calculatePrice($this->getBaseCost(), $this->getRealDistance());
+        $this->realPrice = ServiceRepository::calculatePrice($this->getBaseCost(), $this->getRealDistance(), true, $this->getDiscountCode());
 
         return $this;
     }
@@ -1435,7 +1434,7 @@ class Service
     }
 
     /**
-     * @return FavoriteDiscountCodes
+     * @return DiscountCode
      */
     public function getDiscountCode()
     {
@@ -1443,10 +1442,10 @@ class Service
     }
 
     /**
-     * @param FavoriteDiscountCodes $discountCode
+     * @param DiscountCode $discountCode
      * @return Service;
      */
-    public function setDiscountCode(FavoriteDiscountCodes $discountCode)
+    public function setDiscountCode(DiscountCode $discountCode)
     {
         $this->discountCode = $discountCode;
         return $this;
