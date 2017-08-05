@@ -965,7 +965,7 @@ class ServiceController extends FOSRestController
             $discountCode = null;
         }
 
-        $result['title'] = $discountCode ? $discountCode->getTitle() : '';
+        $result['discount_description'] = $discountCode ? $discountCode->getTitle() : '';
         $result['distance'] = round($distance / 1000, 1);
         $result['duration'] = round($direction->duration($origin, $destination));
         $result['price'] = Service::roundPrice(ServiceRepository::calculatePrice($baseCost, $distance, false));
