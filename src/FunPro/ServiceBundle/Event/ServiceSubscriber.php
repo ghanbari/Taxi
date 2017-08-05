@@ -11,9 +11,11 @@ use FunPro\FinancialBundle\Entity\RegionBasePrice;
 use FunPro\FinancialBundle\Entity\Transaction;
 use FunPro\FinancialBundle\Event\PaymentEvent;
 use FunPro\FinancialBundle\FinancialEvents;
+use FunPro\GeoBundle\Service\Direction;
 use FunPro\ServiceBundle\Entity\Service;
 use FunPro\ServiceBundle\Entity\ServiceLog;
 use FunPro\ServiceBundle\Exception\ServiceStatusException;
+use FunPro\ServiceBundle\Repository\ServiceRepository;
 use FunPro\ServiceBundle\ServiceEvents;
 use Ivory\GoogleMap\Base\Coordinate;
 use Ivory\GoogleMap\Service\Base\Location\CoordinateLocation;
@@ -51,22 +53,22 @@ class ServiceSubscriber implements EventSubscriberInterface
     private $serializer;
 
     /**
-     * @var DirectionService
+     * @var Direction
      */
-    private $directionService;
+    private $direction;
 
     /**
      * @param Registry         $doctrine
      * @param Logger           $logger
      * @param Serializer       $serializer
-     * @param DirectionService $directionService
+     * @param Direction        $direction
      */
-    public function __construct(Registry $doctrine, Logger $logger, Serializer $serializer, DirectionService $directionService)
+    public function __construct(Registry $doctrine, Logger $logger, Serializer $serializer, Direction $direction)
     {
         $this->doctrine = $doctrine;
         $this->logger = $logger;
         $this->serializer = $serializer;
-        $this->directionService = $directionService;
+        $this->direction = $direction;
     }
 
     /**
@@ -116,10 +118,12 @@ class ServiceSubscriber implements EventSubscriberInterface
             ServiceEvents::SERVICE_FINISH => array(
                 array('checkServiceStatusPreFinish', 150),
                 array('onServiceFinish', 10),
+                array('setPrice', 9),
                 array('autoPay', 5),
             ),
             ServiceEvents::SERVICE_UPDATE => array(
                 array('onServiceUpdate', 255),
+                array('setPrice', 254),
             ),
             CarEvents::CAR_MOVE => array(
                 array('onService', 10),
@@ -137,12 +141,13 @@ class ServiceSubscriber implements EventSubscriberInterface
     public function onServiceRequest(ServiceEvent $event)
     {
         $service = $event->getService();
-        $service->setDistance($this->calculateDistance($service));
-        try {
-            $service->calculatePrice();
-        } catch (\RuntimeException $e) {
-            $this->logger->addError('distance can not be zero', array('distance' => $service->getDistance()));
-        }
+        $service->setDistance($this->direction->distance($service->getStartPoint(), $service->getEndPoint(), 'm'));
+        #IMPORTANT: service price must saved when driver update destination, no earlier
+//        try {
+//            $service->calculatePrice();
+//        } catch (\RuntimeException $e) {
+//            $this->logger->addError('distance can not be zero', array('distance' => $service->getDistance()));
+//        }
 
         $log = new ServiceLog($event->getService(), ServiceLog::STATUS_REQUESTED);
         $this->doctrine->getManager()->persist($log);
@@ -324,28 +329,33 @@ class ServiceSubscriber implements EventSubscriberInterface
     public function onServiceUpdate(ServiceEvent $event)
     {
         $service = $event->getService();
-        $service->setDistance($this->calculateDistance($service));
-        try {
-            $service->calculatePrice();
-        } catch (\RuntimeException $e) {
-            $this->logger->addError('distance can not be zero', array('distance' => $service->getDistance()));
-        }
-
-        $this->applyDiscount($service);
+        $service->setDistance($this->direction->distance($service->getStartPoint(), $service->getEndPoint(), 'm'));
+//        try {
+//            $service->calculatePrice();
+//        } catch (\RuntimeException $e) {
+//            $this->logger->addError('distance can not be zero', array('distance' => $service->getDistance()));
+//        }
     }
 
-    private function applyDiscount(Service $service)
+    public function setPrice(ServiceEvent $event)
     {
-        if ($service->getDiscountCode()) {
-            return;
-        }
+        $service = $event->getService();
 
-        $activeDiscount = $this->doctrine->getRepository('FunProFinancialBundle:FavoriteDiscountCodes')
-            ->findOneBy(array('active' => true, 'passenger' => $service->getPassenger()));
-        if ($activeDiscount) {
-            $discountRepo = $this->doctrine->getRepository('FunProFinancialBundle:DiscountCode');
-            if ($discountRepo->canUseDiscount($service, $activeDiscount->getDiscountCode())) {
-                $service->setDiscountCode($activeDiscount->getDiscountCode());
+        $discountCode = $service->getDiscountCode();
+        $price = Service::roundPrice(
+            ServiceRepository::calculatePrice($service->getBaseCost(), $service->getDistance(), false)
+        );
+        $discountedPrice = Service::roundPrice(
+            ServiceRepository::calculatePrice($service->getBaseCost(), $service->getDistance(), true, $discountCode)
+        );
+
+        $service->setPrice(Service::roundPrice($price));
+        $service->setDiscountedPrice(Service::roundPrice($discountedPrice));
+        if ($discountCode) {
+            $favoriteDiscountCode = $this->doctrine->getRepository('FunProFinancialBundle:FavoriteDiscountCodes')
+                ->findOneBy(array('discountCode' => $discountCode, 'active' => true, 'used' => false));
+            if ($favoriteDiscountCode) {
+                $favoriteDiscountCode->setUsed(true);
             }
         }
     }
@@ -358,8 +368,8 @@ class ServiceSubscriber implements EventSubscriberInterface
         $car = $event->getCar();
         $status = $car->getStatus();
 
-        if ($status === Car::STATUS_SERVICE_IN or $status === Car::STATUS_SERVICE_IN_AND_ACCEPT
-            or $status === Car::STATUS_SERVICE_IN_AND_PREPARE
+        if ($status === Car::STATUS_SERVICE_IN //or $status === Car::STATUS_SERVICE_IN_AND_ACCEPT
+//            or $status === Car::STATUS_SERVICE_IN_AND_PREPARE
         ) {
             $service = $this->doctrine->getRepository('FunProServiceBundle:Service')
                 ->getDoingServiceFilterByCar($car);
@@ -404,42 +414,6 @@ class ServiceSubscriber implements EventSubscriberInterface
 //        }
     }
 
-    private function calculateDistance(Service $service)
-    {
-        $request = new DirectionRequest(
-            new CoordinateLocation(new Coordinate($service->getStartPoint()->getLatitude(), $service->getStartPoint()->getLongitude())),
-            new CoordinateLocation(new Coordinate($service->getEndPoint()->getLatitude(), $service->getEndPoint()->getLongitude()))
-        );
-
-        $request->setUnitSystem(UnitSystem::METRIC);
-        $request->setTravelMode(TravelMode::DRIVING);
-        $request->setProvideRouteAlternatives(true);
-
-        #FIXME: if connection to google have problem then crashed and not send notification to drivers
-        $response = $this->directionService->route($request);
-
-        $bestRoute = null;
-        $routes = $response->getRoutes();
-
-        foreach ($routes as $route) {
-            if ($bestRoute === null) {
-                $bestRoute = $route;
-            } else {
-                if (count($route->getLegs()) > 0
-                    and count($bestRoute->getLegs()) > 0
-                    and $route->getLegs()[0]->getDistance()->getValue() < $bestRoute->getLegs()[0]->getDistance()->getValue()
-                ) {
-                    $bestRoute = $route;
-                }
-            }
-        }
-
-        $legs = $bestRoute->getLegs();
-        $distance = $legs[0]->getDistance()->getValue();
-
-        return $distance;
-    }
-
     /**
      * @param ServiceEvent $event
      */
@@ -448,26 +422,7 @@ class ServiceSubscriber implements EventSubscriberInterface
         $service = $event->getService();
 
         $service->calculateRealDistance();
-        #TODO: calculate price for specified path in requesting time.
-//        $distance = $this->calculateDistance($service);
-//        if ($distance) {
-//            $service->setDistance($distance);
-//        } else {
-//            $service->setDistance($service->getRealDistance());
-//        }
-
-        try {
-//            $service->calculatePrice();
-            $service->calculateRealPrice();
-        } catch (\RuntimeException $e) {
-            $this->logger->addError(
-                'distance can not be zero',
-                array(
-                    'distance' => $service->getDistance(),
-                    'real_distance' => $service->getRealDistance()
-                )
-            );
-        }
+        $service->calculateRealPrice();
 
         $log = new ServiceLog($event->getService(), ServiceLog::STATUS_FINISH);
         $this->doctrine->getManager()->persist($log);
@@ -490,11 +445,9 @@ class ServiceSubscriber implements EventSubscriberInterface
         $serviceRepo = $manager->getRepository('FunProServiceBundle:Service');
         $service = $event->getService();
 
-        $this->applyDiscount($service);
-
         #TODO: we need float costs?
 //        $cost = $serviceRepo->getTotalCost($service);
-        $cost = Service::roundPrice($service->getDiscountedPrice());
+        $cost = $service->getDiscountedPrice();
 
 //        $currency = $manager->getRepository('FunProFinancialBundle:Currency')->findOneByCode('IRR');
 //        $service->setCurrency($currency);
@@ -519,26 +472,26 @@ class ServiceSubscriber implements EventSubscriberInterface
         $dispatcher->dispatch(FinancialEvents::PAYMENT_EVENT, $event);
     }
 
-    /**
-     * @param PaymentEvent $event
-     */
-    public function calculateRealPrice(PaymentEvent $event)
-    {
-        $transaction = $event->getTransaction();
-        $service = $transaction->getService();
-
-        $basePrice = $this->doctrine->getRepository('FunProFinancialBundle:RegionBasePrice')
-            ->getPriceInRegion($service->getStartPoint(), $transaction->getCurrency());
-
-        if ($basePrice) {
-            $service->setRealPrice(floor($basePrice->getPrice() * $service->getDistance()));
-        } else {
-            $this->logger->addWarning(
-                'any base price is not set for this region',
-                array('location' => $service->getStartPoint())
-            );
-        }
-    }
+//    /**
+//     * @param PaymentEvent $event
+//     */
+//    public function calculateRealPrice(PaymentEvent $event)
+//    {
+//        $transaction = $event->getTransaction();
+//        $service = $transaction->getService();
+//
+//        $basePrice = $this->doctrine->getRepository('FunProFinancialBundle:RegionBasePrice')
+//            ->getPriceInRegion($service->getStartPoint(), $transaction->getCurrency());
+//
+//        if ($basePrice) {
+//            $service->setRealPrice(floor($basePrice->getPrice() * $service->getDistance()));
+//        } else {
+//            $this->logger->addWarning(
+//                'any base price is not set for this region',
+//                array('location' => $service->getStartPoint())
+//            );
+//        }
+//    }
 
     /**
      * @param PaymentEvent $event

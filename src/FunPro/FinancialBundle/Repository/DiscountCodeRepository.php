@@ -4,6 +4,7 @@ namespace FunPro\FinancialBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use FunPro\FinancialBundle\Entity\DiscountCode;
+use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use FunPro\GeoBundle\Utility\Util;
 use FunPro\PassengerBundle\Entity\Passenger;
 use FunPro\ServiceBundle\Entity\Service;
@@ -17,15 +18,17 @@ use FunPro\ServiceBundle\Entity\Service;
 class DiscountCodeRepository extends EntityRepository
 {
     /**
-     * @param Service $service
+     * @param Passenger $passenger
      * @param DiscountCode $discountCode
+     * @param Point $origin
+     * @param Point $destination
      * @return bool
      */
-    public function canUseDiscount(Service $service, DiscountCode $discountCode)
+    public function canUseDiscount(Passenger $passenger, DiscountCode $discountCode, Point $origin=null, Point $destination=null)
     {
         $distance = Util::distance(
-            $service->getStartPoint()->getLatitude(),
-            $service->getStartPoint()->getLongitude(),
+            $origin->getLatitude(),
+            $origin->getLongitude(),
             $discountCode->getOriginLocation()->getLatitude(),
             $discountCode->getOriginLocation()->getLongitude()
         );
@@ -34,7 +37,7 @@ class DiscountCodeRepository extends EntityRepository
             return false;
         }
 
-        $usageCountPerUser = $this->getUsageCount($discountCode, $service->getPassenger());
+        $usageCountPerUser = $this->getUsageCount($discountCode, $passenger);
         if ($usageCountPerUser and $usageCountPerUser >= $discountCode->getMaxUsagePerUser()) {
             return false;
         }
@@ -43,8 +46,10 @@ class DiscountCodeRepository extends EntityRepository
         if ($usageCount and $usageCount >= $discountCode->getMaxUsage()) {
             return false;
         }
-
-        if ($discountCode->getExpiredAt()->getTimestamp() < time()) {
+        $expireDate = $discountCode->getExpiredAt();
+        $expireDate->setTime(23, 59, 59);
+        
+        if ($expireDate->getTimestamp() < time()) {
             return false;
         }
 

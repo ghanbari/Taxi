@@ -185,6 +185,7 @@ class DriverController extends FOSRestController
     {
         /** @var Driver $driver */
         $driver = $request->attributes->get('driver');
+        $driver->setDeletedBy($this->getUser());
         $manager = $this->getDoctrine()->getManager();
 
         #FIXME: sleep all cars in wakeful table

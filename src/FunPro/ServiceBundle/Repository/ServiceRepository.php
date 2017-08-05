@@ -2,6 +2,8 @@
 
 namespace FunPro\ServiceBundle\Repository;
 
+use FunPro\FinancialBundle\Entity\BaseCost;
+use FunPro\FinancialBundle\Entity\DiscountCode;
 use FunPro\GeoBundle\Doctrine\ValueObject\Point;
 use Doctrine\ORM\EntityRepository;
 use FunPro\DriverBundle\Entity\Car;
@@ -19,6 +21,34 @@ use FunPro\ServiceBundle\Entity\ServiceLog;
  */
 class ServiceRepository extends EntityRepository
 {
+
+    /**
+     * calculate price for given service or given data
+     * @param BaseCost $baseCost
+     * @param $distance
+     * @param DiscountCode $discountCode
+     * @param bool $applyDiscount
+     * @return int|mixed
+     */
+    public static function calculatePrice(BaseCost $baseCost, $distance, $applyDiscount=true, DiscountCode $discountCode=null)
+    {
+        if ($distance == 0) {
+            return 0;
+        }
+
+        $price = $baseCost->getEntranceFee() + ($baseCost->getCostPerMeter() * $distance);
+
+        if ($applyDiscount) {
+            $price = $price - ($price * $baseCost->getDiscountPercent() / 100);
+
+            if ($discountCode) {
+                $price -= $discountCode->getDiscount();
+            }
+        }
+
+        return max(0, $price);
+    }
+    
     /**
      * Get a service [hydrate: car, plaque, driver] by id
      *

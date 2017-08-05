@@ -368,9 +368,7 @@ class Driver extends User implements SMSInterface
      */
     public function setNationalCode($nationalCode)
     {
-        if (is_null($this->username) or empty($this->username)) {
-            $this->setUsername($nationalCode);
-        }
+        $this->setUsername($nationalCode);
 
         $this->nationalCode = $nationalCode;
 

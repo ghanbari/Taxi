@@ -14,6 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Table(name="transaction")
  * @ORM\Entity(repositoryClass="FunPro\FinancialBundle\Repository\TransactionRepository")
+ * @ORM\EntityListeners("FunPro\FinancialBundle\Entity\TransactionListener")
  *
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */

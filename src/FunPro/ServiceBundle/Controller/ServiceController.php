@@ -24,6 +24,7 @@ use FunPro\ServiceBundle\Event\GetCarPointServiceEvent;
 use FunPro\ServiceBundle\Event\ServiceEvent;
 use FunPro\ServiceBundle\Exception\ServiceStatusException;
 use FunPro\ServiceBundle\Form\ServiceType;
+use FunPro\ServiceBundle\Repository\ServiceRepository;
 use FunPro\ServiceBundle\ServiceEvents;
 use Ivory\GoogleMap\Base\Coordinate;
 use Ivory\GoogleMap\Service\Base\Location\AddressLocation;
@@ -597,12 +598,11 @@ class ServiceController extends FOSRestController
         $fetcher = $this->get('fos_rest.request.param_fetcher');
         $translator = $this->get('translator');
         $logger = $this->get('logger');
+        $doctrine = $this->getDoctrine();
 
-        if ($service->getStatus() !== ServiceLog::STATUS_START
-            && $service->getStatus() !== ServiceLog::STATUS_READY
-        ) {
+        if ($service->getStatus() !== ServiceLog::STATUS_START) {
             $logger->addError(
-                'Driver try change service destination after finish or before ready',
+                'Driver try change service destination after finish or before start',
                 array('service' => $service)
             );
             $error = array(
@@ -618,16 +618,31 @@ class ServiceController extends FOSRestController
         $service
             ->setDestinationPoint($service->getEndPoint())
             ->setEndPoint($destination);
+
+        if ($service->getDiscountCode() === null) {
+            $favoriteDiscountCode = $doctrine->getRepository('FunProFinancialBundle:FavoriteDiscountCodes')->findOneBy(array(
+                'passenger' => $service->getPassenger(),
+                'active' => true,
+                'used' => false,
+            ));
+
+            if ($favoriteDiscountCode and $doctrine->getRepository('FunProFinancialBundle:DiscountCode')
+                    ->canUseDiscount($service->getPassenger(), $favoriteDiscountCode->getDiscountCode(), $service->getStartPoint(), $service->getEndPoint())
+            ) {
+                $service->setDiscountCode($favoriteDiscountCode->getDiscountCode());
+            }
+        }
         
         $event = new ServiceEvent($service);
         $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_UPDATE, $event);
         $this->getDoctrine()->getManager()->flush();
 
+        $result['title'] = $service->getDiscountCode() ? $service->getDiscountCode()->getTitle() : '';
         $result['distance'] = round($service->getDistance() / 1000, 1);
-        $result['duration'] = round($service->getPeriod() / 60);
+        $result['duration'] = 0;
 
-        $result['price'] = Service::roundPrice($service->getPrice());
-        $result['off'] = Service::roundPrice($service->getDiscountedPrice());
+        $result['price'] = $service->getPrice();
+        $result['off'] = $service->getDiscountedPrice();
 
         return $this->view($result, Response::HTTP_OK);
     }
@@ -666,7 +681,9 @@ class ServiceController extends FOSRestController
 //        $fetcher = $this->get('fos_rest.request.param_fetcher');
         $manager = $this->getDoctrine()->getManager();
 
-        if ($service->getStatus() === ServiceLog::STATUS_FINISH) {
+        if ($service->getStatus() === ServiceLog::STATUS_FINISH
+            or $service->getStatus() === ServiceLog::STATUS_PAYED
+        ) {
             return $this->view(null, Response::HTTP_NO_CONTENT);
         }
 
@@ -703,12 +720,19 @@ class ServiceController extends FOSRestController
         try {
             $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_FINISH, $event);
             $manager->flush();
-            $this->get('sms.sender')->send(
-                $service->getPassenger()->getMobile(),
-                $translator->trans(
+            if (Service::roundPrice($service->getDiscountCode()) === 0) {
+                $message = $translator->trans(
+                    'service.is.finished.and.is.free.enjoy'
+                );
+            } else {
+                $message = $translator->trans(
                     'service.is.finished.please.pay.%price%.by.cash',
                     array('%price%' => Service::roundPrice($service->getDiscountedPrice()))
-                )
+                );
+            }
+            $this->get('sms.sender')->send(
+                $service->getPassenger()->getMobile(),
+                $message
             );
         } catch (CarStatusException $e) {
             $error = array(
@@ -905,67 +929,50 @@ class ServiceController extends FOSRestController
      */
     public function getCalculatePriceAction()
     {
+        $doctrine = $this->getDoctrine();
         $translator = $this->get('translator');
         $fetcher = $this->get('fos_rest.request.param_fetcher');
 
-        $request = new DirectionRequest(
-            new CoordinateLocation(new Coordinate($fetcher->get('origin_lat'), $fetcher->get('origin_lng'))),
-            new CoordinateLocation(new Coordinate($fetcher->get('des_lat'), $fetcher->get('des_lng')))
-        );
-
-        $request->setUnitSystem(UnitSystem::METRIC);
-        $request->setTravelMode(TravelMode::DRIVING);
-        $request->setProvideRouteAlternatives(true);
-
-        $response = $this->container->get('ivory.google_map.direction')->route($request);
-
-        $result = array();
-        if (count($response->getRoutes()) > 0) {
-            try {
-                /** @var BaseCost $baseCost */
-                $baseCost = $this->getDoctrine()->getRepository('FunProFinancialBundle:BaseCost')->getLast(
-                    $fetcher->get('origin_lng'),
-                    $fetcher->get('origin_lat')
-                );
-            } catch (NoResultException $e) {
-                $error = array(
-                    'code' => 1,
-                    'message' => $translator->trans('this.location.is.out.of.service')
-                );
-                return $this->view($error, Response::HTTP_BAD_REQUEST);
-            }
-
-            $bestRoute = null;
-            $routes = $response->getRoutes();
-
-            foreach ($routes as $route) {
-                if ($bestRoute === null) {
-                    $bestRoute = $route;
-                } else {
-                    if (count($route->getLegs()) > 0
-                        and count($bestRoute->getLegs()) > 0
-                        and $route->getLegs()[0]->getDistance()->getValue() < $bestRoute->getLegs()[0]->getDistance()->getValue()
-                    ) {
-                        $bestRoute = $route;
-                    }
-                }
-            }
-
-            $legs = $bestRoute->getLegs();
-            $distance = $legs[0]->getDistance()->getValue();
-            $realPrice = $baseCost->getEntranceFee() + ($baseCost->getCostPerMeter() * $distance);
-            $discountedPrice = $realPrice - ($realPrice * $baseCost->getDiscountPercent() / 100);
-
-            $result['distance'] = round($distance / 1000, 1);
-            $result['duration'] = round($legs[0]->getDuration()->getValue() / 60);
-
-            $result['price'] = Service::roundPrice($realPrice);
-            $result['off'] = Service::roundPrice($discountedPrice);
-
-            return $this->view($result, Response::HTTP_OK);
-        } else {
-            return $this->view(null, Response::HTTP_NO_CONTENT);
+        try {
+            /** @var BaseCost $baseCost */
+            $baseCost = $doctrine->getRepository('FunProFinancialBundle:BaseCost')->getLast(
+                $fetcher->get('origin_lng'),
+                $fetcher->get('origin_lat')
+            );
+        } catch (NoResultException $e) {
+            $error = array(
+                'code' => 1,
+                'message' => $translator->trans('this.location.is.out.of.service')
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
         }
+
+        $origin = new Point($fetcher->get('origin_lng'), $fetcher->get('origin_lat'));
+        $destination = new Point($fetcher->get('des_lng'), $fetcher->get('des_lat'));
+
+        $direction = $this->get('fun_pro_geo.direction');
+        $distance = $direction->distance($origin, $destination, 'm');
+
+        $favoriteDiscountCode = $doctrine->getRepository('FunProFinancialBundle:FavoriteDiscountCodes')->findOneBy(array(
+            'passenger' => $this->getUser(),
+            'active' => true,
+            'used' => false,
+        ));
+        if ($favoriteDiscountCode and $doctrine->getRepository('FunProFinancialBundle:DiscountCode')
+                ->canUseDiscount($this->getUser(), $favoriteDiscountCode->getDiscountCode(), $origin, $destination)
+        ) {
+            $discountCode = $favoriteDiscountCode->getDiscountCode();
+        } else {
+            $discountCode = null;
+        }
+
+        $result['discount_description'] = $discountCode ? $discountCode->getTitle() : '';
+        $result['distance'] = round($distance / 1000, 1);
+        $result['duration'] = round($direction->duration($origin, $destination));
+        $result['price'] = Service::roundPrice(ServiceRepository::calculatePrice($baseCost, $distance, false));
+        $result['off'] = Service::roundPrice(ServiceRepository::calculatePrice($baseCost, $distance, true, $discountCode));
+
+        return $this->view($result, Response::HTTP_OK);
     }
 
     /**

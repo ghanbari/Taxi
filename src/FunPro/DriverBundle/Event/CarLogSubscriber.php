@@ -147,8 +147,8 @@ class CarLogSubscriber implements EventSubscriberInterface
 
         if ($status === Car::STATUS_SERVICE_ACCEPT) {
             $status = Car::STATUS_SERVICE_PREPARE;
-        } elseif ($status === Car::STATUS_SERVICE_IN_AND_ACCEPT) {
-            $status = Car::STATUS_SERVICE_IN_AND_PREPARE;
+//        } elseif ($status === Car::STATUS_SERVICE_IN_AND_ACCEPT) {
+//            $status = Car::STATUS_SERVICE_IN_AND_PREPARE;
         } elseif ($status === Car::STATUS_SERVICE_START) {
             $status = Car::STATUS_SERVICE_IN;
         } elseif ($status === Car::STATUS_SERVICE_END) {

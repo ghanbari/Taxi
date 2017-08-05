@@ -13,6 +13,7 @@ use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Class PaymentSubsciber
@@ -103,77 +104,50 @@ class PaymentSubsciber implements EventSubscriberInterface
         $main = $event->getTransaction();
         $driver = $main->getService()->getCar()->getDriver();
         $service = $main->getService();
-        $parameters = $this->parameterBag;
-        $driverCommission = $parameters->get('financial.driver.commission');
 
-        if (!$main->isVirtual() and $service->getBaseCost()->getDiscountPercent() > $driverCommission) {
-            $cashTransaction = new Transaction(
-                $driver,
-                $main->getAmount(),
-                Transaction::TYPE_WAGE,
-                false
-            );
-
-            $discountedCashTransaction = new Transaction(
-                $driver,
-                $service->getPrice() - $main->getAmount(),
-                Transaction::TYPE_WAGE,
-                true
-            );
-
-            $cashTransaction->setService($service);
-            $discountedCashTransaction->setService($service);
-
-            $cashTransaction->setStatus(Transaction::STATUS_SUCCESS);
-            $discountedCashTransaction->setStatus(Transaction::STATUS_SUCCESS);
-
-            $errors = array_merge(
-                $this->validator->validate($cashTransaction, null, array('Create', 'Wage')),
-                $this->validator->validate($discountedCashTransaction, null, array('Create', 'Wage'))
-            );
-
-            if (count($errors)) {
-                $transactionContext = SerializationContext::create()
-                    ->setGroups(array('Admin', 'User', 'Service', 'Currency', 'CurrencyLog', 'Wallet', 'Gateway'));
-                $this->logger->addError(
-                    'transaction is not valid',
-                    array(
-                        'errors' => $this->serializer->serialize($errors, 'json'),
-                        'cashTransaction' => $this->serializer->serialize($cashTransaction, 'json', $transactionContext),
-                        'discountedTransaction' => $this->serializer->serialize($discountedCashTransaction, 'json', $transactionContext),
-                    )
-                );
-                throw new InvalidTransactionException('transaction is not valid');
-            }
-
-            $this->doctrine->getManager()->persist($cashTransaction);
-            $this->doctrine->getManager()->persist($discountedCashTransaction);
+        if ($main->isVirtual()) {
+            $transaction = new Transaction($driver, Service::roundPrice($service->getPrice()), Transaction::TYPE_WAGE, true);
         } else {
-            $transaction = new Transaction(
-                $driver,
-                Service::roundPrice($service->getPrice()),
-                Transaction::TYPE_WAGE,
-                $main->isVirtual()
+            $transaction = new Transaction($driver, Service::roundPrice($service->getDiscountedPrice()), Transaction::TYPE_WAGE, false);
+        }
+
+        $transaction->setService($service);
+        $transaction->setStatus(Transaction::STATUS_SUCCESS);
+
+        $errors = $this->validator->validate($transaction, null, array('Create', 'Wage'));
+
+        if (!$main->isVirtual() and $service->getPrice() > $service->getDiscountedPrice()) {
+            $price = Service::roundPrice($service->getPrice()) - Service::roundPrice($service->getDiscountedPrice());
+            $discountedTransaction = new Transaction($driver, $price, Transaction::TYPE_WAGE, true);
+            $discountedTransaction->setService($service);
+            $discountedTransaction->setStatus(Transaction::STATUS_SUCCESS);
+
+            $discountErrors = $this->validator->validate($discountedTransaction, null, array('Create', 'Wage'));
+        }
+        
+        if (count($errors)) {
+            $transactionContext = SerializationContext::create()
+                ->setGroups(array('Admin', 'User', 'Service', 'Currency', 'CurrencyLog', 'Wallet', 'Gateway'));
+            $discountTransactionContext = clone $transactionContext;
+            $context = array(
+                'errors' => $this->serializer->serialize($errors, 'json'),
+                'cashTransaction' => $this->serializer->serialize($transaction, 'json', $transactionContext)
             );
-
-            $transaction->setService($service);
-            $transaction->setStatus(Transaction::STATUS_SUCCESS);
-
-            $errors = $this->validator->validate($transaction, null, array('Create', 'Wage'));
-            if (count($errors)) {
-                $transactionContext = SerializationContext::create()
-                    ->setGroups(array('Admin', 'User', 'Service', 'Currency', 'CurrencyLog', 'Wallet', 'Gateway'));
-                $this->logger->addError(
-                    'transaction is not valid',
-                    array(
-                        'errors' => $this->serializer->serialize($errors, 'json'),
-                        'transaction' => $this->serializer->serialize($transaction, 'json', $transactionContext)
-                    )
-                );
-                throw new InvalidTransactionException('transaction is not valid');
+            if (isset($discountedTransaction)) {
+                $context['discountErrors'] = $this->serializer->serialize($discountErrors, 'json');
+                $context['discountedTransaction'] = $this->serializer->serialize($discountedTransaction, 'json', $discountTransactionContext);
             }
+            $this->logger->addError(
+                'transaction is not valid',
+                $context
+            );
+            throw new InvalidTransactionException('transaction is not valid');
+        }
 
-            $this->doctrine->getManager()->persist($transaction);
+        $this->doctrine->getManager()->persist($transaction);
+
+        if (isset($discountedTransaction)) {
+            $this->doctrine->getManager()->persist($discountedTransaction);
         }
 
         $this->logger->addInfo('Wage transaction is persisted');
@@ -191,7 +165,7 @@ class PaymentSubsciber implements EventSubscriberInterface
 
         $transaction = new Transaction(
             $driver,
-            $main->getAmount() * $driverCommission / 100,
+            Service::roundPrice($main->getService()->getPrice()) * $driverCommission / 100,
             Transaction::TYPE_COMMISSION,
             true
         );

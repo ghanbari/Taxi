@@ -128,7 +128,7 @@ class User extends BaseUser
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="born", type="date", nullable=true, options={"default"="2017/01/01"})
+     * @ORM\Column(name="born", type="date", nullable=true, options={"default"="2017-01-01"})
      *
      * @Assert\Date(groups={"Register", "Update"})
      *

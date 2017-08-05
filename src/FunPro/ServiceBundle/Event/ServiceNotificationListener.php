@@ -9,6 +9,7 @@ use FunPro\EngineBundle\GCM\GCM;
 use FunPro\FinancialBundle\Entity\BaseCost;
 use FunPro\ServiceBundle\Entity\PropagationList;
 use FunPro\ServiceBundle\Entity\Service;
+use FunPro\ServiceBundle\Repository\ServiceRepository;
 use FunPro\ServiceBundle\ServiceEvents;
 use FunPro\UserBundle\Entity\Message;
 use JMS\Serializer\SerializationContext;
@@ -112,8 +113,24 @@ class ServiceNotificationListener implements EventSubscriberInterface
     {
         $logger = $this->logger;
         $service = $event->getService();
-        $price = $service->getPrice();
-        $discountedPrice = $service->getDiscountedPrice();
+        $doctrine = $this->doctrine;
+
+        $favoriteDiscountCode = $doctrine->getRepository('FunProFinancialBundle:FavoriteDiscountCodes')->findOneBy(array(
+            'passenger' => $service->getPassenger(),
+            'active' => true,
+            'used' => false,
+        ));
+        
+        if ($favoriteDiscountCode and $doctrine->getRepository('FunProFinancialBundle:DiscountCode')
+                ->canUseDiscount($service->getPassenger(), $favoriteDiscountCode->getDiscountCode(), $service->getStartPoint(), $service->getEndPoint())
+        ) {
+            $discountCode = $favoriteDiscountCode->getDiscountCode();
+        } else {
+            $discountCode = null;
+        }
+
+        $price = Service::roundPrice(ServiceRepository::calculatePrice($service->getBaseCost(), $service->getDistance(), false));
+        $discountedPrice = Service::roundPrice(ServiceRepository::calculatePrice($service->getBaseCost(), $service->getDistance(), true, $discountCode));
 
         $data = array(
             'type' => 'service',
@@ -128,9 +145,9 @@ class ServiceNotificationListener implements EventSubscriberInterface
             'requested_at' => $this->serializer->serialize($service->getCreatedAt(), 'json'),
             'description' => !empty($service->getDescription()) ? substr($service->getDescription(), 0, 2000) : '',
             'send_in' => strtotime('now'),
-            'distance' => $service->getDistance() / 1000,
-            'price' => Service::roundPrice($price),
-            'total_cost' => Service::roundPrice($discountedPrice),
+            'distance' => round($service->getDistance() / 1000, 1),
+            'total_cost' => Service::roundPrice($price),
+            'discount_description' => $discountCode ? $discountCode->getTitle() : '',
         );
 
         if ($service->getPassenger()) {
