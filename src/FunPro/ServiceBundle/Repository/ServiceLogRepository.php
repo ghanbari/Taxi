@@ -53,52 +53,18 @@ class ServiceLogRepository extends EntityRepository
         $queryBuilder = $this->getEntityManager()->getRepository('FunProServiceBundle:Service')
             ->createQueryBuilder('s');
 
-        $serviceIds = $queryBuilder
-            ->select('s.id')
-            ->innerJoin('s.logs', 'sl')
+        return $queryBuilder
+            ->select('SUM(TIMESTAMPDIFF(SECOND, startLog.atTime, finishLog.atTime))')
+            ->innerJoin('s.logs', 'startLog', 'WITH', 's.id = startLog.service and startLog.status = '. ServiceLog::STATUS_START)
+            ->innerJoin('s.logs', 'finishLog', 'WITH', 's.id = finishLog.service and finishLog.status = '. ServiceLog::STATUS_START)
             ->innerJoin('s.car', 'c')
             ->where($queryBuilder->expr()->eq('c.driver', ':driver'))
-            ->andWhere($queryBuilder->expr()->orX(
-                $queryBuilder->expr()->andX(
-                    $queryBuilder->expr()->eq('sl.status', ServiceLog::STATUS_FINISH),
-                    $queryBuilder->expr()->lte('sl.atTime', ':finish')
-                ),
-                $queryBuilder->expr()->andX(
-                    $queryBuilder->expr()->eq('sl.status', ServiceLog::STATUS_START),
-                    $queryBuilder->expr()->gte('sl.atTime', ':start')
-                )
-            ))
+            ->andWhere($queryBuilder->expr()->gte('startLog.atTime', ':start'))
+            ->andWhere($queryBuilder->expr()->lte('finishLog.atTime', ':finish'))
             ->setParameter('driver', $driver)
             ->setParameter('start', $from)
             ->setParameter('finish', $till)
             ->getQuery()
-            ->getScalarResult();
-
-        $serviceIds = array_map(
-            function ($item) {
-                return $item['id'];
-            },
-            $serviceIds
-        );
-
-        $startTimeQuery = $this->createQueryBuilder('sl');
-        $sumOfStartTime = $startTimeQuery
-            ->select('SUM(UNIX_TIMESTAMP(sl.atTime))')
-            ->where($startTimeQuery->expr()->in('sl.service', ':serviceIds'))
-            ->andWhere($startTimeQuery->expr()->eq('sl.status', ServiceLog::STATUS_START))
-            ->setParameter('serviceIds', $serviceIds)
-            ->getQuery()
             ->getSingleScalarResult();
-
-        $finishTimeQuery = $this->createQueryBuilder('sl');
-        $sumOfFinishTime = $finishTimeQuery
-            ->select('SUM(UNIX_TIMESTAMP(sl.atTime))')
-            ->where($finishTimeQuery->expr()->in('sl.service', ':serviceIds'))
-            ->andWhere($finishTimeQuery->expr()->eq('sl.status', ServiceLog::STATUS_FINISH))
-            ->setParameter('serviceIds', $serviceIds)
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        return intval($sumOfFinishTime) - intval($sumOfStartTime);
     }
 }

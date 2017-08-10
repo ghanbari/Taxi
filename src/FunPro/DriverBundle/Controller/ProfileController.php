@@ -66,8 +66,8 @@ class ProfileController extends FOSRestController
         }
 
         try {
-            $data['distance'] = $this->getDoctrine()->getRepository('FunProDriverBundle:CarLog')
-                ->getDistance($driver, $from, $till);
+            $data['distance'] = $this->getDoctrine()->getRepository('FunProServiceBundle:Service')
+                ->getDriverMileage($driver, $from, $till);
         } catch (NoResultException $e) {
             $data['distance'] = 0;
         }

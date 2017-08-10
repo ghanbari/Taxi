@@ -311,7 +311,9 @@ class Service
      *
      * @ORM\Column(type="integer", nullable=true)
      *
-     * @JS\Exclude()
+     * @JS\Groups({"Driver", "Admin"})
+     * @JS\SerializedName("netPrice")
+     * @JS\Since("1.0.0")
      */
     private $price;
     

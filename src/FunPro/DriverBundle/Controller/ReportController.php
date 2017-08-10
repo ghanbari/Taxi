@@ -141,8 +141,8 @@ class ReportController extends FOSRestController
         }
 
         try {
-            $total = $this->getDoctrine()->getRepository('FunProDriverBundle:CarLog')
-                ->getDistance($this->getUser(), $from, $till);
+            $total = $this->getDoctrine()->getRepository('FunProServiceBundle:Service')
+                ->getDriverMileage($this->getUser(), $from, $till);
         } catch (NoResultException $e) {
             $total = 0;
         }

@@ -125,6 +125,15 @@ class CarLogRepository extends EntityRepository
         return $sumOfSleepTime - $sumOfWakefulTime;
     }
 
+    /**
+     * @deprecated remove in version 1.1
+     *
+     * @param Driver $driver
+     * @param \DateTime $from
+     * @param \DateTime $till
+     * @return float
+     * @throws \Doctrine\DBAL\DBALException
+     */
     public function getDistance(Driver $driver, \DateTime $from, \DateTime $till)
     {
         $this->getEntityManager()->getConnection()->executeQuery('SET SESSION group_concat_max_len = 5555555');

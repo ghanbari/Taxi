@@ -86,6 +86,8 @@ doctrine:
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
         dql:
+            datetime_functions:
+                timestampdiff: DoctrineExtensions\Query\Mysql\TimestampDiff
             numeric_functions:
 #                point_str: FunPro\GeoBundle\Doctrine\ORM\Query\Functions\PointStr
 #                distance: FunPro\GeoBundle\Doctrine\ORM\Query\Functions\Distance

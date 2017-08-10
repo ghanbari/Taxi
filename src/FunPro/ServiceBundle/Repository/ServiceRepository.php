@@ -310,6 +310,37 @@ class ServiceRepository extends EntityRepository
             ->getSingleScalarResult();
     }
 
+    /**
+     * @param Driver $driver
+     * @param \DateTime $from
+     * @param \DateTime $till
+     */
+    public function getDriverMileage(Driver $driver, \DateTime $from, \DateTime $till)
+    {
+        $qb = $this->createQueryBuilder('s');
+
+        return $qb->select('COALESCE(sum(s.distance), 0)')
+            ->innerJoin('s.car', 'c')
+            ->where($qb->expr()->eq('c.driver', ':driver'))
+            ->andWhere($qb->expr()->gte('s.status', ServiceLog::STATUS_FINISH))
+            ->andWhere($qb->expr()->gte('s.createdAt', ':from'))
+            ->andWhere($qb->expr()->lte('s.createdAt', ':till'))
+            ->setParameter('driver', $driver)
+            ->setParameter('from', $from)
+            ->setParameter('till', $till)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * @param Point $location
+     * @param $radius
+     * @param \DateTime|null $from
+     * @param \Datetime|null $till
+     * @param int $limit
+     * @param int $offset
+     * @return \Doctrine\ORM\QueryBuilder
+     */
     public function get(
         Point $location,
         $radius,
