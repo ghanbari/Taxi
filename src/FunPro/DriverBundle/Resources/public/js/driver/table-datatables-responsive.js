@@ -30,9 +30,9 @@ var TableDatatablesResponsive = function () {
 
             // setup buttons extentension: http://datatables.net/extensions/buttons/
             buttons: [
-                { extend: 'print', className: 'btn dark btn-outline' },
-                { extend: 'pdf', className: 'btn green btn-outline' },
-                { extend: 'csv', className: 'btn purple btn-outline ' }
+                {extend: 'print', className: 'btn dark btn-outline'},
+                {extend: 'pdf', className: 'btn green btn-outline'},
+                {extend: 'csv', className: 'btn purple btn-outline '}
             ],
 
             // setup responsive extension: http://datatables.net/extensions/responsive/
@@ -50,16 +50,14 @@ var TableDatatablesResponsive = function () {
                 {name: "d.mobile", data: "mobile", "defaultContent": "", orderable: true, searchable: true},
                 {name: "d.age", data: "age", "defaultContent": "", orderable: true, searchable: false},
                 {name: "d.sex", data: "sex", "defaultContent": "", orderable: true, searchable: false},
-                {name: "d.rate", data: "rate", "defaultContent": 0, orderable: true, searchable: false},
+                {name: "d.credit", data: "credit", "defaultContent": 0, orderable: true, searchable: false, className: "credit"},
                 {name: "d.description", data: "description", "defaultContent": "", orderable: false, searchable: false},
                 {name: "d.avatar", data: "avatar", "defaultContent": "", orderable: false, searchable: false, className: "avatar"},
-                {name: "recover", "defaultContent": "<i class='btn btn-warning'>بازیابی</i>", orderable: false, searchable: false, className: "recover text-center"},
-                {name: "car", data: "id", orderable: false, searchable: false, className: "carList text-center"},
-                {name: "edit", "defaultContent": "<i class='btn btn-warning'>ویرایش</i>", orderable: false, searchable: false, className: "edit text-center"},
                 {name: "delete", "defaultContent": "<i class='btn btn-danger'>حذف</i>", orderable: false, searchable: false, className: "delete text-center"},
+                {name: "actions", "defaultContent": "", orderable: false, searchable: false, className: "actions"}
             ],
 
-            order: [ 1, 'asc' ],
+            order: [1, 'asc'],
 
             // pagination control
             "lengthMenu": [
@@ -77,7 +75,7 @@ var TableDatatablesResponsive = function () {
             // So when dropdowns used the scrollable div should be removed.
             //"dom": "<'row' <'col-md-12'T>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r>t<'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>",
         });
-    }
+    };
 
     return {
 
@@ -98,10 +96,6 @@ var TableDatatablesResponsive = function () {
 jQuery(document).ready(function() {
     TableDatatablesResponsive.init();
     $('#sample_2').on( 'draw.dt', function () {
-        $('.edit').on('click', function() {
-            document.location.href = Routing.generate('fun_pro_admin_edit_driver', {id: $(this).parent().find('.driverId').text()})
-        });
-        
         $('.delete').on('click', function(event) {
             var driverName = $(this).parent().find('.driverName').text();
             if (!confirm(' نسبت به حذف راننده' + driverName + ' مطمین هستید؟')) {
@@ -120,25 +114,24 @@ jQuery(document).ready(function() {
 
                 },
                 error: function (xhr) {
-                    alert('راننده وجود ندارد');
+                    toastr.error('راننده وجود ندارد');
                 }
             });
         });
 
-        $('.recover').on('click', function(event) {
+        $(document).on('click', '.recover', function(event) {
             event.preventDefault();
             event.stopPropagation();
             var that = this;
             $.ajax({
                 type: 'patch',
                 headers: {'content-type': 'application/json', accept: 'application/json'},
-                url: Routing.generate('fun_pro_admin_recover_driver', {id: $(this).parent().find('.driverId').text()}),
+                url: Routing.generate('fun_pro_admin_recover_driver', {id: $(this).parents('tr').find('.driverId').text()}),
                 success: function (result) {
-                    alert('message sent');
-
+                    toastr.success('رمز جدید تنظیم شد');
                 },
                 error: function (xhr) {
-                    alert('راننده وجود ندارد');
+                    toastr.error('راننده وجود ندارد');
                 }
             });
         });
@@ -148,8 +141,41 @@ jQuery(document).ready(function() {
             $(item).html('<img src="' + Routing.generate('liip_imagine_filter', {filter: 'panel_avatar_thumb', path: avatar}) + '" />');
         });
 
-        $('td.carList').each(function(index, item) {
-            $(item).html("<a href='"+Routing.generate('fun_pro_admin_cget_driver_car', {driverId: $(item).text()})+"'><span class='btn btn-info glyphicon glyphicon-th-list'></span></a>");
+        $('td.actions').each(function(index, item) {
+            var template = $('#actions').html();
+            Mustache.parse(template);
+            var rendered = Mustache.render(template);
+            $(item).html(rendered);
         });
-    } );
+
+        $('a.carList').each(function(index, item) {
+            $(this).attr('href', Routing.generate('fun_pro_admin_cget_driver_car', {driverId: $(this).parents('tr').find('.driverId').text()}));
+        });
+
+        $('a.edit').on('click', function() {
+            $(this).attr('href', Routing.generate('fun_pro_admin_edit_driver', {id: $(this).parents('tr').find('.driverId').text()}));
+        });
+
+        $('a.withdraw').on('click', function() {
+            event.preventDefault();
+            event.stopPropagation();
+            var that = this;
+            $.ajax({
+                type: 'post',
+                headers: {'content-type': 'application/json', accept: 'application/json'},
+                url: Routing.generate('fun_pro_admin_post_driver_withdraw', {id: $(this).parents('tr').find('.driverId').text()}),
+                success: function (result) {
+                    toastr.success('تراکنش با موفقیت ثبت شد');
+                    $(that).parents('tr').find('.credit').text(result.value);
+                },
+                error: function (xhr) {
+                    if (xhr.status == 400) {
+                        toastr.error('اعتبار صفر است');
+                    } else {
+                        toastr.error('راننده وجود ندارد');
+                    }
+                }
+            });
+        });
+    });
 });

@@ -59,13 +59,11 @@
                                         <th class="min-tablet">تلفن همراه</th>
                                         <th class="none">سن</th>
                                         <th class="none">جنسیت</th>
-                                        <th class="min-phone-l">امتیاز</th>
+                                        <th class="min-phone-l">اعتبار</th>
                                         <th class="none">توضیحات</th>
                                         <th class="desktop">آواتار</th>
-                                        <th class="min-tablet-p">بازیابی رمز</th>
-                                        <th class="min-tablet-p">ماشین ها</th>
-                                        <th class="min-tablet-l">ویرایش</th>
                                         <th class="min-tablet-l">حذف</th>
+                                        <th class="min-tablet-l">عملیات</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -80,4 +78,26 @@
             <!-- END PAGE CONTENT INNER -->
         </div>
     </div>
+
+<script id="actions" type="x-tmpl-mustache">
+    <div class="btn-group">
+        <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="javascript:;" aria-expanded="false">عملیات
+            <i class="fa fa-angle-down"></i>
+        </a>
+        <ul class="dropdown-menu pull-right">
+            <li>
+                <a class="carList"> ماشین ها</a>
+            </li>
+            <li>
+                <a class="recover"> بازیابی</a>
+            </li>
+            <li>
+                <a class="withdraw"> تسفیه</a>
+            </li>
+            <li>
+                <a target="_blank" class="edit"> ویرایش</a>
+            </li>
+        </ul>
+    </div>
+</script>
 {% endblock content %}

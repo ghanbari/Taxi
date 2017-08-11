@@ -9,6 +9,7 @@ use FunPro\DriverBundle\Entity\Car;
 use FunPro\DriverBundle\Entity\Driver;
 use FunPro\DriverBundle\Form\DriverType;
 use FunPro\EngineBundle\Utility\DataTable;
+use FunPro\FinancialBundle\Entity\Transaction;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
@@ -262,6 +263,31 @@ class DriverController extends FOSRestController
                 "recordsFiltered" => $pagination->getTotalItemCount(),
                 "data" => $pagination->getItems()
         ))->setSerializationContext($context);
+    }
+
+    /**
+     * Show Drivers
+     *
+     * @Security("has_role('ROLE_ADMIN')")
+     * @ParamConverter(name="driver", class="FunProDriverBundle:Driver")
+     */
+    public function postWithdrawAction(Request $request, $id)
+    {
+        /** @var Driver $driver */
+        $driver = $request->attributes->get('driver');
+
+        if ($driver->getCredit() > 0) {
+            $transaction = new Transaction($driver, $driver->getCredit(), Transaction::TYPE_WITHDRAW, true);
+        } elseif ($driver->getCredit() < 0) {
+            $transaction = new Transaction($driver, abs($driver->getCredit()), Transaction::TYPE_CREDIT, true);
+        } else {
+            return $this->view(null, Response::HTTP_BAD_REQUEST);
+        }
+
+        $this->getDoctrine()->getManager()->persist($transaction);
+        $this->getDoctrine()->getManager()->flush();
+
+        return $this->view(array('value' => $driver->getCredit()), Response::HTTP_CREATED);
     }
 
     public function getAction($id)

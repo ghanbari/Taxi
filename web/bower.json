@@ -17,6 +17,7 @@
   "dependencies": {
     "persian-date": "^0.1.8",
     "pick-a-color": "^1.2.3",
-    "persian-datepicker": "^0.4.5"
+    "persian-datepicker": "^0.4.5",
+    "mustache.js": "mustache#^2.3.0"
   }
 }
