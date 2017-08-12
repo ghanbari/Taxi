@@ -1,26 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:jms="urn:jms:translation" version="1.2">
-  <file date="2017-06-02T21:53:43Z" source-language="en" target-language="fa" datatype="plaintext" original="not.available">
+  <file date="2017-08-11T23:24:10Z" source-language="en" target-language="fa" datatype="plaintext" original="not.available">
     <header>
       <tool tool-id="JMSTranslationBundle" tool-name="JMSTranslationBundle" tool-version="1.1.0-DEV"/>
       <note>The source node in most cases contains the sample message as written by the developer. If it looks like a dot-delimitted string such as "form.label.firstname", then the developer has not provided a default message.</note>
     </header>
     <body>
-      <trans-unit id="4afa8f9e90756f0f919a124a1dfbba19be004edc" resname="206">
-        <source>206</source>
-        <target>پژو ۲۰۶</target>
-      </trans-unit>
-      <trans-unit id="7ee51d9582ef3d3b56ec2fc25b77fc147d8563e5" resname="405">
-        <source>405</source>
-        <target>پژو ۴۰۵</target>
+      <trans-unit id="4e13286a3dd6e54d4bcda47a92238b853e54d893" resname="%credit%.payed.to.you.and.reset.your.credit">
+        <source>%credit%.payed.to.you.and.reset.your.credit</source>
+        <target>%credit% به حساب شما پرداخت و اعتبار حساب شما صفر شد</target>
       </trans-unit>
       <trans-unit id="5ab9899ba2942054d5ce8a0eb3cfc955a59b9fea" resname="X-AUTH-TOKEN.header.is.not.exists">
         <source>X-AUTH-TOKEN.header.is.not.exists</source>
         <target>X-AUTH-TOKEN.header.is.not.exists</target>
       </trans-unit>
-      <trans-unit id="5dc56b9aab61867257a3c1bd7c786c9410d38cd2" resname="age">
-        <source>age</source>
-        <target>age</target>
+      <trans-unit id="03715355e5dbe8898cbbea3d4f5245d98d63aa12" resname="born">
+        <source>born</source>
+        <target>born</target>
       </trans-unit>
       <trans-unit id="687400c12208acad6c40f05baf3cd214baabfb12" resname="car.created">
         <source>car.created</source>
@@ -94,14 +90,6 @@
         <source>gateway.is.not.available.plz.pay.with.cash</source>
         <target>gateway.is.not.available.plz.pay.with.cash</target>
       </trans-unit>
-      <trans-unit id="b4f95e5f54280775348643710500b9935c6a80b1" resname="invite.your.friend.and.get.%discount%.discount">
-        <source>invite.your.friend.and.get.%discount%.discount</source>
-        <target>به كارزين خوش آمديد، با معرفي ما به دوستانتان تا %discount% تخفيف سفر بگيريد.</target>
-      </trans-unit>
-      <trans-unit id="596727c8a0ea4db3ba2ceceedccbacd3d7b371b8" resname="jack">
-        <source>jack</source>
-        <target>جک</target>
-      </trans-unit>
       <trans-unit id="25f33f48f229aa64efa90d30fe9c7b5c5a3904c9" resname="lisans">
         <source>lisans</source>
         <target>lisans</target>
@@ -113,10 +101,6 @@
       <trans-unit id="b697cc8225d70561d5e8455e90e99c9383c719b0" resname="max.size.for.propagation.list.is.%maxSize%">
         <source>max.size.for.propagation.list.is.%maxSize%</source>
         <target>max.size.for.propagation.list.is.%maxSize%</target>
-      </trans-unit>
-      <trans-unit id="777f16b7ee2e1489dd2a9b0bb7926afed64d62d5" resname="megan">
-        <source>megan</source>
-        <target>مگان</target>
       </trans-unit>
       <trans-unit id="0cb41025c771743adb2ecf09ef7c919569d689c3" resname="mohaf">
         <source>mohaf</source>
@@ -138,6 +122,10 @@
         <source>no</source>
         <target>no</target>
       </trans-unit>
+      <trans-unit id="e9f31c9fbd5bc338c03aa9d1ca8cd0d294d6e2f5" resname="operation.done">
+        <source>operation.done</source>
+        <target>operation.done</target>
+      </trans-unit>
       <trans-unit id="f67ba4250ed740fa967d2451806fc28aefa6286d" resname="operator.created">
         <source>operator.created</source>
         <target>operator.created</target>
@@ -146,25 +134,17 @@
         <source>payan.khedmat</source>
         <target>payan.khedmat</target>
       </trans-unit>
-      <trans-unit id="1cc459bac664020395ce14f7a0607a06368171a7" resname="peride">
-        <source>peride</source>
-        <target>پراید</target>
-      </trans-unit>
-      <trans-unit id="f788039a581981f5aa8fe6f5790dca7dea262e55" resname="persia">
-        <source>persia</source>
-        <target>پرشیا</target>
-      </trans-unit>
       <trans-unit id="db8b0ed578e5f383699f0ee3ccda8950c2dca3b7" resname="reason.is.not.exists">
         <source>reason.is.not.exists</source>
         <target>reason.is.not.exists</target>
       </trans-unit>
-      <trans-unit id="943cfd146fbfd48618582626232c3a1312342a87" resname="samand">
-        <source>samand</source>
-        <target>سمند</target>
-      </trans-unit>
       <trans-unit id="9b5a89102e8e9c511f1da5633f65bafed583d047" resname="server.can.not.handle.upload">
         <source>server.can.not.handle.upload</source>
         <target>server.can.not.handle.upload</target>
+      </trans-unit>
+      <trans-unit id="08e90e8dafca0ac1867389b0217009196e35171c" resname="service.is.finished.and.is.free.enjoy">
+        <source>service.is.finished.and.is.free.enjoy</source>
+        <target>service.is.finished.and.is.free.enjoy</target>
       </trans-unit>
       <trans-unit id="12695ed820fa628c86a1cd862043ce1f9a26881e" resname="service.is.finished.please.pay.%price%.by.cash">
         <source>service.is.finished.please.pay.%price%.by.cash</source>
@@ -194,6 +174,14 @@
         <source>this.car.is.not.in.queue</source>
         <target>this.car.is.not.in.queue</target>
       </trans-unit>
+      <trans-unit id="f09ef7e70e576e255d19bd0dd372f06b71d90ce7" resname="this.code.reached.to.max.usage">
+        <source>this.code.reached.to.max.usage</source>
+        <target>this.code.reached.to.max.usage</target>
+      </trans-unit>
+      <trans-unit id="6395904a407ee082799ee1bd54e8deb5b4410a88" resname="this.location.is.out.of.service">
+        <source>this.location.is.out.of.service</source>
+        <target>this.location.is.out.of.service</target>
+      </trans-unit>
       <trans-unit id="7f8cf1b1ab8e0382cbb99b3b44f4ec9648766269" resname="this.service.done">
         <source>this.service.done</source>
         <target>this.service.done</target>
@@ -222,9 +210,33 @@
         <source>you.can.get.report.for.30.day</source>
         <target>you.can.get.report.for.30.day</target>
       </trans-unit>
+      <trans-unit id="1647ce3972ca0b5f46a2f2a7ec432bfd7a0335b2" resname="you.can.not.change.destination.of.service">
+        <source>you.can.not.change.destination.of.service</source>
+        <target>you.can.not.change.destination.of.service</target>
+      </trans-unit>
+      <trans-unit id="43f3007dfed1dbe7bd7e6ce9bd60ac2bb198ad33" resname="you.can.not.change.discount.code.in.service">
+        <source>you.can.not.change.discount.code.in.service</source>
+        <target>you.can.not.change.discount.code.in.service</target>
+      </trans-unit>
+      <trans-unit id="6989396e6748d0602e27ee225f87729f4e319feb" resname="you.can.not.rate.this.service.now.please.refer.next.time">
+        <source>you.can.not.rate.this.service.now.please.refer.next.time</source>
+        <target>you.can.not.rate.this.service.now.please.refer.next.time</target>
+      </trans-unit>
+      <trans-unit id="6ebb133d02aeda4d781c0417a8b7e8be6eeaf556" resname="you.can.not.use.this.code.more.than">
+        <source>you.can.not.use.this.code.more.than</source>
+        <target>you.can.not.use.this.code.more.than</target>
+      </trans-unit>
       <trans-unit id="7964d4a3ee860781c9dd32135244af9e1119600e" resname="you.can.only.check.options.in.end.of.service">
         <source>you.can.only.check.options.in.end.of.service</source>
         <target>you.can.only.check.options.in.end.of.service</target>
+      </trans-unit>
+      <trans-unit id="b1c46159329afa97b31170be3ffe84a15748a901" resname="you.can.rate.service.till.one.day.after.service">
+        <source>you.can.rate.service.till.one.day.after.service</source>
+        <target>you.can.rate.service.till.one.day.after.service</target>
+      </trans-unit>
+      <trans-unit id="4056a878ef109e353e39ca4c6eaefcaa6dd6ad21" resname="you.enter.very.wrong.code.you.can.not.try.again">
+        <source>you.enter.very.wrong.code.you.can.not.try.again</source>
+        <target>you.enter.very.wrong.code.you.can.not.try.again</target>
       </trans-unit>
       <trans-unit id="8481316505b076627e3645459e381a662d66a98d" resname="you.have.very.request.for.token">
         <source>you.have.very.request.for.token</source>
@@ -234,13 +246,21 @@
         <source>you.not.recive.any.request</source>
         <target>you.not.recive.any.request</target>
       </trans-unit>
+      <trans-unit id="a7a814a63517f00c885ff84e07419386a533a81c" resname="you.payed.%credit%.and.reset.your.credit">
+        <source>you.payed.%credit%.and.reset.your.credit</source>
+        <target>شما %credit% به حساب شرکت پرداخت و حساب شما صفر شد</target>
+      </trans-unit>
       <trans-unit id="ed327a4bdd7375010a444adb2b862b659f051bd7" resname="you.payed.service">
         <source>you.payed.service</source>
         <target>you.payed.service</target>
       </trans-unit>
+      <trans-unit id="931c038f07c8c1b10f87fa622c70c9353c3772a3" resname="your.code.is.wrong">
+        <source>your.code.is.wrong</source>
+        <target>your.code.is.wrong</target>
+      </trans-unit>
       <trans-unit id="4e18b9f9f55e370a023734fc8ade0fc639bf26b4" resname="your.credit.is.not.enough">
         <source>your.credit.is.not.enough</source>
-        <target>your.credit.is.not.enough</target>
+        <target>اعتبار حساب شما کافی نیست</target>
       </trans-unit>
       <trans-unit id="ce1a33d01916d182caa663298145ab2f65205d84" resname="your.registeration.is.completed.your.password.is.%password%">
         <source>your.registeration.is.completed.your.password.is.%password%</source>
@@ -253,10 +273,6 @@
       <trans-unit id="545255b82cfaca24c1dd98d9751d84ddf84feb8d" resname="your.wallet.balance.is.not.enough">
         <source>your.wallet.balance.is.not.enough</source>
         <target>your.wallet.balance.is.not.enough</target>
-      </trans-unit>
-      <trans-unit id="47ebed6667c1fb156988444a25239f6c31e0c79a" resname="zantiya">
-        <source>zantiya</source>
-        <target>زانتیا</target>
       </trans-unit>
       <trans-unit id="309328d5f99114f41ad48acca398d84c13a992f7" resname="zire.diplome">
         <source>zire.diplome</source>

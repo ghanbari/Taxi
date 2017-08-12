@@ -278,14 +278,17 @@ class DriverController extends FOSRestController
 
         if ($driver->getCredit() > 0) {
             $transaction = new Transaction($driver, $driver->getCredit(), Transaction::TYPE_WITHDRAW, true);
+            $message = $this->get('translator')->trans('%credit%.payed.to.you.and.reset.your.credit', array('%credit%' => abs($driver->getCredit())));
         } elseif ($driver->getCredit() < 0) {
             $transaction = new Transaction($driver, abs($driver->getCredit()), Transaction::TYPE_CREDIT, true);
+            $message = $this->get('translator')->trans('you.payed.%credit%.and.reset.your.credit', array('%credit%' => abs($driver->getCredit())));
         } else {
             return $this->view(null, Response::HTTP_BAD_REQUEST);
         }
 
         $this->getDoctrine()->getManager()->persist($transaction);
         $this->getDoctrine()->getManager()->flush();
+        $this->get('sms.sender')->send($driver->getMobile(), $message);
 
         return $this->view(array('value' => $driver->getCredit()), Response::HTTP_CREATED);
     }
