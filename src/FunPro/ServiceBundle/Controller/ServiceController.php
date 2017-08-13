@@ -720,7 +720,7 @@ class ServiceController extends FOSRestController
         try {
             $this->get('event_dispatcher')->dispatch(ServiceEvents::SERVICE_FINISH, $event);
             $manager->flush();
-            if (Service::roundPrice($service->getDiscountCode()->getDiscount()) === 0) {
+            if (Service::roundPrice($service->getDiscountedPrice()) === 0) {
                 $message = $translator->trans(
                     'service.is.finished.and.is.free.enjoy'
                 );
