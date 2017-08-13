@@ -98,7 +98,7 @@ class WakefulController extends FOSRestController
         }
 
         if ($car->getStatus() !== Car::STATUS_SLEEP) {
-            $logger->addError('Car\'s status must be sleep', array('car' => $car->getId()));
+            $logger->addError('Car\'s status must be sleep', array('car' => $car->getId(), 'status' => Car::getStatusName($car->getStatus())));
             $error = array(
                 'message' => $translator->trans('car.status.can.be.changed.to.wakeful.only.when.status.is,sleep'),
                 'code' => 2,

@@ -39,7 +39,7 @@ class DiscountWrongCount
     /**
      * @var string
      *
-     * @ORM\Column(name="code", length=7)
+     * @ORM\Column(name="code")
      */
     private $code;
 
