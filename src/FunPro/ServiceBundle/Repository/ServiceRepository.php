@@ -361,12 +361,12 @@ class ServiceRepository extends EntityRepository
             ->setParameter('point', $location);
 
         if ($from) {
-            $qb->andWhere($qb->expr()->gte('t.createdAt', ':from'))
+            $qb->andWhere($qb->expr()->gte('s.createdAt', ':from'))
                 ->setParameter('from', $from);
         }
 
         if ($till) {
-            $qb->andWhere($qb->expr()->lte('t.createdAt', ':till'))
+            $qb->andWhere($qb->expr()->lte('s.createdAt', ':till'))
                 ->setParameter('till', $till);
         }
 
