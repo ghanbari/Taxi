@@ -95,7 +95,8 @@ class ProfileController extends FOSRestController
 
         $data['avatar'] = $driver->getAvatarPath();
         $data['name'] = $driver->getName();
-        $data['car_model'] = $translator->trans(array_search($car->getType(), Car::getTypes()));
+        $data['car_model'] = !is_null($car) ?
+            $translator->trans(array_search($car->getType(), Car::getTypes())) : $translator->trans('you.have.not.car');
         $data['car_brand'] = $car->getType();
         $data['wallet'] = $driver->getCredit();
 

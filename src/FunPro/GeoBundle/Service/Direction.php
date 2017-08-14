@@ -75,6 +75,10 @@ class Direction
             }
         }
 
+        if (!$bestRoute) {
+            throw new \Exception('route is not found');
+        }
+
         $legs = $bestRoute->getLegs();
         $distance = $legs[0]->getDistance()->getValue();
         $duration = $legs[0]->getDuration()->getValue();

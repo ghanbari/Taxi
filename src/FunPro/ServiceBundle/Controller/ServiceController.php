@@ -126,7 +126,7 @@ class ServiceController extends FOSRestController
                 $service->getStartPoint()->getLatitude()
             );
         } catch (NoResultException $e) {
-            $logger->addError("Price is not set for this location", array('service' => $service));
+            $logger->addError("Price is not set for this location", array('service' => $service->getId()));
             $error = array(
                 'code' => 4,
                 'message' => $translator->trans('this.location.is.out.of.service')
