@@ -1,24 +1,40 @@
-var markers = [];
-var markerCluster;
+var carMarkers = [];
+var serviceMarkers = [];
+var carMarkerCluster;
 var onlineCounter = 0;
 var inServiceCounter = 0;
 
-function setMapOnAll(map) {
-    for (var i = 0; i < markers.length; i++) {
-        markers[i].setMap(map);
+function setMapOnCarMarkers(map) {
+    for (var i = 0; i < carMarkers.length; i++) {
+        carMarkers[i].setMap(map);
     }
 }
 
-function clearMarkers() {
-    setMapOnAll(null);
-    markers = [];
+function setMapOnServiceMarkers(map) {
+    for (var i = 0; i < serviceMarkers.length; i++) {
+        serviceMarkers[i].setMap(map);
+    }
 }
 
-function showMarkers() {
-    setMapOnAll(map);
+function clearCarMarkers() {
+    setMapOnCarMarkers(null);
+    carMarkers = [];
 }
 
-function createInfoWindow(wakeful) {
+function clearServiceMarkers() {
+    setMapOnServiceMarkers(null);
+    serviceMarkers = [];
+}
+
+function showCarMarkers() {
+    setMapOnCarMarkers(map);
+}
+
+function showServiceMarkers() {
+    setMapOnServiceMarkers(map);
+}
+
+function createDriverInfoWindow(wakeful) {
     var driverAvatar;
     var carImage;
 
@@ -118,7 +134,7 @@ function showWakeful() {
             if (xhr.status == 200) {
                 inServiceCounter = 0;
                 onlineCounter = 0;
-                clearMarkers();
+                clearCarMarkers();
                 var icon = '';
 
                 for (var i=0; i < result.length; i++) {
@@ -135,20 +151,20 @@ function showWakeful() {
                         map: map,
                         icon: icon
                     });
-                    markers.push(carMarker);
+                    carMarkers.push(carMarker);
 
                     (function(marker, wakeful) {
                         marker.addListener('click', function() {
-                            createInfoWindow(wakeful);
+                            createDriverInfoWindow(wakeful);
                         });
                     })(carMarker, result[i])
                 }
 
-                if (markerCluster !== undefined) {
-                    markerCluster.clearMarkers();
+                if (carMarkerCluster !== undefined) {
+                    carMarkerCluster.clearMarkers();
                 }
 
-                markerCluster = new MarkerClusterer(map, markers,
+                carMarkerCluster = new MarkerClusterer(map, carMarkers,
                     {imagePath: '/bundles/funproadmin/map/markerclusterer/images/m'});
 
                 $('.inServiceCounter').attr('data-value', inServiceCounter);
@@ -166,20 +182,31 @@ function showService() {
         return;
     }
 
+    var from = new Date();
+    from.setMinutes(from.getMinutes() - 30);
+    moment(from).format('YYYY-MM-DD HH:mm:ss');
+
+    var url = Routing.generate('fun_pro_service_api_cget_service', {
+        'latitude': map.getCenter().lat(),
+        'longitude': map.getCenter().lng(),
+        limit: 5000,
+        from: from,
+        order: 'createdAt'
+    });
+
     $.ajax({
-        url: Routing.generate('fun_pro_service_api_cget_service', {'latitude': map.getCenter().lat(), 'longitude': map.getCenter().lng(), limit: 5000}),
+        url: url,
         type: 'GET',
         beforeSend: function(xhr){xhr.setRequestHeader('Accept', 'application/json');},
-
         success: function(result, status, xhr) {
+            console.log(result);
             if (xhr.status == 200) {
-                inServiceCounter = 0;
-                onlineCounter = 0;
-                clearMarkers();
+
+                clearServiceMarkers();
                 var icon = '';
 
-                for (var i=0; i < result.length; i++) {
-                    onlineCounter++;
+                console.log(result);
+                for (var i=0; i < result.data.length; i++) {
                     if (result[i].car.status == 1 || result[i].car.status == 7) {
                         icon = map.getZoom() <= 13 ? blueMarkerSmall : blueMarker;
                     } else {
@@ -201,18 +228,18 @@ function showService() {
                     })(carMarker, result[i])
                 }
 
-                if (markerCluster !== undefined) {
-                    markerCluster.clearMarkers();
-                }
-
-                markerCluster = new MarkerClusterer(map, markers,
-                    {imagePath: '/bundles/funproadmin/map/markerclusterer/images/m'});
-
-                $('.inServiceCounter').attr('data-value', inServiceCounter);
-                $('.inServiceCounter').counterUp();
-
-                $('.onlineCounter').attr('data-value', onlineCounter);
-                $('.onlineCounter').counterUp();
+                // if (carMarkerCluster !== undefined) {
+                //     carMarkerCluster.clearMarkers();
+                // }
+                //
+                // carMarkerCluster = new MarkerClusterer(map, markers,
+                //     {imagePath: '/bundles/funproadmin/map/markerclusterer/images/m'});
+                //
+                // $('.inServiceCounter').attr('data-value', inServiceCounter);
+                // $('.inServiceCounter').counterUp();
+                //
+                // $('.onlineCounter').attr('data-value', onlineCounter);
+                // $('.onlineCounter').counterUp();
             }
         }
     });
