@@ -114,7 +114,11 @@ jQuery(document).ready(function() {
 
                 },
                 error: function (xhr) {
-                    toastr.error('راننده وجود ندارد');
+                    if (xhr.status == 404) {
+                        toastr.error('راننده وجود ندارد');
+                    } else if (xhr.status == 401) {
+                        document.location.href = Routing.generate('fun_pro_admin_login');
+                    }
                 }
             });
         });
@@ -130,8 +134,13 @@ jQuery(document).ready(function() {
                 success: function (result) {
                     toastr.success('رمز جدید تنظیم شد');
                 },
-                error: function (xhr) {
-                    toastr.error('راننده وجود ندارد');
+                statusCode: {
+                    401: function () {
+                        document.location.href = Routing.generate('fun_pro_admin_login');
+                    },
+                    404: function () {
+                        toastr.error('راننده وجود ندارد');
+                    }
                 }
             });
         });
@@ -171,8 +180,10 @@ jQuery(document).ready(function() {
                 error: function (xhr) {
                     if (xhr.status == 400) {
                         toastr.error('اعتبار صفر است');
-                    } else {
+                    } else if (xhr.status == 404) {
                         toastr.error('راننده وجود ندارد');
+                    } else if (xhr.status == 400) {
+                        document.location.href = Routing.generate('fun_pro_admin_login');
                     }
                 }
             });
