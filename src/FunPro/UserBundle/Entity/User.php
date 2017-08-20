@@ -64,7 +64,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  *
  * ### Username s are nullable, because prevent spam passenger username ###
  *
- * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  *
  * @Vich\Uploadable()
  */

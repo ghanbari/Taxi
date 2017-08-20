@@ -18,7 +18,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * @ORM\Entity(repositoryClass="FunPro\DriverBundle\Repository\CarRepository")
  * @ORM\EntityListeners({"CarListener"})
  *
- * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  *
  * @Vich\Uploadable()
  */

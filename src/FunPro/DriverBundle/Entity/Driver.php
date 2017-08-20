@@ -23,7 +23,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @UniqueEntity("contractNumber", groups={"Register", "Update"})
  * @UniqueEntity("nationalCode", groups={"Register", "Update"})
  *
- * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=true)
  */
 class Driver extends User implements SMSInterface
 {
@@ -524,7 +524,7 @@ class Driver extends User implements SMSInterface
      */
     public function getEndActivity()
     {
-        return $this->endActivity;
+        return $this->getDeletedAt();
     }
 
     /**
@@ -534,7 +534,7 @@ class Driver extends User implements SMSInterface
      */
     public function setEndActivity(\DateTime $endActivity)
     {
-        $this->endActivity = $endActivity;
+        $this->setDeletedAt($endActivity);
         return $this;
     }
 

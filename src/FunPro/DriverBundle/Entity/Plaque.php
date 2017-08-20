@@ -9,8 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Plaque
  *
- * @ORM\Table(name="plaque", uniqueConstraints={@ORM\UniqueConstraint(name="plaque_UNIQUE", columns={"first_number",
- *                           "second_number", "city_number", "area_code"})})
+ * @ORM\Table(name="plaque")
  * @ORM\Entity(repositoryClass="FunPro\DriverBundle\Repository\PlaqueRepository")
  */
 class Plaque

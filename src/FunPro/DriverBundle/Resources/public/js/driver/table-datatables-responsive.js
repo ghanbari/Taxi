@@ -4,6 +4,12 @@ var TableDatatablesResponsive = function () {
         var table = $('#sample_2');
 
         var oTable = table.dataTable({
+            "fnRowCallback": function( row, data, iDisplayIndex, iDisplayIndexFull ) {
+                    if (data.deletedAt !== null && moment(data.deletedAt) < new Date()) {
+                    $(row).css('backgroundColor', 'rgba(255, 0, 0, 0.2)');
+                    $(row).find('.delete i').addClass('disabled');
+                }
+            },
             "processing": true,
             "serverSide": true,
             "ajax": "",
@@ -111,11 +117,13 @@ jQuery(document).ready(function() {
                 url: Routing.generate('fun_pro_admin_delete_driver', {id: $(this).parent().find('.driverId').text()}),
                 success: function (result) {
                     $(that).parent().slideUp();
-
+                    toastr.success('راننده با موفقیت حذف شد');
                 },
                 error: function (xhr) {
                     if (xhr.status == 404) {
-                        toastr.error('راننده وجود ندارد');
+                        toastr.error('تاریخ اتمام سرویس دهی راننده گذشته است');
+                    } else if (xhr.status == 400) {
+                        toastr.error('راننده در حال سرویس می باشد');
                     } else if (xhr.status == 401) {
                         document.location.href = Routing.generate('fun_pro_admin_login');
                     }
@@ -139,7 +147,7 @@ jQuery(document).ready(function() {
                         document.location.href = Routing.generate('fun_pro_admin_login');
                     },
                     404: function () {
-                        toastr.error('راننده وجود ندارد');
+                        toastr.error('تاریخ اتمام سرویس دهی راننده گذشته است');
                     }
                 }
             });
@@ -181,7 +189,7 @@ jQuery(document).ready(function() {
                     if (xhr.status == 400) {
                         toastr.error('اعتبار صفر است');
                     } else if (xhr.status == 404) {
-                        toastr.error('راننده وجود ندارد');
+                        toastr.error('تاریخ اتمام سرویس دهی راننده گذشته است');
                     } else if (xhr.status == 400) {
                         document.location.href = Routing.generate('fun_pro_admin_login');
                     }

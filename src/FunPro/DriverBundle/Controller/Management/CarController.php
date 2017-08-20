@@ -40,8 +40,8 @@ class CarController extends FOSRestController
             case 'PUT':
                 $options['action'] = $this->generateUrl('fun_pro_admin_put_driver_car', array('id'=>$car->getId()));
                 $options['validation_groups'] = array('Update', 'Point');
-            case 'DELETE':
-                $options['action'] = $this->generateUrl('fun_pro_admin_delete_driver_car', array('id'=>$car->getId()));
+//            case 'DELETE':
+//                $options['action'] = $this->generateUrl('fun_pro_admin_delete_driver_car', array('id'=>$car->getId()));
         }
 
         $form = $this->createForm(CarType::class, $car, $options);
@@ -50,7 +50,6 @@ class CarController extends FOSRestController
     }
 
     /**
-     * @ParamConverter("driver", class="FunProDriverBundle:Driver", options={"id"="driverId"})
      * @Security("has_role('ROLE_OPERATOR')")
      *
      * @Rest\View("FunProDriverBundle:Management/Car:new.html.twig")
@@ -60,7 +59,10 @@ class CarController extends FOSRestController
      */
     public function newAction(Request $request, $driverId)
     {
-        $driver = $request->attributes->get('driver');
+        $em = $this->getDoctrine()->getManager();
+        $em->getFilters()->disable('softdeleteable');
+
+        $driver = $em->find('FunProDriverBundle:Driver', $driverId);
         $car = new Car();
         $car->setDriver($driver);
         $form = $this->getForm($car, 'POST');
@@ -68,7 +70,6 @@ class CarController extends FOSRestController
     }
 
     /**
-     * @ParamConverter("driver", class="FunProDriverBundle:Driver", options={"id"="driverId"})
      * @Security("has_role('ROLE_OPERATOR')")
      *
      * @Rest\View("FunProDriverBundle:Management/Car:new.html.twig")
@@ -78,8 +79,10 @@ class CarController extends FOSRestController
      */
     public function postAction(Request $request, $driverId)
     {
-        $driverId = intval($driverId);
-        $driver = $request->attributes->get('driver');
+        $em = $this->getDoctrine()->getManager();
+        $em->getFilters()->disable('softdeleteable');
+
+        $driver = $em->find('FunProDriverBundle:Driver', $driverId);
         $car = new Car();
         $car->setDriver($driver);
         $form = $this->getForm($car, 'POST');
@@ -97,7 +100,6 @@ class CarController extends FOSRestController
     }
 
     /**
-     * @ParamConverter("car", class="FunProDriverBundle:Car")
      * @Security("has_role('ROLE_OPERATOR')")
      *
      * @Rest\Get("/driver/car/{id}/edit", requirements={"id"="\d+"})
@@ -109,14 +111,16 @@ class CarController extends FOSRestController
      */
     public function editAction(Request $request, $id)
     {
-        $car = $request->attributes->get('car');
+        $em = $this->getDoctrine()->getManager();
+        $em->getFilters()->disable('softdeleteable');
+
+        $car = $em->find('FunProDriverBundle:Car', $id);
         $form = $this->getForm($car, 'PUT');
 
         return $form;
     }
 
     /**
-     * @ParamConverter("car", class="FunProDriverBundle:Car")
      * @Security("has_role('ROLE_OPERATOR')")
      *
      * @Rest\Put("/driver/car/{id}", requirements={"id"="\d+"})
@@ -128,7 +132,10 @@ class CarController extends FOSRestController
      */
     public function putAction(Request $request, $id)
     {
-        $car = $request->attributes->get('car');
+        $em = $this->getDoctrine()->getManager();
+        $em->getFilters()->disable('softdeleteable');
+
+        $car = $em->find('FunProDriverBundle:Car', $id);
         $form = $this->getForm($car, 'PUT');
         $form->handleRequest($request);
 
@@ -146,20 +153,39 @@ class CarController extends FOSRestController
         return $this->view($form, Response::HTTP_BAD_REQUEST);
     }
 
-    /**
-     * @Rest\Delete("/driver/car/{id}", requirements={"id"="\d+"})
-     *
-     * @param $driverId
-     * @param $id
-     */
-    public function deleteAction($driverId, $id)
-    {
+//    /**
+//     * Delete driver
+//     *
+//     * @Security("has_role('ROLE_ADMIN')")
+//     *
+//     * @Rest\Delete("/driver/car/{id}", requirements={"id"="\d+"})
+//     *
+//     * @param $driverId
+//     * @param $id
+//     * @return \FOS\RestBundle\View\View
+//     */
+//    public function deleteAction($driverId, $id)
+//    {
+//        $em = $this->getDoctrine()->getManager();
+//        $em->getFilters()->disable('softdeleteable');
+//        $car = $em->find('FunProDriverBundle:Car', $id);
+//
+//        if ($car->getStatus() !== Car::STATUS_SLEEP or $car->getStatus() !== Car::STATUS_WAKEFUL) {
+//            return $this->view(null, Response::HTTP_BAD_REQUEST);
+//        }
+//
+//        if ($wakeful = $car->getWakeful()) {
+//            $em->remove($wakeful);
+//        }
+//
+//        $car->setDeletedAt(new \DateTime());
+//        $car->setDeletedBy($this->getUser());
+//        $em->flush();
+//
+//        return $this->view(null, Response::HTTP_NO_CONTENT);
+//    }
 
-    }
-
     /**
-     * @ParamConverter("driver", class="FunProDriverBundle:Driver", options={"id"="driverId"})
-     *
      * @Rest\QueryParam(name="start", requirements="\d+", default="0", nullable=true)
      * @Rest\QueryParam(name="length", requirements="\d+", default="10", nullable=true)
      * @Rest\View("FunProDriverBundle:Management/Car:cget.html.twig")
@@ -169,6 +195,9 @@ class CarController extends FOSRestController
      */
     public function cgetAction(Request $request, $driverId)
     {
+        $em = $this->getDoctrine()->getManager();
+        $em->getFilters()->disable('softdeleteable');
+        
         $max = $this->getParameter('ui.data_table.max_per_page');
         $offset = $this->get('fos_rest.request.param_fetcher')->get('start', 0);
         $length = $this->get('fos_rest.request.param_fetcher')->get('length', 10);
@@ -176,7 +205,7 @@ class CarController extends FOSRestController
         $offset = max($offset, 0);
         $length = min($length, $max);
 
-        $driver = $request->attributes->get('driver');
+        $driver = $em->find('FunProDriverBundle:Driver', $driverId);
         $qb = $this->getDoctrine()->getRepository('FunProDriverBundle:Car')->getAllFilterByDriverQueryBuilder($driver);
 
         DataTable::orderBy($qb, $request);

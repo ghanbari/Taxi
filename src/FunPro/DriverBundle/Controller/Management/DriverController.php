@@ -10,6 +10,8 @@ use FunPro\DriverBundle\Entity\Driver;
 use FunPro\DriverBundle\Form\DriverType;
 use FunPro\EngineBundle\Utility\DataTable;
 use FunPro\FinancialBundle\Entity\Transaction;
+use FunPro\ServiceBundle\Entity\Service;
+use FunPro\ServiceBundle\Entity\ServiceLog;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
@@ -129,8 +131,6 @@ class DriverController extends FOSRestController
      *
      * @Security("has_role('ROLE_OPERATOR')")
      *
-     * @ParamConverter("driver", class="FunProDriverBundle:Driver")
-     *
      * @Rest\View("FunProDriverBundle:Management/Driver:new.html.twig")
      *
      * @param Request $request
@@ -139,8 +139,10 @@ class DriverController extends FOSRestController
      */
     public function editAction(Request $request, $id)
     {
-        $id = intval($id);
-        $driver = $request->attributes->get('driver');
+        $em = $this->getDoctrine()->getManager();
+        $em->getFilters()->disable('softdeleteable');
+
+        $driver = $em->find('FunProDriverBundle:Driver', $id);
         $form = $this->getForm($driver, 'PUT');
         return $form;
     }
@@ -150,8 +152,6 @@ class DriverController extends FOSRestController
      *
      * @Security("has_role('ROLE_OPERATOR')")
      *
-     * @ParamConverter("driver", class="FunProDriverBundle:Driver")
-     *
      * @Rest\View("FunProDriverBundle:Management/Driver:new.html.twig")
      *
      * @param Request $request
@@ -160,7 +160,11 @@ class DriverController extends FOSRestController
      */
     public function putAction(Request $request, $id)
     {
-        $driver = $request->attributes->get('driver');
+        $em = $this->getDoctrine()->getManager();
+        $em->getFilters()->disable('softdeleteable');
+
+        $driver = $em->find('FunProDriverBundle:Driver', $id);
+        
         $form = $this->getForm($driver, 'PUT');
         $form->handleRequest($request);
 
@@ -177,28 +181,34 @@ class DriverController extends FOSRestController
      * Delete driver
      *
      * @Security("has_role('ROLE_ADMIN')")
-     * @ParamConverter(name="driver", class="FunProDriverBundle:Driver")
      *
      * @param $id
      * @return \FOS\RestBundle\View\View
      */
     public function deleteAction(Request $request, $id)
     {
-        /** @var Driver $driver */
-        $driver = $request->attributes->get('driver');
-        $driver->setDeletedBy($this->getUser());
-        $manager = $this->getDoctrine()->getManager();
+        $em = $this->getDoctrine()->getManager();
+        $em->getFilters()->disable('softdeleteable');
+        $driver = $em->find('FunProDriverBundle:Driver', $id);
 
-        #FIXME: sleep all cars in wakeful table
-        #FIXME: this job must doing by trigger or doctrine events
-        /** @var Car $car */
-        foreach ($driver->getCars() as $car) {
-            $manager->remove($car->getWakeful());
-            $manager->remove($car);
+        /** @var Service $service */
+        $service = $em->getRepository('FunProServiceBundle:Service')->getLastServiceOfDriver($driver);
+        if ($service and ($service->getStatus() !== ServiceLog::STATUS_FINISH or $service->getStatus() !== ServiceLog::STATUS_PAYED)) {
+            return $this->view(null, Response::HTTP_BAD_REQUEST);
         }
 
-        $manager->remove($driver);
-        $manager->flush();
+        /** @var Car $car */
+        foreach ($driver->getCars() as $car) {
+            if ($wakeful = $car->getWakeful()) {
+                $em->remove($wakeful);
+            }
+            $car->setDeletedAt(new \DateTime());
+            $car->setDeletedBy($this->getUser());
+        }
+
+        $driver->setDeletedBy($this->getUser());
+        $driver->setDeletedAt(new \DateTime());
+        $em->flush();
 
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
@@ -240,6 +250,8 @@ class DriverController extends FOSRestController
      */
     public function cgetAction(Request $request)
     {
+        $em = $this->getDoctrine()->getManager();
+        $em->getFilters()->disable('softdeleteable');
         $max = $this->getParameter('ui.data_table.max_per_page');
         $offset = $this->get('fos_rest.request.param_fetcher')->get('start');
         $length = $this->get('fos_rest.request.param_fetcher')->get('length');

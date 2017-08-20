@@ -76,7 +76,6 @@ var TableDatatablesResponsive = function () {
                 {name: "c.current", data: "current", orderable: true, searchable: false, className: "isCurrent"},
                 {name: "c.status", data: "status", orderable: true, searchable: false},
                 {name: "edit", "defaultContent": "<i class='btn btn-warning'>ویرایش</i>", orderable: false, searchable: false, className: "edit text-center"},
-                {name: "delete", "defaultContent": "<i class='btn btn-danger'>حذف</i>", orderable: false, searchable: false, className: "delete text-center"},
             ],
 
             order: [ 0, 'desc' ],
@@ -125,9 +124,9 @@ jQuery(document).ready(function() {
 
         $('.isCurrent').each(function(index, item) {
             if ($(item).text() == 'true') {
-                $(item).html('<button class="btn btn-info glyphicon glyphicon-ok changeStatus"></button>')
+                $(item).html('<button class="btn btn-sm btn-success disabled glyphicon glyphicon-ok changeStatus"></button>')
             } else if ($(item).text() == 'false') {
-                $(item).html('<button class="btn btn-info glyphicon glyphicon-remove changeStatus"></button>')
+                $(item).html('<button class="btn btn-sm btn-warning disabled glyphicon glyphicon-remove changeStatus"></button>')
             }
         });
 
@@ -135,7 +134,6 @@ jQuery(document).ready(function() {
             if (isNaN(parseInt($(item).text()))) {
                 return;
             }
-
             var timestamp = $(item).text();
             var date = persianDate.unix(timestamp);
             $(item).text(date.pDate.year + '/' + date.pDate.month + '/' + date.pDate.day);
