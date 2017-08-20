@@ -26,6 +26,9 @@ class DiscountCode
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @JS\Since("1.0.0")
+     * @JS\Groups({"Admin", "Passenger"})
      */
     private $id;
 
@@ -44,10 +47,10 @@ class DiscountCode
     /**
      * @var string
      *
-     * @ORM\Column(name="code", length=10, unique=true)
+     * @ORM\Column(name="code", length=50, unique=true)
      *
      * @Assert\NotBlank(groups={"Create", "Update"})
-     * @Assert\Length(min="0", max="10", groups={"Create", "Update"})
+     * @Assert\Length(min="3", max="50", groups={"Create", "Update"})
      *
      * @JS\Since("1.0.0")
      * @JS\Groups({"Admin", "Passenger"})

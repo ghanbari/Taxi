@@ -24,9 +24,7 @@ class DiscountCodeType extends AbstractType
             ->add('title', Type\TextType::class, array(
                 'required' => true,
             ))
-            ->add('code', Type\TextType::class, array(
-                'pattern' => '[A-Z0-9a-z]{0,10}',
-            ))
+            ->add('code')
             ->add('discount', Type\NumberType::class)
             ->add('maxUsage', Type\NumberType::class)
             ->add('maxUsagePerUser', Type\NumberType::class)

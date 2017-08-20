@@ -1,33 +1,15 @@
-var addPlaque = function (td, cellData, rowData, row, col) {
-    var html = '<span class="label label-info">ایران'
-        + '<span style="vertical-align: bottom">'+cellData.cityNumber+'</span></span>&nbsp;<span style="font-size: medium" class="label label-info">' +
-        cellData.firstNumber + cellData.areaCode + cellData.secondNumber + '</span>';
+var pickLocation = function (td, cellData, rowData, row, col) {
+    var html = '<a href="https://www.google.com/maps/place/@'+ cellData.latitude +','+ cellData.longitude +',12z">نمایش مکان</a>';
     $(td).html(html);
 };
 
-var showType = function (td, cellData, rowData, row, col) {
-    var types = {
-        '1': 'پراید',
-        '2': '405',
-        '3': '206',
-        '4': '207',
-        '5': 'سمند',
-        '6': 'پرشیا',
-        '7': 'زانتیا',
-        '8': 'مگان',
-        '9': 'جک'
-    };
-    if (types.hasOwnProperty(cellData)) {
-        $(td).text(types[cellData]);
-    }
-};
-
+var oTable;
 var TableDatatablesResponsive = function () {
 
     var initTable = function () {
         var table = $('#sample_2');
 
-        var oTable = table.dataTable({
+        oTable = table.DataTable({
             "processing": true,
             "serverSide": true,
             "ajax": "",
@@ -54,9 +36,9 @@ var TableDatatablesResponsive = function () {
 
             // setup buttons extentension: http://datatables.net/extensions/buttons/
             buttons: [
-                { extend: 'print', className: 'btn dark btn-outline' },
-                { extend: 'pdf', className: 'btn green btn-outline' },
-                { extend: 'csv', className: 'btn purple btn-outline ' }
+                {extend: 'print', className: 'btn dark btn-outline'},
+                {extend: 'pdf', className: 'btn green btn-outline'},
+                {extend: 'csv', className: 'btn purple btn-outline '}
             ],
 
             // setup responsive extension: http://datatables.net/extensions/responsive/
@@ -67,18 +49,19 @@ var TableDatatablesResponsive = function () {
                 }
             },
             columns: [
-                {"defaultContent": "", name: "c.id", data: "id", orderable: true, searchable: false, className: "carId"},
-                {name: "c.plaque", data: "plaque", orderable: false, searchable: false, className: "plaque", "createdCell": addPlaque},
-                {name: "c.type", data: "type", orderable: true, searchable: true, "createdCell": showType},
-                {name: "c.thirdPartyInsurance", data: "thirdPartyInsurance", orderable: true, searchable: false, className: "timestamp"},
-                {name: "c.pullInsurance", data: "pullInsurance", orderable: true, searchable: false, className: "timestamp"},
-                {name: "c.technicalDiagnosis", data: "technicalDiagnosis", orderable: true, searchable: false, className: "timestamp"},
-                {name: "c.current", data: "current", orderable: true, searchable: false, className: "isCurrent"},
-                {name: "c.status", data: "status", orderable: true, searchable: false},
+                {name: "d.id", data: "id", "defaultContent": "", orderable: true, searchable: false, className: 'id'},
+                {name: "d.title", data: "title", "defaultContent": "", orderable: true, searchable: true},
+                {name: "d.code", data: "code", orderable: true, searchable: true},
+                {name: "d.discount", data: "discount", "defaultContent": "", orderable: true, searchable: false},
+                {name: "d.maxUsage", data: "maxUsage", "defaultContent": "", orderable: true, searchable: false},
+                {name: "d.maxUsagePerUser", data: "maxUsagePerUser", "defaultContent": "", orderable: true, searchable: false},
+                {name: "d.expiredAt", data: "expiredAt", "defaultContent": "", orderable: true, searchable: true, className: "timestamp"},
+                {name: "d.originLocation", data: "originLocation", "defaultContent": "", orderable: false, searchable: false, className: "location", "createdCell": pickLocation},
+                {name: "d.locationRadius", data: "locationRadius", "defaultContent": "", orderable: false, searchable: false},
                 {name: "edit", "defaultContent": "<i class='btn btn-warning'>ویرایش</i>", orderable: false, searchable: false, className: "edit text-center"},
             ],
 
-            order: [ 0, 'desc' ],
+            order: [0, 'desc'],
 
             // pagination control
             "lengthMenu": [
@@ -96,7 +79,7 @@ var TableDatatablesResponsive = function () {
             // So when dropdowns used the scrollable div should be removed.
             //"dom": "<'row' <'col-md-12'T>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r>t<'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>",
         });
-    }
+    };
 
     return {
 
@@ -117,24 +100,18 @@ var TableDatatablesResponsive = function () {
 jQuery(document).ready(function() {
     TableDatatablesResponsive.init();
 
+
     $('#sample_2').on( 'draw.dt', function () {
         $('.edit').on('click', function() {
-            document.location.href = Routing.generate('fun_pro_admin_edit_driver_car', {id: $(this).parent().find('.carId').text()})
-        });
-
-        $('.isCurrent').each(function(index, item) {
-            if ($(item).text() == 'true') {
-                $(item).html('<button class="btn btn-sm btn-success disabled glyphicon glyphicon-ok changeStatus"></button>')
-            } else if ($(item).text() == 'false') {
-                $(item).html('<button class="btn btn-sm btn-warning disabled glyphicon glyphicon-remove changeStatus"></button>')
-            }
+            document.location.href = Routing.generate('fun_pro_admin_edit_discount', {id: $(this).parent().find('.id').text()})
         });
 
         $('.timestamp').each(function(index, item) {
-            if (isNaN(parseInt($(item).text()))) {
+            var text = $(item).text();
+            if (isNaN(parseInt(text))) {
                 return;
             }
-            var timestamp = $(item).text();
+            var timestamp = moment(text).unix();
             var date = persianDate.unix(timestamp);
             $(item).text(date.pDate.year + '/' + date.pDate.month + '/' + date.pDate.date);
         });

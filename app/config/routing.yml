@@ -1,3 +1,11 @@
+fun_pro_admin_res:
+    resource: "@FunProAdminBundle/Resources/config/routing.yml"
+    prefix:   /
+    host:     "%admin.panel.host%"
+    options:
+        expose: true
+    type:     rest
+
 fun_pro_ticket:
     resource: "@FunProTicketBundle/Resources/config/routing.yml"
     type:     rest
@@ -9,14 +17,6 @@ fun_pro_financial:
     type:     rest
     options:
         expose: true
-
-fun_pro_admin_res:
-    resource: "@FunProAdminBundle/Resources/config/routing.yml"
-    prefix:   /
-    host:     "%admin.panel.host%"
-    options:
-        expose: true
-    type:     rest
 
 fun_pro_service:
     resource: "@FunProServiceBundle/Resources/config/routing.yml"
