@@ -314,6 +314,7 @@ class ServiceRepository extends EntityRepository
      * @param Driver $driver
      * @param \DateTime $from
      * @param \DateTime $till
+     * @return mixed
      */
     public function getDriverMileage(Driver $driver, \DateTime $from, \DateTime $till)
     {
@@ -345,7 +346,7 @@ class ServiceRepository extends EntityRepository
         Point $location,
         $radius,
         \DateTime $from = null,
-        \Datetime $till = null,
+        \DateTime $till = null,
         $limit = 10,
         $offset = 0
     ) {

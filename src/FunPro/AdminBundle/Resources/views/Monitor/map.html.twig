@@ -41,11 +41,22 @@
 
 {% block javascriptsPageScripts %}
     <script>
+        var iconMarker = {
+            freeCarSmall: '{{ asset('bundles/funproadmin/images/blue_circle.png') }}',
+            freeCar: '{{ asset('bundles/funproadmin/images/blue_circle_small.png') }}',
+            busyCarSmall: '{{ asset('bundles/funproadmin/images/purple_circle.png') }}',
+            busyCar: '{{ asset('bundles/funproadmin/images/purple_circle_small.png') }}',
+            newServiceSmall: 'http://labs.google.com/ridefinder/images/mm_20_red.png',
+            newService: 'http://labs.google.com/ridefinder/images/mm_20_red.png',
+            acceptedServiceSmall: 'http://labs.google.com/ridefinder/images/mm_20_purple.png',
+            acceptedService: 'http://labs.google.com/ridefinder/images/mm_20_purple.png',
+            startedServiceSmall: 'http://labs.google.com/ridefinder/images/mm_20_orange.png',
+            startedService: 'http://labs.google.com/ridefinder/images/mm_20_orange.png',
+            finishedServiceSmall: 'http://labs.google.com/ridefinder/images/mm_20_green.png',
+            finishedService: 'http://labs.google.com/ridefinder/images/mm_20_green.png'
+        };
+
         var map, supportedArea;
-        var blueMarker = '{{ asset('bundles/funproadmin/images/blue_circle.png') }}';
-        var blueMarkerSmall = '{{ asset('bundles/funproadmin/images/blue_circle_small.png') }}';
-        var purpleMarker = '{{ asset('bundles/funproadmin/images/purple_circle.png') }}';
-        var purpleMarkerSmall = '{{ asset('bundles/funproadmin/images/purple_circle_small.png') }}';
     </script>
     <script src="{{ asset('assets/pages/scripts/ui-modals.min.js') }}"></script>
     <script src="{{ asset('assets/pages/scripts/ui-buttons.min.js') }}"></script>
@@ -218,6 +229,170 @@
                             </div>
                         </div>
                         <div class="col-md-6" style="padding-right: 7px">
+                            <div class="portlet light profile-sidebar-portlet " style="margin-bottom: 0px">
+                                <!-- SIDEBAR USERPIC -->
+                                <div class="profile-userpic">
+                                    <img id="carImage" style="height: 139px" src="{{ asset('bundles/funproadmin/images/default_car.jpg') }}" class="img-responsive" alt=""> </div>
+                                <!-- END SIDEBAR USERPIC -->
+                                <!-- SIDEBAR USER TITLE -->
+                                <div class="profile-usertitle">
+                                    <div id="carName" class="profile-usertitle-name">نام</div>
+                                    <div id="carStatus" class="profile-usertitle-job">وضعیت</div>
+                                </div>
+                                <!-- END SIDEBAR USER TITLE -->
+                                <!-- SIDEBAR BUTTONS -->
+                                <div class="profile-userbuttons">
+                                    <button id="carReports" type="button" class="btn btn-circle green btn-sm">گزارشات</button>
+                                    <button type="carProfile" class="btn btn-circle red btn-sm">مشاهده پروفایل</button>
+                                </div>
+                                <!-- END SIDEBAR BUTTONS -->
+                                <!-- SIDEBAR MENU -->
+                                <div class="profile-usermenu">
+                                    <ul class="nav">
+                                        <li class="profile-desc-text">
+                                            <a><i class="fa fa-car" style="color: #d1cb0f"></i>رنگ :
+                                                <i id="carColor"></i> </a>
+                                        </li>
+                                        <li class="profile-desc-text">
+                                            <a><i class="fa fa-star" style="color: #26a1ab"></i>امتیاز:
+                                                <i id="carRate"></i> </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <!-- END MENU -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" id="service" tabindex="-1" role="service" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6" style="padding-right: 7px">
+                            <div class="portlet light profile-sidebar-portlet " style="margin-bottom: 0px">
+                                <!-- SIDEBAR USERPIC -->
+                                <div class="profile-userpic">
+                                    <img id="passengerAvatar" style="height: 139px" src="{{ asset('bundles/funproadmin/images/default_avatar.jpg') }}" class="img-responsive" alt=""> </div>
+                                <!-- END SIDEBAR USERPIC -->
+                                <!-- SIDEBAR USER TITLE -->
+                                <div class="profile-usertitle">
+                                    <div class="profile-usertitle-name" id="passengerName">نام</div>
+                                    <div class="profile-usertitle-job" id="passengerAge">سن</div>
+                                </div>
+                                <!-- END SIDEBAR USER TITLE -->
+                                <!-- SIDEBAR BUTTONS -->
+                                <div class="profile-userbuttons">
+                                    <button id="messageToPassenger" type="button" class="btn btn-circle green btn-sm">پیام</button>
+                                    <a target="_blank" id="passengerProfile" type="button" class="btn btn-circle red btn-sm">پروفایل</a>
+                                </div>
+                                <!-- END SIDEBAR BUTTONS -->
+                                <!-- SIDEBAR MENU -->
+                                <div class="profile-usermenu">
+                                    <ul class="nav">
+                                        <li class="profile-desc-text">
+                                            <a><i class="fa fa-mobile" style="color: #26a1ab"></i>موبایل:
+                                                <i id="passengerMobileNumber"></i> </a>
+                                        </li>
+                                        <li class="profile-desc-text">
+                                            <a><i class="icon-user" style="color: #26a1ab"></i>فعال؟
+                                                <i id="passengerStatus"></i> </a>
+                                        </li>
+                                        <li class="profile-desc-text">
+                                            <a><i class="fa fa-star" style="color: #26a1ab"></i>امتیاز:
+                                                <i id="passengerRate"></i> </a>
+                                        </li>
+                                        <li class="profile-desc-text">
+                                            <a><i class="fa fa-lock" style="color: #26a1ab"></i>قفل شده؟
+                                                <i id="passengerLock"></i> </a>
+                                        </li>
+                                        <li class="profile-desc-text">
+                                            <a><i class="fa fa-map-marker" style="color: #26a1ab"></i>مبدا
+                                                <i id="serviceStartAddress"></i> </a>
+                                        </li>
+                                        <li class="profile-desc-text">
+                                            <a><i class="fa fa-map-marker" style="color: #26a1ab"></i>مقصد
+                                                <i id="serviceEndAddress"></i> </a>
+                                        </li>
+                                        <li class="profile-desc-text">
+                                            <a><i class="fa fa-taxi" style="color: #26a1ab"></i>وضعیت
+                                                <i id="serviceStatus"></i> </a>
+                                        </li>
+                                        <li class="profile-desc-text">
+                                            <a><i class="fa fa-arrows-h" style="color: #26a1ab"></i>فاصله
+                                                <i id="serviceDistance"></i> </a>
+                                        </li>
+                                        <li class="profile-desc-text">
+                                            <a><i class="fa fa-dollar" style="color: #26a1ab"></i>قیمت
+                                                <i id="servicePrice"></i> </a>
+                                        </li>
+                                        <li class="profile-desc-text">
+                                            <a><i class="fa fa-clock-o" style="color: #26a1ab"></i>تاریخ
+                                                <i id="serviceDate"></i> </a>
+                                        </li>
+                                        <li class="profile-desc-text">
+                                            <a><i class="fa fa-dollar" style="color: #26a1ab"></i>قیمت نهایی
+                                                <i id="serviceDiscountedPrice"></i> </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <!-- END MENU -->
+                            </div>
+                        </div>
+                        <div class="col-md-6" style="padding-right: 7px">
+                            <div class="portlet light profile-sidebar-portlet " style="margin-bottom: 0px">
+                                <!-- SIDEBAR USERPIC -->
+                                <div class="profile-userpic">
+                                    <img id="serviceDriverAvatar" style="height: 139px" src="{{ asset('bundles/funproadmin/images/default_avatar.jpg') }}" class="img-responsive" alt=""> </div>
+                                <!-- END SIDEBAR USERPIC -->
+                                <!-- SIDEBAR USER TITLE -->
+                                <div class="profile-usertitle">
+                                    <div class="profile-usertitle-name" id="serviceDriverName">نام</div>
+                                    <div class="profile-usertitle-job" id="serviceDriverStatus">وضعیت</div>
+                                </div>
+                                <!-- END SIDEBAR USER TITLE -->
+                                <!-- SIDEBAR BUTTONS -->
+                                <div class="profile-userbuttons">
+                                    <button id="messageToserviceDriver" type="button" class="btn btn-circle green btn-sm">پیام</button>
+                                    <a target="_blank" id="serviceDriverProfile" type="button" class="btn btn-circle red btn-sm">ویرایش</a>
+                                </div>
+                                <!-- END SIDEBAR BUTTONS -->
+                                <!-- SIDEBAR MENU -->
+                                <div class="profile-usermenu">
+                                    <ul class="nav">
+                                        <li class="profile-desc-text">
+                                            <a><i class="fa fa-sticky-note-o" style="color: #26a1ab"></i> شماره قرارداد:
+                                                <i id="serviceDriverContractNumber"></i> </a>
+                                        </li>
+                                        <li class="profile-desc-text">
+                                            <a><i class="fa fa-mobile" style="color: #26a1ab"></i>موبایل:
+                                                <i id="serviceDriverMobileNumber"></i> </a>
+                                        </li>
+                                        <li class="profile-desc-text">
+                                            <a><i class="icon-user" style="color: #26a1ab"></i>کد ملی:
+                                                <i id="serviceDriverNationalCode"></i> </a>
+                                        </li>
+                                        <li class="profile-desc-text">
+                                            <a><i class="fa fa-star" style="color: #26a1ab"></i>امتیاز:
+                                                <i id="serviceDriverRate"></i> </a>
+                                        </li>
+                                        <li class="profile-desc-text">
+                                            <a><i class="fa fa-star" style="color: #26a1ab"></i>ماشین
+                                                <i id="serviceDriverRate"></i> </a>
+                                        </li>
+                                        <li class="profile-desc-text">
+                                            <a><i class="fa fa-star" style="color: #26a1ab"></i>پلاک
+                                                <i id="serviceDriverRate"></i> </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <!-- END MENU -->
+                            </div>
                             <div class="portlet light profile-sidebar-portlet " style="margin-bottom: 0px">
                                 <!-- SIDEBAR USERPIC -->
                                 <div class="profile-userpic">
