@@ -4,6 +4,7 @@ var TableDatatablesResponsive = function () {
         var table = $('#sample_2');
 
         var oTable = table.dataTable({
+            "oSearch": {"sSearch": search},
             "processing": true,
             "serverSide": true,
             "ajax": "",

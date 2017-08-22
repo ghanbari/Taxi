@@ -1,24 +1,41 @@
-var markers = [];
-var markerCluster;
+var carMarkers = [];
+var serviceMarkers = [];
+var carMarkerCluster;
+var serviceMarkerCluster;
 var onlineCounter = 0;
 var inServiceCounter = 0;
 
-function setMapOnAll(map) {
-    for (var i = 0; i < markers.length; i++) {
-        markers[i].setMap(map);
+function setMapOnCarMarkers(map) {
+    for (var i = 0; i < carMarkers.length; i++) {
+        carMarkers[i].setMap(map);
     }
 }
 
-function clearMarkers() {
-    setMapOnAll(null);
-    markers = [];
+function setMapOnServiceMarkers(map) {
+    for (var i = 0; i < serviceMarkers.length; i++) {
+        serviceMarkers[i].setMap(map);
+    }
 }
 
-function showMarkers() {
-    setMapOnAll(map);
+function clearCarMarkers() {
+    setMapOnCarMarkers(null);
+    carMarkers = [];
 }
 
-function createInfoWindow(wakeful) {
+function clearServiceMarkers() {
+    setMapOnServiceMarkers(null);
+    serviceMarkers = [];
+}
+
+function showCarMarkers() {
+    setMapOnCarMarkers(map);
+}
+
+function showServiceMarkers() {
+    setMapOnServiceMarkers(map);
+}
+
+function createDriverInfoWindow(wakeful) {
     var driverAvatar;
     var carImage;
 
@@ -104,8 +121,88 @@ function createInfoWindow(wakeful) {
     $('#driver').modal('toggle');
 }
 
+function createServiceInfoWindow(service) {
+    var driverAvatar;
+    var car = service.car;
+
+    if (car !== null) {
+        if (car.driver.hasOwnProperty('avatar')) {
+            driverAvatar = car.driver.avatar;
+        } else {
+            driverAvatar = 'default_avatar.jpg';
+        }
+
+        driverAvatar = Routing.generate('liip_imagine_filter', {
+            'filter': 'panel_monitoring_avatar_thumb',
+            path: driverAvatar
+        });
+
+        $('#serviceDriverAvatar').attr('src', driverAvatar);
+        $('#serviceDriverProfile').attr('href', Routing.generate('fun_pro_admin_edit_driver', {id: car.driver.id}));
+        $('#serviceDriverName').text(car.driver.name);
+        $('#serviceDriverContractNumber').text(car.driver.contractNumber);
+        $('#serviceDriverMobileNumber').text(car.driver.mobile);
+        $('#serviceDriverNationalCode').text(car.driver.nationalCode);
+        $('#serviceDriverRate').text(car.driver.rate);
+
+        $('#carName').text(car.type);
+        $('#carColor').text(car.color);
+        $('#carRate').text(car.rate);
+
+        switch (car.status) {
+            case 0:
+                $('#carStatus').text('آفلاین');
+                $('#serviceDriverStatus').text('آفلاین');
+                break;
+            case 1:
+                $('#carStatus').text('آنلاین');
+                $('#serviceDriverStatus').text('آنلاین');
+                break;
+            case 2:
+                $('#carStatus').text('تایید سفر');
+                $('#serviceDriverStatus').text('تایید سفر');
+                break;
+            case 3:
+                $('#carStatus').text('سفر به مبدا');
+                $('#serviceDriverStatus').text('سفر به مبدا');
+                break;
+            case 4:
+                $('#carStatus').text('انتظار برای مسافر');
+                $('#serviceDriverStatus').text('انتظار برای مسافر');
+                break;
+            case 5:
+                $('#carStatus').text('شروع سفر');
+                $('#serviceDriverStatus').text('شروع سفر');
+                break;
+            case 6:
+                $('#carStatus').text('در حال سفر');
+                $('#serviceDriverStatus').text('در حال سفر');
+                break;
+            case 7:
+                $('#carStatus').text('پایان سفر');
+                $('#serviceDriverStatus').text('پایان سفر');
+                break;
+            case 8:
+                $('#carStatus').text('تایید سفر دیگر');
+                $('#serviceDriverStatus').text('تایید سفر دیگر');
+                break;
+            case 9:
+                $('#carStatus').text('سفر به مبدا دیگر');
+                $('#serviceDriverStatus').text('سفر به مبدا دیگر');
+                break;
+        }
+    }
+
+    $('#service').modal('toggle');
+}
+
 function showWakeful() {
     if (!$('.autoRefresh label').hasClass('active')) {
+        console.log('clear cars');
+        if (carMarkerCluster !== undefined) {
+            carMarkerCluster.clearMarkers();
+        }
+        clearCarMarkers();
         return;
     }
 
@@ -118,16 +215,16 @@ function showWakeful() {
             if (xhr.status == 200) {
                 inServiceCounter = 0;
                 onlineCounter = 0;
-                clearMarkers();
+                clearCarMarkers();
                 var icon = '';
 
                 for (var i=0; i < result.length; i++) {
                     onlineCounter++;
                     if (result[i].car.status == 1 || result[i].car.status == 7) {
-                        icon = map.getZoom() <= 13 ? blueMarkerSmall : blueMarker;
+                        icon = map.getZoom() <= 13 ? iconMarker.freeCarSmall : iconMarker.freeCar;
                     } else {
                         inServiceCounter ++;
-                        icon = map.getZoom() <= 13 ? purpleMarkerSmall : purpleMarker;
+                        icon = map.getZoom() <= 13 ? iconMarker.busyCarSmall : iconMarker.busyCar;
                     }
 
                     var carMarker = new google.maps.Marker({
@@ -135,20 +232,20 @@ function showWakeful() {
                         map: map,
                         icon: icon
                     });
-                    markers.push(carMarker);
+                    carMarkers.push(carMarker);
 
                     (function(marker, wakeful) {
                         marker.addListener('click', function() {
-                            createInfoWindow(wakeful);
+                            createDriverInfoWindow(wakeful);
                         });
                     })(carMarker, result[i])
                 }
 
-                if (markerCluster !== undefined) {
-                    markerCluster.clearMarkers();
+                if (carMarkerCluster !== undefined) {
+                    carMarkerCluster.clearMarkers();
                 }
 
-                markerCluster = new MarkerClusterer(map, markers,
+                carMarkerCluster = new MarkerClusterer(map, carMarkers,
                     {imagePath: '/bundles/funproadmin/map/markerclusterer/images/m'});
 
                 $('.inServiceCounter').attr('data-value', inServiceCounter);
@@ -163,56 +260,72 @@ function showWakeful() {
 
 function showService() {
     if (!$('.showService label').hasClass('active')) {
+        console.log('clear services');
+        if (serviceMarkerCluster !== undefined) {
+            serviceMarkerCluster.clearMarkers();
+        }
+        clearServiceMarkers();
         return;
     }
 
+    var from = new Date();
+    /** FIXME: change to 180 min */
+    from.setMinutes(from.getMinutes() - 180000);
+    from = moment(from).format('YYYY-MM-DD HH:mm:ss');
+
+    var url = Routing.generate('fun_pro_service_api_cget_service', {
+        'latitude': map.getCenter().lat(),
+        'longitude': map.getCenter().lng(),
+        limit: 5000,
+        from: from,
+        order: 'createdAt'
+    });
+
     $.ajax({
-        url: Routing.generate('fun_pro_service_api_cget_service', {'latitude': map.getCenter().lat(), 'longitude': map.getCenter().lng(), limit: 5000}),
+        url: url,
         type: 'GET',
         beforeSend: function(xhr){xhr.setRequestHeader('Accept', 'application/json');},
-
         success: function(result, status, xhr) {
+            result = result.data;
             if (xhr.status == 200) {
-                inServiceCounter = 0;
-                onlineCounter = 0;
-                clearMarkers();
-                var icon = '';
 
+                clearServiceMarkers();
+                var icon = '';
+                
                 for (var i=0; i < result.length; i++) {
-                    onlineCounter++;
-                    if (result[i].car.status == 1 || result[i].car.status == 7) {
-                        icon = map.getZoom() <= 13 ? blueMarkerSmall : blueMarker;
+                    console.log(result[i].status);
+                    if (result[i].status == -1) {
+                        continue;
+                    } else if (result[i].status == 1) {
+                        icon = map.getZoom() <= 13 ? iconMarker.newServiceSmall : iconMarker.newService;
+                    } else if (result[i].status == 2) {
+                        icon = map.getZoom() <= 13 ? iconMarker.acceptedServiceSmall : iconMarker.acceptedService;
+                    } else if (result[i].status == 3 || result[i].status == 4) {
+                        icon = map.getZoom() <= 13 ? iconMarker.startedServiceSmall : iconMarker.startedService;
                     } else {
-                        inServiceCounter ++;
-                        icon = map.getZoom() <= 13 ? purpleMarkerSmall : purpleMarker;
+                        icon = map.getZoom() <= 13 ? iconMarker.finishedServiceSmall : iconMarker.finishedService;
                     }
 
-                    var carMarker = new google.maps.Marker({
-                        position: {lat: result[i].point.latitude, lng: result[i].point.longitude},
+                    var serviceMarker = new google.maps.Marker({
+                        position: {lat: result[i].startPoint.latitude, lng: result[i].startPoint.longitude},
                         map: map,
                         icon: icon
                     });
-                    markers.push(carMarker);
+                    serviceMarkers.push(serviceMarker);
 
-                    (function(marker, wakeful) {
+                    (function(marker, service) {
                         marker.addListener('click', function() {
-                            createInfoWindow(wakeful);
+                            createServiceInfoWindow(service);
                         });
-                    })(carMarker, result[i])
+                    })(serviceMarker, result[i])
                 }
 
-                if (markerCluster !== undefined) {
-                    markerCluster.clearMarkers();
+                if (serviceMarkerCluster !== undefined) {
+                    serviceMarkerCluster.clearMarkers();
                 }
 
-                markerCluster = new MarkerClusterer(map, markers,
+                serviceMarkerCluster = new MarkerClusterer(map, serviceMarkers,
                     {imagePath: '/bundles/funproadmin/map/markerclusterer/images/m'});
-
-                $('.inServiceCounter').attr('data-value', inServiceCounter);
-                $('.inServiceCounter').counterUp();
-
-                $('.onlineCounter').attr('data-value', onlineCounter);
-                $('.onlineCounter').counterUp();
             }
         }
     });

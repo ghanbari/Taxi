@@ -26,13 +26,6 @@ use FunPro\ServiceBundle\Exception\ServiceStatusException;
 use FunPro\ServiceBundle\Form\ServiceType;
 use FunPro\ServiceBundle\Repository\ServiceRepository;
 use FunPro\ServiceBundle\ServiceEvents;
-use Ivory\GoogleMap\Base\Coordinate;
-use Ivory\GoogleMap\Service\Base\Location\AddressLocation;
-use Ivory\GoogleMap\Service\Base\Location\CoordinateLocation;
-use Ivory\GoogleMap\Service\Base\TransitRoutingPreference;
-use Ivory\GoogleMap\Service\Base\TravelMode;
-use Ivory\GoogleMap\Service\Base\UnitSystem;
-use Ivory\GoogleMap\Service\Direction\Request\DirectionRequest;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -992,10 +985,11 @@ class ServiceController extends FOSRestController
      * @Rest\QueryParam(name="latitude", requirements="\d+\.\d+", strict=true, allowBlank=false, nullable=false)
      * @Rest\QueryParam(name="longitude", requirements="\d+\.\d+", strict=true, allowBlank=false, nullable=false)
      * @Rest\QueryParam(name="radius", requirements="\d+", strict=true, nullable=true, default=20000)
-     * @Rest\QueryParam(name="from", requirements=@Assert\Date(), nullable=true, strict=true)
-     * @Rest\QueryParam(name="till", requirements=@Assert\Date(), nullable=true, strict=true)
+     * @Rest\QueryParam(name="from", requirements=@Assert\DateTime(), nullable=true, strict=true)
+     * @Rest\QueryParam(name="till", requirements=@Assert\DateTime(), nullable=true, strict=true)
      * @Rest\QueryParam(name="limit", nullable=true, default="10", requirements="\d+", strict=true)
      * @Rest\QueryParam(name="offset", nullable=true, default="0", requirements="\d+", strict=true)
+     * @Rest\QueryParam(name="order", nullable=true, requirements="[a-zA-Z]+", strict=true)
      */
     public function cgetAction(Request $request)
     {
@@ -1003,6 +997,7 @@ class ServiceController extends FOSRestController
 
         $limit = $fetcher->get('limit');
         $offset = $fetcher->get('offset');
+        $order = $fetcher->get('order');
 
         $from = $fetcher->get('from') ? new \DateTime($fetcher->get('from')) : null;
         $till = $fetcher->get('till') ? new \DateTime($fetcher->get('till')) : null;
@@ -1017,13 +1012,20 @@ class ServiceController extends FOSRestController
         DataTable::orderBy($queryBuilder, $request);
         DataTable::filterBy($queryBuilder, $request);
 
+        if ($order) {
+            $queryBuilder->orderBy('s.' . $order);
+        }
+
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate($queryBuilder, floor($offset / $limit)+1, $limit);
+
+        $context = new Context();
+        $context->addGroups(array('Public', 'Point', 'Plaque', 'PassengerMobile', 'DriverMobile', 'Car', 'Cost', 'DriverInfo', 'Admin'));
 
         return $this->view(array(
             "recordsTotal" => $pagination->getTotalItemCount(),
             "recordsFiltered" => $pagination->getTotalItemCount(),
             "data" => $pagination->getItems()
-        ), Response::HTTP_OK);
+        ), Response::HTTP_OK)->setSerializationContext($context);
     }
 }

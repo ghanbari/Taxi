@@ -341,11 +341,13 @@ class Service
 
     /**
      * @var ArrayCollection
+     * @deprecated
      *
      * @ORM\OneToMany(targetEntity="FunPro\ServiceBundle\Entity\FloatingCost", mappedBy="service")
      *
      * @JS\Groups({"Cost"})
      * @JS\Since("1.0.0")
+     * @JS\Exclude()
      */
     private $floatingCosts;
 

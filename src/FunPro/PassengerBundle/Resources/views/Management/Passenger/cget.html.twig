@@ -13,6 +13,7 @@
 
 {% block javascriptsPageScripts %}
     <script src="{{ asset("bundles/funpropassenger/js/passenger/table-datatables-responsive.js") }}" type="text/javascript"></script>
+    <script>var search = '{{ app.request.query.get('search') }}';</script>
 {% endblock javascriptsPageScripts %}
 
 {% block content %}
