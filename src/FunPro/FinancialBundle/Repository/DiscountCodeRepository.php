@@ -37,6 +37,10 @@ class DiscountCodeRepository extends EntityRepository
             return false;
         }
 
+        if ($discountCode->getExpiredAt() < new \DateTime()) {
+            return false;
+        }
+
         $usageCountPerUser = $this->getUsageCount($discountCode, $passenger);
         if ($usageCountPerUser and $usageCountPerUser >= $discountCode->getMaxUsagePerUser()) {
             return false;
@@ -44,12 +48,6 @@ class DiscountCodeRepository extends EntityRepository
 
         $usageCount = $this->getUsageCount($discountCode);
         if ($usageCount and $usageCount >= $discountCode->getMaxUsage()) {
-            return false;
-        }
-        $expireDate = $discountCode->getExpiredAt();
-        $expireDate->setTime(23, 59, 59);
-        
-        if ($expireDate->getTimestamp() < time()) {
             return false;
         }
 

@@ -15,8 +15,6 @@ use JMS\Serializer\Annotation as JS;
  *
  * @ORM\Table(name="discount_code")
  * @ORM\Entity(repositoryClass="FunPro\FinancialBundle\Repository\DiscountCodeRepository")
- *
- * @Gedmo\SoftDeleteable(fieldName="expiredAt", timeAware=true)
  */
 class DiscountCode
 {

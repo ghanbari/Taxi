@@ -11,7 +11,6 @@ use FunPro\FinancialBundle\Entity\FavoriteDiscountCodes;
 use FunPro\PassengerBundle\Entity\Passenger;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -36,7 +35,8 @@ class DiscountController extends FOSRestController
      *              "User enter very wrong code (code: 1)",
      *              "code is wrong (code: 2)",
      *              "this code reached to max usage (code: 3)",
-     *              "you can not use this code more than (code: 4)"
+     *              "you can not use this code more than (code: 4)",
+     *              "this code is expired (code: 5)"
      *          }
      *     }
      * )
@@ -67,6 +67,14 @@ class DiscountController extends FOSRestController
 
         /** @var DiscountCode $discountCode */
         $discountCode = $doctrine->getRepository('FunProFinancialBundle:DiscountCode')->findOneByCode($code);
+        if ($discountCode->getExpiredAt() < new \DateTime()) {
+            $error = array(
+                'code' => 5,
+                'message' => $translator->trans('this.code.is.expired'),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
+
         if (!$discountCode) {
             $wrong = new DiscountWrongCount($passenger, $code);
             $manager->persist($wrong);
@@ -147,7 +155,10 @@ class DiscountController extends FOSRestController
      *     views={"passenger"},
      *     statusCodes={
      *          204="Success",
-     *          400="You can not change discount code in service (code: 1)",
+     *          400={
+     *              "You can not change discount code in service (code: 1)",
+     *              "This code is expired (code: 2)"
+     *          },
      *          404="You have not this code in your list"
      *     }
      * )
@@ -183,7 +194,16 @@ class DiscountController extends FOSRestController
         }
         
         $code = $fetcher->get('code', true);
+        /** @var DiscountCode $discountCode */
         $discountCode = $doctrine->getRepository('FunProFinancialBundle:DiscountCode')->findOneByCode($code);
+
+        if ($discountCode->getExpiredAt() < new \DateTime()) {
+            $error = array(
+                'code' => 2,
+                'message' => $translator->trans('this.code.is.expired'),
+            );
+            return $this->view($error, Response::HTTP_BAD_REQUEST);
+        }
 
         $doctrine->getRepository('FunProFinancialBundle:FavoriteDiscountCodes')->deactiveCodes($passenger);
         
