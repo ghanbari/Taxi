@@ -4,6 +4,7 @@ var TableDatatablesResponsive = function () {
         var table = $('#sample_2');
 
         var oTable = table.dataTable({
+            "oSearch": {"sSearch": query.nationalCode ? query.nationalCode : ''},
             "fnRowCallback": function( row, data, iDisplayIndex, iDisplayIndexFull ) {
                     if (data.deletedAt !== null && moment(data.deletedAt) < new Date()) {
                     $(row).css('backgroundColor', 'rgba(255, 0, 0, 0.2)');

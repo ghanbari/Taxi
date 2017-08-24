@@ -75,6 +75,9 @@ function initMap() {
     );
 
     var city = $('.controls-button .city .btn.active input');
+
+    directionsService = new google.maps.DirectionsService;
+    directionsDisplay = new google.maps.DirectionsRenderer;
     map = new google.maps.Map(document.getElementById('gmap_basic'), {
         center: {lat: city.data('lat'), lng: city.data('lng')},
         zoom: 12,

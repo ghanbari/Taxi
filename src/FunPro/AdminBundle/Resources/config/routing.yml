@@ -19,6 +19,10 @@ fun_pro_passenger_management:
     resource: "@FunProPassengerBundle/Controller/Management/PassengerController.php"
     type:     rest
 
+fun_pro_service_management:
+    resource: "@FunProServiceBundle/Controller/Management/ServiceController.php"
+    type:     rest
+
 fun_pro_operator_management:
     resource: "@FunProUserBundle/Controller/Management/OperatorController.php"
     type:     rest

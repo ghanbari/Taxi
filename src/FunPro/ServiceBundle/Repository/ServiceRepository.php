@@ -21,7 +21,6 @@ use FunPro\ServiceBundle\Entity\ServiceLog;
  */
 class ServiceRepository extends EntityRepository
 {
-
     /**
      * calculate price for given service or given data
      * @param BaseCost $baseCost
@@ -352,10 +351,12 @@ class ServiceRepository extends EntityRepository
     ) {
         $qb = $this->createQueryBuilder('s');
 
-        $qb->select(array('s', 'p', 'c', 'd'))
+        $qb->select(array('s', 'p', 'c', 'd', 'w', 'pl'))
             ->innerJoin('s.passenger', 'p')
             ->leftJoin('s.car', 'c')
             ->leftJoin('c.driver', 'd')
+            ->leftJoin('c.wakeful', 'w')
+            ->leftJoin('c.plaque', 'pl')
             ->where($qb->expr()->lte('glength(linestring(s.startPoint, st_geomfromtext(:point))) * 110000', ':radius'))
             ->orWhere($qb->expr()->lte('glength(linestring(s.endPoint, st_geomfromtext(:point))) * 110000', ':radius'))
             ->setParameter('radius', $radius)
@@ -374,5 +375,18 @@ class ServiceRepository extends EntityRepository
         return $qb
             ->setMaxResults($limit)
             ->setFirstResult($offset);
+    }
+
+    /**
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    public function getAllQueryBuilder()
+    {
+        $qb = $this->createQueryBuilder('s');
+        $qb->select(array('s', 'p', 'c', 'd'))
+            ->innerJoin('s.passenger', 'p')
+            ->leftJoin('s.car', 'c')
+            ->leftJoin('c.driver', 'd');
+        return $qb;
     }
 }

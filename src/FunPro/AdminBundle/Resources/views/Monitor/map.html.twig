@@ -17,20 +17,12 @@
             height: 100%;
         }
 
-        .autoRefresh label {
-            color: white !important;
-            background-color: #e7505a !important;
-            border-color: #e7505a !important;
-        }
-
-        .autoRefresh label.active {
-            color: white !important;
-            background-color: #32c5d2 !important;
-            border-color: #32c5d2 !important;
-        }
-
         .controls-button .btn {
             margin-bottom: 5px;
+        }
+
+        #service li a i.value {
+            float: left;
         }
     </style>
 {% endblock stylesheets %}
@@ -56,7 +48,7 @@
             finishedService: 'http://labs.google.com/ridefinder/images/mm_20_green.png'
         };
 
-        var map, supportedArea;
+        var map, supportedArea, directionsService, directionsDisplay;
     </script>
     <script src="{{ asset('assets/pages/scripts/ui-modals.min.js') }}"></script>
     <script src="{{ asset('assets/pages/scripts/ui-buttons.min.js') }}"></script>
@@ -91,15 +83,13 @@
                     <div class="col-md-1 col-xs-12 controls-button">
                         <div class="portlet light portlet-fit ">
                             <div class="portlet-body">
-                                <div class="btn-group autoRefresh" data-toggle="buttons">
-                                    <label class="btn btn-icon-only active">
-                                        <input type="checkbox" class="toggle">C
-                                    </label>
-                                </div>
-                                <div class="btn-group showService" data-toggle="buttons">
-                                    <label class="btn yellow-crusta">
-                                        <input type="checkbox" class="toggle">S
-                                    </label>
+                                <div class="btn-group" data-toggle="buttons">
+                                    <label class="btn btn-icon-only active yellow-crusta btn-outline" id="showCars">
+                                        <input type="checkbox" class="toggle">C</label>
+                                    <label class="btn btn-icon-only green-haze btn-outline" id="showService">
+                                        <input type="checkbox" class="toggle">S</label>
+                                    <label class="btn btn-icon-only active grey-gallery btn-outline" id="clusterMarker">
+                                        <input type="checkbox" class="toggle">G</label>
                                 </div>
                                 <div class="btn-group city" data-toggle="buttons">
                                     <label class="btn blue">
@@ -201,7 +191,7 @@
                                 <!-- SIDEBAR BUTTONS -->
                                 <div class="profile-userbuttons">
                                     <button id="messageToDriver" type="button" class="btn btn-circle green btn-sm">پیام</button>
-                                    <a target="_blank" id="driverProfile" type="button" class="btn btn-circle red btn-sm">ویرایش</a>
+                                    <a target="_blank" id="driverProfile" type="button" class="btn btn-circle red btn-sm">پروفایل</a>
                                 </div>
                                 <!-- END SIDEBAR BUTTONS -->
                                 <!-- SIDEBAR MENU -->
@@ -283,7 +273,6 @@
                                 <!-- SIDEBAR USER TITLE -->
                                 <div class="profile-usertitle">
                                     <div class="profile-usertitle-name" id="passengerName">نام</div>
-                                    <div class="profile-usertitle-job" id="passengerAge">سن</div>
                                 </div>
                                 <!-- END SIDEBAR USER TITLE -->
                                 <!-- SIDEBAR BUTTONS -->
@@ -297,47 +286,31 @@
                                     <ul class="nav">
                                         <li class="profile-desc-text">
                                             <a><i class="fa fa-mobile" style="color: #26a1ab"></i>موبایل:
-                                                <i id="passengerMobileNumber"></i> </a>
-                                        </li>
-                                        <li class="profile-desc-text">
-                                            <a><i class="icon-user" style="color: #26a1ab"></i>فعال؟
-                                                <i id="passengerStatus"></i> </a>
+                                                <i class="value" id="passengerMobileNumber"></i> </a>
                                         </li>
                                         <li class="profile-desc-text">
                                             <a><i class="fa fa-star" style="color: #26a1ab"></i>امتیاز:
-                                                <i id="passengerRate"></i> </a>
+                                                <i class="value" id="passengerRate"></i> </a>
                                         </li>
                                         <li class="profile-desc-text">
-                                            <a><i class="fa fa-lock" style="color: #26a1ab"></i>قفل شده؟
-                                                <i id="passengerLock"></i> </a>
+                                            <a><i class="fa fa-taxi" style="color: #26a1ab"></i>وضعیت:
+                                                <i class="value" id="serviceStatus"></i> </a>
                                         </li>
                                         <li class="profile-desc-text">
-                                            <a><i class="fa fa-map-marker" style="color: #26a1ab"></i>مبدا
-                                                <i id="serviceStartAddress"></i> </a>
+                                            <a><i class="fa fa-arrows-h" style="color: #26a1ab"></i>فاصله:
+                                                <i class="value" id="serviceDistance"></i> </a>
                                         </li>
                                         <li class="profile-desc-text">
-                                            <a><i class="fa fa-map-marker" style="color: #26a1ab"></i>مقصد
-                                                <i id="serviceEndAddress"></i> </a>
+                                            <a><i class="fa fa-dollar" style="color: #26a1ab"></i>قیمت:
+                                                <i class="value" id="servicePrice"></i> </a>
                                         </li>
                                         <li class="profile-desc-text">
-                                            <a><i class="fa fa-taxi" style="color: #26a1ab"></i>وضعیت
-                                                <i id="serviceStatus"></i> </a>
+                                            <a><i class="fa fa-clock-o" style="color: #26a1ab"></i>تاریخ:
+                                                <i class="value" id="serviceDate"></i> </a>
                                         </li>
                                         <li class="profile-desc-text">
-                                            <a><i class="fa fa-arrows-h" style="color: #26a1ab"></i>فاصله
-                                                <i id="serviceDistance"></i> </a>
-                                        </li>
-                                        <li class="profile-desc-text">
-                                            <a><i class="fa fa-dollar" style="color: #26a1ab"></i>قیمت
-                                                <i id="servicePrice"></i> </a>
-                                        </li>
-                                        <li class="profile-desc-text">
-                                            <a><i class="fa fa-clock-o" style="color: #26a1ab"></i>تاریخ
-                                                <i id="serviceDate"></i> </a>
-                                        </li>
-                                        <li class="profile-desc-text">
-                                            <a><i class="fa fa-dollar" style="color: #26a1ab"></i>قیمت نهایی
-                                                <i id="serviceDiscountedPrice"></i> </a>
+                                            <a><i class="fa fa-dollar" style="color: #26a1ab"></i>قیمت نهایی:
+                                                <i class="value" id="serviceDiscountedPrice"></i> </a>
                                         </li>
                                     </ul>
                                 </div>
@@ -353,7 +326,6 @@
                                 <!-- SIDEBAR USER TITLE -->
                                 <div class="profile-usertitle">
                                     <div class="profile-usertitle-name" id="serviceDriverName">نام</div>
-                                    <div class="profile-usertitle-job" id="serviceDriverStatus">وضعیت</div>
                                 </div>
                                 <!-- END SIDEBAR USER TITLE -->
                                 <!-- SIDEBAR BUTTONS -->
@@ -367,63 +339,49 @@
                                     <ul class="nav">
                                         <li class="profile-desc-text">
                                             <a><i class="fa fa-sticky-note-o" style="color: #26a1ab"></i> شماره قرارداد:
-                                                <i id="serviceDriverContractNumber"></i> </a>
+                                                <i class="value" id="serviceDriverContractNumber"></i> </a>
                                         </li>
                                         <li class="profile-desc-text">
                                             <a><i class="fa fa-mobile" style="color: #26a1ab"></i>موبایل:
-                                                <i id="serviceDriverMobileNumber"></i> </a>
+                                                <i class="value" id="serviceDriverMobileNumber"></i> </a>
                                         </li>
                                         <li class="profile-desc-text">
                                             <a><i class="icon-user" style="color: #26a1ab"></i>کد ملی:
-                                                <i id="serviceDriverNationalCode"></i> </a>
+                                                <i class="value" id="serviceDriverNationalCode"></i> </a>
                                         </li>
                                         <li class="profile-desc-text">
                                             <a><i class="fa fa-star" style="color: #26a1ab"></i>امتیاز:
-                                                <i id="serviceDriverRate"></i> </a>
+                                                <i class="value" id="serviceDriverRate"></i> </a>
+                                        </li>
+                                        <li class="profile-desc-text">
+                                            <a><i class="fa fa-star" style="color: #26a1ab"></i>وضعیت
+                                                <i class="value" id="serviceDriverStatus"></i> </a>
                                         </li>
                                         <li class="profile-desc-text">
                                             <a><i class="fa fa-star" style="color: #26a1ab"></i>ماشین
-                                                <i id="serviceDriverRate"></i> </a>
+                                                <i class="value" id="serviceCarType"></i> </a>
                                         </li>
                                         <li class="profile-desc-text">
                                             <a><i class="fa fa-star" style="color: #26a1ab"></i>پلاک
-                                                <i id="serviceDriverRate"></i> </a>
+                                                <i class="value" id="serviceCarPlaque"></i> </a>
                                         </li>
                                     </ul>
                                 </div>
                                 <!-- END MENU -->
                             </div>
-                            <div class="portlet light profile-sidebar-portlet " style="margin-bottom: 0px">
-                                <!-- SIDEBAR USERPIC -->
-                                <div class="profile-userpic">
-                                    <img id="carImage" style="height: 139px" src="{{ asset('bundles/funproadmin/images/default_car.jpg') }}" class="img-responsive" alt=""> </div>
-                                <!-- END SIDEBAR USERPIC -->
-                                <!-- SIDEBAR USER TITLE -->
-                                <div class="profile-usertitle">
-                                    <div id="carName" class="profile-usertitle-name">نام</div>
-                                    <div id="carStatus" class="profile-usertitle-job">وضعیت</div>
-                                </div>
-                                <!-- END SIDEBAR USER TITLE -->
-                                <!-- SIDEBAR BUTTONS -->
-                                <div class="profile-userbuttons">
-                                    <button id="carReports" type="button" class="btn btn-circle green btn-sm">گزارشات</button>
-                                    <button type="carProfile" class="btn btn-circle red btn-sm">مشاهده پروفایل</button>
-                                </div>
-                                <!-- END SIDEBAR BUTTONS -->
-                                <!-- SIDEBAR MENU -->
-                                <div class="profile-usermenu">
-                                    <ul class="nav">
-                                        <li class="profile-desc-text">
-                                            <a><i class="fa fa-car" style="color: #d1cb0f"></i>رنگ :
-                                                <i id="carColor"></i> </a>
-                                        </li>
-                                        <li class="profile-desc-text">
-                                            <a><i class="fa fa-star" style="color: #26a1ab"></i>امتیاز:
-                                                <i id="carRate"></i> </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <!-- END MENU -->
+                        </div>
+                        <div class="col-md-12" style="padding-right: 7px">
+                            <div class="profile-usermenu">
+                                <ul class="nav">
+                                    <li class="profile-desc-text">
+                                        <a id="showStartLocation"><i class="fa fa-map-marker" style="color: #26a1ab"></i>مبدا:
+                                            <i id="serviceStartAddress" style="font-size: 11px;"></i> </a>
+                                    </li>
+                                    <li class="profile-desc-text">
+                                        <a id="showEndLocation"><i class="fa fa-map-marker" style="color: #26a1ab"></i>مقصد:
+                                            <i style="font-size: 11px;" id="serviceEndAddress"></i> </a>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>

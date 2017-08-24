@@ -2524,6 +2524,10 @@
             <script src="{{ asset("assets/pages/scripts/ui-toastr.min.js") }}" type="text/javascript"></script>
             <script src="{{ asset("assets/pages/scripts/ui-confirmations.min.js") }}" type="text/javascript"></script>
             <script src="{{ asset("assets/global/plugins/moment.min.js") }}" type="text/javascript"></script>
+            <script src="{{ asset("bower_components/persian-date/dist/0.1.8/persian-date-0.1.8.min.js") }}" type="text/javascript"></script>
+            <script>
+                var query = JSON.parse('{{ app.request.query.all|json_encode(constant('JSON_HEX_QUOT'))|raw }}');
+            </script>
             {% block javascriptsPageScripts %}
             {% endblock javascriptsPageScripts %}
             <!-- END PAGE LEVEL SCRIPTS -->

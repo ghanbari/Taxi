@@ -4,6 +4,9 @@ var carMarkerCluster;
 var serviceMarkerCluster;
 var onlineCounter = 0;
 var inServiceCounter = 0;
+var wakefulInterval;
+var serviceInterval;
+var carId;
 
 function setMapOnCarMarkers(map) {
     for (var i = 0; i < carMarkers.length; i++) {
@@ -20,11 +23,17 @@ function setMapOnServiceMarkers(map) {
 function clearCarMarkers() {
     setMapOnCarMarkers(null);
     carMarkers = [];
+    if (carMarkerCluster !== undefined) {
+        carMarkerCluster.clearMarkers();
+    }
 }
 
 function clearServiceMarkers() {
     setMapOnServiceMarkers(null);
     serviceMarkers = [];
+    if (serviceMarkerCluster !== undefined) {
+        serviceMarkerCluster.clearMarkers();
+    }
 }
 
 function showCarMarkers() {
@@ -63,7 +72,7 @@ function createDriverInfoWindow(wakeful) {
     });
 
     $('#driverAvatar').attr('src', driverAvatar);
-    $('#driverProfile').attr('href', Routing.generate('fun_pro_admin_edit_driver', {id: wakeful.car.driver.id}));
+    $('#driverProfile').attr('href', Routing.generate('fun_pro_admin_cget_driver', {nationalCode: wakeful.car.driver.nationalCode}));
     $('#driverName').text(wakeful.car.driver.name);
     $('#driverContractNumber').text(wakeful.car.driver.contractNumber);
     $('#driverMobileNumber').text(wakeful.car.driver.mobile);
@@ -125,6 +134,29 @@ function createServiceInfoWindow(service) {
     var driverAvatar;
     var car = service.car;
 
+    var passenger = service.passenger;
+
+    $('#passengerMobileNumber').text(passenger.mobile);
+    $('#passengerRate').text(passenger.rate);
+    $('#passengerName').text(passenger.name);
+
+    $('#serviceStartAddress').text(service.startAddress);
+    $('#serviceStartAddress').parent().data('lat', service.startPoint.latitude);
+    $('#serviceStartAddress').parent().data('lng', service.startPoint.longitude);
+
+    $('#serviceEndAddress').text(service.endAddress);
+    $('#serviceEndAddress').parent().data('lat', service.endPoint.latitude);
+    $('#serviceEndAddress').parent().data('lng', service.endPoint.longitude);
+
+    $('#serviceStatus').text(service.status);
+    $('#serviceDistance').text(service.distance);
+    $('#servicePrice').text(service.price);
+
+    var timestamp = moment(service.createdAt).unix();
+    var date = persianDate.unix(timestamp);
+    $('#serviceDate').text(date.pDate.year + '/' + date.pDate.month + '/' + date.pDate.date + ' '  + moment(service.createdAt).format('HH:mm:ss'));
+    $('#serviceDiscountedPrice').text(service.discountedPrice);
+
     if (car !== null) {
         if (car.driver.hasOwnProperty('avatar')) {
             driverAvatar = car.driver.avatar;
@@ -145,9 +177,14 @@ function createServiceInfoWindow(service) {
         $('#serviceDriverNationalCode').text(car.driver.nationalCode);
         $('#serviceDriverRate').text(car.driver.rate);
 
-        $('#carName').text(car.type);
-        $('#carColor').text(car.color);
-        $('#carRate').text(car.rate);
+        var getPlaque = function (plaque) {
+            return plaque.cityNumber + ' ' + plaque.secondNumber + ' ' +
+                plaque.areaCode + ' ' + plaque.firstNumber;
+        };
+
+        $('#serviceCarType').text(car.type);
+        $('#serviceCarType').data('id', car.id);
+        $('#serviceCarPlaque').text(getPlaque(car.plaque));
 
         switch (car.status) {
             case 0:
@@ -197,17 +234,21 @@ function createServiceInfoWindow(service) {
 }
 
 function showWakeful() {
-    if (!$('.autoRefresh label').hasClass('active')) {
-        console.log('clear cars');
-        if (carMarkerCluster !== undefined) {
-            carMarkerCluster.clearMarkers();
-        }
-        clearCarMarkers();
-        return;
-    }
+    // if (!$('#showCars').hasClass('active')) {
+    //     console.log('clear cars');
+    //     if (carMarkerCluster !== undefined) {
+    //         carMarkerCluster.clearMarkers();
+    //     }
+    //     clearCarMarkers();
+    //     return;
+    // }
 
+    var params = {'latitude': map.getCenter().lat(), 'longitude': map.getCenter().lng(), limit: 5000};
+    if (carId) {
+        params['cars'] = [carId];
+    }
     $.ajax({
-        url: Routing.generate('fun_pro_admin_cget_monitor_wakeful', {'latitude': map.getCenter().lat(), 'longitude': map.getCenter().lng(), limit: 5000}),
+        url: Routing.generate('fun_pro_admin_cget_monitor_wakeful', params),
         type: 'GET',
         beforeSend: function(xhr){xhr.setRequestHeader('Accept', 'application/json');},
 
@@ -245,8 +286,10 @@ function showWakeful() {
                     carMarkerCluster.clearMarkers();
                 }
 
-                carMarkerCluster = new MarkerClusterer(map, carMarkers,
-                    {imagePath: '/bundles/funproadmin/map/markerclusterer/images/m'});
+                if ($('#clusterMarker').hasClass('active')) {
+                    carMarkerCluster = new MarkerClusterer(map, carMarkers,
+                        {imagePath: '/bundles/funproadmin/map/markerclusterer/images/m'});
+                }
 
                 $('.inServiceCounter').attr('data-value', inServiceCounter);
                 $('.inServiceCounter').counterUp();
@@ -259,14 +302,14 @@ function showWakeful() {
 }
 
 function showService() {
-    if (!$('.showService label').hasClass('active')) {
-        console.log('clear services');
-        if (serviceMarkerCluster !== undefined) {
-            serviceMarkerCluster.clearMarkers();
-        }
-        clearServiceMarkers();
-        return;
-    }
+    // if (!$('#showService').hasClass('active')) {
+    //     console.log('clear services');
+    //     if (serviceMarkerCluster !== undefined) {
+    //         serviceMarkerCluster.clearMarkers();
+    //     }
+    //     clearServiceMarkers();
+    //     return;
+    // }
 
     var from = new Date();
     /** FIXME: change to 180 min */
@@ -293,14 +336,13 @@ function showService() {
                 var icon = '';
                 
                 for (var i=0; i < result.length; i++) {
-                    console.log(result[i].status);
-                    if (result[i].status == -1) {
+                    if (result[i].statusNumber == -1) {
                         continue;
-                    } else if (result[i].status == 1) {
+                    } else if (result[i].statusNumber == 1) {
                         icon = map.getZoom() <= 13 ? iconMarker.newServiceSmall : iconMarker.newService;
-                    } else if (result[i].status == 2) {
+                    } else if (result[i].statusNumber == 2) {
                         icon = map.getZoom() <= 13 ? iconMarker.acceptedServiceSmall : iconMarker.acceptedService;
-                    } else if (result[i].status == 3 || result[i].status == 4) {
+                    } else if (result[i].statusNumber == 3 || result[i].statusNumber == 4) {
                         icon = map.getZoom() <= 13 ? iconMarker.startedServiceSmall : iconMarker.startedService;
                     } else {
                         icon = map.getZoom() <= 13 ? iconMarker.finishedServiceSmall : iconMarker.finishedService;
@@ -324,14 +366,100 @@ function showService() {
                     serviceMarkerCluster.clearMarkers();
                 }
 
-                serviceMarkerCluster = new MarkerClusterer(map, serviceMarkers,
-                    {imagePath: '/bundles/funproadmin/map/markerclusterer/images/m'});
+                if ($('#clusterMarker').hasClass('active')) {
+                    serviceMarkerCluster = new MarkerClusterer(map, serviceMarkers,
+                        {imagePath: '/bundles/funproadmin/map/markerclusterer/images/m'});
+                }
             }
         }
     });
 }
 
+function stopAndClearMapService() {
+    stopWakefulService();
+    stopServicesService();
+}
+
+function stopWakefulService() {
+    $('#showCars').removeClass('active');
+    clearInterval(wakefulInterval);
+    clearCarMarkers();
+    wakefulInterval = null;
+    carId = null;
+}
+
+function stopServicesService() {
+    $('#showService').removeClass('active')
+    clearInterval(serviceInterval);
+    clearServiceMarkers();
+    serviceInterval = null;
+}
+
+function startWakefulService() {
+    wakefulInterval = window.setInterval(showWakeful, 8000);
+}
+
+function toggleWakefulService() {
+    if (!wakefulInterval) {
+        startWakefulService();
+    } else {
+        stopWakefulService();
+    }
+}
+
+function startServicesService() {
+    serviceInterval = window.setInterval(showService, 8000);
+}
+
+function toggleServicesService() {
+    if (!serviceInterval) {
+        startServicesService();
+    } else {
+        stopServicesService();
+    }
+}
+
+function start() {
+    if ($('#showCars').hasClass('active')) {
+        startWakefulService();
+    }
+
+    if ($('#showService').hasClass('active')) {
+        startServicesService();
+    }
+}
+
+$('#showCars').click(function (event) {
+    toggleWakefulService();
+});
+
+$('#showService').click(function (event) {
+    toggleServicesService();
+});
+
 $(document).ready(function(){
-    window.setInterval(showWakeful, 8000);
-    window.setInterval(showService, 8000);
+    start();
+
+    $('#showEndLocation, #showStartLocation').click(function (event) {
+        var origin = new google.maps.LatLng($('#showStartLocation').data('lat'), $('#showStartLocation').data('lng'));
+        var destination = new google.maps.LatLng($('#showEndLocation').data('lat'), $('#showEndLocation').data('lng'));
+
+        directionsDisplay.setMap(map);
+        directionsService.route({
+            origin: origin,
+            destination: destination,
+            travelMode: 'DRIVING',
+            unitSystem: google.maps.UnitSystem.METRIC,
+            provideRouteAlternatives: false
+        }, function(response, status) {
+            if (status === 'OK') {
+                stopAndClearMapService();
+                directionsDisplay.setDirections(response);
+                carId = $('#serviceCarType').data('id');
+                startWakefulService();
+            } else {
+                toastr.error('ادرسی یافت نشد: ' + status);
+            }
+        });
+    });
 });

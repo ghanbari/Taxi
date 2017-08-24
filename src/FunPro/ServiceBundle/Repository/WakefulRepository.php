@@ -103,4 +103,25 @@ class WakefulRepository extends EntityRepository
 
         return $wakefuls;
     }
+
+    /**
+     * @param $carIds
+     * @return array
+     */
+    public function getWakefulFilterByCar($carIds)
+    {
+        $queryBuilder = $this->createQueryBuilder('w');
+
+        $queryBuilder->select(array('w', 'c', 'd'))
+            ->join('w.car', 'c')
+            ->join('c.driver', 'd')
+            ->where($queryBuilder->expr()->in('c.id', ':cars'))
+            ->setParameter('cars', $carIds);
+
+        $wakefuls = $queryBuilder
+            ->getQuery()
+            ->getResult();
+
+        return $wakefuls;
+    }
 }

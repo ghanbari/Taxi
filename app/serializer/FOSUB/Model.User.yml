@@ -7,3 +7,7 @@ FOS\UserBundle\Model\User:
             groups: ["Owner", "Admin"]
         lastLogin:
             groups: ["Owner"]
+        enabled:
+            groups: ["Admin"]
+        locked:
+            groups: ["Admin"]

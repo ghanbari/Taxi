@@ -55,6 +55,7 @@ class MonitorController extends FOSRestController
      * @Rest\QueryParam(name="longitude", strict=true, nullable=false)
      * @Rest\QueryParam(name="distance", default=20000, description="Max of result")
      * @Rest\QueryParam(name="limit", default=20, description="Max of result")
+     * @Rest\QueryParam(name="cars", map=true, nullable=true, strict=false, requirements="\d+")
      * @Rest\View()
      *
      * @return \FOS\RestBundle\View\View
@@ -66,9 +67,15 @@ class MonitorController extends FOSRestController
         $lon = $fetcher->get('longitude', true);
         $distance = $fetcher->get('distance', true);
         $limit = intval($fetcher->get('limit', true));
+        $cars = $fetcher->get('cars', false);
 
-        $wakefulList = $this->getDoctrine()->getRepository('FunProServiceBundle:Wakeful')
-            ->getAllNearWakeful($lon, $lat, $distance, $limit);
+        if (!empty($cars)) {
+            $wakefulList = $this->getDoctrine()->getRepository('FunProServiceBundle:Wakeful')
+                ->getWakefulFilterByCar($cars);
+        } else {
+            $wakefulList = $this->getDoctrine()->getRepository('FunProServiceBundle:Wakeful')
+                ->getAllNearWakeful($lon, $lat, $distance, $limit);
+        }
 
         if (count($wakefulList)) {
             $context = (new Context())
