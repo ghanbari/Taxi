@@ -312,8 +312,7 @@ function showService() {
     // }
 
     var from = new Date();
-    /** FIXME: change to 180 min */
-    from.setMinutes(from.getMinutes() - 180000);
+    from.setMinutes(from.getMinutes() - 180);
     from = moment(from).format('YYYY-MM-DD HH:mm:ss');
 
     var url = Routing.generate('fun_pro_service_api_cget_service', {

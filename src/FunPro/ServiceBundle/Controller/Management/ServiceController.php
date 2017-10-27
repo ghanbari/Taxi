@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @package FunPro\ServiceBundle\Controller
  *
- * @Rest\RouteResource(resource="service", pluralize=false)
+ * @Rest\RouteResource(resource="tour", pluralize=false)
  * @Rest\NamePrefix("fun_pro_admin_")
  */
 class ServiceController extends FOSRestController

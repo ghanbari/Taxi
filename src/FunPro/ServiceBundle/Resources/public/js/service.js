@@ -174,7 +174,7 @@ jQuery(document).ready(function() {
             $.ajax({
                 type: 'patch',
                 headers: {'content-type': 'application/json', accept: 'application/json'},
-                url: Routing.generate('fun_pro_admin_cancel_service', {id: $(that).parents('tr').find('.serviceId').text()}),
+                url: Routing.generate('fun_pro_admin_cancel_tour', {id: $(that).parents('tr').find('.serviceId').text()}),
                 success: function (result) {
                     toastr.success('سفر با موفقیت کنسل شد');
                     $(that).parents('tr').find('.status').text('canceled');
