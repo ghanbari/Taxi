@@ -6,6 +6,10 @@ fun_pro_admin_res:
         expose: true
     type:     rest
 
+fun_pro_home_res:
+    resource: "@FunProHomeBundle/Resources/config/routing.yml"
+    type:     rest
+
 fun_pro_ticket:
     resource: "@FunProTicketBundle/Resources/config/routing.yml"
     type:     rest

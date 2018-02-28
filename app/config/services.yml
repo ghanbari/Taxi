@@ -9,4 +9,5 @@ imports:
     - { resource: "@FunProAdminBundle/Resources/config/services.yml" }
     - { resource: "@FunProFinancialBundle/Resources/config/services.yml" }
     - { resource: "@FunProTicketBundle/Resources/config/services.yml" }
+    - { resource: "@FunProHomeBundle/Resources/config/services.yml" }
     - { resource: monolog.yml }
